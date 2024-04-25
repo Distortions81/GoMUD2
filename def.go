@@ -8,6 +8,7 @@ const (
 		"License: Mozilla Public License 2.0\n" +
 		"This information must remain unmodified, fully intact and shown to end-users.\n"
 
+		// Directories and files
 	DATA_DIR   = "data/"
 	PLAYER_DIR = "players/"
 	AREA_DIR   = "areas/"
@@ -22,22 +23,29 @@ var makeDirs = []string{
 	DATA_DIR + PLAYER_DIR,
 	DATA_DIR + AREA_DIR,
 	DATA_DIR + TEXTS_DIR,
-	DATA_DIR + LOGS_DIR}
+	LOGS_DIR}
 
-/*Connection State*/
+// Server states
 const (
-	CON_STATE_DISCONNECTED = iota
+	SERVER_BOOTING = iota
+	SERVER_RUNNING
+	SERVER_SHUTDOWN
+)
 
-	CON_STATE_WELCOME
-	CON_STATE_PASSWORD
+// Connection state
+const (
+	CON_DISCONNECTED = iota
 
-	CON_STATE_NEWS
-	CON_STATE_RECONNECT_CONFIRM
-	CON_STATE_PLAYING
+	CON_WELCOME
+	CON_PASSWORD
 
-	// New Users
-	CON_STATE_NEW_LOGIN
-	CON_STATE_NEW_LOGIN_CONFIRM
-	CON_STATE_NEW_PASSWORD
-	CON_STATE_NEW_PASSWORD_CONFIRM
+	CON_NEWS
+	CON_RECONNECT_CONFIRM
+	CON_PLAYING
+
+	// New users
+	CON_NEW_LOGIN
+	CON_NEW_LOGIN_CONFIRM
+	CON_NEW_PASSWORD
+	CON_NEW_PASSWORD_CONFIRM
 )

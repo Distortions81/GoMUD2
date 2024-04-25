@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -21,6 +22,7 @@ var (
 	port, portTLS *int
 	noTLS         *bool
 	bindIP        *string
+	serverState   int
 )
 
 func main() {
@@ -32,16 +34,16 @@ func main() {
 	bindIP = flag.String("bindIP", "localhost", "Bind to a specific IP.")
 	flag.Parse()
 
-	startLogs()
-
 	//Make sure all directories we need are created
 	for _, newDir := range makeDirs {
 		err := os.Mkdir(newDir, os.ModePerm)
-		if err != nil {
-			errLog("Unable to create directory: %v: %v", newDir, err.Error())
+		if err != nil && !os.IsExist(err) {
+			log.Printf("Unable to create directory: %v: %v", newDir, err)
 			os.Exit(1)
 		}
 	}
+
+	startLogs()
 
 	setupListener()
 	setupListenerTLS()

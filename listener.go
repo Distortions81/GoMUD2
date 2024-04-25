@@ -26,43 +26,40 @@ func setupListenerTLS() {
 
 	cert, err := tls.LoadX509KeyPair(DATA_DIR+SSL_PEM, DATA_DIR+SSL_KEY)
 	if err != nil {
-		errLog("Error loading TLS certificate, TLS port not opened.")
-		errLog("How to make quick cert: (in data directory)")
-		errLog("openssl ecparam -genkey -name prime256v1 -out server.key")
-		errLog("openssl req -new -x509 -key server.key -out server.pem -days 3650")
-		errLog("Or use letsencrypt if you have a domain name.")
+		errLog("Error loading TLS certificates: %v & %v in %v directory... TLS port not opened.", SSL_PEM, SSL_KEY, DATA_DIR)
+		errLog("Use makeTestCert.sh, or letsencrypt if you have a domain name.")
 		return
 	}
 
 	tlsCfg := &tls.Config{Certificates: []tls.Certificate{cert}}
 
-	addr, err := net.ResolveTCPAddr("tcp4", *bindIP+":"+strconv.Itoa(*port))
+	addr, err := net.ResolveTCPAddr("tcp4", *bindIP+":"+strconv.Itoa(*portTLS))
 	if err != nil {
-		errLog("Unable to resolve %v. Error: %v", addr.IP, addr.Port, err)
+		errLog("Unable to resolve %v. Error: %v", *bindIP, *portTLS, err)
 		os.Exit(1)
 	}
 
 	listenerTLS, err = tls.Listen("tcp4", addr.String(), tlsCfg)
 	if err != nil {
-		errLog("Unable to listen at %v. Error: %v", addr.IP, addr.Port, err)
+		errLog("Unable to listen at %v:%v. Error: %v", *bindIP, *portTLS, err)
 		os.Exit(1)
 	}
 
-	errLog("TLS listener online at: %s", *portTLS)
+	errLog("TLS listener online at: %s", addr.String())
 }
 
 func setupListener() {
 	/*Find Network*/
 	addr, err := net.ResolveTCPAddr("tcp4", *bindIP+":"+strconv.Itoa(*port))
 	if err != nil {
-		errLog("Unable to resolve %v. Error: %v", addr.IP, addr.Port, err)
+		errLog("Unable to resolve %v. Error: %v", *bindIP, *port, err)
 		os.Exit(1)
 	}
 
 	/*Open Listener*/
 	listener, err = net.ListenTCP("tcp4", addr)
 	if err != nil {
-		errLog("Unable to listen on port %v. Error: %v", *port, err)
+		errLog("Unable to listen on port %v:%v. Error: %v", *bindIP, *port, err)
 		os.Exit(1)
 	}
 
@@ -72,7 +69,7 @@ func setupListener() {
 
 func waitNewConnectionSSL() {
 
-	if !*noTLS && portTLS != nil {
+	if !*noTLS && portTLS != nil && listenerTLS != nil {
 
 		for serverState == SERVER_RUNNING {
 
@@ -101,7 +98,7 @@ func waitNewConnectionSSL() {
 
 func waitNewConnection() {
 
-	for serverState == SERVER_RUNNING {
+	for serverState == SERVER_RUNNING && listener != nil {
 
 		desc, err := listener.Accept()
 		if err != nil {
