@@ -2,10 +2,9 @@ package main
 
 import (
 	"crypto/tls"
-	"fmt"
 	"net"
+	"os"
 	"strconv"
-	"time"
 )
 
 const (
@@ -27,95 +26,99 @@ func setupListenerTLS() {
 
 	cert, err := tls.LoadX509KeyPair(DATA_DIR+SSL_PEM, DATA_DIR+SSL_KEY)
 	if err != nil {
-		errLog("Error loading SSL certificate, SSL port not opened.")
-		errLog("How to make cert: (put in data directory)")
+		errLog("Error loading TLS certificate, TLS port not opened.")
+		errLog("How to make quick cert: (in data directory)")
 		errLog("openssl ecparam -genkey -name prime256v1 -out server.key")
 		errLog("openssl req -new -x509 -key server.key -out server.pem -days 3650")
+		errLog("Or use letsencrypt if you have a domain name.")
 		return
 	}
 
 	tlsCfg := &tls.Config{Certificates: []tls.Certificate{cert}}
 
-	/*Open Listener*/
-	listenerTLS, err = tls.Listen("tcp4", strconv.Itoa(DEFAULT_TLS_PORT), tlsCfg)
+	addr, err := net.ResolveTCPAddr("tcp4", *bindIP+":"+strconv.Itoa(*port))
 	if err != nil {
-
+		errLog("Unable to resolve %v. Error: %v", addr.IP, addr.Port, err)
+		os.Exit(1)
 	}
 
-	/*Print Connection*/
-	buf := fmt.Sprintf("SSL listener online at: %s", DEFAULT_TLS_PORT)
-	errLog(buf)
+	listenerTLS, err = tls.Listen("tcp4", addr.String(), tlsCfg)
+	if err != nil {
+		errLog("Unable to listen at %v. Error: %v", addr.IP, addr.Port, err)
+		os.Exit(1)
+	}
+
+	errLog("TLS listener online at: %s", *portTLS)
 }
 
 func setupListener() {
 	/*Find Network*/
-	addr, err := net.ResolveTCPAddr("tcp4", DEFAULT_PORT)
-	support.CheckError("main: resolveTCP", err, ERROR_FATAL)
+	addr, err := net.ResolveTCPAddr("tcp4", *bindIP+":"+strconv.Itoa(*port))
+	if err != nil {
+		errLog("Unable to resolve %v. Error: %v", addr.IP, addr.Port, err)
+		os.Exit(1)
+	}
 
 	/*Open Listener*/
-	listener, err := net.ListenTCP("tcp4", addr)
-	glob.ServerListener = listener
-	support.CheckError("main: ListenTCP", err, ERROR_FATAL)
+	listener, err = net.ListenTCP("tcp4", addr)
+	if err != nil {
+		errLog("Unable to listen on port %v. Error: %v", *port, err)
+		os.Exit(1)
+	}
 
 	/*Print Connection*/
-	buf := fmt.Sprintf("TCP listener online at: %s", addr.String())
-	mlog.Write(buf)
+	errLog("TCP listener online at: %s", addr.String())
 }
 
 func waitNewConnectionSSL() {
 
-	if glob.ServerListenerSSL != nil {
+	if !*noTLS && portTLS != nil {
 
-		for glob.ServerState == SERVER_RUNNING {
+		for serverState == SERVER_RUNNING {
 
-			time.Sleep(CONNECT_THROTTLE_MS * time.Millisecond)
-			desc, err := glob.ServerListenerSSL.Accept()
-			support.AddNetDesc()
+			desc, err := listenerTLS.Accept()
+			if err != nil {
+				mudLog("Listener error: %v -- exiting loop", err)
+				break
+			}
+			//support.AddNetDesc()
 
-			/* If there is a connection flood, sleep listeners */
-			if err != nil || support.CheckNetDesc() {
-				time.Sleep(5 * time.Second)
-				desc.Close()
-				support.RemoveNetDesc()
-			} else {
+			desc.Write(nil)
 
+			/*
 				desc.Write([]byte(
 					LICENSE + support.TextFiles["greet"] +
 						"(SSL Encryption Enabled!)\n(Type NEW to create character) Name:"))
 				time.Sleep(CONNECT_THROTTLE_MS * time.Millisecond)
-				support.NewDescriptor(desc, true)
-			}
+			*/
+			//support.NewDescriptor(desc, true)
 
 		}
 
-		glob.ServerListenerSSL.Close()
+		listenerTLS.Close()
 	}
 }
 
 func waitNewConnection() {
 
-	for glob.ServerState == SERVER_RUNNING {
+	for serverState == SERVER_RUNNING {
 
-		time.Sleep(CONNECT_THROTTLE_MS * time.Millisecond)
-		desc, err := glob.ServerListener.Accept()
-		support.AddNetDesc()
-		time.Sleep(CONNECT_THROTTLE_MS * time.Millisecond)
-
-		/* If there is a connection flood, sleep listeners */
-		if err != nil || support.CheckNetDesc() {
-			time.Sleep(5 * time.Second)
-			desc.Close()
-			support.RemoveNetDesc()
-		} else {
-
-			_, err = desc.Write([]byte(
-				LICENSE + support.TextFiles["greet"] +
-					"(ENCRYPTION NOT ENABLED!)\n(Type NEW to create character) Name:"))
-
-			time.Sleep(CONNECT_THROTTLE_MS * time.Millisecond)
-			support.NewDescriptor(desc, false)
+		desc, err := listener.Accept()
+		if err != nil {
+			mudLog("Listener error: %v -- exiting loop", err)
+			break
 		}
+		//support.AddNetDesc()
+
+		desc.Write(nil)
+		/*
+			_, err = desc.Write([]byte(
+			LICENSE + support.TextFiles["greet"] +
+				"(ENCRYPTION NOT ENABLED!)\n(Type NEW to create character) Name:"))
+		*/
+
+		//support.NewDescriptor(desc, false)
 	}
 
-	glob.ServerListener.Close()
+	listener.Close()
 }

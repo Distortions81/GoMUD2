@@ -1,16 +1,11 @@
 package main
 
-import (
-	"os"
-	"time"
+const (
+	SERVER_BOOTING = iota
+	SERVER_RUNNING
+	SERVER_SHUTDOWN
 )
 
 var (
-	bootTime time.Time
-
-	signalHandle chan os.Signal
-
-	port, portTLS *int
-	noTLS         *bool
-	bindIP        *string
+	serverState int
 )

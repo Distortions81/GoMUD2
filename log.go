@@ -33,16 +33,36 @@ func startLogs() {
 	log.SetOutput(elog)
 }
 
-func errLog(format string, args ...string) {
-	buf := fmt.Sprintf(format, args)
-	elog.WriteString(buf)
-	fmt.Println(buf)
+// Log errors, sprintf format
+func errLog(format string, args ...interface{}) {
+	if args == nil {
+		buf := fmt.Sprintf(format+"\n", args)
+		if elog != nil {
+			elog.WriteString(buf)
+		}
+		fmt.Println(buf)
+	} else {
+		if elog != nil {
+			elog.WriteString(format)
+		}
+		fmt.Println(format)
+	}
 }
 
-func mudLog(format string, args ...string) {
-	buf := fmt.Sprintf(format, args)
-	mlog.WriteString(buf)
-	fmt.Println(buf)
+// Log info, sprintf format
+func mudLog(format string, args ...interface{}) {
+	if args == nil {
+		buf := fmt.Sprintf(format+"\n", args)
+		if mlog != nil {
+			mlog.WriteString(buf)
+		}
+		fmt.Println(buf)
+	} else {
+		if mlog != nil {
+			mlog.WriteString(format)
+		}
+		fmt.Println(format)
+	}
 }
 
 func closeLogs() {

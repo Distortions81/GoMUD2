@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -14,28 +13,40 @@ const (
 	DEFAULT_TLS_PORT = DEFAULT_PORT + 1
 )
 
+var (
+	bootTime time.Time
+
+	signalHandle chan os.Signal
+
+	port, portTLS *int
+	noTLS         *bool
+	bindIP        *string
+)
+
 func main() {
 	bootTime = time.Now()
 
 	port = flag.Int("port", DEFAULT_PORT, "port")
 	portTLS = flag.Int("portTLS", DEFAULT_TLS_PORT, "TLS Port")
 	noTLS = flag.Bool("noSSL", false, "disable TLS listener")
-	bindIP = flag.String("bindIP", "", "Bind to a specific IP.")
+	bindIP = flag.String("bindIP", "localhost", "Bind to a specific IP.")
 	flag.Parse()
+
+	startLogs()
 
 	//Make sure all directories we need are created
 	for _, newDir := range makeDirs {
 		err := os.Mkdir(newDir, os.ModePerm)
 		if err != nil {
-			fmt.Printf("Unable to create directory: %v: %v", newDir, err.Error())
+			errLog("Unable to create directory: %v: %v", newDir, err.Error())
 			os.Exit(1)
 		}
 	}
 
-	startLogs()
-
 	setupListener()
 	setupListenerTLS()
+
+	serverState = SERVER_RUNNING
 	go waitNewConnection()
 	go waitNewConnectionSSL()
 
