@@ -34,7 +34,7 @@ func startLogs() {
 }
 
 // Log errors, sprintf format
-func errLog(format string, args ...interface{}) {
+func errLog(format string, args ...any) {
 	if args != nil {
 		buf := fmt.Sprintf(format, args...)
 		if elog != nil {
@@ -50,7 +50,7 @@ func errLog(format string, args ...interface{}) {
 }
 
 // Log info, sprintf format
-func mudLog(format string, args ...interface{}) {
+func mudLog(format string, args ...any) {
 	if args != nil {
 		buf := fmt.Sprintf(format, args...)
 		if mlog != nil {

@@ -35,7 +35,7 @@ func setupListenerTLS() {
 
 	addr, err := net.ResolveTCPAddr("tcp4", *bindIP+":"+strconv.Itoa(*portTLS))
 	if err != nil {
-		errLog("Unable to resolve %v. Error: %v", *bindIP, *portTLS, err)
+		errLog("Unable to resolve %v:%v: Error: %v", *bindIP, *portTLS, err)
 		os.Exit(1)
 	}
 
@@ -52,7 +52,7 @@ func setupListener() {
 	/*Find Network*/
 	addr, err := net.ResolveTCPAddr("tcp4", *bindIP+":"+strconv.Itoa(*port))
 	if err != nil {
-		errLog("Unable to resolve %v. Error: %v", *bindIP, *port, err)
+		errLog("Unable to resolve %v:%v: Error: %v", *bindIP, *port, err)
 		os.Exit(1)
 	}
 
