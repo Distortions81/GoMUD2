@@ -5,12 +5,13 @@ import (
 	"strings"
 )
 
-var TextFiles map[string]string
+var textFiles map[string]string
+var greetBuf []byte
 
 const textExt = ".txt"
 
 func ReadTextFiles() {
-	TextFiles = make(map[string]string)
+	textFiles = make(map[string]string)
 
 	dir, err := os.ReadDir(DATA_DIR + TEXTS_DIR)
 	if err != nil {
@@ -32,7 +33,9 @@ func ReadTextFiles() {
 		}
 
 		shortName := strings.TrimSuffix(fname.Name(), textExt)
-		TextFiles[shortName] = ANSIColor(string(data))
+		textFiles[shortName] = ANSIColor(string(data))
 		errLog("ReadTextFiles: Read: %v", fname.Name())
 	}
+
+	greetBuf = []byte(LICENSE + textFiles["greet"] + "Login:" + string(byte(TermOpt_END_OF_RECORD)))
 }
