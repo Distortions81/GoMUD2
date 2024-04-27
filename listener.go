@@ -73,22 +73,12 @@ func waitNewConnectionSSL() {
 
 		for serverState == SERVER_RUNNING {
 
-			desc, err := listenerTLS.Accept()
+			conn, err := listenerTLS.Accept()
 			if err != nil {
 				mudLog("Listener error: %v -- exiting loop", err)
 				break
 			}
-			//support.AddNetDesc()
-
-			desc.Write(nil)
-
-			/*
-				desc.Write([]byte(
-					LICENSE + support.TextFiles["greet"] +
-						"(SSL Encryption Enabled!)\n(Type NEW to create character) Name:"))
-				time.Sleep(CONNECT_THROTTLE_MS * time.Millisecond)
-			*/
-			//support.NewDescriptor(desc, true)
+			handleConnection(conn)
 
 		}
 
@@ -100,21 +90,13 @@ func waitNewConnection() {
 
 	for serverState == SERVER_RUNNING && listener != nil {
 
-		desc, err := listener.Accept()
+		conn, err := listener.Accept()
 		if err != nil {
 			mudLog("Listener error: %v -- exiting loop", err)
 			break
 		}
-		//support.AddNetDesc()
 
-		desc.Write(nil)
-		/*
-			_, err = desc.Write([]byte(
-			LICENSE + support.TextFiles["greet"] +
-				"(ENCRYPTION NOT ENABLED!)\n(Type NEW to create character) Name:"))
-		*/
-
-		//support.NewDescriptor(desc, false)
+		handleConnection(conn)
 	}
 
 	listener.Close()
