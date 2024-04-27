@@ -60,17 +60,17 @@ func handleConnection(conn net.Conn) {
 				if desc.telnet.subType == TermOpt_TERMINAL_TYPE {
 					desc.telnet.termType = string(desc.telnet.subData)
 
-					errLog("#%v: %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.termType)
+					errLog("#%v: GOT %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.termType)
 				} else if desc.telnet.subType == TermOpt_CHARSET {
 					desc.telnet.charset = string(desc.telnet.subData)
 					if strings.EqualFold(desc.telnet.charset, "UTF-8") {
 						desc.telnet.utf = true
 					}
-					errLog("#%v: %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.charset)
+					errLog("#%v: GOT %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.charset)
 
 					sendSub(desc, desc.telnet.charset, TermOpt_CHARSET, SB_ACCEPTED)
 				} else {
-					errLog("#%v: unknown sub data: %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], string(desc.telnet.subData))
+					errLog("#%v: GOT unknown sub data: %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], string(desc.telnet.subData))
 				}
 
 				desc.telnet.subMode = false
