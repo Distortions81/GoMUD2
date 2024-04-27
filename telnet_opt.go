@@ -168,6 +168,15 @@ const (
 	SB_IS   = 0
 	SB_SEND = 1
 )
+const (
+	SB_REQ = iota + 1
+	SB_ACCEPTED
+	SB_REJECTED
+	SB_TTABLE_IS
+	SB_TTABLE_REJECTED
+	SB_TTABLE_ACK
+	SB_TTABLE_NAK
+)
 
 func init() {
 	TXT2TermCmd = make(map[string]int)

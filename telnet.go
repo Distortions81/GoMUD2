@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"net"
+	"strings"
 	"time"
 )
 
@@ -27,7 +28,8 @@ func handleConnection(conn net.Conn) {
 
 	sendCommand(desc, TermCmd_DO, TermOpt_SUP_GOAHEAD)
 	sendCommand(desc, TermCmd_DO, TermOpt_TERMINAL_TYPE)
-	sendCommand(desc, TermCmd_DO, TermOpt_CHARSET)
+	sendCommand(desc, TermCmd_WILL, TermOpt_CHARSET)
+	sendCommand(desc, TermCmd_WILL, TermOpt_SUP_GOAHEAD)
 
 	// Create a new buffered reader for reading incoming data.
 	reader := bufio.NewReader(conn)
@@ -57,9 +59,18 @@ func handleConnection(conn net.Conn) {
 
 				if desc.telnet.subType == TermOpt_TERMINAL_TYPE {
 					desc.telnet.termType = string(desc.telnet.subData)
+
 					errLog("#%v: %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.termType)
+				} else if desc.telnet.subType == TermOpt_CHARSET {
+					desc.telnet.charset = string(desc.telnet.subData)
+					if strings.EqualFold(desc.telnet.charset, "UTF-8") {
+						desc.telnet.utf = true
+					}
+					errLog("#%v: %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.charset)
+
+					sendSub(desc, desc.telnet.charset, TermOpt_CHARSET, SB_ACCEPTED)
 				} else {
-					errLog("#%v: Sub data: %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], string(desc.telnet.subData))
+					errLog("#%v: unknown sub data: %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], string(desc.telnet.subData))
 				}
 
 				desc.telnet.subMode = false
@@ -72,14 +83,17 @@ func handleConnection(conn net.Conn) {
 				return
 			}
 
-			if command == TermCmd_SB && option == TermOpt_TERMINAL_TYPE {
+			if command == TermCmd_SB {
 				desc.telnet.subData = []byte{}
 				desc.telnet.subMode = true
-			}
-
-			if command == TermCmd_WILL {
+				desc.telnet.subType = option
+			} else if command == TermCmd_WILL {
 				if option == TermOpt_TERMINAL_TYPE {
-					sendSub(desc, TermOpt_TERMINAL_TYPE, SB_SEND)
+					sendSub(desc, "", TermOpt_TERMINAL_TYPE, SB_SEND)
+				}
+			} else if command == TermCmd_DO {
+				if option == TermOpt_CHARSET {
+					sendSub(desc, ";UTF-8;US-ASCII;ASCII", TermOpt_CHARSET, SB_REQ)
 				}
 			}
 
@@ -131,16 +145,18 @@ func sendCommand(desc *descData, command, option byte) {
 	errLog("#%v: Sent: %v %v", desc.id, TermCmd2Txt[int(command)], TermOpt2TXT[int(option)])
 }
 
-func sendSub(desc *descData, args ...byte) {
+func sendSub(desc *descData, data string, args ...byte) {
 
-	desc.telnet.subType = args[0]
 	buf := []byte{TermCmd_IAC, TermCmd_SB}
 	buf = append(buf, args...)
+	if data != "" {
+		buf = append(buf, []byte(data)...)
+	}
 	buf = append(buf, []byte{TermCmd_IAC, TermCmd_SE}...)
 	desc.conn.Write(buf)
 
 	if len(args) > 1 {
-		errLog("#%v: Sent sub: %v %d", desc.id, TermOpt2TXT[int(args[0])], args[1])
+		errLog("#%v: Sent sub: %v %v %d", desc.id, data, TermOpt2TXT[int(args[0])], args[1])
 	}
 }
 

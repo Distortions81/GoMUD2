@@ -29,8 +29,8 @@ type descData struct {
 }
 
 type telnetData struct {
-	ansiColor, goAhead bool
-	charset, termType  string
+	ansiColor, goAhead, utf bool
+	charset, termType       string
 
 	subType   byte
 	subMode   bool
