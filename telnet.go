@@ -25,7 +25,7 @@ func handleConnection(conn net.Conn) {
 	// Create a new buffered reader for reading incoming data.
 	reader := bufio.NewReader(conn)
 
-	desc := &descData{conn: conn}
+	desc := &descData{conn: conn, born: time.Now()}
 
 	// Read incoming data loop.
 	for serverState == SERVER_RUNNING {

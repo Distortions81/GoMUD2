@@ -3,11 +3,12 @@ package main
 import (
 	"net"
 	"sync"
+	"time"
 )
 
 type descData struct {
 	conn  net.Conn
-	state uint8
+	state int
 
 	telnet telnetData
 
@@ -17,6 +18,8 @@ type descData struct {
 	lineBufferLock sync.Mutex
 	lineBuffer     []string
 	numLines       int
+
+	born time.Time
 }
 
 type telnetData struct {
