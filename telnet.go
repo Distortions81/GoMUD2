@@ -12,7 +12,7 @@ const (
 	maxInputLineLength = 1024 * 2
 	connDeadline       = time.Second * 15
 	maxLines           = 50
-	maxSubLen          = 40 //rfc930
+	maxSubLen          = 1024
 )
 
 // Handle incoming connections.
