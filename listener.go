@@ -5,6 +5,7 @@ import (
 	"net"
 	"os"
 	"strconv"
+	"time"
 )
 
 const (
@@ -80,7 +81,7 @@ func waitNewConnectionSSL() {
 			}
 
 			go handleConnection(conn)
-			<-gameTick
+			time.Sleep(CONNECT_THROTTLE)
 		}
 
 		listenerTLS.Close()
@@ -98,7 +99,7 @@ func waitNewConnection() {
 		}
 
 		go handleConnection(conn)
-		<-gameTick
+		time.Sleep(CONNECT_THROTTLE)
 	}
 
 	listener.Close()

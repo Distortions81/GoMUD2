@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"net"
 	"strings"
 	"time"
@@ -16,9 +17,15 @@ const (
 
 // Handle incoming connections.
 func handleConnection(conn net.Conn) {
-	defer conn.Close()
+	descLock.Lock()
+	topID++
+	desc := &descData{conn: conn, id: topID, born: time.Now()}
+	descList = append(descList, desc)
+	descLock.Unlock()
 
-	desc := &descData{conn: conn}
+	//Close and mark disconnected if we
+	defer desc.close()
+
 	desc.sendCmd(TermCmd_DO, TermOpt_SUP_GOAHEAD)
 	desc.sendCmd(TermCmd_DO, TermOpt_TERMINAL_TYPE)
 	desc.sendCmd(TermCmd_WILL, TermOpt_CHARSET)
@@ -26,16 +33,8 @@ func handleConnection(conn net.Conn) {
 
 	_, err := conn.Write(greetBuf)
 	if err != nil {
-		//Don't log this error for speed
 		return
 	}
-
-	descLock.Lock()
-	topID++
-	desc.id = topID
-	desc.born = time.Now()
-	descList = append(descList, desc)
-	descLock.Unlock()
 
 	// Create a new buffered reader for reading incoming data.
 	desc.reader = bufio.NewReader(conn)
@@ -149,47 +148,87 @@ func handleConnection(conn net.Conn) {
 	}
 }
 
-func (desc *descData) sendCmd(command, option byte) {
-	desc.conn.Write([]byte{TermCmd_IAC, command, option})
+func (desc *descData) send(format string, args ...any) error {
+	var data []byte
+	if args != nil {
+		data = []byte(fmt.Sprintf(format, args...))
+	} else {
+		data = []byte(format)
+	}
+
+	dlen := len(data)
+	l, err := desc.conn.Write([]byte(data))
+
+	if err != nil || dlen != l {
+		mudLog("#%v: %v: write failed (connection lost)", desc.id, desc.conn.RemoteAddr().String())
+		return err
+	}
+
+	return nil
+}
+
+func (desc *descData) sendCmd(command, option byte) error {
+	dlen, err := desc.conn.Write([]byte{TermCmd_IAC, command, option})
+	if err != nil || dlen != 3 {
+		mudLog("#%v: %v: command send failed (connection lost)", desc.id, desc.conn.RemoteAddr().String())
+		return err
+	}
+
 	errLog("#%v: Sent: %v %v", desc.id, TermCmd2Txt[int(command)], TermOpt2TXT[int(option)])
+	return nil
 }
 
-func (desc *descData) sendEOR() {
-	desc.conn.Write([]byte{TermOpt_END_OF_RECORD})
+func (desc *descData) sendEOR() error {
+	dlen, err := desc.conn.Write([]byte{TermOpt_END_OF_RECORD})
+	if err != nil || dlen != 1 {
+		mudLog("#%v: %v: EOR send failed (connection lost)", desc.id, desc.conn.RemoteAddr().String())
+		return err
+	}
 	errLog("#%v: Sent: %v", desc.id, TermOpt2TXT[int(TermOpt_END_OF_RECORD)])
+	return nil
 }
 
-func (desc *descData) sendSub(data string, args ...byte) {
-
+func (desc *descData) sendSub(data string, args ...byte) error {
 	buf := []byte{TermCmd_IAC, TermCmd_SB}
 	buf = append(buf, args...)
 	if data != "" {
 		buf = append(buf, []byte(data)...)
 	}
 	buf = append(buf, []byte{TermCmd_IAC, TermCmd_SE}...)
-	desc.conn.Write(buf)
+	dlen, err := desc.conn.Write(buf)
+	if err != nil || dlen != len(buf) {
+		mudLog("#%v: %v: sub send failed (connection lost)", desc.id, desc.conn.RemoteAddr().String())
+		return err
+	}
 
 	if len(args) > 1 {
 		errLog("#%v: Sent sub: %v %v %d", desc.id, data, TermOpt2TXT[int(args[0])], args[1])
 	}
+
+	return nil
 }
 
 func (desc *descData) inputFull() {
 	buf := "Input buffer full! Closing connection..."
-
 	desc.send("\r\n%v\r\n", buf)
 	mudLog("#%v: ERROR: %v: %v", desc.id, desc.conn.RemoteAddr().String(), buf)
-
-	desc.state = CON_DISCONNECTED
-	desc.conn.Close()
 }
 
 func (desc *descData) readByte() (byte, error) {
 	data, err := desc.reader.ReadByte()
 	if err != nil {
 		mudLog("#%v: %v: Connection closed by server.", desc.id, desc.conn.RemoteAddr().String())
-		desc.conn.Close()
 		return 0, err
 	}
 	return data, nil
+}
+
+func (desc *descData) close() {
+	if desc == nil {
+		return
+	}
+	desc.state = CON_DISCONNECTED
+	if desc.conn != nil {
+		desc.conn.Close()
+	}
 }

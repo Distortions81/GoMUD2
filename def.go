@@ -3,7 +3,7 @@ package main
 const (
 	VERSION = "v0.0.1a 04-25-2024 0402p"
 
-	LICENSE = "goMUD " + VERSION + "\n" +
+	LICENSE = "goMUD2 " + VERSION + "\n" +
 		"COPYRIGHT 2024 Carl Frank Otto III (carlotto81@gmail.com)\n" +
 		"License: Mozilla Public License 2.0\n" +
 		"This information must remain unmodified, fully intact and shown to end-users.\n"

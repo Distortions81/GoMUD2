@@ -51,9 +51,9 @@ func main() {
 	setupListenerTLS()
 
 	serverState = SERVER_RUNNING
+
 	go waitNewConnection()
 	go waitNewConnectionSSL()
-
 	go mainLoop()
 
 	//After starting loops, wait here for process signals
@@ -61,6 +61,9 @@ func main() {
 
 	signal.Notify(signalHandle, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-signalHandle
+
+	serverState = SERVER_SHUTDOWN
+	time.Sleep(time.Second)
 
 	//Handle shutdown here
 	closeLogs()

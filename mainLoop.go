@@ -5,7 +5,8 @@ import (
 )
 
 const (
-	ROUND_LENGTH_uS = 250000 //0.25s
+	ROUND_LENGTH_uS  = 250000 //0.25s
+	CONNECT_THROTTLE = time.Millisecond * 10
 )
 
 var gameTick chan uint64
@@ -13,22 +14,32 @@ var gameTick chan uint64
 func mainLoop() {
 	var tickNum uint64
 
-	gameTick = make(chan uint64)
-
 	roundTime := time.Duration(ROUND_LENGTH_uS * time.Microsecond)
+
 	for serverState == SERVER_RUNNING {
 		tickNum++
 		start := time.Now()
 
-		since := roundTime - time.Since(start)
-		time.Sleep(since)
-
 		descLock.Lock()
+		var newList []*descData
+		// Remove dead descriptors
+		for _, desc := range descList {
+			if desc.state == CON_DISCONNECTED {
+				errLog("Removed %v", desc.id)
+				continue
+			}
+			newList = append(newList, desc)
+		}
+		descList = newList
+
 		for _, desc := range descList {
 			desc.interp()
 		}
 		descLock.Unlock()
 
-		gameTick <- tickNum
+		//Sleep for remaining round time
+		since := roundTime - time.Since(start)
+		time.Sleep(since)
+		//fmt.Println(since.String())
 	}
 }
