@@ -4,12 +4,20 @@ import (
 	"bufio"
 	"fmt"
 	"net"
+	"time"
 )
 
 var (
 	subType byte
 	subMode bool
 	subData []byte
+)
+
+const (
+	preallocInputSize  = 512
+	maxInputLineLength = 1024 * 2
+	connDeadline       = time.Second * 15
+	maxLines           = 50
 )
 
 // Handle incoming connections.
@@ -21,10 +29,13 @@ func handleConnection(conn net.Conn) {
 	sendCommand(conn, TermCmd_DO, TermOpt_CHARSET)
 
 	// Create a new buffered reader for reading incoming data.
-	reader := bufio.NewReader(conn)
+	reader := bufio.NewReaderSize(conn, preallocInputSize)
+
+	desc := &descData{conn: &conn}
+	defer conn.Close()
 
 	// Read incoming data loop.
-	for {
+	for serverState == SERVER_RUNNING {
 		// Read a byte.
 		data, err := reader.ReadByte()
 		if err != nil {
@@ -66,10 +77,38 @@ func handleConnection(conn net.Conn) {
 
 			fmt.Printf("client: %v %v\n", TermCmd2Txt[int(command)], TermOpt2TXT[int(option)])
 		default:
-			if !subMode {
-				fmt.Print(string(data))
-			} else {
+			if subMode {
 				subData = append(subData, data)
+			} else {
+				if desc.inputBufferBytes > maxInputLineLength {
+					//Too long of a line
+					inputFull(conn)
+					break
+				}
+
+				if data == '\n' || data == '\r' {
+					desc.lineBufferLock.Lock()
+
+					//Too lany lines
+					if desc.numLines > maxLines {
+						inputFull(conn)
+						break
+					}
+					desc.lineBuffer = append(desc.lineBuffer, string(desc.inputBuffer))
+					desc.numLines++
+					fmt.Println(string(desc.inputBuffer))
+					desc.lineBufferLock.Unlock()
+
+					desc.inputBuffer = []byte{}
+					desc.inputBufferBytes = 0
+					continue
+				}
+
+				/* No control chars, no delete, but allow UTF-8 */
+				if data >= 32 && data != 127 {
+					desc.inputBufferBytes += 1
+					desc.inputBuffer = append(desc.inputBuffer, data)
+				}
 			}
 		}
 	}
@@ -93,4 +132,8 @@ func sendSub(conn net.Conn, args ...byte) {
 		fmt.Printf("%v %d", TermOpt2TXT[int(args[0])], args[1])
 		fmt.Println()
 	}
+}
+
+func inputFull(conn net.Conn) {
+	conn.Write([]byte("\r\n\r\nInput buffer full! Closing connection...\r\n\r\n"))
 }

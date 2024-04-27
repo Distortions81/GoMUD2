@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -10,13 +9,18 @@ const (
 )
 
 func mainLoop() {
+	var tickNum uint64
 
 	roundTime := time.Duration(ROUND_LENGTH_uS * time.Microsecond)
 	for serverState == SERVER_RUNNING {
+		tickNum++
 		start := time.Now()
 
 		since := roundTime - time.Since(start)
 		time.Sleep(since)
-		fmt.Printf("tick: slept for: %v\n", since)
+
+		if tickNum%20 == 0 {
+			//fmt.Printf("tick %v: slept for: %v\n", tickNum, since.Round(time.Millisecond))
+		}
 	}
 }
