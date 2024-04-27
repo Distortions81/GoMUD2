@@ -2,26 +2,20 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"net"
 	"time"
 )
 
-var (
-	subType byte
-	subMode bool
-	subData []byte
-)
-
 const (
-	preallocInputSize  = 512
 	maxInputLineLength = 1024 * 2
 	connDeadline       = time.Second * 15
 	maxLines           = 50
+	maxSubLen          = 40 //rfc930
 )
 
 // Handle incoming connections.
 func handleConnection(conn net.Conn) {
+	mudLog("%v connected.", conn.RemoteAddr().String())
 	defer conn.Close()
 
 	sendCommand(conn, TermCmd_DO, TermOpt_SUP_GOAHEAD)
@@ -29,84 +23,84 @@ func handleConnection(conn net.Conn) {
 	sendCommand(conn, TermCmd_DO, TermOpt_CHARSET)
 
 	// Create a new buffered reader for reading incoming data.
-	reader := bufio.NewReaderSize(conn, preallocInputSize)
+	reader := bufio.NewReader(conn)
 
-	desc := &descData{conn: &conn}
-	defer conn.Close()
+	desc := &descData{conn: conn}
 
 	// Read incoming data loop.
 	for serverState == SERVER_RUNNING {
 		// Read a byte.
-		data, err := reader.ReadByte()
+		data, err := connReadByte(reader, conn)
 		if err != nil {
-			fmt.Println("Connection closed by server.")
 			return
 		}
 
 		// Process received data.
 		switch data {
 		case TermCmd_IAC:
-			command, err := reader.ReadByte()
+			command, err := connReadByte(reader, conn)
 			if err != nil {
-				fmt.Println("Connection closed by server.")
 				return
 			}
 			if command == TermCmd_SE {
-				subMode = false
-				fmt.Printf("sub data: %v: %v\n", TermOpt2TXT[int(subType)], string(subData))
-				subData = []byte{}
+				desc.telnet.subMode = false
+				errLog("sub data: %v: %v", TermOpt2TXT[int(desc.telnet.subType)], string(desc.telnet.subData))
+				desc.telnet.subData = []byte{}
 				continue
 			}
 
-			option, err := reader.ReadByte()
+			option, err := connReadByte(reader, conn)
 			if err != nil {
-				fmt.Println("Connection closed by server.")
 				return
 			}
 
 			if command == TermCmd_SB && option == TermOpt_TERMINAL_TYPE {
-				subData = []byte{}
-				subMode = true
+				desc.telnet.subData = []byte{}
+				desc.telnet.subMode = true
 			}
 
 			if command == TermCmd_WILL {
 				if option == TermOpt_TERMINAL_TYPE {
-					sendSub(conn, TermOpt_TERMINAL_TYPE, SB_SEND)
+					sendSub(desc, TermOpt_TERMINAL_TYPE, SB_SEND)
 				}
 			}
 
-			fmt.Printf("client: %v %v\n", TermCmd2Txt[int(command)], TermOpt2TXT[int(option)])
+			errLog("client: %v %v", TermCmd2Txt[int(command)], TermOpt2TXT[int(option)])
 		default:
-			if subMode {
-				subData = append(subData, data)
+			if desc.telnet.subMode {
+				if desc.telnet.subLength > maxSubLen {
+					return
+				}
+				desc.telnet.subData = append(desc.telnet.subData, data)
 			} else {
-				if desc.inputBufferBytes > maxInputLineLength {
+				if desc.inputBufferLen > maxInputLineLength {
 					//Too long of a line
 					inputFull(conn)
-					break
+					return
 				}
 
-				if data == '\n' || data == '\r' {
+				if data == '\n' {
 					desc.lineBufferLock.Lock()
 
 					//Too lany lines
 					if desc.numLines > maxLines {
 						inputFull(conn)
-						break
+						desc.lineBufferLock.Unlock()
+						return
 					}
 					desc.lineBuffer = append(desc.lineBuffer, string(desc.inputBuffer))
 					desc.numLines++
-					fmt.Println(string(desc.inputBuffer))
+					mudLog("%v: %v", conn.RemoteAddr().String(), string(desc.inputBuffer))
 					desc.lineBufferLock.Unlock()
 
 					desc.inputBuffer = []byte{}
-					desc.inputBufferBytes = 0
+					desc.inputBufferLen = 0
 					continue
 				}
 
 				/* No control chars, no delete, but allow UTF-8 */
 				if data >= 32 && data != 127 {
-					desc.inputBufferBytes += 1
+					desc.inputBufferLen += 1
 					desc.inputBuffer = append(desc.inputBuffer, data)
 				}
 			}
@@ -116,24 +110,33 @@ func handleConnection(conn net.Conn) {
 
 func sendCommand(conn net.Conn, command, option byte) {
 	conn.Write([]byte{TermCmd_IAC, command, option})
-	fmt.Printf("sent: %v %v\n", TermCmd2Txt[int(command)], TermOpt2TXT[int(option)])
+	errLog("sent: %v %v", TermCmd2Txt[int(command)], TermOpt2TXT[int(option)])
 }
 
-func sendSub(conn net.Conn, args ...byte) {
+func sendSub(desc *descData, args ...byte) {
 
-	subType = args[0]
+	desc.telnet.subType = args[0]
 	buf := []byte{TermCmd_IAC, TermCmd_SB}
 	buf = append(buf, args...)
 	buf = append(buf, []byte{TermCmd_IAC, TermCmd_SE}...)
-	conn.Write(buf)
+	desc.conn.Write(buf)
 
 	if len(args) > 1 {
-		fmt.Print("sent sub: ")
-		fmt.Printf("%v %d", TermOpt2TXT[int(args[0])], args[1])
-		fmt.Println()
+		errLog("sent sub: %v %d", TermOpt2TXT[int(args[0])], args[1])
 	}
 }
 
 func inputFull(conn net.Conn) {
-	conn.Write([]byte("\r\n\r\nInput buffer full! Closing connection...\r\n\r\n"))
+	conn.Write([]byte("\r\nInput buffer full! Closing connection...\r\n"))
+
+	mudLog("ERROR: %v: Input buffer full, disconnecting...", conn.RemoteAddr().String())
+}
+
+func connReadByte(reader *bufio.Reader, conn net.Conn) (byte, error) {
+	data, err := reader.ReadByte()
+	if err != nil {
+		mudLog("%v: Connection closed by server.", conn.RemoteAddr().String())
+		return 0, err
+	}
+	return data, nil
 }

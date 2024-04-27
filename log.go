@@ -38,12 +38,12 @@ func errLog(format string, args ...any) {
 	if args != nil {
 		buf := fmt.Sprintf(format, args...)
 		if elog != nil {
-			elog.WriteString(buf)
+			elog.WriteString(buf + "\n")
 		}
 		fmt.Println(buf)
 	} else {
 		if elog != nil {
-			elog.WriteString(format)
+			elog.WriteString(format + "\n")
 		}
 		fmt.Println(format)
 	}
@@ -54,12 +54,12 @@ func mudLog(format string, args ...any) {
 	if args != nil {
 		buf := fmt.Sprintf(format, args...)
 		if mlog != nil {
-			mlog.WriteString(buf)
+			mlog.WriteString(buf + "\n")
 		}
 		fmt.Println(buf)
 	} else {
 		if mlog != nil {
-			mlog.WriteString(format)
+			mlog.WriteString(format + "\n")
 		}
 		fmt.Println(format)
 	}

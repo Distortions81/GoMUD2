@@ -6,13 +6,13 @@ import (
 )
 
 type descData struct {
-	conn  *net.Conn
+	conn  net.Conn
 	state uint8
 
 	telnet telnetData
 
-	inputBufferBytes int
-	inputBuffer      []byte
+	inputBufferLen int
+	inputBuffer    []byte
 
 	lineBufferLock sync.Mutex
 	lineBuffer     []string
@@ -22,4 +22,9 @@ type descData struct {
 type telnetData struct {
 	ansiColor, goAhead bool
 	charset, termType  string
+
+	subType   byte
+	subMode   bool
+	subData   []byte
+	subLength int
 }

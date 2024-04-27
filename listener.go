@@ -78,7 +78,7 @@ func waitNewConnectionSSL() {
 				mudLog("Listener error: %v -- exiting loop", err)
 				break
 			}
-			handleConnection(conn)
+			go handleConnection(conn)
 
 		}
 
@@ -96,7 +96,7 @@ func waitNewConnection() {
 			break
 		}
 
-		handleConnection(conn)
+		go handleConnection(conn)
 	}
 
 	listener.Close()
