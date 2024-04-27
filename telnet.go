@@ -18,32 +18,34 @@ const (
 func handleConnection(conn net.Conn) {
 	defer conn.Close()
 
-	descLock.Lock()
-	topID++
-	desc := &descData{conn: conn, born: time.Now(), id: topID}
-	descList = append(descList, desc)
-	descLock.Unlock()
-
-	mudLog("#%v: %v connected.", desc.id, conn.RemoteAddr().String())
-
-	sendCommand(desc, TermCmd_DO, TermOpt_SUP_GOAHEAD)
-	sendCommand(desc, TermCmd_DO, TermOpt_TERMINAL_TYPE)
-	sendCommand(desc, TermCmd_WILL, TermOpt_CHARSET)
-	sendCommand(desc, TermCmd_WILL, TermOpt_SUP_GOAHEAD)
-
-	// Create a new buffered reader for reading incoming data.
-	reader := bufio.NewReader(conn)
+	desc := &descData{conn: conn}
+	desc.sendCmd(TermCmd_DO, TermOpt_SUP_GOAHEAD)
+	desc.sendCmd(TermCmd_DO, TermOpt_TERMINAL_TYPE)
+	desc.sendCmd(TermCmd_WILL, TermOpt_CHARSET)
+	desc.sendCmd(TermCmd_WILL, TermOpt_SUP_GOAHEAD)
 
 	_, err := conn.Write(greetBuf)
 	if err != nil {
+		//Don't log this error for speed
 		return
 	}
-	errLog("#%v: Sent greeting", desc.id)
+
+	descLock.Lock()
+	topID++
+	desc.id = topID
+	desc.born = time.Now()
+	descList = append(descList, desc)
+	descLock.Unlock()
+
+	// Create a new buffered reader for reading incoming data.
+	desc.reader = bufio.NewReader(conn)
+	mudLog("#%v: %v connected.", desc.id, conn.RemoteAddr().String())
+	desc.state = CON_WELCOME
 
 	// Read incoming data loop.
 	for serverState == SERVER_RUNNING {
 		// Read a byte.
-		data, err := connReadByte(reader, desc)
+		data, err := desc.readByte()
 		if err != nil {
 			return
 		}
@@ -51,7 +53,7 @@ func handleConnection(conn net.Conn) {
 		// Process received data.
 		switch data {
 		case TermCmd_IAC:
-			command, err := connReadByte(reader, desc)
+			command, err := desc.readByte()
 			if err != nil {
 				return
 			}
@@ -68,7 +70,7 @@ func handleConnection(conn net.Conn) {
 					}
 					errLog("#%v: GOT %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.charset)
 
-					sendSub(desc, desc.telnet.charset, TermOpt_CHARSET, SB_ACCEPTED)
+					desc.sendSub(desc.telnet.charset, TermOpt_CHARSET, SB_ACCEPTED)
 				} else {
 					errLog("#%v: GOT unknown sub data: %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], string(desc.telnet.subData))
 				}
@@ -78,7 +80,7 @@ func handleConnection(conn net.Conn) {
 				continue
 			}
 
-			option, err := connReadByte(reader, desc)
+			option, err := desc.readByte()
 			if err != nil {
 				return
 			}
@@ -89,11 +91,11 @@ func handleConnection(conn net.Conn) {
 				desc.telnet.subType = option
 			} else if command == TermCmd_WILL {
 				if option == TermOpt_TERMINAL_TYPE {
-					sendSub(desc, "", TermOpt_TERMINAL_TYPE, SB_SEND)
+					desc.sendSub("", TermOpt_TERMINAL_TYPE, SB_SEND)
 				}
 			} else if command == TermCmd_DO {
 				if option == TermOpt_CHARSET {
-					sendSub(desc, ";UTF-8;US-ASCII;ASCII", TermOpt_CHARSET, SB_REQ)
+					desc.sendSub(";UTF-8;US-ASCII;ASCII", TermOpt_CHARSET, SB_REQ)
 				}
 			}
 
@@ -107,26 +109,33 @@ func handleConnection(conn net.Conn) {
 			} else {
 				if desc.inputBufferLen > maxInputLineLength {
 					//Too long of a line
-					inputFull(desc)
+					desc.inputFull()
 					return
 				}
 
-				if data == '\n' {
+				if data == '\n' || data == '\r' {
 					desc.inputLock.Lock()
 
-					//Too lany lines
-					if desc.numLines > maxLines {
-						inputFull(desc)
+					if desc.inputBufferLen == 0 {
 						desc.inputLock.Unlock()
+						continue
+					}
+
+					//Too many lines
+					if desc.numLines > maxLines {
+						desc.inputLock.Unlock()
+						desc.inputFull()
 						return
 					}
+
 					desc.lineBuffer = append(desc.lineBuffer, string(desc.inputBuffer))
 					desc.numLines++
 					mudLog("#%v: %v: %v", desc.id, conn.RemoteAddr().String(), string(desc.inputBuffer))
-					desc.inputLock.Unlock()
 
 					desc.inputBuffer = []byte{}
 					desc.inputBufferLen = 0
+
+					desc.inputLock.Unlock()
 					continue
 				}
 
@@ -140,12 +149,17 @@ func handleConnection(conn net.Conn) {
 	}
 }
 
-func sendCommand(desc *descData, command, option byte) {
+func (desc *descData) sendCmd(command, option byte) {
 	desc.conn.Write([]byte{TermCmd_IAC, command, option})
 	errLog("#%v: Sent: %v %v", desc.id, TermCmd2Txt[int(command)], TermOpt2TXT[int(option)])
 }
 
-func sendSub(desc *descData, data string, args ...byte) {
+func (desc *descData) sendEOR() {
+	desc.conn.Write([]byte{TermOpt_END_OF_RECORD})
+	errLog("#%v: Sent: %v", desc.id, TermOpt2TXT[int(TermOpt_END_OF_RECORD)])
+}
+
+func (desc *descData) sendSub(data string, args ...byte) {
 
 	buf := []byte{TermCmd_IAC, TermCmd_SB}
 	buf = append(buf, args...)
@@ -160,16 +174,21 @@ func sendSub(desc *descData, data string, args ...byte) {
 	}
 }
 
-func inputFull(desc *descData) {
+func (desc *descData) inputFull() {
 	buf := "Input buffer full! Closing connection..."
-	desc.conn.Write([]byte("\r\n" + buf + "\r\n"))
+
+	desc.send("\r\n%v\r\n", buf)
 	mudLog("#%v: ERROR: %v: %v", desc.id, desc.conn.RemoteAddr().String(), buf)
+
+	desc.state = CON_DISCONNECTED
+	desc.conn.Close()
 }
 
-func connReadByte(reader *bufio.Reader, desc *descData) (byte, error) {
-	data, err := reader.ReadByte()
+func (desc *descData) readByte() (byte, error) {
+	data, err := desc.reader.ReadByte()
 	if err != nil {
 		mudLog("#%v: %v: Connection closed by server.", desc.id, desc.conn.RemoteAddr().String())
+		desc.conn.Close()
 		return 0, err
 	}
 	return data, nil

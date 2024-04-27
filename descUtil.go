@@ -4,11 +4,11 @@ import "fmt"
 
 func (desc *descData) send(format string, args ...any) (fail bool) {
 
-	var data string
+	var data []byte
 	if args != nil {
-		data = fmt.Sprintf(format, args...)
+		data = []byte(fmt.Sprintf(format, args...))
 	} else {
-		data = format
+		data = []byte(format)
 	}
 
 	dlen := len(data)

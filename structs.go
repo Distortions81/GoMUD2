@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"net"
 	"sync"
 	"time"
@@ -13,9 +14,10 @@ var (
 )
 
 type descData struct {
-	id    uint64
-	conn  net.Conn
-	state int
+	id     uint64
+	conn   net.Conn
+	reader *bufio.Reader
+	state  int
 
 	telnet telnetData
 

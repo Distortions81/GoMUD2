@@ -8,8 +8,12 @@ const (
 	ROUND_LENGTH_uS = 250000 //0.25s
 )
 
+var gameTick chan uint64
+
 func mainLoop() {
 	var tickNum uint64
+
+	gameTick = make(chan uint64)
 
 	roundTime := time.Duration(ROUND_LENGTH_uS * time.Microsecond)
 	for serverState == SERVER_RUNNING {
@@ -24,5 +28,7 @@ func mainLoop() {
 			desc.interp()
 		}
 		descLock.Unlock()
+
+		gameTick <- tickNum
 	}
 }

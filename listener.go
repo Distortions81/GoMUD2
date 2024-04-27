@@ -78,8 +78,9 @@ func waitNewConnectionSSL() {
 				mudLog("Listener error: %v -- exiting loop", err)
 				break
 			}
-			go handleConnection(conn)
 
+			go handleConnection(conn)
+			<-gameTick
 		}
 
 		listenerTLS.Close()
@@ -97,6 +98,7 @@ func waitNewConnection() {
 		}
 
 		go handleConnection(conn)
+		<-gameTick
 	}
 
 	listener.Close()
