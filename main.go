@@ -26,6 +26,7 @@ var (
 )
 
 func main() {
+	serverState = SERVER_BOOTING
 	bootTime = time.Now()
 
 	port = flag.Int("port", DEFAULT_PORT, "port")
