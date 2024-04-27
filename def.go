@@ -12,7 +12,7 @@ const (
 	DATA_DIR   = "data/"
 	PLAYER_DIR = "players/"
 	AREA_DIR   = "areas/"
-	TEXTS_DIR  = "texts"
+	TEXTS_DIR  = "texts/"
 	LOGS_DIR   = "log/"
 
 	HELP_FILE = "helps.json"
