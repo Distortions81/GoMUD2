@@ -19,8 +19,10 @@ func mainLoop() {
 		since := roundTime - time.Since(start)
 		time.Sleep(since)
 
-		if tickNum%20 == 0 {
-			//fmt.Printf("tick %v: slept for: %v\n", tickNum, since.Round(time.Millisecond))
+		descLock.Lock()
+		for _, desc := range descList {
+			desc.interp()
 		}
+		descLock.Unlock()
 	}
 }
