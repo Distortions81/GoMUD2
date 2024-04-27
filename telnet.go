@@ -127,9 +127,9 @@ func sendSub(desc *descData, args ...byte) {
 }
 
 func inputFull(conn net.Conn) {
-	conn.Write([]byte("\r\nInput buffer full! Closing connection...\r\n"))
-
-	mudLog("ERROR: %v: Input buffer full, disconnecting...", conn.RemoteAddr().String())
+	buf := "Input buffer full! Closing connection..."
+	conn.Write([]byte("\r\n" + buf + "\r\n"))
+	mudLog("ERROR: %v: %v", conn.RemoteAddr().String(), buf)
 }
 
 func connReadByte(reader *bufio.Reader, conn net.Conn) (byte, error) {
