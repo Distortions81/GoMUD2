@@ -19,12 +19,15 @@ const (
 func handleConnection(conn net.Conn) {
 	descLock.Lock()
 	topID++
-	desc := &descData{conn: conn, id: topID, born: time.Now()}
+	desc := &descData{conn: conn, id: topID, born: time.Now(), reader: bufio.NewReader(conn)}
+	desc.state = CON_WELCOME
 	descList = append(descList, desc)
 	descLock.Unlock()
 
 	//Close and mark disconnected if we
 	defer desc.close()
+
+	mudLog("#%v: %v connected.", desc.id, conn.RemoteAddr().String())
 
 	desc.sendCmd(TermCmd_DO, TermOpt_SUP_GOAHEAD)
 	desc.sendCmd(TermCmd_DO, TermOpt_TERMINAL_TYPE)
@@ -35,11 +38,6 @@ func handleConnection(conn net.Conn) {
 	if err != nil {
 		return
 	}
-
-	// Create a new buffered reader for reading incoming data.
-	desc.reader = bufio.NewReader(conn)
-	mudLog("#%v: %v connected.", desc.id, conn.RemoteAddr().String())
-	desc.state = CON_WELCOME
 
 	// Read incoming data loop.
 	for serverState == SERVER_RUNNING {

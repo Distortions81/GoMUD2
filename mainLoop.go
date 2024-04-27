@@ -6,7 +6,7 @@ import (
 
 const (
 	ROUND_LENGTH_uS  = 250000 //0.25s
-	CONNECT_THROTTLE = time.Millisecond * 10
+	CONNECT_THROTTLE = time.Millisecond
 )
 
 var gameTick chan uint64
