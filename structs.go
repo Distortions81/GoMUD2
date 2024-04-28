@@ -37,8 +37,8 @@ type descData struct {
 }
 
 type telnetData struct {
-	ansiColor, goAhead, utf bool
-	charset, termType       string
+	ansiColor, supGoAhead, utf bool
+	charset, termType          string
 
 	charMap *charmap.Charmap
 	options *termSettings
