@@ -90,7 +90,7 @@ func convertByte(charmap *charmap.Charmap, data byte) byte {
 }
 
 func setCharset(desc *descData) {
-	if strings.EqualFold(desc.telnet.charset, "UTF-8") {
+	if strings.EqualFold(desc.telnet.charset, "UTF8") {
 		desc.telnet.utf = true
 	} else {
 

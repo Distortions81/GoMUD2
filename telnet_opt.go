@@ -38,7 +38,7 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	"SOILED":        {ANSI256: true, ANSI24: false},
 	"TINYFUGUE":     {ANSI256: true, ANSI24: false},
 	"TREBUCHET":     {ANSI256: false, ANSI24: false},
-	"WINTIN.NET":    {ANSI256: true, ANSI24: false},
+	"WINTINNET":     {ANSI256: true, ANSI24: false},
 	"ZMUD":          {ANSI256: false, ANSI24: false},
 	"XTERM256COLOR": {ANSI256: true, ANSI24: false},
 }
