@@ -19,27 +19,28 @@ const (
 func handleConnection(conn net.Conn, tls bool) {
 	var tlsStr string
 
-	hostStr := "Unknow"
-	addrStr := conn.RemoteAddr().String()
-	ipStr, _, err := net.SplitHostPort(addrStr)
-	if err != nil {
-		hostStr = addrStr
-	}
-	addrList, err := net.LookupHost(ipStr)
-	if err != nil {
-		hostStr = addrStr
-	}
-	if len(addrList) > 0 {
-		hostStr = strings.Join(addrList, ",")
+	//Remote address
+	rAddr := conn.RemoteAddr().String()
+	//Split ip/port
+	ipStr, _, _ := net.SplitHostPort(rAddr)
+	//Reverse DNS lookup
+	addrList, _ := net.LookupHost(ipStr)
+	//Combine host list
+	hostStr := strings.Join(addrList, ", ")
+
+	//If reverse DNS found, make combined string
+	cAddr := hostStr
+	if hostStr != ipStr {
+		cAddr = fmt.Sprintf("%v : %v", ipStr, hostStr)
 	}
 
 	descLock.Lock()
 	topID++
 
 	desc := &descData{
-		conn: conn, id: topID, born: time.Now(),
+		conn: conn, id: topID, connectTime: time.Now(),
 		reader: bufio.NewReader(conn), tls: tls,
-		addr: hostStr, state: CON_WELCOME}
+		host: hostStr, addr: ipStr, cAddr: cAddr, state: CON_WELCOME}
 	descList = append(descList, desc)
 	descLock.Unlock()
 
@@ -49,14 +50,14 @@ func handleConnection(conn net.Conn, tls bool) {
 	if tls {
 		tlsStr = " (TLS)"
 	}
-	mudLog("#%v: %v connected.%v", desc.id, desc.addr, tlsStr)
+	mudLog("#%v: %v connected.%v", desc.id, desc.host, tlsStr)
 
 	desc.sendCmd(TermCmd_DO, TermOpt_SUP_GOAHEAD)
 	desc.sendCmd(TermCmd_DO, TermOpt_TERMINAL_TYPE)
 	desc.sendCmd(TermCmd_WILL, TermOpt_CHARSET)
 	desc.sendCmd(TermCmd_WILL, TermOpt_SUP_GOAHEAD)
 
-	_, err = conn.Write(greetBuf)
+	_, err := conn.Write(greetBuf)
 	if err != nil {
 		return
 	}
@@ -149,7 +150,7 @@ func handleConnection(conn net.Conn, tls bool) {
 
 					desc.lineBuffer = append(desc.lineBuffer, string(desc.inputBuffer))
 					desc.numLines++
-					mudLog("#%v: %v: %v", desc.id, desc.addr, string(desc.inputBuffer))
+					mudLog("#%v: %v: %v", desc.id, desc.cAddr, string(desc.inputBuffer))
 
 					desc.inputBuffer = []byte{}
 					desc.inputBufferLen = 0
@@ -180,7 +181,7 @@ func (desc *descData) send(format string, args ...any) error {
 	l, err := desc.conn.Write([]byte(data))
 
 	if err != nil || dlen != l {
-		mudLog("#%v: %v: write failed (connection lost)", desc.id, desc.addr)
+		mudLog("#%v: %v: write failed (connection lost)", desc.id, desc.cAddr)
 		return err
 	}
 
@@ -190,7 +191,7 @@ func (desc *descData) send(format string, args ...any) error {
 func (desc *descData) sendCmd(command, option byte) error {
 	dlen, err := desc.conn.Write([]byte{TermCmd_IAC, command, option})
 	if err != nil || dlen != 3 {
-		mudLog("#%v: %v: command send failed (connection lost)", desc.id, desc.addr)
+		mudLog("#%v: %v: command send failed (connection lost)", desc.id, desc.cAddr)
 		return err
 	}
 
@@ -201,7 +202,7 @@ func (desc *descData) sendCmd(command, option byte) error {
 func (desc *descData) sendEOR() error {
 	dlen, err := desc.conn.Write([]byte{TermOpt_END_OF_RECORD})
 	if err != nil || dlen != 1 {
-		mudLog("#%v: %v: EOR send failed (connection lost)", desc.id, desc.addr)
+		mudLog("#%v: %v: EOR send failed (connection lost)", desc.id, desc.cAddr)
 		return err
 	}
 	errLog("#%v: Sent: %v", desc.id, TermOpt2TXT[int(TermOpt_END_OF_RECORD)])
@@ -217,7 +218,7 @@ func (desc *descData) sendSub(data string, args ...byte) error {
 	buf = append(buf, []byte{TermCmd_IAC, TermCmd_SE}...)
 	dlen, err := desc.conn.Write(buf)
 	if err != nil || dlen != len(buf) {
-		mudLog("#%v: %v: sub send failed (connection lost)", desc.id, desc.addr)
+		mudLog("#%v: %v: sub send failed (connection lost)", desc.id, desc.cAddr)
 		return err
 	}
 
@@ -231,13 +232,13 @@ func (desc *descData) sendSub(data string, args ...byte) error {
 func (desc *descData) inputFull() {
 	buf := "Input buffer full! Closing connection..."
 	desc.send("\r\n%v\r\n", buf)
-	mudLog("#%v: ERROR: %v: %v", desc.id, desc.addr, buf)
+	mudLog("#%v: ERROR: %v: %v", desc.id, desc.cAddr, buf)
 }
 
 func (desc *descData) readByte() (byte, error) {
 	data, err := desc.reader.ReadByte()
 	if err != nil {
-		mudLog("#%v: %v: Connection closed by server.", desc.id, desc.addr)
+		mudLog("#%v: %v: Connection closed by server.", desc.id, desc.cAddr)
 		return 0, err
 	}
 	return data, nil

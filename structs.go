@@ -14,22 +14,24 @@ var (
 )
 
 type descData struct {
-	id     uint64
-	conn   net.Conn
-	reader *bufio.Reader
-	state  int
-	addr   string
-	tls    bool
+	id                uint64
+	conn              net.Conn
+	reader            *bufio.Reader
+	state             int
+	host, addr, cAddr string
+
+	tls bool
 
 	telnet telnetData
 
 	inputLock      sync.Mutex
 	inputBufferLen int
 	inputBuffer    []byte
-	numLines       int
-	lineBuffer     []string
 
-	born time.Time
+	numLines   int
+	lineBuffer []string
+
+	connectTime time.Time
 }
 
 type telnetData struct {
