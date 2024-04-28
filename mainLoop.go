@@ -9,8 +9,6 @@ const (
 	CONNECT_THROTTLE = time.Millisecond
 )
 
-var gameTick chan uint64
-
 func mainLoop() {
 	var tickNum uint64
 
