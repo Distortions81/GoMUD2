@@ -41,6 +41,7 @@ type telnetData struct {
 	charset, termType       string
 
 	charMap *charmap.Charmap
+	options *termSettings
 
 	subType   byte
 	subMode   bool

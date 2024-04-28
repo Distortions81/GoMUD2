@@ -82,7 +82,15 @@ func handleDesc(conn net.Conn, tls bool) {
 				if desc.telnet.subType == TermOpt_TERMINAL_TYPE {
 					//Terminal info
 					desc.telnet.termType = string(desc.telnet.subData)
+					ttype := strings.TrimSpace(desc.telnet.termType)
+					ttype = strings.ToUpper(ttype)
+					match := termTypeMap[ttype]
+
 					errLog("#%v: GOT %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.termType)
+					if match != nil {
+						desc.telnet.options = match
+						errLog("Found client match: %v", ttype)
+					}
 
 					//Charset recieved
 				} else if desc.telnet.subType == TermOpt_CHARSET {

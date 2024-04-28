@@ -2,6 +2,47 @@ package main
 
 import "fmt"
 
+type termSettings struct {
+	NOANSI, ANSI256, ANSI24, UTF bool
+}
+
+var termTypeMap map[string]*termSettings = map[string]*termSettings{
+	"AMUDCLIENT": {ANSI256: true, ANSI24: false, UTF: true},
+	"ATLANTIS":   {ANSI256: true, ANSI24: false, UTF: true},
+	"BEIPMU":     {ANSI256: true, ANSI24: false, UTF: true},
+	"KBTIN":      {ANSI256: true, ANSI24: false, UTF: true},
+	"KILDCLIENT": {ANSI256: true, ANSI24: false, UTF: true},
+	"MUDLET":     {ANSI256: true, ANSI24: false, UTF: true},
+	"MUSHCLIENT": {ANSI256: true, ANSI24: false, UTF: true},
+	"POTATO":     {ANSI256: true, ANSI24: false, UTF: true},
+	"POWWOW":     {ANSI256: true, ANSI24: false, UTF: true},
+	"TINTIN":     {ANSI256: true, ANSI24: false, UTF: true},
+	"TORTILLA":   {ANSI256: true, ANSI24: false, UTF: true},
+
+	"BIOMUD":        {ANSI256: true, ANSI24: false},
+	"BLOWTORCH":     {ANSI256: true, ANSI24: false},
+	"CMUD":          {ANSI256: true, ANSI24: false},
+	"GGMUD":         {ANSI256: false, ANSI24: false},
+	"GMUD":          {ANSI256: false, ANSI24: false},
+	"GNOMEMUD":      {ANSI256: true, ANSI24: false},
+	"JAMOCHAMUD":    {ANSI256: false, ANSI24: false},
+	"LYNTIN":        {ANSI256: true, ANSI24: false},
+	"KMUDDY":        {ANSI256: false, ANSI24: false},
+	"MCL":           {ANSI256: true, ANSI24: false},
+	"MUBY":          {ANSI256: true, ANSI24: false},
+	"MUDMAGIC":      {ANSI256: false, ANSI24: false},
+	"PORTAL":        {ANSI256: false, ANSI24: false},
+	"PUEBLO":        {ANSI256: false, ANSI24: false},
+	"UE":            {ANSI256: false, ANSI24: false},
+	"SIMPLEMU":      {ANSI256: false, ANSI24: false},
+	"SOILED":        {ANSI256: true, ANSI24: false},
+	"TINYFUGUE":     {ANSI256: true, ANSI24: false},
+	"TREBUCHET":     {ANSI256: false, ANSI24: false},
+	"WINTIN.NET":    {ANSI256: true, ANSI24: false},
+	"ZMUD":          {ANSI256: false, ANSI24: false},
+	"XTERM256COLOR": {ANSI256: true, ANSI24: false},
+}
+
 const (
 	TermCmd_SE = iota + 240
 	TermCmd_NOP
