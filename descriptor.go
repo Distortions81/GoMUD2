@@ -188,6 +188,10 @@ func handleDesc(conn net.Conn, tls bool) {
 
 func (desc *descData) send(format string, args ...any) error {
 
+	if !desc.telnet.utf {
+
+	}
+
 	//Format string if args supplied
 	var data []byte
 	if args != nil {

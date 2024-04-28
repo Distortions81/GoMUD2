@@ -1,10 +1,10 @@
 package main
 
 func sendTelnetCmds(desc *descData) {
-	desc.sendCmd(TermCmd_DO, TermOpt_SUP_GOAHEAD)
+	//desc.sendCmd(TermCmd_DO, TermOpt_SUP_GOAHEAD)
 	desc.sendCmd(TermCmd_DO, TermOpt_TERMINAL_TYPE)
 	desc.sendCmd(TermCmd_WILL, TermOpt_CHARSET)
-	desc.sendCmd(TermCmd_WILL, TermOpt_SUP_GOAHEAD)
+	//desc.sendCmd(TermCmd_WILL, TermOpt_SUP_GOAHEAD)
 }
 
 func (desc *descData) sendCmd(command, option byte) error {
