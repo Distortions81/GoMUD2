@@ -18,10 +18,19 @@ const (
 // Handle incoming connections.
 func handleConnection(conn net.Conn, tls bool) {
 	var tlsStr string
-	addrStr := "Unknown"
-	aParts := strings.Split(conn.RemoteAddr().String(), ":")
-	if len(aParts) > 0 {
-		addrStr = aParts[0]
+
+	hostStr := "Unknow"
+	addrStr := conn.RemoteAddr().String()
+	ipStr, _, err := net.SplitHostPort(addrStr)
+	if err != nil {
+		hostStr = addrStr
+	}
+	addrList, err := net.LookupHost(ipStr)
+	if err != nil {
+		hostStr = addrStr
+	}
+	if len(addrList) > 0 {
+		hostStr = strings.Join(addrList, ",")
 	}
 
 	descLock.Lock()
@@ -30,7 +39,7 @@ func handleConnection(conn net.Conn, tls bool) {
 	desc := &descData{
 		conn: conn, id: topID, born: time.Now(),
 		reader: bufio.NewReader(conn), tls: tls,
-		addr: addrStr, state: CON_WELCOME}
+		addr: hostStr, state: CON_WELCOME}
 	descList = append(descList, desc)
 	descLock.Unlock()
 
@@ -47,7 +56,7 @@ func handleConnection(conn net.Conn, tls bool) {
 	desc.sendCmd(TermCmd_WILL, TermOpt_CHARSET)
 	desc.sendCmd(TermCmd_WILL, TermOpt_SUP_GOAHEAD)
 
-	_, err := conn.Write(greetBuf)
+	_, err = conn.Write(greetBuf)
 	if err != nil {
 		return
 	}
