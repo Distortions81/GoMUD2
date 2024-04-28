@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	maxInputLineLength = 1024 * 2
+	maxInputLineLength = 1024 * 10
 	connDeadline       = time.Second * 15
-	maxLines           = 50
+	maxLines           = 500
 	maxSubLen          = 128
 )
 
@@ -39,7 +39,7 @@ func handleDesc(conn net.Conn, tls bool) {
 		conn: conn, id: topID, connectTime: time.Now(),
 		reader: bufio.NewReader(conn), tls: tls,
 		host: hostStr, addr: ipStr, cAddr: cAddr,
-		state: CON_WELCOME, telnet: telnetData{charset: "ASCII"}}
+		state: CON_WELCOME, telnet: telnetData{charset: "cp437", charMap: charmap.CodePage437}}
 	descList = append(descList, desc)
 	descLock.Unlock()
 
@@ -180,9 +180,15 @@ func handleDesc(conn net.Conn, tls bool) {
 					}
 
 					//Append line to buffer
-					desc.lineBuffer = append(desc.lineBuffer, string(desc.inputBuffer))
+					var buf string
+					if !desc.telnet.utf {
+						buf = encodeToUTF(desc.telnet.charMap, desc.inputBuffer)
+					} else {
+						buf = string(desc.inputBuffer)
+					}
+					desc.lineBuffer = append(desc.lineBuffer, buf)
 					desc.numLines++
-					mudLog("#%v: %v: %v", desc.id, desc.cAddr, string(desc.inputBuffer))
+					mudLog("#%v: %v: %v", desc.id, desc.cAddr, buf)
 
 					//Reset input buffer
 					desc.inputBuffer = []byte{}
@@ -203,22 +209,25 @@ func handleDesc(conn net.Conn, tls bool) {
 }
 
 func (desc *descData) send(format string, args ...any) error {
+	var outBytes []byte
 
 	//Format string if args supplied
-	var data []byte
+	var data string
 	if args != nil {
-		data = []byte(fmt.Sprintf(format, args...))
+		data = fmt.Sprintf(format, args...)
 	} else {
-		data = []byte(format)
+		data = format
 	}
 
 	if !desc.telnet.utf {
-		data = convertText(charmap.ISO8859_1, data)
+		outBytes = encodeFromUTF(desc.telnet.charMap, data)
+	} else {
+		outBytes = []byte(data)
 	}
 
 	//Write, check for err or invalid len
-	dlen := len(data)
-	l, err := desc.conn.Write([]byte(data))
+	dlen := len(outBytes)
+	l, err := desc.conn.Write(outBytes)
 
 	if err != nil || dlen != l {
 		mudLog("#%v: %v: write failed (connection lost)", desc.id, desc.cAddr)

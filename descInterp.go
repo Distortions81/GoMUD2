@@ -33,6 +33,8 @@ func (desc *descData) interp() {
 }
 
 func dWelcome(desc *descData, input string) (fail bool) {
-	desc.send("Invalid login.\r\nLogin: ")
+	for _, d := range descList {
+		d.send(input)
+	}
 	return true
 }

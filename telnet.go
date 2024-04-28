@@ -1,7 +1,5 @@
 package main
 
-import "golang.org/x/text/encoding/charmap"
-
 func sendTelnetCmds(desc *descData) {
 	//desc.sendCmd(TermCmd_DO, TermOpt_SUP_GOAHEAD)
 	desc.sendCmd(TermCmd_DO, TermOpt_TERMINAL_TYPE)
@@ -61,9 +59,6 @@ func (desc *descData) readByte() (byte, error) {
 	if err != nil {
 		mudLog("#%v: %v: Connection closed by server.", desc.id, desc.cAddr)
 		return 0, err
-	}
-	if !desc.telnet.utf {
-		data = convertByte(charmap.ISO8859_1, data)
 	}
 	return data, nil
 }

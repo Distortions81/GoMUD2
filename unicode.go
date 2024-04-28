@@ -1,9 +1,13 @@
 package main
 
 import (
+	"bytes"
+	"io"
 	"strings"
 
+	"github.com/muesli/reflow/wrap"
 	"golang.org/x/text/encoding/charmap"
+	"golang.org/x/text/transform"
 )
 
 const charsetSend = ";UTF-8;ISO88591;WINDOWS1252;LATIN1;MCP437;CP437;IBM437;MCP850;MCP858;MACROMAN;MACINTOSH;ASCII"
@@ -64,29 +68,23 @@ var charsetList map[string]*charmap.Charmap = map[string]*charmap.Charmap{
 	"WINDOWS1258": charmap.Windows1258,
 }
 
-func convertText(charmap *charmap.Charmap, data []byte) []byte {
-	var tmp []byte
-	for _, myRune := range data {
-
-		enc := charmap.NewEncoder()
-		win, err := enc.String(string(myRune))
-		if err != nil {
-			tmp = append(tmp, []byte("?")...)
-			continue
-		}
-		tmp = append(tmp, []byte(win)...)
-	}
-	return tmp
+func encodeFromUTF(cmap *charmap.Charmap, input string) []byte {
+	f := wrap.NewWriter(10240)
+	f.PreserveSpace = true
+	f.Newline = []rune{'\n'}
+	f.KeepNewlines = true
+	f.Write([]byte(input))
+	var tmp io.Reader = strings.NewReader(f.String())
+	tmp = transform.NewReader(tmp, cmap.NewEncoder()) // encode bytes to cmap
+	encBytes, _ := io.ReadAll(tmp)
+	return encBytes
 }
 
-func convertByte(charmap *charmap.Charmap, data byte) byte {
-	enc := charmap.NewEncoder()
-	win, err := enc.String(string(data))
-	if err != nil {
-		win = "?"
-	}
-	bytes := []byte(win)
-	return bytes[0]
+func encodeToUTF(cmap *charmap.Charmap, input []byte) string {
+	var d io.Reader = bytes.NewReader(input)          // each line as string
+	utf8 := transform.NewReader(d, cmap.NewDecoder()) // decode from cmap to UTF-8
+	decBytes, _ := io.ReadAll(utf8)
+	return string(decBytes)
 }
 
 func setCharset(desc *descData) {
