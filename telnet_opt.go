@@ -7,7 +7,7 @@ type termSettings struct {
 }
 
 var termTypeMap map[string]*termSettings = map[string]*termSettings{
-	"AMUDCLIENT": {ANSI256: true, ANSI24: false, UTF: true},
+	"AMUDCLIENT": {ANSI256: true, ANSI24: true, UTF: true},
 	"ATLANTIS":   {ANSI256: true, ANSI24: false, UTF: true},
 	"BEIPMU":     {ANSI256: true, ANSI24: false, UTF: true},
 	"KBTIN":      {ANSI256: true, ANSI24: false, UTF: true},
@@ -16,7 +16,7 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	"MUSHCLIENT": {ANSI256: true, ANSI24: false, UTF: true},
 	"POTATO":     {ANSI256: true, ANSI24: false, UTF: true},
 	"POWWOW":     {ANSI256: true, ANSI24: false, UTF: true},
-	"TINTIN":     {ANSI256: true, ANSI24: false, UTF: true},
+	"TINTIN":     {ANSI256: true, ANSI24: true, UTF: true},
 	"TORTILLA":   {ANSI256: true, ANSI24: false, UTF: true},
 
 	"BIOMUD":        {ANSI256: true, ANSI24: false},
