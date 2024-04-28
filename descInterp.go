@@ -33,6 +33,6 @@ func (desc *descData) interp() {
 }
 
 func dWelcome(desc *descData, input string) (fail bool) {
-	desc.send("You connected from: %v. Hello: Login: ", desc.cAddr)
+	desc.send("Invalid login.\r\nLogin: ")
 	return true
 }
