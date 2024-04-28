@@ -38,7 +38,8 @@ func handleDesc(conn net.Conn, tls bool) {
 	desc := &descData{
 		conn: conn, id: topID, connectTime: time.Now(),
 		reader: bufio.NewReader(conn), tls: tls,
-		host: hostStr, addr: ipStr, cAddr: cAddr, state: CON_WELCOME}
+		host: hostStr, addr: ipStr, cAddr: cAddr,
+		state: CON_WELCOME, telnet: telnetData{charset: "ASCII"}}
 	descList = append(descList, desc)
 	descLock.Unlock()
 
@@ -85,10 +86,11 @@ func handleDesc(conn net.Conn, tls bool) {
 
 					//Charset recieved
 				} else if desc.telnet.subType == TermOpt_CHARSET {
-					desc.telnet.charset = string(desc.telnet.subData)
-					if strings.EqualFold(desc.telnet.charset, "UTF-8") {
-						desc.telnet.utf = true
-					}
+					data := string(desc.telnet.subData)
+					data = strings.TrimSpace(data)
+					data = strings.ToUpper(data)
+					desc.telnet.charset = data
+					setCharset(desc)
 					errLog("#%v: GOT %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.charset)
 
 					desc.sendSub(desc.telnet.charset, TermOpt_CHARSET, SB_ACCEPTED)
@@ -137,8 +139,12 @@ func handleDesc(conn net.Conn, tls bool) {
 					desc.telnet.subLength = 0
 					return
 				}
-
-				desc.telnet.subData = append(desc.telnet.subData, data)
+				// Filter to 7-bit
+				if (data >= '0' && data <= '9') ||
+					(data >= 'A' && data <= 'Z') ||
+					(data >= 'a' && data <= 'z') {
+					desc.telnet.subData = append(desc.telnet.subData, data)
+				}
 			} else {
 
 				//Limit line length
@@ -212,19 +218,4 @@ func (desc *descData) send(format string, args ...any) error {
 	}
 
 	return nil
-}
-
-func convertText(charmap *charmap.Charmap, data []byte) []byte {
-	var tmp []byte
-	for _, myRune := range data {
-
-		enc := charmap.NewEncoder()
-		win, err := enc.String(string(myRune))
-		if err != nil {
-			tmp = append(tmp, []byte("?")...)
-			continue
-		}
-		tmp = append(tmp, []byte(win)...)
-	}
-	return tmp
 }

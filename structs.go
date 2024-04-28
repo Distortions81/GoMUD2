@@ -5,6 +5,8 @@ import (
 	"net"
 	"sync"
 	"time"
+
+	"golang.org/x/text/encoding/charmap"
 )
 
 var (
@@ -37,6 +39,8 @@ type descData struct {
 type telnetData struct {
 	ansiColor, goAhead, utf bool
 	charset, termType       string
+
+	charMap *charmap.Charmap
 
 	subType   byte
 	subMode   bool
