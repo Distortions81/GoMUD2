@@ -80,7 +80,7 @@ func waitNewConnectionSSL() {
 				break
 			}
 
-			go handleConnection(conn)
+			go handleConnection(conn, true)
 			time.Sleep(CONNECT_THROTTLE)
 		}
 
@@ -98,7 +98,7 @@ func waitNewConnection() {
 			break
 		}
 
-		go handleConnection(conn)
+		go handleConnection(conn, false)
 		time.Sleep(CONNECT_THROTTLE)
 	}
 

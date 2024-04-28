@@ -18,6 +18,8 @@ type descData struct {
 	conn   net.Conn
 	reader *bufio.Reader
 	state  int
+	addr   string
+	tls    bool
 
 	telnet telnetData
 
