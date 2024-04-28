@@ -8,7 +8,7 @@ const (
 		"License: Mozilla Public License 2.0\n" +
 		"This information must remain unmodified, fully intact and shown to end-users.\n"
 
-		// Directories and files
+		//Directories and files
 	DATA_DIR   = "data/"
 	PLAYER_DIR = "players/"
 	AREA_DIR   = "areas/"
@@ -43,7 +43,7 @@ const (
 	CON_RECONNECT_CONFIRM
 	CON_PLAYING
 
-	// New users
+	//New users
 	CON_NEW_LOGIN
 	CON_NEW_LOGIN_CONFIRM
 	CON_NEW_PASSWORD

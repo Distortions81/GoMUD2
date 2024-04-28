@@ -50,21 +50,21 @@ func setupListenerTLS() {
 }
 
 func setupListener() {
-	/*Find Network*/
+	//Find network
 	addr, err := net.ResolveTCPAddr("tcp4", *bindIP+":"+strconv.Itoa(*port))
 	if err != nil {
 		errLog("Unable to resolve %v:%v: Error: %v", *bindIP, *port, err)
 		os.Exit(1)
 	}
 
-	/*Open Listener*/
+	//Open listener
 	listener, err = net.ListenTCP("tcp4", addr)
 	if err != nil {
 		errLog("Unable to listen on port %v:%v. Error: %v", *bindIP, *port, err)
 		os.Exit(1)
 	}
 
-	/*Print Connection*/
+	//Print listener
 	errLog("TCP listener online at: %s", addr.String())
 }
 
@@ -80,7 +80,7 @@ func waitNewConnectionSSL() {
 				break
 			}
 
-			go handleConnection(conn, true)
+			go handleDesc(conn, true)
 			time.Sleep(CONNECT_THROTTLE)
 		}
 
@@ -98,7 +98,7 @@ func waitNewConnection() {
 			break
 		}
 
-		go handleConnection(conn, false)
+		go handleDesc(conn, false)
 		time.Sleep(CONNECT_THROTTLE)
 	}
 
