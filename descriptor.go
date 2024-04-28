@@ -6,6 +6,8 @@ import (
 	"net"
 	"strings"
 	"time"
+
+	"golang.org/x/text/encoding/charmap"
 )
 
 const (
@@ -188,16 +190,16 @@ func handleDesc(conn net.Conn, tls bool) {
 
 func (desc *descData) send(format string, args ...any) error {
 
-	if !desc.telnet.utf {
-
-	}
-
 	//Format string if args supplied
 	var data []byte
 	if args != nil {
 		data = []byte(fmt.Sprintf(format, args...))
 	} else {
 		data = []byte(format)
+	}
+
+	if !desc.telnet.utf {
+		data = convertText(charmap.ISO8859_1, data)
 	}
 
 	//Write, check for err or invalid len
@@ -210,4 +212,19 @@ func (desc *descData) send(format string, args ...any) error {
 	}
 
 	return nil
+}
+
+func convertText(charmap *charmap.Charmap, data []byte) []byte {
+	var tmp []byte
+	for _, myRune := range data {
+
+		enc := charmap.NewEncoder()
+		win, err := enc.String(string(myRune))
+		if err != nil {
+			tmp = append(tmp, []byte("?")...)
+			continue
+		}
+		tmp = append(tmp, []byte(win)...)
+	}
+	return tmp
 }
