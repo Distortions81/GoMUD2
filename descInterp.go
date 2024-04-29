@@ -27,14 +27,60 @@ func (desc *descData) interp() {
 		desc.inputLock.Unlock()
 	}
 
-	if desc.state == CON_WELCOME {
-		desc.dWelcome(input)
+	if loginStateList[desc.state] != nil {
+		loginStateList[desc.state].goDo(desc, input)
+
+		if loginStateList[desc.state] != nil {
+			desc.send(loginStateList[desc.state].prompt)
+			return
+		}
 	}
+	if desc.state == CON_DISCONNECTED {
+		desc.sendln(textFiles["aurevoir"])
+		endInterp(desc)
+		return
+	}
+	endInterp(desc)
 }
 
-func (desc *descData) dWelcome(input string) (fail bool) {
-	for _, d := range descList {
-		d.send(input)
-	}
-	return true
+func endInterp(desc *descData) {
+	errLog("Error: #%v: Invalid desc state. Disconnecting...", desc.id)
+	desc.sendln("Sorry, something went wrong! Disconnecting...\r\n(invalid desc state %v)!", desc.state)
+	desc.close()
+}
+
+type loginStates struct {
+	prompt string
+	goDo   func(desc *descData, input string)
+}
+
+var loginStateList = map[int]*loginStates{
+
+	CON_WELCOME: {
+		prompt: "Press return to continue.",
+		goDo:   gWelcome,
+	},
+	CON_LOGIN: {
+		prompt: "To create a new account type NEW\r\nLogin: ",
+		goDo:   gLogin,
+	},
+	CON_PASS: {
+		prompt: "Passphrase: ",
+		goDo:   gPass,
+	},
+}
+
+func gWelcome(desc *descData, input string) {
+	desc.send("Welcome!")
+	desc.state = CON_LOGIN
+}
+
+func gLogin(desc *descData, input string) {
+	desc.send("login okay.")
+	desc.state = CON_PASS
+}
+
+func gPass(desc *descData, input string) {
+	desc.send("pass okay.")
+	desc.state = CON_DISCONNECTED
 }

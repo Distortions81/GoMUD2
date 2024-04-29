@@ -57,7 +57,7 @@ func handleDesc(conn net.Conn, tls bool) {
 	desc.sendTelnetCmds()
 
 	//Send greeting
-	err := desc.send(greetBuf)
+	err := desc.sendln(greetBuf)
 	if err != nil {
 		return
 	}
@@ -251,8 +251,6 @@ func (desc *descData) send(format string, args ...any) error {
 		outBytes = []byte(data)
 	}
 
-	outBytes = append(outBytes, []byte{'\r', '\n'}...)
-
 	//Write, check for err or invalid len
 	dlen := len(outBytes)
 	l, err := desc.conn.Write(outBytes)
@@ -263,4 +261,8 @@ func (desc *descData) send(format string, args ...any) error {
 	}
 
 	return nil
+}
+
+func (desc *descData) sendln(format string, args ...any) error {
+	return desc.send(format+"\r\n", args...)
 }

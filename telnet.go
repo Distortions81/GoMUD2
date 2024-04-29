@@ -40,7 +40,7 @@ func (desc *descData) sendSub(data string, args ...byte) error {
 
 func (desc *descData) inputFull() {
 	buf := "Input buffer full! Closing connection..."
-	desc.send("\r\n%v\r\n", buf)
+	desc.sendln("\r\n%v", buf)
 	mudLog("#%v: ERROR: %v: %v", desc.id, desc.cAddr, buf)
 }
 
