@@ -1,0 +1,15 @@
+MUD MAGIC:
+//Won't accept latin1, will accept utf-8 but normalizes accents away
+//Only sends screwed latin1 or some similar encoding
+#13: 127.0.0.1 connected.
+#13: Sent: DO SUP_GOAHEAD
+#13: Sent: DO TERMINAL_TYPE
+#13: Sent: WILL CHARSET
+#13: Sent: WILL SUP_GOAHEAD
+#13: Client: WONT SUP_GOAHEAD
+#13: Client: WONT TERMINAL_TYPE
+#13: Client: DONT CHARSET
+#13: Client: DONT SUP_GOAHEAD
+
+
+
