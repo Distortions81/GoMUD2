@@ -1,15 +1,20 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"golang.org/x/text/encoding/charmap"
+)
 
 type termSettings struct {
-	NOANSI, ANSI256, ANSI24, UTF bool
+	ANSI256, ANSI24, UTF, SUPGA bool
+	CharMap                     *charmap.Charmap
 }
 
 var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	"AMUDCLIENT":    {ANSI256: true, ANSI24: true, UTF: true},
 	"ATLANTIS":      {ANSI256: true, ANSI24: false, UTF: true},
-	"BEIPMU":        {ANSI256: true, ANSI24: false, UTF: true},
+	"BEIP":          {ANSI256: true, ANSI24: false, UTF: true},
 	"KBTIN":         {ANSI256: true, ANSI24: false, UTF: true},
 	"MUDLET":        {ANSI256: true, ANSI24: false, UTF: true},
 	"MUSHCLIENT":    {ANSI256: true, ANSI24: false, UTF: true},
@@ -22,7 +27,7 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	"BIOMUD":     {ANSI256: true, ANSI24: false},
 	"BLOWTORCH":  {ANSI256: true, ANSI24: false},
 	"CMUD":       {ANSI256: true, ANSI24: false},
-	"GGMUD":      {ANSI256: false, ANSI24: false},
+	"GGMUD":      {ANSI256: false, ANSI24: false, UTF: true},
 	"GMUD":       {ANSI256: false, ANSI24: false},
 	"GNOMEMUD":   {ANSI256: true, ANSI24: false},
 	"JAMOCHAMUD": {ANSI256: false, ANSI24: false},

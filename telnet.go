@@ -1,10 +1,10 @@
 package main
 
 func sendTelnetCmds(desc *descData) {
-	//desc.sendCmd(TermCmd_DO, TermOpt_SUP_GOAHEAD)
+	desc.sendCmd(TermCmd_DO, TermOpt_SUP_GOAHEAD)
 	desc.sendCmd(TermCmd_DO, TermOpt_TERMINAL_TYPE)
 	desc.sendCmd(TermCmd_WILL, TermOpt_CHARSET)
-	//desc.sendCmd(TermCmd_WILL, TermOpt_SUP_GOAHEAD)
+	desc.sendCmd(TermCmd_WILL, TermOpt_SUP_GOAHEAD)
 }
 
 func (desc *descData) sendCmd(command, option byte) error {
@@ -15,16 +15,6 @@ func (desc *descData) sendCmd(command, option byte) error {
 	}
 
 	errLog("#%v: Sent: %v %v", desc.id, TermCmd2Txt[int(command)], TermOpt2TXT[int(option)])
-	return nil
-}
-
-func (desc *descData) sendEOR() error {
-	dlen, err := desc.conn.Write([]byte{TermOpt_END_OF_RECORD})
-	if err != nil || dlen != 1 {
-		mudLog("#%v: %v: EOR send failed (connection lost)", desc.id, desc.cAddr)
-		return err
-	}
-	errLog("#%v: Sent: %v", desc.id, TermOpt2TXT[int(TermOpt_END_OF_RECORD)])
 	return nil
 }
 

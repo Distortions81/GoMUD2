@@ -6,7 +6,7 @@ import (
 )
 
 var textFiles map[string]string
-var greetBuf []byte
+var greetBuf string
 
 const textExt = ".txt"
 
@@ -37,5 +37,5 @@ func ReadTextFiles() {
 		errLog("ReadTextFiles: Read: %v", fname.Name())
 	}
 
-	greetBuf = []byte(LICENSE + textFiles["greet"] + "Login:" + string(byte(TermOpt_END_OF_RECORD)))
+	greetBuf = LICENSE + textFiles["greet"] + "Login:"
 }

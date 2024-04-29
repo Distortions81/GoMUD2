@@ -33,11 +33,15 @@ func handleDesc(conn net.Conn, tls bool) {
 	//Create descriptor
 	descLock.Lock()
 	topID++
+	tnd := telnetData{
+		charset: DEFAULT_CHARSET, charMap: DEFAULT_CHARMAP,
+		options: &termSettings{},
+	}
 	desc := &descData{
 		conn: conn, id: topID, connectTime: time.Now(),
 		reader: bufio.NewReader(conn), tls: tls,
 		host: hostStr, addr: ipStr, cAddr: cAddr,
-		state: CON_WELCOME, telnet: telnetData{charset: DEFAULT_CHARSET, charMap: DEFAULT_CHARMAP}}
+		state: CON_WELCOME, telnet: tnd}
 	descList = append(descList, desc)
 	descLock.Unlock()
 
@@ -53,7 +57,7 @@ func handleDesc(conn net.Conn, tls bool) {
 	sendTelnetCmds(desc)
 
 	//Send greeting
-	_, err := conn.Write(greetBuf)
+	err := desc.send(greetBuf)
 	if err != nil {
 		return
 	}
@@ -88,6 +92,13 @@ func handleDesc(conn net.Conn, tls bool) {
 					if match != nil {
 						desc.telnet.options = match
 						errLog("Found client match: %v", ttype)
+					}
+					for n, item := range termTypeMap {
+						if strings.HasPrefix(ttype, n) {
+							desc.telnet.options = item
+						} else if strings.HasSuffix(ttype, n) {
+							desc.telnet.options = item
+						}
 					}
 
 					//Charset recieved
@@ -125,12 +136,24 @@ func handleDesc(conn net.Conn, tls bool) {
 				//Client termType reply
 				if option == TermOpt_TERMINAL_TYPE {
 					desc.sendSub("", TermOpt_TERMINAL_TYPE, SB_SEND)
+				} else if option == TermOpt_SUP_GOAHEAD {
+					desc.telnet.options.SUPGA = true
 				}
 			} else if command == TermCmd_DO {
 				//Send our charset list
 				if option == TermOpt_CHARSET {
 					//If we don't get a reply, use this default
 					desc.sendSub(charsetSend, TermOpt_CHARSET, SB_REQ)
+				} else if option == TermOpt_SUP_GOAHEAD {
+					desc.telnet.options.SUPGA = true
+				}
+			} else if command == TermCmd_DONT {
+				if option == TermOpt_SUP_GOAHEAD {
+					desc.telnet.options.SUPGA = false
+				}
+			} else if command == TermCmd_WONT {
+				if option == TermCmd_GOAHEAD {
+					desc.telnet.options.SUPGA = false
 				}
 			}
 
@@ -216,11 +239,17 @@ func (desc *descData) send(format string, args ...any) error {
 		data = format
 	}
 
+	if !desc.telnet.options.SUPGA {
+		data = data + string([]byte{TermCmd_IAC, TermCmd_GOAHEAD})
+	}
+
 	if !desc.telnet.options.UTF {
 		outBytes = encodeFromUTF(desc.telnet.charMap, data)
 	} else {
 		outBytes = []byte(data)
 	}
+
+	outBytes = append(outBytes, []byte{'\r', '\n'}...)
 
 	//Write, check for err or invalid len
 	dlen := len(outBytes)
