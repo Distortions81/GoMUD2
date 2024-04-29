@@ -189,3 +189,17 @@ PUEBLO: Works fine, but normalizes accents
 #12: Client: SB TERMINAL_TYPE
 #12: GOT TERMINAL_TYPE: pueblo
 Found client match: PUEBLO
+
+SimpleMU: //Seems to work fine
+#13: 192.168.1.189 connected.
+#13: Sent: DO SUP_GOAHEAD
+#13: Sent: DO TERMINAL_TYPE
+#13: Sent: WILL CHARSET
+#13: Sent: WILL SUP_GOAHEAD
+#13: Client: WONT SUP_GOAHEAD
+#13: Sent sub:  TERMINAL_TYPE 1
+#13: Client: WILL TERMINAL_TYPE
+#13: Client: DONT CHARSET
+#13: Client: DONT SUP_GOAHEAD
+#13: Client: SB TERMINAL_TYPE
+#13: GOT TERMINAL_TYPE: ANSI
