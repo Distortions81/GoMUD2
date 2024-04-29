@@ -32,21 +32,12 @@ func (desc *descData) interp() {
 
 		if loginStateList[desc.state] != nil {
 			desc.send(loginStateList[desc.state].prompt)
-			return
 		}
 	}
 	if desc.state == CON_DISCONNECTED {
 		desc.sendln(textFiles["aurevoir"])
-		endInterp(desc)
 		return
 	}
-	endInterp(desc)
-}
-
-func endInterp(desc *descData) {
-	errLog("Error: #%v: Invalid desc state. Disconnecting...", desc.id)
-	desc.sendln("Sorry, something went wrong! Disconnecting...\r\n(invalid desc state %v)!", desc.state)
-	desc.close()
 }
 
 type loginStates struct {
@@ -56,10 +47,6 @@ type loginStates struct {
 
 var loginStateList = map[int]*loginStates{
 
-	CON_WELCOME: {
-		prompt: "Press return to continue.",
-		goDo:   gWelcome,
-	},
 	CON_LOGIN: {
 		prompt: "To create a new account type NEW\r\nLogin: ",
 		goDo:   gLogin,
@@ -68,11 +55,6 @@ var loginStateList = map[int]*loginStates{
 		prompt: "Passphrase: ",
 		goDo:   gPass,
 	},
-}
-
-func gWelcome(desc *descData, input string) {
-	desc.send("Welcome!")
-	desc.state = CON_LOGIN
 }
 
 func gLogin(desc *descData, input string) {

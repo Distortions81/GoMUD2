@@ -58,6 +58,7 @@ func handleDesc(conn net.Conn, tls bool) {
 
 	//Send greeting
 	err := desc.sendln(greetBuf)
+	desc.state = CON_LOGIN
 	if err != nil {
 		return
 	}
