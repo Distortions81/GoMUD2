@@ -203,3 +203,28 @@ SimpleMU: //Seems to work fine
 #13: Client: DONT SUP_GOAHEAD
 #13: Client: SB TERMINAL_TYPE
 #13: GOT TERMINAL_TYPE: ANSI
+
+WinTin95: //Seems to work fine
+#14: 192.168.1.189 connected.
+#14: Sent: DO SUP_GOAHEAD
+#14: Sent: DO TERMINAL_TYPE
+#14: Sent: WILL CHARSET
+#14: Sent: WILL SUP_GOAHEAD
+#14: Client: WONT SUP_GOAHEAD
+#14: Client: WONT TERMINAL_TYPE
+#14: Client: DONT CHARSET
+#14: Client: DONT SUP_GOAHEAD
+
+ZMUD: //Seems to work fine
+#15: 192.168.1.189 connected.
+#15: Sent: DO SUP_GOAHEAD
+#15: Sent: DO TERMINAL_TYPE
+#15: Sent: WILL CHARSET
+#15: Sent: WILL SUP_GOAHEAD
+#15: Client: WILL SUP_GOAHEAD
+#15: Sent sub:  TERMINAL_TYPE 1
+#15: Client: WILL TERMINAL_TYPE
+#15: Client: DONT CHARSET
+#15: Client: SB TERMINAL_TYPE
+#15: GOT TERMINAL_TYPE: zmud
+Found client match: ZMUD

@@ -48,13 +48,14 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	"MUBY":       {ANSI256: true},
 	"PORTAL":     {ANSI256: false},
 	"PUEBLO":     {ANSI256: false},
-	"UE":         {ANSI256: false},
 	"SIMPLEMU":   {ANSI256: false},
-	"SOILED":     {ANSI256: true},
-	"TINYFUGUE":  {ANSI256: true},
-	"TREBUCHET":  {ANSI256: false},
-	"WINTINNET":  {ANSI256: true},
-	"ZMUD":       {ANSI256: false},
+	//No binary found
+	"SOILED": {ANSI256: true},
+	//No binary found
+	"TINYFUGUE": {ANSI256: true},
+	"TREBUCHET": {ANSI256: false},
+	"WINTINNET": {ANSI256: true},
+	"ZMUD":      {ANSI256: false},
 }
 
 const (
