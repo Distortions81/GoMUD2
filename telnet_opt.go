@@ -12,50 +12,75 @@ type termSettings struct {
 }
 
 var termTypeMap map[string]*termSettings = map[string]*termSettings{
-	//UTF-8 clients
+	//Java, didnt try it
 	"AMUDCLIENT": {ANSI256: true, ANSI24: true, UTF: true},
-	"ATLANTIS":   {ANSI256: true, UTF: true},
-	"BEIP":       {ANSI256: true, UTF: true},
+	//Macintosh / OS X, didn't test
+	"ATLANTIS": {ANSI256: true, UTF: true},
+	//Worked fine
+	"BEIP": {ANSI256: true, UTF: true},
+
 	//ggmud normalizes accents away, always sends UTF-8, but auto-detects recieved?
 	//wont/dont sup_gohead & charset, terminal_type bug (reconnects as "hardcopy", "unknown"?),
-	"GGMUD": {ANSI256: false, UTF: true},
+	"GGMUD":    {ANSI256: false, UTF: true},
+	"HARDCOPY": {ANSI256: false, UTF: true},
+	"UNKNOWN":  {ANSI256: false, UTF: true},
+	//ggmud
+
+	//Didn't find any binaries, just source, did not test
 	"KBTIN": {ANSI256: true, UTF: true},
 	//mudlet wont/dont sup_gohead, do charset
 	"MUDLET": {ANSI256: true, UTF: true},
 	//mudmagic WONT TERMINAL_TYPE, sup_goahead. DONT charset, supgohead.
 	//will accept but does not send UTF-8, does not accept latin1
-	"MUDMAGIC":   {ANSI256: false, UTF: true},
+	//"MUDMAGIC":   {ANSI256: false, UTF: true},
 	"MUSHCLIENT": {ANSI256: true, UTF: true},
-	"POTATO":     {ANSI256: true, UTF: true, SUPGA: true},
+	//potato Works fine if you never send GA
+	"POTATO": {ANSI256: true, UTF: true, SUPGA: true},
 	//POWWOW WINDOWS, LINUX: xterm-256color
-	"CYGWIN":        {ANSI256: true, CharMap: charmap.CodePage437},
-	"TINTIN":        {ANSI256: true, ANSI24: true, UTF: true},
-	"TORTILLA":      {ANSI256: true, UTF: true},
-	"XTERM256COLOR": {ANSI256: true, UTF: true},
-
-	"BIOMUD":    {ANSI256: true},
+	"CYGWIN": {ANSI256: true, CharMap: charmap.CodePage437},
+	//tintin Newline issues on linux?
+	"TINTIN": {ANSI256: true, ANSI24: true, UTF: true},
+	//I couldn't figure out how to connect with it
+	"TORTILLA": {ANSI256: true, UTF: true},
+	//Unable to connect to anything
+	"BIOMUD": {ANSI256: true},
+	//blowtorch Didn't test, no android devices
 	"BLOWTORCH": {ANSI256: true},
-	//cmud dont charset, will sup_goahead
-	"CMUD":       {ANSI256: true},
-	"GMUD":       {ANSI256: false},
-	"GNOMEMUD":   {ANSI256: true},
+	//Works, but eats whole lines with accent characters?
+	"CMUD": {ANSI256: true},
+	//"GMUD":       {ANSI256: false},
+	"GNOMEMUD": {ANSI256: true},
+	//Java client, didn't open for me
 	"JAMOCHAMUD": {ANSI256: false},
 	//kild NO RESPONSE: will/do sup_gohead & charset
 	"KILDCLIENT": {ANSI256: true},
-	"LYNTIN":     {ANSI256: true},
-	"KMUDDY":     {ANSI256: false},
-	"MCL":        {ANSI256: true},
-	"MUBY":       {ANSI256: true},
-	"PORTAL":     {ANSI256: false},
-	"PUEBLO":     {ANSI256: false},
-	"SIMPLEMU":   {ANSI256: false},
+	//Didn't run
+	"LYNTIN": {ANSI256: true},
+	//No binary found
+	"KMUDDY": {ANSI256: false},
+	//No binary found
+	"MCL": {ANSI256: true},
+	//No results
+	"MUBY": {ANSI256: true},
+	//Dead, broken
+	//"PORTAL": {ANSI256: false},
+	//Works fine but normalizes text
+	"PUEBLO": {ANSI256: false},
+	//Won't run for me
+	//"SIMPLEMU":   {ANSI256: false},
 	//No binary found
 	"SOILED": {ANSI256: true},
 	//No binary found
 	"TINYFUGUE": {ANSI256: true},
+	//Didnt open forme
 	"TREBUCHET": {ANSI256: false},
+	//Worked fine
 	"WINTINNET": {ANSI256: true},
-	"ZMUD":      {ANSI256: false},
+	//Worked fine
+	"ZMUD": {ANSI256: false},
+
+	//Generic terminal
+	"XTERM256COLOR": {ANSI256: true, UTF: true},
 }
 
 const (

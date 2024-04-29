@@ -63,7 +63,7 @@ TINTIN++:
 //Seems to work fine
 #5: 127.0.0.1 connected.
 #5: Sent: DO SUP_GOAHEAD
-#5: Sent: DO TERMINAL_TYPE
+#5: Sent: DO TERMINAL_TYPE  
 #5: Sent: WILL CHARSET
 #5: Sent: WILL SUP_GOAHEAD
 #5: Client: WILL SUP_GOAHEAD
@@ -224,6 +224,7 @@ ZMUD: //Seems to work fine
 #15: Client: WILL SUP_GOAHEAD
 #15: Sent sub:  TERMINAL_TYPE 1
 #15: Client: WILL TERMINAL_TYPE
+
 #15: Client: DONT CHARSET
 #15: Client: SB TERMINAL_TYPE
 #15: GOT TERMINAL_TYPE: zmud
