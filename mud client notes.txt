@@ -1,6 +1,7 @@
 MUD MAGIC:
 //Won't accept latin1, will accept utf-8 but normalizes accents away
 //Only sends screwed latin1 or some similar encoding
+//EATS LINES WITH ACCENTS
 #13: 127.0.0.1 connected.
 #13: Sent: DO SUP_GOAHEAD
 #13: Sent: DO TERMINAL_TYPE
@@ -173,3 +174,18 @@ POWWOW:
 #10: Client: SB TERMINAL_TYPE
 #10: GOT TERMINAL_TYPE: xterm-256color
 Found client match: XTERM256COLOR
+
+PUEBLO: Works fine, but normalizes accents
+#12: 192.168.1.189 connected.
+#12: Sent: DO SUP_GOAHEAD
+#12: Sent: DO TERMINAL_TYPE
+#12: Sent: WILL CHARSET
+#12: Sent: WILL SUP_GOAHEAD
+#12: Client: WONT SUP_GOAHEAD
+#12: Sent sub:  TERMINAL_TYPE 1
+#12: Client: WILL TERMINAL_TYPE
+#12: Client: DONT CHARSET
+#12: Client: DONT SUP_GOAHEAD
+#12: Client: SB TERMINAL_TYPE
+#12: GOT TERMINAL_TYPE: pueblo
+Found client match: PUEBLO
