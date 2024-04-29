@@ -44,7 +44,7 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	//potato Works fine if you never send GA
 	"POTATO": {ANSI256: true, UTF: true, SUPGA: true},
 
-	//POWWOW WINDOWS, LINUX: xterm-256color
+	//POWWOW WINDOWS, uses DOS/OEM/CP437
 	"CYGWIN": {ANSI256: true, CharMap: charmap.CodePage437},
 
 	//tintin Newline issues on linux?
