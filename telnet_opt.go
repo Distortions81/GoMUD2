@@ -22,7 +22,7 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	"BEIP": {ANSI256: true, UTF: true},
 
 	//ggmud normalizes accents away, always sends UTF-8, but auto-detects recieved?
-	//wont/dont sup_gohead & charset, terminal_type bug (reconnects as "hardcopy", "unknown"?),
+	//terminal_type bug (reconnects as "hardcopy", "unknown"?),
 	"GGMUD":    {ANSI256: false, UTF: true},
 	"HARDCOPY": {ANSI256: false, UTF: true},
 	"UNKNOWN":  {ANSI256: false, UTF: true},
@@ -31,7 +31,7 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	//kbtin Didn't find any binaries, just source, did not test
 	"KBTIN": {ANSI256: true, UTF: true},
 
-	//mudlet wont/dont sup_gohead, do charset
+	//mudlet Works fine
 	"MUDLET": {ANSI256: true, UTF: true},
 
 	//mudmagic will accept but does not send UTF-8, does not accept latin1
@@ -46,6 +46,7 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 
 	//POWWOW WINDOWS, LINUX: xterm-256color
 	"CYGWIN": {ANSI256: true, CharMap: charmap.CodePage437},
+
 	//tintin Newline issues on linux?
 	//"TINTIN": {ANSI256: true, ANSI24: true, UTF: true},
 
@@ -70,7 +71,7 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	//Java client, didn't open for me
 	//"JAMOCHAMUD": {ANSI256: false},
 
-	//kild NO RESPONSE: will/do sup_gohead & charset
+	//kild works fine
 	"KILDCLIENT": {ANSI256: true},
 
 	//Didn't run
