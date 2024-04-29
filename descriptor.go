@@ -178,7 +178,7 @@ func handleDesc(conn net.Conn, tls bool) {
 
 					//Append line to buffer
 					var buf string
-					if !desc.telnet.utf {
+					if !desc.telnet.options.UTF {
 						buf = encodeToUTF(desc.telnet.charMap, desc.inputBuffer)
 					} else {
 						buf = string(desc.inputBuffer)
@@ -216,7 +216,7 @@ func (desc *descData) send(format string, args ...any) error {
 		data = format
 	}
 
-	if !desc.telnet.utf {
+	if !desc.telnet.options.UTF {
 		outBytes = encodeFromUTF(desc.telnet.charMap, data)
 	} else {
 		outBytes = []byte(data)

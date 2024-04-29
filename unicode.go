@@ -90,7 +90,7 @@ func encodeToUTF(cmap *charmap.Charmap, input []byte) string {
 
 func setCharset(desc *descData) {
 	if strings.EqualFold(desc.telnet.charset, "UTF8") {
-		desc.telnet.utf = true
+		desc.telnet.options.UTF = true
 	} else {
 
 		//Check if we have the charset
