@@ -10,10 +10,6 @@ func (desc *descData) interp() {
 	} else {
 		//Get oldest line
 		input = desc.lineBuffer[0]
-		if input == "" {
-			desc.inputLock.Unlock()
-			return
-		}
 
 		if desc.numLines == 1 {
 			//If only one line, reset buffer
@@ -27,42 +23,87 @@ func (desc *descData) interp() {
 		desc.inputLock.Unlock()
 	}
 
-	if loginStateList[desc.state] != nil {
-		loginStateList[desc.state].goDo(desc, input)
-
-		if loginStateList[desc.state] != nil {
-			desc.send(loginStateList[desc.state].prompt)
+	//Playing, or disconnected
+	if desc.state == CON_PLAYING {
+		if input != "" {
+			handleCommands(desc, input)
 		}
-	}
-	if desc.state == CON_DISCONNECTED {
+		return
+	} else if desc.state == CON_DISCONNECTED {
 		desc.sendln(textFiles["aurevoir"])
 		return
 	}
+
+	//Login screen
+	if input == "" && !loginStateList[desc.state].anyKey {
+		return
+	} else {
+		loginStateList[desc.state].goDo(desc, input)
+	}
+
+	if loginStateList[desc.state].goPrompt != nil {
+		loginStateList[desc.state].goPrompt(desc)
+	} else {
+		desc.send(loginStateList[desc.state].prompt)
+	}
+
 }
 
 type loginStates struct {
-	prompt string
-	goDo   func(desc *descData, input string)
+	prompt   string
+	goPrompt func(desc *descData)
+	goDo     func(desc *descData, input string)
+	anyKey   bool
 }
 
-var loginStateList = map[int]*loginStates{
-
+var loginStateList = [CON_MAX]*loginStates{
+	CON_DISCONNECTED: {},
+	CON_WELCOME:      {},
 	CON_LOGIN: {
-		prompt: "To create a new account type NEW\r\nLogin: ",
+		prompt: "To create a new account type: NEW.\r\nLogin: ",
 		goDo:   gLogin,
 	},
 	CON_PASS: {
 		prompt: "Passphrase: ",
 		goDo:   gPass,
 	},
+	CON_NEWS: {
+		goPrompt: gShowNews,
+		goDo:     gNews,
+		anyKey:   true,
+	},
+	CON_NEW_LOGIN:            {},
+	CON_NEW_LOGIN_CONFIRM:    {},
+	CON_NEW_PASSWORD:         {},
+	CON_NEW_PASSWORD_CONFIRM: {},
+	CON_RECONNECT_CONFIRM:    {},
+	CON_PLAYING:              {},
 }
 
 func gLogin(desc *descData, input string) {
-	desc.send("login okay.")
-	desc.state = CON_PASS
+	if input == "tester" {
+		desc.sendln("Welcome %v!", input)
+		desc.state = CON_PASS
+	} else {
+		desc.sendln("Invalid login.")
+	}
 }
 
 func gPass(desc *descData, input string) {
-	desc.send("pass okay.")
-	desc.state = CON_DISCONNECTED
+	if input == "password" {
+		desc.send("Pass okay.")
+		desc.state = CON_NEWS
+	} else {
+		desc.send("Incorrect password.")
+	}
+}
+
+func gNews(desc *descData, input string) {
+	//announce arrive here?
+	desc.send("Welcome!")
+	desc.state = CON_PLAYING
+}
+
+func gShowNews(desc *descData) {
+	desc.send(textFiles["news"] + "\r\n[Press return to enter the world]")
 }

@@ -37,5 +37,8 @@ func ReadTextFiles() {
 		errLog("ReadTextFiles: Read: %v", fname.Name())
 	}
 
-	greetBuf = LICENSE + textFiles["greet"] + "Login:"
+	//Login prompt
+	lItem := loginStateList[CON_LOGIN]
+	promptStr := lItem.prompt
+	greetBuf = LICENSE + textFiles["greet"] + promptStr
 }

@@ -63,6 +63,7 @@ func handleDesc(conn net.Conn, tls bool) {
 		return
 	}
 
+	var lastByte byte
 	for serverState == SERVER_RUNNING {
 		data, err := desc.readByte()
 		if err != nil {
@@ -186,14 +187,9 @@ func handleDesc(conn net.Conn, tls bool) {
 				}
 
 				//Detect line end
-				if data == '\n' || data == '\r' {
+				if (lastByte == '\n' && data == '\r') ||
+					(lastByte == '\r' && data == '\n') {
 					desc.inputLock.Lock()
-
-					//Reject empty line
-					if desc.inputBufferLen == 0 {
-						desc.inputLock.Unlock()
-						continue
-					}
 
 					//Too many lines
 					if desc.numLines > maxLines {
@@ -220,6 +216,8 @@ func handleDesc(conn net.Conn, tls bool) {
 					desc.inputLock.Unlock()
 					continue
 				}
+
+				lastByte = data
 
 				//No control chars, no delete, but allow valid UTF-8
 				if data >= 32 && data != 127 {
