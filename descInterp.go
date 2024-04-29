@@ -49,16 +49,37 @@ func (desc *descData) interp() {
 
 }
 
-type loginStates struct {
-	prompt   string
-	goPrompt func(desc *descData)
-	goDo     func(desc *descData, input string)
-	anyKey   bool
-}
+// Connection states
+const (
+	CON_DISCONNECTED = iota
 
-var loginStateList = [CON_MAX]*loginStates{
-	CON_DISCONNECTED: {},
-	CON_WELCOME:      {},
+	//Greet
+	CON_WELCOME
+	CON_LOGIN
+	CON_PASS
+	CON_NEWS
+
+	//New users
+	CON_NEW_LOGIN
+	CON_NEW_LOGIN_CONFIRM
+	CON_NEW_PASSWORD
+	CON_NEW_PASSWORD_CONFIRM
+	CON_RECONNECT_CONFIRM
+
+	//Playing
+	CON_PLAYING
+
+	/*
+	 * Don't delete this
+	 * MUST remain at the end
+	 * Auto-defines our array size
+	 * Never set state to this value
+	 */
+	CON_MAX
+)
+
+// These can be defined out of order, neato!
+var loginStateList = [CON_MAX]loginStates{
 	CON_LOGIN: {
 		prompt: "To create a new account type: NEW.\r\nLogin: ",
 		goDo:   gLogin,
@@ -72,12 +93,13 @@ var loginStateList = [CON_MAX]*loginStates{
 		goDo:     gNews,
 		anyKey:   true,
 	},
-	CON_NEW_LOGIN:            {},
-	CON_NEW_LOGIN_CONFIRM:    {},
-	CON_NEW_PASSWORD:         {},
-	CON_NEW_PASSWORD_CONFIRM: {},
-	CON_RECONNECT_CONFIRM:    {},
-	CON_PLAYING:              {},
+}
+
+type loginStates struct {
+	prompt   string
+	goPrompt func(desc *descData)
+	goDo     func(desc *descData, input string)
+	anyKey   bool
 }
 
 func gLogin(desc *descData, input string) {

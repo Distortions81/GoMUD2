@@ -28,25 +28,3 @@ var makeDirs = []string{
 	DATA_DIR + AREA_DIR,
 	DATA_DIR + TEXTS_DIR,
 	LOGS_DIR}
-
-// Connection state
-const (
-	CON_DISCONNECTED = iota
-
-	//Greet
-	CON_WELCOME
-	CON_LOGIN
-	CON_PASS
-	CON_NEWS
-
-	//New users
-	CON_NEW_LOGIN
-	CON_NEW_LOGIN_CONFIRM
-	CON_NEW_PASSWORD
-	CON_NEW_PASSWORD_CONFIRM
-	CON_RECONNECT_CONFIRM
-
-	//Playing
-	CON_PLAYING
-	CON_MAX
-)

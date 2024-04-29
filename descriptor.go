@@ -207,7 +207,10 @@ func handleDesc(conn net.Conn, tls bool) {
 					}
 					desc.lineBuffer = append(desc.lineBuffer, buf)
 					desc.numLines++
-					mudLog("#%v: %v: %v", desc.id, desc.cAddr, buf)
+
+					if desc.inputBufferLen != 0 {
+						mudLog("#%v: %v: %v", desc.id, desc.cAddr, buf)
+					}
 
 					//Reset input buffer
 					desc.inputBuffer = []byte{}
