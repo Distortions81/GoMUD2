@@ -4,7 +4,9 @@ func (desc *descData) interp() {
 	var input string
 
 	desc.inputLock.Lock()
+
 	if desc.numLines == 0 {
+		//Return if there are no lines
 		desc.inputLock.Unlock()
 		return
 	} else {
@@ -34,13 +36,15 @@ func (desc *descData) interp() {
 		return
 	}
 
-	//Login screen
 	if input == "" && !loginStateList[desc.state].anyKey {
+		//Ignore blank lines, unless set
 		return
 	} else {
+		//Otherwise, run the command
 		loginStateList[desc.state].goDo(desc, input)
 	}
 
+	//Show prompt
 	if loginStateList[desc.state].goPrompt != nil {
 		loginStateList[desc.state].goPrompt(desc)
 	} else {
