@@ -224,7 +224,6 @@ ZMUD: //Seems to work fine
 #15: Client: WILL SUP_GOAHEAD
 #15: Sent sub:  TERMINAL_TYPE 1
 #15: Client: WILL TERMINAL_TYPE
-
 #15: Client: DONT CHARSET
 #15: Client: SB TERMINAL_TYPE
 #15: GOT TERMINAL_TYPE: zmud
