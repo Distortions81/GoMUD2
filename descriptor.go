@@ -132,7 +132,6 @@ func handleDesc(conn net.Conn, tls bool) {
 				//Send our charset list
 				if option == TermOpt_CHARSET {
 					//If we don't get a reply, use this default
-					desc.telnet.charset = "ASCII"
 					desc.sendSub(charsetSend, TermOpt_CHARSET, SB_REQ)
 				}
 			}

@@ -69,7 +69,7 @@ var charsetList map[string]*charmap.Charmap = map[string]*charmap.Charmap{
 }
 
 func encodeFromUTF(cmap *charmap.Charmap, input string) []byte {
-	f := wrap.NewWriter(10240)
+	f := wrap.NewWriter(0)
 	f.PreserveSpace = true
 	f.Newline = []rune{'\n'}
 	f.KeepNewlines = true
@@ -81,8 +81,9 @@ func encodeFromUTF(cmap *charmap.Charmap, input string) []byte {
 }
 
 func encodeToUTF(cmap *charmap.Charmap, input []byte) string {
-	var d io.Reader = bytes.NewReader(input)          // each line as string
-	utf8 := transform.NewReader(d, cmap.NewDecoder()) // decode from cmap to UTF-8
+	var d io.Reader = bytes.NewReader(input) // each line as string
+	e := cmap.NewDecoder()
+	utf8 := transform.NewReader(d, e) // decode from cmap to UTF-8
 	decBytes, _ := io.ReadAll(utf8)
 	return string(decBytes)
 }
