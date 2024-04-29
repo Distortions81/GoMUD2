@@ -12,11 +12,18 @@ type termSettings struct {
 }
 
 var termTypeMap map[string]*termSettings = map[string]*termSettings{
-	"AMUDCLIENT":    {ANSI256: true, ANSI24: true, UTF: true},
-	"ATLANTIS":      {ANSI256: true, UTF: true},
-	"BEIP":          {ANSI256: true, UTF: true},
-	"KBTIN":         {ANSI256: true, UTF: true},
-	"MUDLET":        {ANSI256: true, UTF: true},
+	//UTF-8 clients
+	"AMUDCLIENT": {ANSI256: true, ANSI24: true, UTF: true},
+	"ATLANTIS":   {ANSI256: true, UTF: true},
+	"BEIP":       {ANSI256: true, UTF: true},
+	//ggmud normalizes accents away, always sends UTF-8, but auto-detects recieved?
+	//wont/dont sup_gohead & charset, terminal_type bug (reconnects as "hardcopy", "unknown"?),
+	"GGMUD": {ANSI256: false, UTF: true},
+	"KBTIN": {ANSI256: true, UTF: true},
+	//mudlet wont/dont sup_gohead, do charset
+	"MUDLET": {ANSI256: true, UTF: true},
+	//mudmagic Accepts but does not send UTF-8, and does not accept latin1
+	"MUDMAGIC":      {ANSI256: false, UTF: true},
 	"MUSHCLIENT":    {ANSI256: true, UTF: true},
 	"POTATO":        {ANSI256: true, UTF: true},
 	"POWWOW":        {ANSI256: true, UTF: true},
@@ -26,28 +33,26 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 
 	"BIOMUD":    {ANSI256: true},
 	"BLOWTORCH": {ANSI256: true},
-	"CMUD":      {ANSI256: true},
-	//ggmud normalizes accents away, always sends UTF-8, but auto-detects recieved?
-	"GGMUD":      {ANSI256: false, UTF: true},
+	//cmud dont charset, will sup_goahead
+	"CMUD":       {ANSI256: true},
 	"GMUD":       {ANSI256: false},
 	"GNOMEMUD":   {ANSI256: true},
 	"JAMOCHAMUD": {ANSI256: false},
+	//kild NO RESPONSE: will/do sup_gohead & charset
 	"KILDCLIENT": {ANSI256: true},
 	"LYNTIN":     {ANSI256: true},
 	"KMUDDY":     {ANSI256: false},
 	"MCL":        {ANSI256: true},
 	"MUBY":       {ANSI256: true},
-	//mudmagic Accepts but does not send UTF-8, and does not accept latin1
-	"MUDMAGIC":  {ANSI256: false, UTF: true},
-	"PORTAL":    {ANSI256: false},
-	"PUEBLO":    {ANSI256: false},
-	"UE":        {ANSI256: false},
-	"SIMPLEMU":  {ANSI256: false},
-	"SOILED":    {ANSI256: true},
-	"TINYFUGUE": {ANSI256: true},
-	"TREBUCHET": {ANSI256: false},
-	"WINTINNET": {ANSI256: true},
-	"ZMUD":      {ANSI256: false},
+	"PORTAL":     {ANSI256: false},
+	"PUEBLO":     {ANSI256: false},
+	"UE":         {ANSI256: false},
+	"SIMPLEMU":   {ANSI256: false},
+	"SOILED":     {ANSI256: true},
+	"TINYFUGUE":  {ANSI256: true},
+	"TREBUCHET":  {ANSI256: false},
+	"WINTINNET":  {ANSI256: true},
+	"ZMUD":       {ANSI256: false},
 }
 
 const (
