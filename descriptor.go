@@ -83,30 +83,25 @@ func handleDesc(conn net.Conn, tls bool) {
 
 				if desc.telnet.subType == TermOpt_TERMINAL_TYPE {
 					//Terminal info
-					desc.telnet.termType = string(desc.telnet.subData)
-					ttype := strings.TrimSpace(desc.telnet.termType)
-					ttype = strings.ToUpper(ttype)
-					match := termTypeMap[ttype]
+					desc.telnet.termType = telSnFilter(string(desc.telnet.subData))
+					match := termTypeMap[desc.telnet.termType]
 
-					errLog("#%v: GOT %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.termType)
+					errLog("#%v: GOT %v: %s", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.subData)
 					if match != nil {
 						desc.telnet.options = match
-						errLog("Found client match: %v", ttype)
+						errLog("Found client match: %v", desc.telnet.termType)
 					}
 					for n, item := range termTypeMap {
-						if strings.HasPrefix(ttype, n) {
+						if strings.HasPrefix(desc.telnet.termType, n) {
 							desc.telnet.options = item
-						} else if strings.HasSuffix(ttype, n) {
+						} else if strings.HasSuffix(desc.telnet.termType, n) {
 							desc.telnet.options = item
 						}
 					}
 
 					//Charset recieved
 				} else if desc.telnet.subType == TermOpt_CHARSET {
-					data := string(desc.telnet.subData)
-					data = strings.TrimSpace(data)
-					data = strings.ToUpper(data)
-					desc.telnet.charset = data
+					desc.telnet.charset = telSnFilter(string(desc.telnet.subData))
 					setCharset(desc)
 					errLog("#%v: GOT %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.charset)
 
@@ -167,10 +162,8 @@ func handleDesc(conn net.Conn, tls bool) {
 					desc.telnet.subLength = 0
 					return
 				}
-				// Filter to 7-bit
-				if (data >= '0' && data <= '9') ||
-					(data >= 'A' && data <= 'Z') ||
-					(data >= 'a' && data <= 'z') {
+
+				if data >= ' ' && data <= '~' {
 					desc.telnet.subData = append(desc.telnet.subData, data)
 				}
 			} else {

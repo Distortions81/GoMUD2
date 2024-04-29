@@ -22,7 +22,7 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	"KBTIN": {ANSI256: true, UTF: true},
 	//mudlet wont/dont sup_gohead, do charset
 	"MUDLET": {ANSI256: true, UTF: true},
-	//mudmagic Accepts but does not send UTF-8, and does not accept latin1
+	//mudmagic WONT TERMINAL_TYPE, Accepts but does not send UTF-8, and does not accept latin1
 	"MUDMAGIC":      {ANSI256: false, UTF: true},
 	"MUSHCLIENT":    {ANSI256: true, UTF: true},
 	"POTATO":        {ANSI256: true, UTF: true},
