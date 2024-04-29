@@ -24,10 +24,11 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	"MUDLET": {ANSI256: true, UTF: true},
 	//mudmagic WONT TERMINAL_TYPE, sup_goahead. DONT charset, supgohead.
 	//will accept but does not send UTF-8, does not accept latin1
-	"MUDMAGIC":      {ANSI256: false, UTF: true},
-	"MUSHCLIENT":    {ANSI256: true, UTF: true},
-	"POTATO":        {ANSI256: true, UTF: true},
-	"POWWOW":        {ANSI256: true, UTF: true},
+	"MUDMAGIC":   {ANSI256: false, UTF: true},
+	"MUSHCLIENT": {ANSI256: true, UTF: true},
+	"POTATO":     {ANSI256: true, UTF: true, SUPGA: true},
+	//POWWOW WINDOWS, LINUX: xterm-256color
+	"CYGWIN":        {ANSI256: true, CharMap: charmap.CodePage437},
 	"TINTIN":        {ANSI256: true, ANSI24: true, UTF: true},
 	"TORTILLA":      {ANSI256: true, UTF: true},
 	"XTERM256COLOR": {ANSI256: true, UTF: true},

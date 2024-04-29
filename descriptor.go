@@ -89,13 +89,22 @@ func handleDesc(conn net.Conn, tls bool) {
 					errLog("#%v: GOT %v: %s", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.subData)
 					if match != nil {
 						desc.telnet.options = match
+						if match.CharMap != nil {
+							desc.telnet.charMap = match.CharMap
+						}
 						errLog("Found client match: %v", desc.telnet.termType)
 					}
 					for n, item := range termTypeMap {
 						if strings.HasPrefix(desc.telnet.termType, n) {
 							desc.telnet.options = item
+							if item.CharMap != nil {
+								desc.telnet.charMap = item.CharMap
+							}
 						} else if strings.HasSuffix(desc.telnet.termType, n) {
 							desc.telnet.options = item
+							if item.CharMap != nil {
+								desc.telnet.charMap = item.CharMap
+							}
 						}
 					}
 
