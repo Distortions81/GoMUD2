@@ -29,13 +29,6 @@ var makeDirs = []string{
 	DATA_DIR + TEXTS_DIR,
 	LOGS_DIR}
 
-// Server states
-const (
-	SERVER_BOOTING = iota
-	SERVER_RUNNING
-	SERVER_SHUTDOWN
-)
-
 // Connection state
 const (
 	CON_DISCONNECTED = iota

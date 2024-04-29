@@ -1,6 +1,6 @@
 package main
 
-func sendTelnetCmds(desc *descData) {
+func (desc *descData) sendTelnetCmds() {
 	desc.sendCmd(TermCmd_DO, TermOpt_SUP_GOAHEAD)
 	desc.sendCmd(TermCmd_DO, TermOpt_TERMINAL_TYPE)
 	desc.sendCmd(TermCmd_WILL, TermOpt_CHARSET)

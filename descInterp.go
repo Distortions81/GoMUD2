@@ -28,11 +28,11 @@ func (desc *descData) interp() {
 	}
 
 	if desc.state == CON_WELCOME {
-		dWelcome(desc, input)
+		desc.dWelcome(input)
 	}
 }
 
-func dWelcome(desc *descData, input string) (fail bool) {
+func (desc *descData) dWelcome(input string) (fail bool) {
 	for _, d := range descList {
 		d.send(input)
 	}

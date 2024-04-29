@@ -54,7 +54,7 @@ func handleDesc(conn net.Conn, tls bool) {
 	mudLog("#%v: %v connected.%v", desc.id, desc.host, tlsStr)
 
 	//Start telnet negotiation
-	sendTelnetCmds(desc)
+	desc.sendTelnetCmds()
 
 	//Send greeting
 	err := desc.send(greetBuf)

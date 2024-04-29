@@ -10,7 +10,7 @@ import (
 	"golang.org/x/text/transform"
 )
 
-const charsetSend = ";UTF-8;ISO88591;WINDOWS1252;LATIN1;MCP437;CP437;IBM437;MCP850;MCP858;MACROMAN;MACINTOSH;ASCII"
+const charsetSend = ";UTF-8;ISO88591;WINDOWS1252;LATIN1;MCP437;CP437;IBM437;MCP850;MCP858;MACROMAN;MACINTOSH;ASCII;"
 
 // use all caps!
 var charsetList map[string]*charmap.Charmap = map[string]*charmap.Charmap{
