@@ -6,8 +6,6 @@ import (
 	"net"
 	"strings"
 	"time"
-
-	"golang.org/x/text/encoding/charmap"
 )
 
 const (
@@ -39,7 +37,7 @@ func handleDesc(conn net.Conn, tls bool) {
 		conn: conn, id: topID, connectTime: time.Now(),
 		reader: bufio.NewReader(conn), tls: tls,
 		host: hostStr, addr: ipStr, cAddr: cAddr,
-		state: CON_WELCOME, telnet: telnetData{charset: "cp437", charMap: charmap.CodePage437}}
+		state: CON_WELCOME, telnet: telnetData{charset: DEFAULT_CHARSET, charMap: DEFAULT_CHARMAP}}
 	descList = append(descList, desc)
 	descLock.Unlock()
 

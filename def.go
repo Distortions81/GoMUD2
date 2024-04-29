@@ -16,7 +16,11 @@ const (
 	LOGS_DIR   = "log/"
 
 	HELP_FILE = "helps.json"
+
+	DEFAULT_CHARSET = "LATIN1"
 )
+
+var DEFAULT_CHARMAP = charsetList[DEFAULT_CHARSET]
 
 var makeDirs = []string{
 	DATA_DIR,
