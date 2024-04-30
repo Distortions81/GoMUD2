@@ -9,10 +9,15 @@ import (
 	"golang.org/x/text/encoding/charmap"
 )
 
+type pLEVEL int
+
+const ()
+
 var (
 	topID    uint64
 	descList []*descData
 	descLock sync.Mutex
+	playList []*playerData
 )
 
 type descData struct {
@@ -36,15 +41,16 @@ type descData struct {
 	numLines   int
 	lineBuffer []string
 
-	account   *accountData
-	character *playerCharacter
+	account *accountData
+	player  *playerData
 
 	connectTime time.Time
 	valid       bool
 }
 
-type playerCharacter struct {
+type playerData struct {
 	name string
+	desc *descData
 }
 
 type telnetData struct {

@@ -302,11 +302,3 @@ func (desc *descData) send(format string, args ...any) error {
 func (desc *descData) sendln(format string, args ...any) error {
 	return desc.send(format+"\r\n", args...)
 }
-
-func (desc *descData) sendToPlaying(format string, args ...any) {
-	for _, player := range descList {
-		if player.state == CON_PLAYING {
-			player.send(format, args...)
-		}
-	}
-}

@@ -27,8 +27,8 @@ func (desc *descData) interp() {
 
 	//Playing, or disconnected
 	if desc.state == CON_PLAYING {
-		if input != "" {
-			handleCommands(desc, input)
+		if desc.player != nil {
+			desc.player.handleCommands(input)
 		}
 		return
 	} else if desc.state == CON_DISCONNECTED {
