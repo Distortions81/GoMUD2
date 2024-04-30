@@ -42,7 +42,7 @@ func handleDesc(conn net.Conn, tls bool) {
 		conn: conn, id: topID, connectTime: time.Now(),
 		reader: bufio.NewReader(conn), tls: tls,
 		host: hostStr, addr: ipStr, cAddr: cAddr,
-		state: CON_WELCOME, telnet: tnd}
+		state: CON_WELCOME, telnet: tnd, valid: true}
 	descList = append(descList, desc)
 	descLock.Unlock()
 
@@ -214,7 +214,10 @@ func (desc *descData) ingestLine() {
 	desc.numLines++
 
 	if desc.inputBufferLen != 0 {
-		mudLog("#%v: %v: %v", desc.id, desc.cAddr, buf)
+		//Log user input, but not login/pass
+		if !desc.telnet.hideInput {
+			mudLog("#%v: %v: %v", desc.id, desc.cAddr, buf)
+		}
 	}
 
 	//Reset input buffer

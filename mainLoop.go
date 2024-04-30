@@ -20,9 +20,10 @@ func mainLoop() {
 
 		descLock.Lock()
 		var newList []*descData
+
 		//Remove dead descriptors
 		for _, desc := range descList {
-			if desc.state == CON_DISCONNECTED {
+			if desc.state == CON_DISCONNECTED || !desc.valid {
 				errLog("Removed #%v", desc.id)
 				continue
 			}

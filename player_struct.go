@@ -36,6 +36,7 @@ type descData struct {
 	account *accountData
 
 	connectTime time.Time
+	valid       bool
 }
 
 type telnetData struct {
@@ -48,13 +49,16 @@ type telnetData struct {
 	subMode   bool
 	subData   []byte
 	subLength int
+
+	hideInput bool
 }
 
 type accountData struct {
 	id uint64
 
 	login    string
-	passHash string
+	tempPass string
+	passHash []byte
 
 	creationDate time.Time
 	modDate      time.Time
