@@ -6,13 +6,14 @@ const (
 	LICENSE = "goMUD2 " + VERSION + "\n" +
 		"Copyright 2024 Carl Frank Otto III (carlotto81@gmail.com). All rights reserved.\n"
 
-		//Directories and files
+		//Directories
 	DATA_DIR    = "data/"
 	ACCOUNT_DIR = "accounts/"
 	AREA_DIR    = "areas/"
 	TEXTS_DIR   = "texts/"
 	LOGS_DIR    = "log/"
 
+	//Files
 	HELP_FILE = "helps.json"
 
 	DEFAULT_CHARSET = "LATIN1"
