@@ -218,6 +218,7 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 		var err error
 		desc.account.passHash, err = bcrypt.GenerateFromPassword([]byte(input), PASSPHRASE_HASH_COST)
 		desc.sendln("Okay, passwords match!")
+		desc.account.tempPass = ""
 
 		if err != nil {
 			errLog("ERROR: #%v password hashing failed!!!: %v", desc.id, err.Error())
