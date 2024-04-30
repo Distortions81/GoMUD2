@@ -23,7 +23,7 @@ func mainLoop() {
 		//Remove dead descriptors
 		for _, desc := range descList {
 			if desc.state == CON_DISCONNECTED {
-				errLog("Removed %v", desc.id)
+				errLog("Removed #%v", desc.id)
 				continue
 			}
 			newList = append(newList, desc)

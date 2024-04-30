@@ -172,7 +172,7 @@ func (desc *descData) getTermType() {
 
 func (desc *descData) getCharset() {
 	desc.telnet.charset = telSnFilter(string(desc.telnet.subData))
-	setCharset(desc)
+	desc.setCharset()
 	errLog("#%v: GOT %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.charset)
 
 	desc.sendSub(desc.telnet.charset, TermOpt_CHARSET, SB_ACCEPTED)

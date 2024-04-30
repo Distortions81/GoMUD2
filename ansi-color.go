@@ -171,7 +171,7 @@ func StripColorCodes(in string) string {
 						output = input[:i] + "\r\n" + input[i+2:]
 						input = output
 						continue
-					} else if next >= '!' && next <= 'z' {
+					} else {
 						output = input[:i] + input[i+2:]
 						input = output
 					}

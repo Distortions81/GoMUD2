@@ -35,31 +35,24 @@ func startLogs() {
 
 // Log errors, sprintf format
 func errLog(format string, args ...any) {
-	if args != nil {
-		buf := fmt.Sprintf(format, args...)
-		if elog != nil {
-			elog.WriteString(buf + "\n")
-		}
-		fmt.Println(buf)
-	} else {
-		if elog != nil {
-			elog.WriteString(format + "\n")
-		}
-		fmt.Println(format)
-	}
+	doLog(elog, format, args...)
 }
 
 // Log info, sprintf format
 func mudLog(format string, args ...any) {
+	doLog(mlog, format, args...)
+}
+
+func doLog(dest *os.File, format string, args ...any) {
 	if args != nil {
 		buf := fmt.Sprintf(format, args...)
-		if mlog != nil {
-			mlog.WriteString(buf + "\n")
+		if dest != nil {
+			dest.WriteString(buf + "\n")
 		}
 		fmt.Println(buf)
 	} else {
-		if mlog != nil {
-			mlog.WriteString(format + "\n")
+		if dest != nil {
+			dest.WriteString(format + "\n")
 		}
 		fmt.Println(format)
 	}

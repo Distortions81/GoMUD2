@@ -10,7 +10,7 @@ import (
 	"golang.org/x/text/transform"
 )
 
-const charsetSend = ";UTF-8;ISO88591;WINDOWS1252;LATIN1;MCP437;CP437;IBM437;MCP850;MCP858;MACROMAN;MACINTOSH;ASCII;"
+const charsetSend = ";UTF-8;ISO88591;WINDOWS1252;LATIN1;MCP437;CP437;IBM437;MCP850;MCP858;ASCII;"
 
 // use all caps!
 var charsetList map[string]*charmap.Charmap = map[string]*charmap.Charmap{
@@ -88,7 +88,7 @@ func encodeToUTF(cmap *charmap.Charmap, input []byte) string {
 	return string(decBytes)
 }
 
-func setCharset(desc *descData) {
+func (desc *descData) setCharset() {
 	if strings.EqualFold(desc.telnet.charset, "UTF8") {
 		desc.telnet.options.UTF = true
 	} else {

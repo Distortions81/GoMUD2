@@ -130,7 +130,3 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 	desc.sendln("Okay, type again to confirm")
 	desc.state = CON_NEWS
 }
-
-func handleCommands(desc *descData, input string) {
-	desc.sendln("Echo: %v", input)
-}

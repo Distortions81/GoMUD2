@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"golang.org/x/text/encoding/charmap"
 )
@@ -9,6 +10,26 @@ import (
 type termSettings struct {
 	ANSI256, ANSI24, UTF, SUPGA bool
 	CharMap                     *charmap.Charmap
+}
+
+func txtTo7bit(data string) string {
+	var tmp string
+	// Filter to 7-bit
+	for _, data := range data {
+		if (data >= '0' && data <= '9') ||
+			(data >= 'A' && data <= 'Z') ||
+			(data >= 'a' && data <= 'z') {
+			tmp = tmp + string(data)
+		}
+	}
+
+	return tmp
+}
+
+func telSnFilter(data string) string {
+	ttype := txtTo7bit(data)
+	ttype = strings.ToUpper(ttype)
+	return ttype
 }
 
 var termTypeMap map[string]*termSettings = map[string]*termSettings{
