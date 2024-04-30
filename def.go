@@ -4,7 +4,7 @@ const (
 	VERSION = "v0.0.2a 04-30-2024 1250"
 
 	LICENSE = "goMUD2 " + VERSION + "\n" +
-		"Copyright 2024 Carl Frank Otto III (carlotto81@gmail.com), All rights reserved.\n"
+		"Copyright 2024 Carl Frank Otto III (carlotto81@gmail.com). All rights reserved.\n"
 
 		//Directories and files
 	DATA_DIR    = "data/"
