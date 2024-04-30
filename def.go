@@ -1,12 +1,10 @@
 package main
 
 const (
-	VERSION = "v0.0.1a 04-25-2024 0402p"
+	VERSION = "v0.0.2a 04-30-2024 1250"
 
 	LICENSE = "goMUD2 " + VERSION + "\n" +
-		"COPYRIGHT 2024 Carl Frank Otto III (carlotto81@gmail.com)\n" +
-		"License: Mozilla Public License 2.0\n" +
-		"This information must remain unmodified, fully intact and shown to end-users.\n"
+		"Copyright 2024 Carl Frank Otto III (carlotto81@gmail.com), All rights reserved.\n"
 
 		//Directories and files
 	DATA_DIR    = "data/"
