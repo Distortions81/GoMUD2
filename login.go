@@ -1,7 +1,8 @@
 package main
 
 const (
-	PASSWORD_HASH_COST     = 10
+	MAX_PASSPHRASE_LENGTH  = 256
+	PASSPHRASE_HASH_COST   = 10
 	MAX_PLAYER_NAME_LENGTH = 32
 	MIN_PLAYER_NAME_LENGTH = 2
 )
@@ -19,8 +20,8 @@ const (
 	//New users
 	CON_NEW_LOGIN
 	CON_NEW_LOGIN_CONFIRM
-	CON_NEW_PASSWORD
-	CON_NEW_PASSWORD_CONFIRM
+	CON_NEW_PASSPHRASE
+	CON_NEW_PASSPHRASE_CONFIRM
 	CON_RECONNECT_CONFIRM
 
 	//Playing
@@ -61,20 +62,20 @@ var loginStateList = [CON_MAX]loginStates{
 
 	//New login
 	CON_NEW_LOGIN: {
-		prompt: "New login (not character name): ",
+		prompt: "(not character name)\r\nNew login: ",
 		goDo:   gNewLogin,
 	},
 	CON_NEW_LOGIN_CONFIRM: {
-		prompt: "Type again to condirm: ",
+		prompt: "Type again to confirm: ",
 		goDo:   gNewLoginConfirm,
 	},
-	CON_NEW_PASSWORD: {
+	CON_NEW_PASSPHRASE: {
 		prompt: "Passphrase",
-		goDo:   gNewPassword,
+		goDo:   gNewPassphrase,
 	},
-	CON_NEW_PASSWORD_CONFIRM: {
+	CON_NEW_PASSPHRASE_CONFIRM: {
 		prompt: "Type again to confirm: ",
-		goDo:   gNewPasswordConfirm,
+		goDo:   gNewPassphraseConfirm,
 	},
 }
 
@@ -91,11 +92,11 @@ func gLogin(desc *descData, input string) {
 }
 
 func gPass(desc *descData, input string) {
-	if input == "password" {
+	if input == "passphrase" {
 		desc.send("Pass okay.")
 		desc.state = CON_NEWS
 	} else {
-		desc.send("Incorrect password.")
+		desc.send("Incorrect passphrase.")
 	}
 }
 
@@ -117,15 +118,15 @@ func gNewLogin(desc *descData, input string) {
 
 func gNewLoginConfirm(desc *descData, input string) {
 	desc.sendln("Okay, type again to confirm")
-	desc.state = CON_NEW_PASSWORD
+	desc.state = CON_NEW_PASSPHRASE
 }
 
-func gNewPassword(desc *descData, input string) {
+func gNewPassphrase(desc *descData, input string) {
 	desc.sendln("Passphrase")
-	desc.state = CON_NEW_PASSWORD_CONFIRM
+	desc.state = CON_NEW_PASSPHRASE_CONFIRM
 }
 
-func gNewPasswordConfirm(desc *descData, input string) {
+func gNewPassphraseConfirm(desc *descData, input string) {
 	desc.sendln("Okay, type again to confirm")
 	desc.state = CON_NEWS
 }
