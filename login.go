@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/martinhoefling/goxkcdpwgen/xkcdpwgen"
@@ -11,13 +13,17 @@ import (
 const (
 	MAX_PASSPHRASE_LENGTH = 72
 	MIN_PASSPHRASE_LENGTH = 8
-	PASSPHRASE_HASH_COST  = 14
+	PASSPHRASE_HASH_COST  = 10
 	MIN_PASS_ENTROPY_BITS = 52
+	MAX_CHAR_SLOTS        = 15
 
 	NUM_PASS_SUGGEST = 10
 
 	MAX_LOGIN_LEN = 48
 	MIN_LOGIN_LEN = 3
+
+	MAX_NAME_LEN = 30
+	MIN_NAME_LEN = 2
 )
 
 // Connection states
@@ -37,6 +43,10 @@ const (
 	CON_NEW_PASSPHRASE_CONFIRM
 	CON_RECONNECT_CONFIRM
 
+	CON_CHAR_LIST
+	CON_CHAR_CREATE
+	CON_CHAR_CREATE_CONFIRM
+
 	//Playing
 	CON_PLAYING
 
@@ -55,55 +65,139 @@ type loginStates struct {
 	goDo     func(desc *descData, input string)
 	anyKey   bool
 	hideInfo bool
-	hideLog  bool
 }
 
 // These can be defined out of order, neato!
 var loginStateList = [CON_MAX]loginStates{
 	//Normal login
 	CON_LOGIN: {
-		prompt:  "To create a new account type: NEW.\r\nLogin: ",
-		goDo:    gLogin,
-		hideLog: true,
+		prompt: "To create a new account type: NEW.\r\nLogin: ",
+		goDo:   gLogin,
 	},
 	CON_PASS: {
 		prompt:   "Passphrase: ",
 		goDo:     gPass,
 		hideInfo: true,
-		hideLog:  true,
 	},
 	CON_NEWS: {
 		goPrompt: gShowNews,
 		goDo:     gNews,
 		anyKey:   true,
-		hideLog:  true,
 	},
 
 	//New login
 	CON_NEW_LOGIN: {
-		prompt:  "(LOGIN NAME -- NOT character name. Up to 48 chars long. Spaces allowed.)\r\nNew login: ",
-		goDo:    gNewLogin,
-		hideLog: true,
+		prompt: "(LOGIN NAME -- NOT character name. Up to 48 chars long. Spaces allowed.)\r\nNEW login: ",
+		goDo:   gNewLogin,
 	},
 	CON_NEW_LOGIN_CONFIRM: {
-		prompt:  "(leave blank to choose a new login).\r\nType login again to confirm: ",
-		goDo:    gNewLoginConfirm,
-		anyKey:  true,
-		hideLog: true,
+		prompt: "(leave blank to choose a new login).\r\nConfirm login: ",
+		goDo:   gNewLoginConfirm,
+		anyKey: true,
 	},
 	CON_NEW_PASSPHRASE: {
 		goPrompt: gNewPassPrompt,
 		goDo:     gNewPassphrase,
 		hideInfo: true,
-		hideLog:  true,
 	},
 	CON_NEW_PASSPHRASE_CONFIRM: {
-		prompt:   "(leave blank to choose a new passphrase).\r\nType passphrase again to confirm: ",
+		prompt:   "(leave blank to choose a new passphrase).\r\nConfirm passphrase: ",
 		goDo:     gNewPassphraseConfirm,
 		anyKey:   true,
 		hideInfo: true,
-		hideLog:  true,
 	},
+
+	//Character menu
+	CON_CHAR_LIST: {
+		goPrompt: gCharList,
+		goDo:     gCharSelect,
+	},
+	CON_CHAR_CREATE: {
+		prompt: "Character name:",
+		goDo:   gCharNewName,
+	},
+	CON_CHAR_CREATE_CONFIRM: {
+		prompt: "Confirm character name:",
+		goDo:   gCharConfirmName,
+	},
+
+	CON_PLAYING: {
+		prompt: "Type to chat.",
+	},
+}
+
+func gCharList(desc *descData) {
+	numChars := len(desc.account.characters)
+
+	if numChars <= 0 {
+		desc.send("You don't have any characters right now.\r\nType NEW to create one:")
+		return
+	}
+	var buf string
+	for i, item := range desc.account.characters {
+		buf = buf + fmt.Sprintf("#%v: %v\r\n", i, item)
+	}
+	if numChars < MAX_CHAR_SLOTS {
+		buf = buf + "Type NEW to create a new character.\r\n"
+	}
+	buf = buf + "Select a player by number or name: "
+	desc.send(buf)
+}
+
+func gCharSelect(desc *descData, input string) {
+	numChars := len(desc.account.characters)
+
+	if strings.EqualFold(input, "new") {
+		if numChars < MAX_CHAR_SLOTS {
+			desc.send("Okay, creating new character!")
+			desc.state = CON_CHAR_CREATE
+			return
+		} else {
+			desc.send("Sorry, you have hit the limit.")
+			return
+		}
+	} else {
+		num, err := strconv.Atoi(input)
+		if err != nil {
+			for _, item := range desc.account.characters {
+				if strings.EqualFold(item, input) {
+					desc.send("DEBUG: Would have loaded: %v", input)
+					return
+				}
+			}
+			desc.send("Didn't find a character by the name: %v", input)
+		} else {
+			if num > 0 && num < numChars {
+				selectedChar := desc.account.characters[num]
+				desc.send("DEBUG: Would have loaded %v", selectedChar)
+			} else {
+				desc.send("That player doesn't seem to exist.")
+			}
+		}
+	}
+}
+
+func gCharNewName(desc *descData, input string) {
+	newNameLen := len(input)
+	if newNameLen < MIN_NAME_LEN && newNameLen > MAX_NAME_LEN {
+		desc.send("Sorry, the name must be more than %v and less than %v. Try again!", MIN_NAME_LEN, MAX_NAME_LEN)
+		return
+	}
+
+	desc.account.tempCharName = input
+	desc.state = CON_CHAR_CREATE_CONFIRM
+}
+
+func gCharConfirmName(desc *descData, input string) {
+	if input == desc.account.tempCharName {
+		desc.sendToPlaying("Welcome %v to the lands!", desc.account.tempCharName)
+		desc.send("Okay, you will be called %v.", input)
+		desc.account.characters = append(desc.account.characters, desc.account.tempCharName)
+		desc.character = &playerCharacter{name: input}
+		desc.state = CON_NEWS
+	} else {
+		desc.send("Names did not match. Try again, or blank line to choose a new name.")
+	}
 }
 
 // Normal login
@@ -127,7 +221,7 @@ func gLogin(desc *descData, input string) {
 func gPass(desc *descData, input string) {
 	if input == "passphrase" {
 		desc.send("Pass okay.")
-		desc.state = CON_NEWS
+		desc.state = CON_CHAR_LIST
 	} else {
 		desc.send("Incorrect passphrase.")
 		errLog("#%v Someone tried a invalid password!", desc.id)
@@ -230,7 +324,7 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 		desc.sendln("Passwords did not match! Try again.")
 		return
 	}
-	desc.state = CON_NEWS
+	desc.state = CON_CHAR_LIST
 }
 
 func (desc *descData) suggestPasswords() {
