@@ -29,6 +29,7 @@ type descData struct {
 	inputLock      sync.Mutex
 	inputBufferLen int
 	inputBuffer    []byte
+	lastChat       string
 
 	numLines   int
 	lineBuffer []string
