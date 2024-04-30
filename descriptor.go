@@ -215,7 +215,7 @@ func (desc *descData) ingestLine() {
 
 	if desc.inputBufferLen != 0 {
 		//Log user input, but not login/pass
-		if !desc.telnet.hideInput {
+		if desc.state == CON_PLAYING {
 			mudLog("#%v: %v: %v", desc.id, desc.cAddr, buf)
 		}
 	}

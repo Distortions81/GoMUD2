@@ -50,7 +50,7 @@ type telnetData struct {
 	subData   []byte
 	subLength int
 
-	hideInput bool
+	hideEcho bool
 }
 
 type accountData struct {

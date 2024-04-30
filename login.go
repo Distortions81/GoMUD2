@@ -11,7 +11,7 @@ import (
 const (
 	MAX_PASSPHRASE_LENGTH = 72
 	MIN_PASSPHRASE_LENGTH = 8
-	PASSPHRASE_HASH_COST  = 15
+	PASSPHRASE_HASH_COST  = 14
 	MIN_PASS_ENTROPY_BITS = 52
 
 	NUM_PASS_SUGGEST = 10
@@ -55,46 +55,54 @@ type loginStates struct {
 	goDo     func(desc *descData, input string)
 	anyKey   bool
 	hideInfo bool
+	hideLog  bool
 }
 
 // These can be defined out of order, neato!
 var loginStateList = [CON_MAX]loginStates{
 	//Normal login
 	CON_LOGIN: {
-		prompt: "To create a new account type: NEW.\r\nLogin: ",
-		goDo:   gLogin,
+		prompt:  "To create a new account type: NEW.\r\nLogin: ",
+		goDo:    gLogin,
+		hideLog: true,
 	},
 	CON_PASS: {
 		prompt:   "Passphrase: ",
 		goDo:     gPass,
 		hideInfo: true,
+		hideLog:  true,
 	},
 	CON_NEWS: {
 		goPrompt: gShowNews,
 		goDo:     gNews,
 		anyKey:   true,
+		hideLog:  true,
 	},
 
 	//New login
 	CON_NEW_LOGIN: {
-		prompt: "(LOGIN NAME -- NOT character name. Up to 48 chars long. Spaces allowed.)\r\nNew login: ",
-		goDo:   gNewLogin,
+		prompt:  "(LOGIN NAME -- NOT character name. Up to 48 chars long. Spaces allowed.)\r\nNew login: ",
+		goDo:    gNewLogin,
+		hideLog: true,
 	},
 	CON_NEW_LOGIN_CONFIRM: {
-		prompt: "(leave blank to choose a new login).\r\nType login again to confirm: ",
-		goDo:   gNewLoginConfirm,
-		anyKey: true,
+		prompt:  "(leave blank to choose a new login).\r\nType login again to confirm: ",
+		goDo:    gNewLoginConfirm,
+		anyKey:  true,
+		hideLog: true,
 	},
 	CON_NEW_PASSPHRASE: {
 		goPrompt: gNewPassPrompt,
 		goDo:     gNewPassphrase,
 		hideInfo: true,
+		hideLog:  true,
 	},
 	CON_NEW_PASSPHRASE_CONFIRM: {
 		prompt:   "(leave blank to choose a new passphrase).\r\nType passphrase again to confirm: ",
 		goDo:     gNewPassphraseConfirm,
 		anyKey:   true,
 		hideInfo: true,
+		hideLog:  true,
 	},
 }
 
@@ -135,7 +143,7 @@ func gNews(desc *descData, input string) {
 }
 
 func gShowNews(desc *descData) {
-	desc.send(textFiles["news"] + "\r\n[Press return to enter the world]")
+	desc.send("\r\n" + textFiles["news"] + "\r\n[Press return to enter the world]")
 }
 
 // New login
@@ -234,7 +242,7 @@ func (desc *descData) suggestPasswords() {
 		passSuggestions = append(passSuggestions, sugPass)
 	}
 
-	buf := "Suggested passphrases:\n\r\n\r"
+	buf := "\r\nSuggested passphrases:\n\r\n\r"
 	for _, item := range passSuggestions {
 		buf = buf + item + "\n\r"
 	}
@@ -243,5 +251,5 @@ func (desc *descData) suggestPasswords() {
 
 func gNewPassPrompt(desc *descData) {
 	desc.suggestPasswords()
-	desc.send("(minumum 8 characters long)\r\nPassphrase: ")
+	desc.send("\r\n(minumum 8 characters long)\r\nPassphrase: ")
 }
