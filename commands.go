@@ -1,5 +1,5 @@
 package main
 
 func handleCommands(desc *descData, input string) {
-	desc.sendln("Echo: %v", input)
+	desc.sendToPlaying("%v: %v", desc.character.name, input)
 }
