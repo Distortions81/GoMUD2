@@ -42,6 +42,7 @@ func (desc *descData) inputFull() {
 	buf := "Input buffer full! Closing connection..."
 	desc.sendln("\r\n%v", buf)
 	mudLog("#%v: ERROR: %v: %v", desc.id, desc.cAddr, buf)
+	desc.close()
 }
 
 func (desc *descData) readByte() (byte, error) {

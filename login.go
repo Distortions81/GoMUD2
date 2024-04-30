@@ -221,6 +221,7 @@ func gLogin(desc *descData, input string) {
 func gPass(desc *descData, input string) {
 	if input == "passphrase" {
 		desc.send("Pass okay.")
+		desc.account = &accountData{login: input}
 		desc.state = CON_CHAR_LIST
 	} else {
 		desc.send("Incorrect passphrase.")
