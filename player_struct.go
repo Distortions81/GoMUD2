@@ -47,3 +47,18 @@ type telnetData struct {
 	subData   []byte
 	subLength int
 }
+
+type accountData struct {
+	id           uint64
+	creationDate time.Time
+	modDate      time.Time
+	characters   []string
+	banned       banData
+}
+
+type banData struct {
+	reason  string
+	date    time.Time
+	banBy   string
+	revoked bool
+}
