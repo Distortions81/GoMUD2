@@ -33,6 +33,8 @@ type descData struct {
 	numLines   int
 	lineBuffer []string
 
+	account *accountData
+
 	connectTime time.Time
 }
 
@@ -49,7 +51,11 @@ type telnetData struct {
 }
 
 type accountData struct {
-	id           uint64
+	id uint64
+
+	login    string
+	passHash string
+
 	creationDate time.Time
 	modDate      time.Time
 	characters   []string
