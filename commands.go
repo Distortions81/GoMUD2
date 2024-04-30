@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 )
@@ -12,10 +13,11 @@ type commandData struct {
 	level pLEVEL
 	hint  string
 	goDo  func(play *playerData, data string)
+	args  []string
 }
 
 var commandList = map[string]*commandData{
-	"say":    {hint: "<message here>", goDo: cmdChat},
+	"say":    {hint: "Sends a message", goDo: cmdChat, args: []string{"message"}},
 	"quit":   {hint: "quits and disconnects.", goDo: cmdQuit},
 	"logout": {hint: "quits back to character selection.", goDo: cmdLogout},
 }
@@ -26,30 +28,23 @@ func init() {
 	cmdList = []string{}
 
 	for iName, cmd := range commandList {
-		cmdList = append(cmdList, iName+" "+cmd.hint)
+		tName := fmt.Sprintf("%15v", iName)
+		var buf string
+		if cmd.args == nil {
+			buf = tName + " -- " + cmd.hint
+		} else {
+			buf = tName + " -- " + cmd.hint + " : " + iName + " "
+			for a, aName := range cmd.args {
+				if a > 0 {
+					buf = buf + " "
+				}
+				buf = buf + fmt.Sprintf("<%v>", aName)
+			}
+		}
+		cmdList = append(cmdList, buf)
 	}
 
 	sort.Strings(cmdList)
-}
-
-func (play *playerData) handleCommands(input string) {
-	cmd, args, found := strings.Cut(input, " ")
-	if !found {
-		play.cmdInvalid()
-		return
-	}
-	cmd = strings.ToLower(cmd)
-	command := commandList[cmd]
-
-	if command != nil {
-		command.goDo(play, args)
-	} else {
-		play.cmdInvalid()
-	}
-}
-
-func (play *playerData) cmdInvalid() {
-	play.desc.send("Not a valid command. Commands:\r\n%v", strings.Join(cmdList, "\r\n"))
 }
 
 func cmdChat(play *playerData, input string) {
@@ -75,19 +70,4 @@ func cmdQuit(play *playerData, input string) {
 
 func cmdLogout(play *playerData, input string) {
 
-}
-
-func (play *playerData) send(format string, args ...any) {
-	if play.desc == nil {
-		return
-	}
-	play.desc.send(format, args...)
-}
-
-func (play *playerData) sendToPlaying(format string, args ...any) {
-	for _, target := range descList {
-		if target.state == CON_PLAYING {
-			target.send(format, args...)
-		}
-	}
 }

@@ -120,7 +120,7 @@ var loginStateList = [CON_MAX]loginStates{
 	},
 
 	CON_PLAYING: {
-		prompt: "How to chat: say message here",
+		goPrompt: cmdInvalid,
 	},
 }
 
