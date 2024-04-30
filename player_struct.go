@@ -51,6 +51,8 @@ type descData struct {
 type playerData struct {
 	name string
 	desc *descData
+
+	valid bool
 }
 
 type telnetData struct {

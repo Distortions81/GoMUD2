@@ -17,7 +17,7 @@ type commandData struct {
 }
 
 var commandList = map[string]*commandData{
-	"say":    {hint: "Sends a message", goDo: cmdChat, args: []string{"message"}},
+	"say":    {hint: "sends a message", goDo: cmdChat, args: []string{"message"}},
 	"quit":   {hint: "quits and disconnects.", goDo: cmdQuit},
 	"logout": {hint: "quits back to character selection.", goDo: cmdLogout},
 }
@@ -65,9 +65,9 @@ func cmdChat(play *playerData, input string) {
 }
 
 func cmdQuit(play *playerData, input string) {
-
+	play.quit(true)
 }
 
 func cmdLogout(play *playerData, input string) {
-
+	play.quit(false)
 }

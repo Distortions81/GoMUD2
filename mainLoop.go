@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -19,18 +20,29 @@ func mainLoop() {
 		start := time.Now()
 
 		descLock.Lock()
-		var newList []*descData
+		//Remove dead players
+		var newPlayList []*playerData
+		for _, target := range playList {
+			if !target.valid {
+				errLog("Removed player %v", target.name)
+				continue
+			}
+			newPlayList = append(newPlayList, target)
+		}
+		playList = newPlayList
 
 		//Remove dead descriptors
+		var newDescList []*descData
 		for _, desc := range descList {
 			if desc.state == CON_DISCONNECTED || !desc.valid {
 				errLog("Removed #%v", desc.id)
 				continue
 			}
-			newList = append(newList, desc)
+			newDescList = append(newDescList, desc)
 		}
-		descList = newList
+		descList = newDescList
 
+		//Interpret all
 		for _, desc := range descList {
 			desc.interp()
 		}
@@ -39,6 +51,9 @@ func mainLoop() {
 		//Sleep for remaining round time
 		since := roundTime - time.Since(start)
 		time.Sleep(since)
-		//fmt.Println(since.String())
+
+		if since.Nanoseconds() < int64(roundTime)-int64(time.Millisecond) {
+			fmt.Println(since.Round(time.Millisecond).String())
+		}
 	}
 }
