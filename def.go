@@ -9,11 +9,11 @@ const (
 		"This information must remain unmodified, fully intact and shown to end-users.\n"
 
 		//Directories and files
-	DATA_DIR   = "data/"
-	PLAYER_DIR = "players/"
-	AREA_DIR   = "areas/"
-	TEXTS_DIR  = "texts/"
-	LOGS_DIR   = "log/"
+	DATA_DIR    = "data/"
+	ACCOUNT_DIR = "accounts/"
+	AREA_DIR    = "areas/"
+	TEXTS_DIR   = "texts/"
+	LOGS_DIR    = "log/"
 
 	HELP_FILE = "helps.json"
 
@@ -24,7 +24,7 @@ var DEFAULT_CHARMAP = charsetList[DEFAULT_CHARSET]
 
 var makeDirs = []string{
 	DATA_DIR,
-	DATA_DIR + PLAYER_DIR,
+	DATA_DIR + ACCOUNT_DIR,
 	DATA_DIR + AREA_DIR,
 	DATA_DIR + TEXTS_DIR,
 	LOGS_DIR}
