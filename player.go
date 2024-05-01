@@ -42,5 +42,10 @@ func (play *playerData) quit(doClose bool) {
 	} else {
 		play.desc.state = CON_CHAR_LIST
 		gCharList(play.desc)
+
+		play.desc.inputLock.Lock()
+		play.desc.lineBuffer = []string{}
+		play.desc.numLines = 0
+		play.desc.inputLock.Unlock()
 	}
 }
