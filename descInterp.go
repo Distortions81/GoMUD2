@@ -43,7 +43,10 @@ func (desc *descData) interp() {
 		//Ignore blank lines, unless set
 		return
 	}
-	loginStateList[desc.state].goDo(desc, input)
+
+	if loginStateList[desc.state].goDo != nil {
+		loginStateList[desc.state].goDo(desc, input)
+	}
 
 	//Show prompt from next state
 	if loginStateList[desc.state].goPrompt != nil {
