@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -52,8 +51,8 @@ func mainLoop() {
 		since := roundTime - time.Since(start)
 		time.Sleep(since)
 
-		if since.Nanoseconds() < int64(roundTime)-int64(time.Millisecond) {
-			fmt.Println(since.Round(time.Millisecond).String())
+		if since.Milliseconds() <= 25 {
+			errLog("90% load! Round took %v", since.Round(time.Millisecond).String())
 		}
 	}
 }
