@@ -75,6 +75,9 @@ func saveFile(filePath string, data []byte) error {
 }
 
 func readFile(filePath string) ([]byte, error) {
+	saveFileLock.Lock()
+	defer saveFileLock.Unlock()
+
 	data, err := os.ReadFile(filePath)
 	if err != nil {
 		errLog("Unable to load file: %v", filePath)
