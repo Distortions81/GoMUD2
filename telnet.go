@@ -10,7 +10,7 @@ func (desc *descData) sendTelnetCmds() {
 func (desc *descData) sendCmd(command, option byte) error {
 	dlen, err := desc.conn.Write([]byte{TermCmd_IAC, command, option})
 	if err != nil || dlen != 3 {
-		mudLog("#%v: %v: command send failed (connection lost)", desc.id, desc.cAddr)
+		errLog("#%v: %v: command send failed (connection lost)", desc.id, desc.cAddr)
 		return err
 	}
 
@@ -27,7 +27,7 @@ func (desc *descData) sendSub(data string, args ...byte) error {
 	buf = append(buf, []byte{TermCmd_IAC, TermCmd_SE}...)
 	dlen, err := desc.conn.Write(buf)
 	if err != nil || dlen != len(buf) {
-		mudLog("#%v: %v: sub send failed (connection lost)", desc.id, desc.cAddr)
+		errLog("#%v: %v: sub send failed (connection lost)", desc.id, desc.cAddr)
 		return err
 	}
 
@@ -48,7 +48,7 @@ func (desc *descData) inputFull() {
 func (desc *descData) readByte() (byte, error) {
 	data, err := desc.reader.ReadByte()
 	if err != nil {
-		mudLog("#%v: %v: Connection closed by server.", desc.id, desc.cAddr)
+		errLog("#%v: %v: Connection closed by server.", desc.id, desc.cAddr)
 		return 0, err
 	}
 	return data, nil

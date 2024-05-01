@@ -76,7 +76,7 @@ func waitNewConnectionSSL() {
 
 			conn, err := listenerTLS.Accept()
 			if err != nil {
-				mudLog("Listener error: %v -- exiting loop", err)
+				errLog("Listener error: %v -- exiting loop", err)
 				break
 			}
 
@@ -94,7 +94,7 @@ func waitNewConnection() {
 
 		conn, err := listener.Accept()
 		if err != nil {
-			mudLog("Listener error: %v -- exiting loop", err)
+			errLog("Listener error: %v -- exiting loop", err)
 			break
 		}
 

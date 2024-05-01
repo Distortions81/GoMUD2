@@ -50,7 +50,7 @@ func handleDesc(conn net.Conn, tls bool) {
 	if tls {
 		tlsStr = " (TLS)"
 	}
-	mudLog("#%v: %v connected.%v", desc.id, desc.host, tlsStr)
+	errLog("#%v: %v connected.%v", desc.id, desc.host, tlsStr)
 
 	//Start telnet negotiation
 	desc.sendTelnetCmds()
@@ -288,7 +288,7 @@ func (desc *descData) send(format string, args ...any) error {
 	dlen := len(outBytes)
 	l, err := desc.conn.Write(outBytes)
 	if err != nil || dlen != l {
-		mudLog("#%v: %v: write failed (connection lost)", desc.id, desc.cAddr)
+		errLog("#%v: %v: write failed (connection lost)", desc.id, desc.cAddr)
 		return err
 	}
 
