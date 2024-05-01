@@ -177,7 +177,7 @@ func loadAccount(desc *descData, acc *accountData) error {
 	return nil
 }
 
-func loadPlayerInex() error {
+func loadPlayerIndex() error {
 	data, err := readFile(DATA_DIR + PINDEX_FILE)
 	if err != nil {
 		return err
@@ -187,7 +187,7 @@ func loadPlayerInex() error {
 
 	err = json.Unmarshal(data, &newIndex)
 	if err != nil {
-		errLog("loadPlayerInex: Unable to unmarshal the data.")
+		errLog("loadPlayerIndex: Unable to unmarshal the data.")
 		return err
 	}
 
@@ -195,20 +195,20 @@ func loadPlayerInex() error {
 	return nil
 }
 
-func savePlayerInex() error {
+func savePlayerIndex() error {
 	outbuf := new(bytes.Buffer)
 	enc := json.NewEncoder(outbuf)
 	enc.SetIndent("", "\t")
 
 	err := enc.Encode(&playerIndex)
 	if err != nil {
-		critLog("saveAccount: enc.Encode: %v", err.Error())
+		critLog("savePlayerIndex: enc.Encode: %v", err.Error())
 		return err
 	}
 
 	err = saveFile(DATA_DIR+PINDEX_FILE, outbuf.Bytes())
 	if err != nil {
-		critLog("saveAccount: saveFile failed %v", err.Error())
+		critLog("savePlayerIndex: saveFile failed %v", err.Error())
 		return err
 	}
 
