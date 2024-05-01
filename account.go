@@ -17,7 +17,7 @@ func gCharList(desc *descData) {
 		desc.send("You don't have any characters right now.\r\nType NEW to create one:")
 		return
 	}
-	var buf string
+	var buf string = "\r\n"
 	for i, item := range desc.account.Characters {
 		buf = buf + fmt.Sprintf("#%v: %v\r\n", i+1, item)
 	}
@@ -74,6 +74,11 @@ func gCharSelect(desc *descData, input string) {
 }
 
 func gCharNewName(desc *descData, input string) {
+	if nameBad(input) {
+		desc.send("Sorry, that name is not appropriate.")
+		return
+	}
+
 	newNameLen := len(input)
 	if newNameLen < MIN_NAME_LEN && newNameLen > MAX_NAME_LEN {
 		desc.send("Sorry, the name must be more than %v and less than %v. Try again!", MIN_NAME_LEN, MAX_NAME_LEN)

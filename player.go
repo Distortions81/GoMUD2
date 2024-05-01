@@ -11,7 +11,7 @@ func (play *playerData) handleCommands(input string) {
 	if command != nil {
 		command.goDo(play, args)
 	} else {
-		cmdInvalid(play.desc)
+		cmdListCmds(play.desc)
 	}
 }
 
@@ -30,7 +30,7 @@ func (play *playerData) sendToPlaying(format string, args ...any) {
 	}
 }
 
-func cmdInvalid(desc *descData) {
+func cmdListCmds(desc *descData) {
 	desc.send("\r\nCommands:\r\n%v", strings.Join(cmdList, "\r\n"))
 }
 

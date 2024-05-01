@@ -31,3 +31,22 @@ var makeDirs = []string{
 	DATA_DIR + AREA_DIR,
 	DATA_DIR + TEXTS_DIR,
 	LOGS_DIR}
+
+var nameBlacklist = []string{
+	"new",
+	"admin",
+	"moderator",
+	"mod",
+	"someone",
+	"something",
+	"no one",
+	"nobody",
+	"imm",
+	"immortal",
+	"wiz",
+	"ooc",
+	"ic",
+	"sav",
+	"save",
+	"fuck",
+}

@@ -3,9 +3,14 @@ package main
 import (
 	"os"
 	"strconv"
+	"strings"
 	"time"
+	"unicode"
 
 	"golang.org/x/exp/rand"
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 )
 
 func makeFingerprintString(id string) string {
@@ -61,4 +66,38 @@ func saveFile(filePath string, data []byte) error {
 		critLog("saveFile: ERROR: failed to rename file: %v", err.Error())
 	}
 	return err
+}
+
+// Returns false if name is prohibited
+func nameBad(name string) bool {
+	for _, item := range nameBlacklist {
+		if wideCheck(name, item) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// Returns true if there is a partial match
+func wideCheck(input string, target string) bool {
+
+	//normalize unicode
+	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
+	result, _, _ := transform.String(t, input)
+
+	//Remove everything but latin letters
+	var squished string
+	for _, letter := range result {
+		if (letter >= 'A' && letter < 'Z') || (letter >= 'a' && letter <= 'z') {
+			squished = squished + string(letter)
+		}
+	}
+
+	//Caps-insensitive matching
+	if strings.EqualFold(squished, target) {
+		errLog("wideCheck: MATCH: input: %v, target: %v, normalized: %v, squished: %v", input, target, result, squished)
+		return true
+	}
+	return false
 }

@@ -120,7 +120,7 @@ var loginStateList = [CON_MAX]loginStates{
 	},
 
 	CON_PLAYING: {
-		goPrompt: cmdInvalid,
+		goPrompt: cmdListCmds,
 	},
 }
 
@@ -167,6 +167,11 @@ func gShowNews(desc *descData) {
 
 // New login
 func gNewLogin(desc *descData, input string) {
+	if nameBad(input) {
+		desc.send("Sorry, that login is not appropriate.")
+		return
+	}
+
 	inputLen := len([]byte(input))
 	if inputLen >= MIN_LOGIN_LEN && inputLen <= MAX_LOGIN_LEN {
 		desc.sendln("Okay, login is: %v", input)
