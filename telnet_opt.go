@@ -133,6 +133,8 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 
 	//Generic terminal
 	"XTERM256COLOR": {ANSI256: true, UTF: true},
+
+	//Someone said MUDRammer supports UTF-8, check?
 }
 
 const (

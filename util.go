@@ -116,6 +116,8 @@ func wideCheck(input string, target string) bool {
 	if strings.EqualFold(squished, target) {
 		errLog("wideCheck: MATCH: input: %v, target: %v, normalized: %v, squished: %v", input, target, result, squished)
 		return true
+	} else {
+		errLog("wideCheck: MATCH: input: %v, normalized: %v, squished: %v", input, result, squished)
+		return false
 	}
-	return false
 }
