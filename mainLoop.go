@@ -51,8 +51,9 @@ func mainLoop() {
 		since := roundTime - time.Since(start)
 		time.Sleep(since)
 
-		if since.Milliseconds() <= 25 {
-			errLog("90% load! Round took %v", since.Round(time.Millisecond).String())
+		took := time.Duration(since).Round(time.Millisecond)
+		if took < (roundTime / 10) {
+			errLog("Over 90%% load! Round took %v", took.String())
 		}
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func gCharList(desc *descData) {
@@ -43,7 +44,7 @@ func gCharSelect(desc *descData, input string) {
 				if strings.EqualFold(item, input) {
 					desc.send("DEBUG: Would have loaded: %v", input)
 
-					desc.player = &playerData{name: input, desc: desc}
+					desc.player = &playerData{name: input, desc: desc, valid: true, loginTime: time.Now()}
 					playList = append(playList, desc.player)
 					desc.state = CON_NEWS
 					desc.player.sendToPlaying("%v has arrived.", desc.account.tempCharName)
@@ -55,7 +56,7 @@ func gCharSelect(desc *descData, input string) {
 			if num > 0 && num <= numChars {
 				selectedChar := desc.account.characters[num-1]
 
-				desc.player = &playerData{name: selectedChar, desc: desc, valid: true}
+				desc.player = &playerData{name: selectedChar, desc: desc, valid: true, loginTime: time.Now()}
 				playList = append(playList, desc.player)
 				desc.state = CON_NEWS
 				desc.send("DEBUG: Would have loaded %v", selectedChar)
@@ -82,7 +83,7 @@ func gCharConfirmName(desc *descData, input string) {
 	if input == desc.account.tempCharName {
 		desc.send("Okay, you will be called %v.", input)
 		desc.account.characters = append(desc.account.characters, desc.account.tempCharName)
-		desc.player = &playerData{name: input, desc: desc}
+		desc.player = &playerData{name: input, desc: desc, valid: true, loginTime: time.Now()}
 		desc.player.sendToPlaying("Welcome %v to the lands!", desc.account.tempCharName)
 		desc.state = CON_NEWS
 	} else {

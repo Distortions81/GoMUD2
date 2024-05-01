@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"time"
 )
 
 const WARN_CHAT_REPEAT = 5
@@ -20,6 +21,7 @@ var commandList = map[string]*commandData{
 	"say":    {hint: "sends a message", goDo: cmdChat, args: []string{"message"}},
 	"quit":   {hint: "quits and disconnects.", goDo: cmdQuit},
 	"logout": {hint: "quits back to character selection.", goDo: cmdLogout},
+	"who":    {hint: "Show players online", goDo: cmdWho},
 }
 
 var cmdList []string
@@ -73,9 +75,9 @@ func cmdLogout(play *playerData, input string) {
 }
 
 func cmdWho(play *playerData, input string) {
-	var buf string
+	var buf string = "Players online:\r\n"
 	for _, target := range playList {
-		buf = buf + fmt.Sprintf("%30\r\n", target)
+		buf = buf + fmt.Sprintf("%30v -- %v\r\n", target.name, time.Since(target.loginTime))
 	}
 	play.send(buf)
 }

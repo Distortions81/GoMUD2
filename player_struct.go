@@ -52,7 +52,8 @@ type playerData struct {
 	name string
 	desc *descData
 
-	valid bool
+	loginTime time.Time
+	valid     bool
 }
 
 type telnetData struct {
