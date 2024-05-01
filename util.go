@@ -77,7 +77,7 @@ func saveFile(filePath string, data []byte) error {
 func readFile(filePath string) ([]byte, error) {
 	data, err := os.ReadFile(filePath)
 	if err != nil {
-		errLog("loadAccount: Unable to read account file.")
+		errLog("Unable to load file: %v", filePath)
 		return nil, err
 	}
 	return data, nil
