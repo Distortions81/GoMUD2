@@ -7,6 +7,7 @@ import (
 const (
 	ROUND_LENGTH_uS  = 250000 //0.25s
 	CONNECT_THROTTLE = time.Millisecond
+	LAG_THRESH       = time.Millisecond
 )
 
 func mainLoop() {
@@ -49,7 +50,7 @@ func mainLoop() {
 
 		since := time.Since(start)
 		if since > time.Millisecond {
-			errLog("Round took %v", since.Round(time.Millisecond).String())
+			errLog("Round took %v", since.Round(LAG_THRESH).String())
 		}
 
 		//Sleep for remaining round time
