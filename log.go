@@ -38,6 +38,17 @@ func errLog(format string, args ...any) {
 	doLog(elog, format, args...)
 }
 
+// Log errors, sprintf format
+func critLog(format string, args ...any) {
+	doLog(elog, format, args...)
+
+	descLock.Lock()
+	defer descLock.Unlock()
+	for _, d := range descList {
+		d.send("ERROR: "+format, args...)
+	}
+}
+
 // Log info, sprintf format
 func mudLog(format string, args ...any) {
 	doLog(mlog, format, args...)

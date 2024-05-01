@@ -98,51 +98,45 @@ func gCharConfirmName(desc *descData, input string) {
 
 func createAccountDir(acc *accountData) error {
 	if acc.fingerprint == "" {
-		errLog("account has no fingerprint: %v", acc.login)
+		critLog("account has no fingerprint: %v", acc.login)
 		return fmt.Errorf("No fingerprint")
 	}
 
 	err := os.Mkdir(DATA_DIR+ACCOUNT_DIR+acc.fingerprint, 0755)
 	if err != nil {
-		errLog("unable to make directory for account: %v", acc.fingerprint)
+		critLog("unable to make directory for account: %v", acc.fingerprint)
 		return err
 	}
 	return nil
 }
 
-func saveAccount(acc *accountData, asyncSave bool) (error bool) {
+func saveAccount(acc *accountData) (error bool) {
 	outbuf := new(bytes.Buffer)
 	enc := json.NewEncoder(outbuf)
 	enc.SetIndent("", "\t")
 
 	if acc == nil {
 		return true
+	} else if acc.fingerprint == "" {
+		critLog("Account '%v' doesn't have a fingerprint.", acc.login)
+		return
 	}
 	acc.version = ACCOUNT_VERSION
 	fileName := DATA_DIR + ACCOUNT_DIR + acc.fingerprint + "/" + ACCOUNT_FILE
 
 	acc.modDate = time.Now()
 
-	if err := enc.Encode(&acc); err != nil {
-		errLog("WritePlayer: enc.Encode", err)
-		return true
-	}
-
-	_, err := os.Create(fileName)
-
+	err := enc.Encode(&acc)
 	if err != nil {
-		errLog("WritePlayer: os.Create", err)
+		critLog("saveAccount: enc.Encode: %v", err.Error())
 		return true
 	}
 
-	//Async write
-	/*
-		if asyncSave {
-			go writePlayerFile(outbuf, fileName)
-		} else {
-			writePlayerFile(outbuf, fileName)
-		}*/
-
+	err = saveFile(fileName, outbuf.Bytes())
+	if err != nil {
+		critLog("saveAccount: saveFile failed %v", err.Error())
+		return true
+	}
 	acc.dirty = false
 	return true
 }

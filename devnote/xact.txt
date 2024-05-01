@@ -1,0 +1,167 @@
+void xact_new(const char *format, CHAR_DATA * ch, const void *arg1,
+              const void *arg2, int type, int min_pos, int verbose)
+{
+  CHAR_DATA *to;
+  CHAR_DATA *vch = (CHAR_DATA *) arg2;
+  OBJ_DATA *obj1 = (OBJ_DATA *) arg1;
+  OBJ_DATA *obj2 = (OBJ_DATA *) arg2;
+  const char *str;
+  char *i;
+  char *point;
+  char buf[8192];
+  char fname[1000];
+  int collen = -1;
+
+  memset(&buf, 8192, sizeof(char));
+
+  if (!format || !*format)
+    return;
+  if (!ch || !ch->in_room)
+    return;
+  to = ch->in_room->people;
+  if (type == 2)
+  {
+    if (!vch)
+    {
+      bug("Act: null vch with TO_VICT.", 0);
+      return;
+    }
+
+    if (!vch->in_room)
+      return;
+    to = vch->in_room->people;
+  }
+
+  for (; to; to = to->next_in_room)
+  {
+    if ((!((((to)->act) & ((1)))) && to->desc == ((void*)0)) ||
+        (((((to)->act) & ((1)))) && !((((to)->pIndexData->mprog_flags) & (((1)))))) || to->position < min_pos)
+      continue;
+    if (type == 3 && to != ch)
+      continue;
+    if (type == 2 && (to != vch || to == ch))
+      continue;
+    if (type == 0 && to == ch)
+      continue;
+    if (type == 1 && (to == ch || to == vch))
+      continue;
+    point = buf;
+    str = format;
+    while (*str)
+    {
+      if (*str != '$')
+      {
+        *point++ = *str++;
+        continue;
+      }
+
+      i = ((void*)0);
+      switch (*str)
+      {
+        case '$':
+          ++str;
+          i = " <@@@> ";
+          if (!arg2 && *str >= 'A' && *str <= 'Z' && *str != 'G')
+          {
+            bug("Act: missing arg2 for code %d.", *str);
+            i = " <@@@> ";
+          }
+          else
+          {
+            switch (*str)
+            {
+              default:
+                bug("Act: bad code %d.", *str);
+                i = " <@@@> ";
+                break;
+              case 't':
+                i = (char *) arg1;
+                break;
+              case 'T':
+                i = (char *) arg2;
+                break;
+              case 'n':
+                i = ( can_see( to,(ch) )? ( ((((ch)->act) & ((1)))) ? (ch)->short_descr : (ch)->name ) : (get_trust(ch) >= (211 - 8)) ? "{WAn {BIm{bm{Wor{bt{Bal{x" : "someone");
+                break;
+              case 'N':
+                i = ( can_see( to,(vch) )? ( ((((vch)->act) & ((1)))) ? (vch)->short_descr : (vch)->name ) : (get_trust(vch) >= (211 - 8)) ? "{WAn {BIm{bm{Wor{bt{Bal{x" : "someone");
+                break;
+              case 'e':
+                i = he_she[((ch->sex) < (0) ? (0) : ((ch->sex) > (2) ? (2) : (ch->sex)))];
+                break;
+              case 'E':
+                i = he_she[((vch->sex) < (0) ? (0) : ((vch->sex) > (2) ? (2) : (vch->sex)))];
+                break;
+              case 'm':
+                i = him_her[((ch->sex) < (0) ? (0) : ((ch->sex) > (2) ? (2) : (ch->sex)))];
+                break;
+              case 'M':
+                i = him_her[((vch->sex) < (0) ? (0) : ((vch->sex) > (2) ? (2) : (vch->sex)))];
+                break;
+              case 's':
+                i = his_her[((ch->sex) < (0) ? (0) : ((ch->sex) > (2) ? (2) : (ch->sex)))];
+                break;
+              case 'S':
+                i = his_her[((vch->sex) < (0) ? (0) : ((vch->sex) > (2) ? (2) : (vch->sex)))];
+                break;
+              case 'p':
+                i = can_see_obj(to, obj1) ? obj1->short_descr : "something";
+                break;
+              case 'P':
+                i = can_see_obj(to, obj2) ? obj2->short_descr : "something";
+                break;
+              case 'd':
+                if (!arg2 || ((char *) arg2)[0] == '\0')
+                {
+                  i = "door";
+                }
+                else
+                {
+                  one_argument((char *) arg2, fname);
+                  i = fname;
+                }
+                break;
+              case 'G':
+                if (ch->alignment < 0)
+                {
+                  i = "the darkness";
+                }
+                else
+                {
+                  i = "the light";
+                }
+                break;
+            }
+          }
+          break;
+        default:
+          *point++ = *str++;
+          break;
+      }
+
+      ++str;
+      while ((*point = *i) != '\0')
+        ++point, ++i;
+    }
+
+    *point++ = '\n';
+    *point++ = '\r';
+    *point = '\0';
+    if (collen)
+      buf[collen] = ((buf[collen]) >= 'a' && (buf[collen]) <= 'z' ? (buf[collen])+'A'-'a' : (buf[collen]));
+    buf[0] = ((buf[0]) >= 'a' && (buf[0]) <= 'z' ? (buf[0])+'A'-'a' : (buf[0]));
+    if (to->desc != ((void*)0))
+    {
+      if (((((to)->act) & ((1)))) ||
+          (!((to->pcdata->verbose) & (verbose)) &&
+           !((to->pcdata->verbose) & ((128)))))
+      {
+        write_to_buffer(to->desc, buf, point - buf);
+      }
+      continue;
+    }
+    if (MOBtrigger)
+      mp_act_trigger(buf, to, ch, arg1, arg2, (1));
+  }
+  return;
+}

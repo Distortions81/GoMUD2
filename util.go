@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"strconv"
 	"time"
 
@@ -46,4 +47,16 @@ func TimeStringRunes() string {
 		b[i] = letterRunes[p2]
 	}
 	return string(b)
+}
+
+// Saves as a temp file, then renames
+func saveFile(filePath string, data []byte) error {
+	tmpName := filePath + ".tmp"
+	err := os.WriteFile(tmpName, data, 0755)
+	if err != nil {
+		critLog("saveFile: ERROR: failed to write file: %v", err.Error())
+	}
+	err = os.Rename(tmpName, filePath)
+	critLog("saveFile: ERROR: failed to rename file: %v", err.Error())
+	return err
 }
