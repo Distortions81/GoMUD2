@@ -41,7 +41,6 @@ func (play *playerData) quit(doClose bool) {
 		play.desc.state = CON_DISCONNECTED
 	} else {
 		play.desc.state = CON_CHAR_LIST
-		play.desc.lineBuffer = []string{""}
-		play.desc.numLines = 1
+		gCharList(play.desc)
 	}
 }
