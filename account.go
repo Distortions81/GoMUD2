@@ -118,7 +118,7 @@ func gCharConfirmName(desc *descData, input string) {
 func createAccountDir(acc *accountData) error {
 	if acc.Fingerprint == "" {
 		critLog("account has no fingerprint: %v", acc.Login)
-		return fmt.Errorf("No fingerprint")
+		return fmt.Errorf("no fingerprint")
 	}
 
 	err := os.Mkdir(DATA_DIR+ACCOUNT_DIR+acc.Fingerprint, 0755)
