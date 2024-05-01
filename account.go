@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -89,4 +92,55 @@ func gCharConfirmName(desc *descData, input string) {
 	} else {
 		desc.send("Names did not match. Try again, or blank line to choose a new name.")
 	}
+}
+
+func createAccountDir(acc *accountData) error {
+	if acc.fingerprint == "" {
+		errLog("account has no fingerprint: %v", acc.login)
+		return fmt.Errorf("No fingerprint")
+	}
+
+	err := os.Mkdir(DATA_DIR+ACCOUNT_DIR+acc.fingerprint, 0755)
+	if err != nil {
+		errLog("unable to make directory for account: %v", acc.fingerprint)
+		return err
+	}
+	return nil
+}
+
+func saveAccount(acc *accountData, asyncSave bool) (error bool) {
+	outbuf := new(bytes.Buffer)
+	enc := json.NewEncoder(outbuf)
+	enc.SetIndent("", "\t")
+
+	if acc == nil {
+		return true
+	}
+	acc.version = ACCOUNT_VERSION
+	fileName := DATA_DIR + ACCOUNT_DIR + acc.fingerprint + "/" + ACCOUNT_FILE
+
+	acc.modDate = time.Now()
+
+	if err := enc.Encode(&acc); err != nil {
+		errLog("WritePlayer: enc.Encode", err)
+		return true
+	}
+
+	_, err := os.Create(fileName)
+
+	if err != nil {
+		errLog("WritePlayer: os.Create", err)
+		return true
+	}
+
+	//Async write
+	/*
+		if asyncSave {
+			go writePlayerFile(outbuf, fileName)
+		} else {
+			writePlayerFile(outbuf, fileName)
+		}*/
+
+	acc.dirty = false
+	return true
 }

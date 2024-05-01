@@ -1,9 +1,10 @@
 package main
 
 const (
-	VERSION = "v0.0.2a 04-30-2024 1250"
+	VERSION  = "v0.0.3a-04302024-1714533857-"
+	CODENAME = "Darkflare"
 
-	LICENSE = "goMUD2 " + VERSION + "\n" +
+	LICENSE = "goMUD2: " + VERSION + CODENAME + "\n" +
 		"Copyright 2024 Carl Frank Otto III (carlotto81@gmail.com). All rights reserved.\n"
 
 		//Directories
@@ -14,7 +15,10 @@ const (
 	LOGS_DIR    = "log/"
 
 	//Files
-	HELP_FILE = "helps.json"
+	HELP_FILE       = "helps.json"
+	ACCOUNT_FILE    = "acc.json"
+	ACCOUNT_VERSION = 1
+	PLAYER_VERSION  = 1
 
 	DEFAULT_CHARSET = "LATIN1"
 )
