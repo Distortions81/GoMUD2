@@ -145,7 +145,9 @@ func gLogin(desc *descData, input string) {
 func gPass(desc *descData, input string) {
 	if input == "passphrase" {
 		desc.send("Pass okay.")
-		desc.account = &accountData{login: input}
+
+		//TODO replace when we add load
+		desc.account = &accountData{Login: input, Fingerprint: makeFingerprintString("")}
 		desc.state = CON_CHAR_LIST
 	} else {
 		desc.send("Incorrect passphrase.")
@@ -168,7 +170,7 @@ func gNewLogin(desc *descData, input string) {
 	inputLen := len([]byte(input))
 	if inputLen >= MIN_LOGIN_LEN && inputLen <= MAX_LOGIN_LEN {
 		desc.sendln("Okay, login is: %v", input)
-		desc.account = &accountData{login: input}
+		desc.account = &accountData{Login: input, Fingerprint: makeFingerprintString("")}
 		desc.state = CON_NEW_LOGIN_CONFIRM
 	} else {
 		desc.sendln("Sorry, that is not an acceptable login.")
@@ -176,7 +178,7 @@ func gNewLogin(desc *descData, input string) {
 }
 
 func gNewLoginConfirm(desc *descData, input string) {
-	if input == desc.account.login {
+	if input == desc.account.Login {
 		desc.sendln("Okay, login confirmed: %v", input)
 		desc.state = CON_NEW_PASSPHRASE
 	} else {
@@ -233,7 +235,7 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 
 		desc.sendln("Hashing password... one moment please!")
 		var err error
-		desc.account.passHash, err = bcrypt.GenerateFromPassword([]byte(input), PASSPHRASE_HASH_COST)
+		desc.account.PassHash, err = bcrypt.GenerateFromPassword([]byte(input), PASSPHRASE_HASH_COST)
 		desc.sendln("Okay, passwords match!")
 		desc.account.tempPass = ""
 
@@ -246,6 +248,20 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 	} else {
 		desc.sendln("Passwords did not match! Try again.")
 		return
+	}
+
+	err := createAccountDir(desc.account)
+	if err != nil {
+		desc.send("Unable to create account! Pleaselet moderators knows!")
+		desc.close()
+	}
+
+	notSaved := saveAccount(desc.account)
+	if notSaved {
+		desc.send("Unable to save account! Please let moderators know!")
+		desc.close()
+	} else {
+		desc.send("Account created and saved.")
 	}
 	desc.state = CON_CHAR_LIST
 }

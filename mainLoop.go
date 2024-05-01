@@ -23,7 +23,7 @@ func mainLoop() {
 		var newPlayList []*playerData
 		for _, target := range playList {
 			if !target.valid {
-				errLog("Removed player %v", target.name)
+				errLog("Removed player %v", target.Name)
 				continue
 			}
 			newPlayList = append(newPlayList, target)

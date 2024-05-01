@@ -1,3 +1,4 @@
 data/server.key
 data/server.pem
 log/*.log
+accounts/*

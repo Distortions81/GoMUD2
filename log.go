@@ -45,7 +45,9 @@ func critLog(format string, args ...any) {
 	descLock.Lock()
 	defer descLock.Unlock()
 	for _, d := range descList {
-		d.send("ERROR: "+format, args...)
+		if d.state == CON_PLAYING {
+			d.send("ERROR: "+format, args...)
+		}
 	}
 }
 

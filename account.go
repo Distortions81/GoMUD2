@@ -11,14 +11,14 @@ import (
 )
 
 func gCharList(desc *descData) {
-	numChars := len(desc.account.characters)
+	numChars := len(desc.account.Characters)
 
 	if numChars <= 0 {
 		desc.send("You don't have any characters right now.\r\nType NEW to create one:")
 		return
 	}
 	var buf string
-	for i, item := range desc.account.characters {
+	for i, item := range desc.account.Characters {
 		buf = buf + fmt.Sprintf("#%v: %v\r\n", i+1, item)
 	}
 	if numChars < MAX_CHAR_SLOTS {
@@ -29,7 +29,7 @@ func gCharList(desc *descData) {
 }
 
 func gCharSelect(desc *descData, input string) {
-	numChars := len(desc.account.characters)
+	numChars := len(desc.account.Characters)
 
 	if strings.EqualFold(input, "new") {
 		if numChars < MAX_CHAR_SLOTS {
@@ -43,11 +43,11 @@ func gCharSelect(desc *descData, input string) {
 	} else {
 		num, err := strconv.Atoi(input)
 		if err != nil {
-			for _, item := range desc.account.characters {
+			for _, item := range desc.account.Characters {
 				if strings.EqualFold(item, input) {
 					desc.send("DEBUG: Would have loaded: %v", input)
 
-					newPlayer := &playerData{name: input, desc: desc, valid: true, loginTime: time.Now()}
+					newPlayer := &playerData{Name: input, desc: desc, valid: true, LoginTime: time.Now()}
 					desc.player = newPlayer
 					playList = append(playList, newPlayer)
 					desc.state = CON_NEWS
@@ -58,9 +58,9 @@ func gCharSelect(desc *descData, input string) {
 			desc.send("Didn't find a character by the name: %v", input)
 		} else {
 			if num > 0 && num <= numChars {
-				selectedChar := desc.account.characters[num-1]
+				selectedChar := desc.account.Characters[num-1]
 
-				newPlayer := &playerData{name: selectedChar, desc: desc, valid: true, loginTime: time.Now()}
+				newPlayer := &playerData{Name: selectedChar, desc: desc, valid: true, LoginTime: time.Now()}
 				desc.player = newPlayer
 				playList = append(playList, newPlayer)
 				desc.state = CON_NEWS
@@ -87,9 +87,19 @@ func gCharNewName(desc *descData, input string) {
 func gCharConfirmName(desc *descData, input string) {
 	if input == desc.account.tempCharName {
 		desc.send("Okay, you will be called %v.", input)
-		desc.account.characters = append(desc.account.characters, desc.account.tempCharName)
-		desc.player = &playerData{name: input, desc: desc, valid: true, loginTime: time.Now()}
+		desc.account.Characters = append(desc.account.Characters, desc.account.tempCharName)
+
+		err := saveAccount(desc.account)
+		if err {
+			desc.send("Unable to save account! Please let moderators know!")
+			desc.close()
+		} else {
+			desc.send("Account created and saved.")
+		}
+
+		desc.player = &playerData{Name: input, desc: desc, valid: true, LoginTime: time.Now()}
 		desc.player.sendToPlaying("Welcome %v to the lands!", desc.account.tempCharName)
+
 		desc.state = CON_NEWS
 	} else {
 		desc.send("Names did not match. Try again, or blank line to choose a new name.")
@@ -97,14 +107,14 @@ func gCharConfirmName(desc *descData, input string) {
 }
 
 func createAccountDir(acc *accountData) error {
-	if acc.fingerprint == "" {
-		critLog("account has no fingerprint: %v", acc.login)
+	if acc.Fingerprint == "" {
+		critLog("account has no fingerprint: %v", acc.Login)
 		return fmt.Errorf("No fingerprint")
 	}
 
-	err := os.Mkdir(DATA_DIR+ACCOUNT_DIR+acc.fingerprint, 0755)
+	err := os.Mkdir(DATA_DIR+ACCOUNT_DIR+acc.Fingerprint, 0755)
 	if err != nil {
-		critLog("unable to make directory for account: %v", acc.fingerprint)
+		critLog("unable to make directory for account: %v", acc.Fingerprint)
 		return err
 	}
 	return nil
@@ -117,14 +127,14 @@ func saveAccount(acc *accountData) (error bool) {
 
 	if acc == nil {
 		return true
-	} else if acc.fingerprint == "" {
-		critLog("Account '%v' doesn't have a fingerprint.", acc.login)
+	} else if acc.Fingerprint == "" {
+		critLog("Account '%v' doesn't have a fingerprint.", acc.Login)
 		return
 	}
-	acc.version = ACCOUNT_VERSION
-	fileName := DATA_DIR + ACCOUNT_DIR + acc.fingerprint + "/" + ACCOUNT_FILE
+	acc.Version = ACCOUNT_VERSION
+	fileName := DATA_DIR + ACCOUNT_DIR + acc.Fingerprint + "/" + ACCOUNT_FILE
 
-	acc.modDate = time.Now()
+	acc.ModDate = time.Now()
 
 	err := enc.Encode(&acc)
 	if err != nil {
@@ -138,5 +148,5 @@ func saveAccount(acc *accountData) (error bool) {
 		return true
 	}
 	acc.dirty = false
-	return true
+	return false
 }

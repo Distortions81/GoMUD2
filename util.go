@@ -57,6 +57,8 @@ func saveFile(filePath string, data []byte) error {
 		critLog("saveFile: ERROR: failed to write file: %v", err.Error())
 	}
 	err = os.Rename(tmpName, filePath)
-	critLog("saveFile: ERROR: failed to rename file: %v", err.Error())
+	if err != nil {
+		critLog("saveFile: ERROR: failed to rename file: %v", err.Error())
+	}
 	return err
 }

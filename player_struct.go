@@ -49,14 +49,14 @@ type descData struct {
 }
 
 type playerData struct {
-	version int
+	Version int
 
-	name string
+	Name string
 	desc *descData `json:"-"`
 
-	loginTime    time.Time `json:"-"`
-	lastOnline   time.Time
-	creationDate time.Time
+	LoginTime time.Time `json:"-"`
+	SaveTime  time.Time
+	CreDate   time.Time
 
 	dirty bool `json:"-"`
 	valid bool `json:"-"`
@@ -77,21 +77,21 @@ type telnetData struct {
 }
 
 type accountData struct {
-	version     int
-	fingerprint string
+	Version     int
+	Fingerprint string
 
-	login    string
-	passHash []byte
+	Login    string
+	PassHash []byte
 
 	tempPass     string `json:"-"`
 	tempCharName string `json:"-"`
 
-	creationDate time.Time
-	modDate      time.Time
-	lastOnline   time.Time
+	CreDate    time.Time
+	ModDate    time.Time
+	LastOnline time.Time
 
-	characters []string
-	banned     banData `json:",omitempty"`
+	Characters []string
+	Banned     *banData `json:",omitempty"`
 
 	dirty bool `json:"-"`
 	valid bool `json:"-"`

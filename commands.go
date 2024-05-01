@@ -63,7 +63,7 @@ func cmdChat(play *playerData, input string) {
 	}
 	play.desc.lastChat = trimInput
 
-	play.sendToPlaying("%v: %v", play.desc.player.name, input)
+	play.sendToPlaying("%v: %v", play.desc.player.Name, input)
 }
 
 func cmdQuit(play *playerData, input string) {
@@ -77,7 +77,7 @@ func cmdLogout(play *playerData, input string) {
 func cmdWho(play *playerData, input string) {
 	var buf string = "Players online:\r\n"
 	for _, target := range playList {
-		buf = buf + fmt.Sprintf("%30v -- %v\r\n", target.name, time.Since(target.loginTime))
+		buf = buf + fmt.Sprintf("%30v -- %v\r\n", target.Name, time.Since(target.LoginTime))
 	}
 	play.send(buf)
 }
