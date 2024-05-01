@@ -2,6 +2,10 @@ package main
 
 import "strings"
 
+func savePlayer(player *playerData) {
+
+}
+
 func (play *playerData) handleCommands(input string) {
 	cmd, args, _ := strings.Cut(input, " ")
 

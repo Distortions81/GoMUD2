@@ -58,12 +58,18 @@ const (
 )
 
 var accountIndex map[string]*accountIndexData
+var playerIndex []*playerIndexData
 
 func init() {
 	accountIndex = make(map[string]*accountIndexData)
 }
 
 type accountIndexData struct {
+	Login       string
+	Fingerprint string
+}
+
+type playerIndexData struct {
 	Name        string
 	Fingerprint string
 }
@@ -279,7 +285,7 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 		desc.close()
 	} else {
 		desc.send("Account created and saved.")
-		newAcc := &accountIndexData{Name: desc.account.Login, Fingerprint: desc.account.Fingerprint}
+		newAcc := &accountIndexData{Login: desc.account.Login, Fingerprint: desc.account.Fingerprint}
 		accountIndex[desc.account.Login] = newAcc
 		saveAccountIndex()
 	}
