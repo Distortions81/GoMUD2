@@ -47,8 +47,9 @@ func gCharSelect(desc *descData, input string) {
 				if strings.EqualFold(item, input) {
 					desc.send("DEBUG: Would have loaded: %v", input)
 
-					desc.player = &playerData{name: input, desc: desc, valid: true, loginTime: time.Now()}
-					playList = append(playList, desc.player)
+					newPlayer := &playerData{name: input, desc: desc, valid: true, loginTime: time.Now()}
+					desc.player = newPlayer
+					playList = append(playList, newPlayer)
 					desc.state = CON_NEWS
 					desc.player.sendToPlaying("%v has arrived.", desc.account.tempCharName)
 					return
@@ -59,8 +60,9 @@ func gCharSelect(desc *descData, input string) {
 			if num > 0 && num <= numChars {
 				selectedChar := desc.account.characters[num-1]
 
-				desc.player = &playerData{name: selectedChar, desc: desc, valid: true, loginTime: time.Now()}
-				playList = append(playList, desc.player)
+				newPlayer := &playerData{name: selectedChar, desc: desc, valid: true, loginTime: time.Now()}
+				desc.player = newPlayer
+				playList = append(playList, newPlayer)
 				desc.state = CON_NEWS
 				desc.send("DEBUG: Would have loaded %v", selectedChar)
 				return

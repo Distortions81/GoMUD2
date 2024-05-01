@@ -21,7 +21,7 @@ var commandList = map[string]*commandData{
 	"say":    {hint: "sends a message", goDo: cmdChat, args: []string{"message"}},
 	"quit":   {hint: "quits and disconnects.", goDo: cmdQuit},
 	"logout": {hint: "quits back to character selection.", goDo: cmdLogout},
-	"who":    {hint: "Show players online", goDo: cmdWho},
+	"who":    {hint: "show players online", goDo: cmdWho},
 }
 
 var cmdList []string
