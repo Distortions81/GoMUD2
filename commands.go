@@ -54,7 +54,7 @@ func cmdChat(play *playerData, input string) {
 	if strings.EqualFold(trimInput, play.desc.lastChat) {
 		play.desc.chatRepeatCount++
 		if play.desc.chatRepeatCount >= MAX_CHAT_REPEAT {
-			play.desc.close()
+			play.desc.state = CON_DISCONNECTED
 			return
 		} else if play.desc.chatRepeatCount >= WARN_CHAT_REPEAT {
 			play.desc.send("Stop repeating yourself please.")

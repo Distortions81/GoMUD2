@@ -15,7 +15,7 @@ func mainLoop() {
 
 	roundTime := time.Duration(ROUND_LENGTH_uS * time.Microsecond)
 
-	for serverState == SERVER_RUNNING {
+	for serverState.Load() == SERVER_RUNNING {
 		tickNum++
 		start := time.Now()
 
@@ -36,6 +36,7 @@ func mainLoop() {
 		for _, desc := range descList {
 			if desc.state == CON_DISCONNECTED || !desc.valid {
 				errLog("Removed #%v", desc.id)
+				desc.close()
 				continue
 			}
 			newDescList = append(newDescList, desc)

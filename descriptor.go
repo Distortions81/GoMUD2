@@ -42,12 +42,9 @@ func handleDesc(conn net.Conn, tls bool) {
 		conn: conn, id: topID, connectTime: time.Now(),
 		reader: bufio.NewReader(conn), tls: tls,
 		host: hostStr, addr: ipStr, cAddr: cAddr,
-		state: CON_WELCOME, telnet: tnd, valid: true}
+		state: CON_LOGIN, telnet: tnd, valid: true}
 	descList = append(descList, desc)
 	descLock.Unlock()
-
-	//Close desc on return
-	defer desc.close()
 
 	//Connect log message
 	if tls {
@@ -60,18 +57,24 @@ func handleDesc(conn net.Conn, tls bool) {
 
 	//Send greeting
 	err := desc.sendln(greetBuf)
-	desc.state = CON_LOGIN
 	if err != nil {
+		descLock.Lock()
+		desc.close()
+		descLock.Unlock()
 		return
 	}
 
 	desc.readDescLoop()
+
+	descLock.Lock()
+	desc.close()
+	descLock.Unlock()
 }
 
 func (desc *descData) readDescLoop() {
 	//Read loop
 	var lastByte byte
-	for serverState == SERVER_RUNNING {
+	for serverState.Load() == SERVER_RUNNING {
 
 		data, err := desc.readByte()
 		if err != nil {
@@ -212,13 +215,6 @@ func (desc *descData) ingestLine() {
 	}
 	desc.lineBuffer = append(desc.lineBuffer, buf)
 	desc.numLines++
-
-	if desc.inputBufferLen != 0 {
-		//Log user input, but not login/pass
-		if desc.state == CON_PLAYING {
-			mudLog("#%v: %v: %v", desc.id, desc.cAddr, buf)
-		}
-	}
 
 	//Reset input buffer
 	desc.inputBuffer = []byte{}

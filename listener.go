@@ -72,7 +72,7 @@ func waitNewConnectionSSL() {
 
 	if !*noTLS && portTLS != nil && listenerTLS != nil {
 
-		for serverState == SERVER_RUNNING {
+		for serverState.Load() == SERVER_RUNNING {
 
 			conn, err := listenerTLS.Accept()
 			if err != nil {
@@ -90,7 +90,7 @@ func waitNewConnectionSSL() {
 
 func waitNewConnection() {
 
-	for serverState == SERVER_RUNNING && listener != nil {
+	for serverState.Load() == SERVER_RUNNING && listener != nil {
 
 		conn, err := listener.Accept()
 		if err != nil {

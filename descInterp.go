@@ -22,6 +22,7 @@ func (desc *descData) interp() {
 			desc.lineBuffer = desc.lineBuffer[1:]
 			desc.numLines--
 		}
+
 		desc.inputLock.Unlock()
 	}
 
@@ -29,6 +30,7 @@ func (desc *descData) interp() {
 	if desc.state == CON_PLAYING {
 		if desc.player != nil {
 			desc.player.handleCommands(input)
+			mudLog("%v: %v", desc.player.Name, input)
 		}
 		return
 	} else if desc.state == CON_DISCONNECTED {
@@ -41,7 +43,6 @@ func (desc *descData) interp() {
 		//Ignore blank lines, unless set
 		return
 	}
-	//Otherwise, run the command
 	loginStateList[desc.state].goDo(desc, input)
 
 	//Show prompt from next state

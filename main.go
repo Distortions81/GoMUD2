@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"sync/atomic"
 	"syscall"
 	"time"
 )
@@ -26,11 +27,11 @@ var (
 	port, portTLS *int
 	noTLS         *bool
 	bindIP        *string
-	serverState   int
+	serverState   atomic.Int32
 )
 
 func main() {
-	serverState = SERVER_BOOTING
+	serverState.Store(SERVER_BOOTING)
 	bootTime = time.Now()
 
 	port = flag.Int("port", DEFAULT_PORT, "port")
@@ -56,7 +57,7 @@ func main() {
 
 	loadPlayerInex()
 
-	serverState = SERVER_RUNNING
+	serverState.Store(SERVER_RUNNING)
 
 	go waitNewConnection()
 	go waitNewConnectionSSL()
@@ -68,7 +69,7 @@ func main() {
 	signal.Notify(signalHandle, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-signalHandle
 
-	serverState = SERVER_SHUTDOWN
+	serverState.Store(SERVER_SHUTDOWN)
 	time.Sleep(time.Second)
 
 	//Handle shutdown here

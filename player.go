@@ -38,12 +38,10 @@ func (play *playerData) quit(doClose bool) {
 	play.desc.send(textFiles["aurevoir"])
 
 	if doClose {
-		play.valid = false
-		play.desc.close()
+		play.desc.state = CON_DISCONNECTED
 	} else {
 		play.desc.state = CON_CHAR_LIST
 		play.desc.lineBuffer = []string{""}
 		play.desc.numLines = 1
-		play.valid = false
 	}
 }

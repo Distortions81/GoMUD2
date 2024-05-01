@@ -42,8 +42,6 @@ func errLog(format string, args ...any) {
 func critLog(format string, args ...any) {
 	doLog(elog, format, args...)
 
-	descLock.Lock()
-	defer descLock.Unlock()
 	for _, d := range descList {
 		if d.state == CON_PLAYING {
 			d.send("ERROR: "+format, args...)
