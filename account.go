@@ -159,3 +159,58 @@ func saveAccount(acc *accountData) (error bool) {
 	acc.dirty = false
 	return false
 }
+
+func loadAccount(desc *descData, acc *accountData) error {
+	data, err := readFile("file")
+	if err != nil {
+		return err
+	}
+
+	accData := &accountData{}
+	err = json.Unmarshal(data, accData)
+	if err != nil {
+		errLog("loadAccount: Unable to unmarshal the data.")
+		return err
+	}
+
+	desc.account = accData
+	return nil
+}
+
+func loadPlayerInex() error {
+	data, err := readFile(DATA_DIR + PINDEX_FILE)
+	if err != nil {
+		return err
+	}
+
+	newIndex := []playerIndexData{}
+
+	err = json.Unmarshal(data, &newIndex)
+	if err != nil {
+		errLog("loadPlayerInex: Unable to unmarshal the data.")
+		return err
+	}
+
+	playerIndex = newIndex
+	return nil
+}
+
+func savePlayerInex() error {
+	outbuf := new(bytes.Buffer)
+	enc := json.NewEncoder(outbuf)
+	enc.SetIndent("", "\t")
+
+	err := enc.Encode(&playerIndex)
+	if err != nil {
+		critLog("saveAccount: enc.Encode: %v", err.Error())
+		return err
+	}
+
+	err = saveFile(DATA_DIR+PINDEX_FILE, outbuf.Bytes())
+	if err != nil {
+		critLog("saveAccount: saveFile failed %v", err.Error())
+		return err
+	}
+
+	return nil
+}

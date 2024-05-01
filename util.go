@@ -68,6 +68,15 @@ func saveFile(filePath string, data []byte) error {
 	return err
 }
 
+func readFile(filePath string) ([]byte, error) {
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		errLog("loadAccount: Unable to read account file.")
+		return nil, err
+	}
+	return data, nil
+}
+
 // Returns false if name is prohibited
 func nameBad(name string) bool {
 	for _, item := range nameBlacklist {

@@ -57,6 +57,13 @@ const (
 	CON_MAX
 )
 
+var playerIndex []playerIndexData
+
+type playerIndexData struct {
+	Name        string
+	Fingerprint string
+}
+
 type loginStates struct {
 	prompt   string
 	goPrompt func(desc *descData)

@@ -54,6 +54,8 @@ func main() {
 	setupListener()
 	setupListenerTLS()
 
+	loadPlayerInex()
+
 	serverState = SERVER_RUNNING
 
 	go waitNewConnection()

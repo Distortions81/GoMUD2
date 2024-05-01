@@ -15,8 +15,10 @@ const (
 	LOGS_DIR    = "log/"
 
 	//Files
-	HELP_FILE       = "helps.json"
-	ACCOUNT_FILE    = "acc.json"
+	HELP_FILE    = "helps.json"
+	ACCOUNT_FILE = "acc.json"
+	PINDEX_FILE  = "playerIndex.json"
+
 	ACCOUNT_VERSION = 1
 	PLAYER_VERSION  = 1
 
