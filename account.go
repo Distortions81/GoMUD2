@@ -15,7 +15,7 @@ func gCharList(desc *descData) {
 	}
 	var buf string
 	for i, item := range desc.account.characters {
-		buf = buf + fmt.Sprintf("#%v: %v\r\n", i, item)
+		buf = buf + fmt.Sprintf("#%v: %v\r\n", i+1, item)
 	}
 	if numChars < MAX_CHAR_SLOTS {
 		buf = buf + "Type NEW to create a new character.\r\n"
@@ -42,18 +42,24 @@ func gCharSelect(desc *descData, input string) {
 			for _, item := range desc.account.characters {
 				if strings.EqualFold(item, input) {
 					desc.send("DEBUG: Would have loaded: %v", input)
+
 					desc.player = &playerData{name: input, desc: desc}
-					desc.player.sendToPlaying("%v has arrived.", desc.account.tempCharName)
-					desc.player.desc = desc
 					playList = append(playList, desc.player)
+					desc.state = CON_NEWS
+					desc.player.sendToPlaying("%v has arrived.", desc.account.tempCharName)
 					return
 				}
 			}
 			desc.send("Didn't find a character by the name: %v", input)
 		} else {
-			if num > 0 && num < numChars {
-				selectedChar := desc.account.characters[num]
+			if num > 0 && num <= numChars {
+				selectedChar := desc.account.characters[num-1]
+
+				desc.player = &playerData{name: selectedChar, desc: desc, valid: true}
+				playList = append(playList, desc.player)
+				desc.state = CON_NEWS
 				desc.send("DEBUG: Would have loaded %v", selectedChar)
+				return
 			} else {
 				desc.send("That player doesn't seem to exist.")
 			}

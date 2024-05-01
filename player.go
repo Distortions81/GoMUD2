@@ -19,7 +19,7 @@ func (play *playerData) send(format string, args ...any) {
 	if play.desc == nil {
 		return
 	}
-	play.desc.send(format, args...)
+	play.desc.sendln(format, args...)
 }
 
 func (play *playerData) sendToPlaying(format string, args ...any) {
@@ -41,7 +41,9 @@ func (play *playerData) quit(doClose bool) {
 		play.valid = false
 		play.desc.close()
 	} else {
+		play.desc.state = CON_CHAR_LIST
+		play.desc.lineBuffer = []string{""}
+		play.desc.numLines = 1
 		play.valid = false
-		play.desc.state = CON_WELCOME
 	}
 }

@@ -71,3 +71,11 @@ func cmdQuit(play *playerData, input string) {
 func cmdLogout(play *playerData, input string) {
 	play.quit(false)
 }
+
+func cmdWho(play *playerData, input string) {
+	var buf string
+	for _, target := range playList {
+		buf = buf + fmt.Sprintf("%30\r\n", target)
+	}
+	play.send(buf)
+}
