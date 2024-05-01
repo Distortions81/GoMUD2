@@ -47,13 +47,14 @@ func mainLoop() {
 		}
 		descLock.Unlock()
 
-		//Sleep for remaining round time
-		since := roundTime - time.Since(start)
-		time.Sleep(since)
-
-		took := time.Duration(since).Round(time.Millisecond)
-		if took < (roundTime / 10) {
-			errLog("Over 90%% load! Round took %v", took.String())
+		since := time.Since(start)
+		if since > time.Millisecond {
+			errLog("Round took %v", since.Round(time.Millisecond).String())
 		}
+
+		//Sleep for remaining round time
+		timeLeft := roundTime - time.Since(start)
+		time.Sleep(timeLeft)
+
 	}
 }
