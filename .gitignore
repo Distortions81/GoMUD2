@@ -2,3 +2,4 @@ data/server.key
 data/server.pem
 log/*.log
 accounts/
+data/accountIndex.json

@@ -55,7 +55,7 @@ func main() {
 	setupListener()
 	setupListenerTLS()
 
-	loadPlayerIndex()
+	loadAccountIndex()
 
 	serverState.Store(SERVER_RUNNING)
 

@@ -177,40 +177,48 @@ func loadAccount(desc *descData, acc *accountData) error {
 	return nil
 }
 
-func loadPlayerIndex() error {
-	data, err := readFile(DATA_DIR + PINDEX_FILE)
+func loadAccountIndex() error {
+	data, err := readFile(DATA_DIR + ACC_INDEX_FILE)
 	if err != nil {
 		return err
 	}
 
-	newIndex := []playerIndexData{}
-
+	newIndex := make(map[string]*accountIndexData)
 	err = json.Unmarshal(data, &newIndex)
 	if err != nil {
-		errLog("loadPlayerIndex: Unable to unmarshal the data.")
+		errLog("loadAccountIndex: Unable to unmarshal the data.")
 		return err
 	}
 
-	playerIndex = newIndex
+	accountIndex = newIndex
 	return nil
 }
 
-func savePlayerIndex() error {
+func saveAccountIndex() error {
+
 	outbuf := new(bytes.Buffer)
 	enc := json.NewEncoder(outbuf)
 	enc.SetIndent("", "\t")
 
-	err := enc.Encode(&playerIndex)
+	err := enc.Encode(&accountIndex)
 	if err != nil {
-		critLog("savePlayerIndex: enc.Encode: %v", err.Error())
+		critLog("saveAccountIndex: enc.Encode: %v", err.Error())
 		return err
 	}
 
-	err = saveFile(DATA_DIR+PINDEX_FILE, outbuf.Bytes())
+	file := DATA_DIR + ACC_INDEX_FILE
+	tempFile := file + ".tmp"
+	err = saveFile(tempFile, outbuf.Bytes())
 	if err != nil {
-		critLog("savePlayerIndex: saveFile failed %v", err.Error())
+		critLog("saveAccountIndex: saveFile failed %v", err.Error())
 		return err
 	}
+	err = os.Rename(tempFile, file)
+	if err != nil {
+		critLog("saveAccountIndex: rename failed %v", err.Error())
+		return err
+	}
+	errLog("Account index saved.")
 
 	return nil
 }

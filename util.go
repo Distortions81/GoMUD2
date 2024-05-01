@@ -4,6 +4,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 	"unicode"
 
@@ -55,7 +56,12 @@ func TimeStringRunes() string {
 }
 
 // Saves as a temp file, then renames
+var saveFileLock sync.Mutex
+
 func saveFile(filePath string, data []byte) error {
+	saveFileLock.Lock()
+	defer saveFileLock.Unlock()
+
 	tmpName := filePath + ".tmp"
 	err := os.WriteFile(tmpName, data, 0755)
 	if err != nil {

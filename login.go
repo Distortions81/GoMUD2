@@ -57,9 +57,13 @@ const (
 	CON_MAX
 )
 
-var playerIndex []playerIndexData
+var accountIndex map[string]*accountIndexData
 
-type playerIndexData struct {
+func init() {
+	accountIndex = make(map[string]*accountIndexData)
+}
+
+type accountIndexData struct {
 	Name        string
 	Fingerprint string
 }
@@ -275,6 +279,9 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 		desc.close()
 	} else {
 		desc.send("Account created and saved.")
+		newAcc := &accountIndexData{Name: desc.account.Login, Fingerprint: desc.account.Fingerprint}
+		accountIndex[desc.account.Login] = newAcc
+		saveAccountIndex()
 	}
 	desc.state = CON_CHAR_LIST
 }
