@@ -40,10 +40,9 @@ func (desc *descData) interp() {
 	if input == "" && !loginStateList[desc.state].anyKey {
 		//Ignore blank lines, unless set
 		return
-	} else {
-		//Otherwise, run the command
-		loginStateList[desc.state].goDo(desc, input)
 	}
+	//Otherwise, run the command
+	loginStateList[desc.state].goDo(desc, input)
 
 	//Show prompt from next state
 	if loginStateList[desc.state].goPrompt != nil {

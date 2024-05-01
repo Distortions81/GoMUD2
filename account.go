@@ -90,7 +90,11 @@ func gCharNewName(desc *descData, input string) {
 }
 
 func gCharConfirmName(desc *descData, input string) {
-	if input == desc.account.tempCharName {
+	if input == "" {
+		desc.send("Okay, we can try again.")
+		desc.state = CON_CHAR_CREATE
+		return
+	} else if input == desc.account.tempCharName {
 		desc.send("Okay, you will be called %v.", input)
 		desc.account.Characters = append(desc.account.Characters, desc.account.tempCharName)
 

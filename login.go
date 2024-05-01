@@ -115,8 +115,9 @@ var loginStateList = [CON_MAX]loginStates{
 		goDo:   gCharNewName,
 	},
 	CON_CHAR_CREATE_CONFIRM: {
-		prompt: "Confirm character name:",
+		prompt: "(leave blank to choose a new name).\r\nConfirm character name:",
 		goDo:   gCharConfirmName,
+		anyKey: true,
 	},
 
 	CON_PLAYING: {
