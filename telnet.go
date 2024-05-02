@@ -10,11 +10,11 @@ func (desc *descData) sendTelnetCmds() {
 func (desc *descData) sendCmd(command, option byte) error {
 	dlen, err := desc.conn.Write([]byte{TermCmd_IAC, command, option})
 	if err != nil || dlen != 3 {
-		errLog("#%v: %v: command send failed (connection lost)", desc.id, desc.cAddr)
+		//errLog("#%v: %v: command send failed (connection lost)", desc.id, desc.cAddr)
 		return err
 	}
 
-	errLog("#%v: Sent: %v %v", desc.id, TermCmd2Txt[int(command)], TermOpt2TXT[int(option)])
+	//errLog("#%v: Sent: %v %v", desc.id, TermCmd2Txt[int(command)], TermOpt2TXT[int(option)])
 	return nil
 }
 
@@ -27,12 +27,12 @@ func (desc *descData) sendSub(data string, args ...byte) error {
 	buf = append(buf, []byte{TermCmd_IAC, TermCmd_SE}...)
 	dlen, err := desc.conn.Write(buf)
 	if err != nil || dlen != len(buf) {
-		errLog("#%v: %v: sub send failed (connection lost)", desc.id, desc.cAddr)
+		//errLog("#%v: %v: sub send failed (connection lost)", desc.id, desc.cAddr)
 		return err
 	}
 
 	if len(args) > 1 {
-		errLog("#%v: Sent sub: %v %v %d", desc.id, data, TermOpt2TXT[int(args[0])], args[1])
+		//errLog("#%v: Sent sub: %v %v %d", desc.id, data, TermOpt2TXT[int(args[0])], args[1])
 	}
 
 	return nil

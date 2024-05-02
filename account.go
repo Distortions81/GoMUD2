@@ -14,7 +14,7 @@ func gCharList(desc *descData) {
 	numChars := len(desc.account.Characters)
 
 	if numChars <= 0 {
-		desc.send("You don't have any characters right now.\r\nType NEW to create one:")
+		desc.sendln("You don't have any characters right now.\r\nType NEW to create one:")
 		return
 	}
 	var buf string = "\r\n"
@@ -25,19 +25,18 @@ func gCharList(desc *descData) {
 		buf = buf + "Type NEW to create a new character.\r\n"
 	}
 	buf = buf + "Select a player by number or name: "
-	desc.send(buf)
+	desc.sendln(buf)
 }
 
 func gCharSelect(desc *descData, input string) {
-	numChars := len(desc.account.Characters)
 
 	if strings.EqualFold(input, "new") {
-		if numChars < MAX_CHAR_SLOTS {
-			desc.send("Okay, creating new character!")
+		if len(desc.account.Characters) < MAX_CHAR_SLOTS {
+			desc.sendln("Okay, creating new character!")
 			desc.state = CON_CHAR_CREATE
 			return
 		} else {
-			desc.send("Sorry, you have hit the limit.")
+			desc.sendln("Sorry, you have hit the limit.")
 			return
 		}
 	} else {
@@ -46,28 +45,26 @@ func gCharSelect(desc *descData, input string) {
 			for _, item := range desc.account.Characters {
 				if strings.EqualFold(item.Login, input) {
 					if desc.loadPlayer(item.Login) {
-						desc.state = CON_NEWS
-						desc.player.sendToPlaying("%v has arrived.", desc.account.tempCharName)
+						desc.enterWorld()
 						return
 					} else {
-						desc.send("Unable to load that character.")
+						desc.sendln("Unable to load that character.")
 						return
 					}
 				}
 			}
-			desc.send("Didn't find a character by the name: %v", input)
+			desc.sendln("Didn't find a character by the name: %v", input)
 		} else {
-			if num > 0 && num <= numChars {
+			if num > 0 && num <= len(desc.account.Characters) {
 				if desc.loadPlayer(desc.account.Characters[num-1].Login) {
-					desc.state = CON_NEWS
-					desc.player.sendToPlaying("%v has arrived.", desc.account.tempCharName)
+					desc.enterWorld()
 					return
 				} else {
-					desc.send("Unable to load that character.")
+					desc.sendln("Unable to load that character.")
 					return
 				}
 			} else {
-				desc.send("That player doesn't seem to exist.")
+				desc.sendln("That player doesn't seem to exist.")
 			}
 		}
 	}
@@ -75,13 +72,13 @@ func gCharSelect(desc *descData, input string) {
 
 func gCharNewName(desc *descData, input string) {
 	if nameBad(input) {
-		desc.send("Sorry, that name is not appropriate.")
+		desc.sendln("Sorry, that name is not appropriate.")
 		return
 	}
 
 	newNameLen := len(input)
 	if newNameLen < MIN_NAME_LEN && newNameLen > MAX_NAME_LEN {
-		desc.send("Sorry, the name must be more than %v and less than %v. Try again!", MIN_NAME_LEN, MAX_NAME_LEN)
+		desc.sendln("Sorry, the name must be more than %v and less than %v. Try again!", MIN_NAME_LEN, MAX_NAME_LEN)
 		return
 	}
 
@@ -91,11 +88,11 @@ func gCharNewName(desc *descData, input string) {
 
 func gCharConfirmName(desc *descData, input string) {
 	if input == "" {
-		desc.send("Okay, we can try again.")
+		desc.sendln("Okay, we can try again.")
 		desc.state = CON_CHAR_CREATE
 		return
 	} else if input == desc.account.tempCharName {
-		desc.send("Okay, you will be called %v.", input)
+		desc.sendln("Okay, you will be called %v.", input)
 		desc.player = &playerData{
 			Fingerprint: makeFingerprintString(),
 			Name:        input,
@@ -111,7 +108,7 @@ func gCharConfirmName(desc *descData, input string) {
 		desc.player.savePlayer()
 		desc.state = CON_NEWS
 	} else {
-		desc.send("Names did not match. Try again, or blank line to choose a new name.")
+		desc.sendln("Names did not match. Try again, or blank line to choose a new name.")
 	}
 }
 
@@ -163,13 +160,14 @@ func (acc *accountData) saveAccount() (error bool) {
 func (desc *descData) loadAccount(fingerprint string) error {
 	data, err := readFile(DATA_DIR + ACCOUNT_DIR + fingerprint + "/" + ACCOUNT_FILE)
 	if err != nil {
+		errLog("loadAccount: Unable to load account file: %v", err)
 		return err
 	}
 
 	accData := &accountData{}
 	err = json.Unmarshal(data, accData)
 	if err != nil {
-		errLog("loadAccount: Unable to unmarshal the data.")
+		errLog("loadAccount: Unable to unmarshal the data: %v", err)
 		return err
 	}
 

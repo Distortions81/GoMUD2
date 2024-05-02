@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"strings"
 	"time"
 )
@@ -41,26 +40,23 @@ func (player *playerData) savePlayer() bool {
 }
 
 func (desc *descData) loadPlayer(plrStr string) bool {
-	if desc == nil {
-		return false
-	}
-	if desc.account == nil {
+	if desc == nil || desc.account == nil {
 		return false
 	}
 
-	fingerprint := ""
+	playFingerprint := ""
 	for _, target := range desc.account.Characters {
 		if target.Login == plrStr {
-			fingerprint = target.Fingerprint
+			playFingerprint = target.Fingerprint
 			break
 		}
 	}
-	if fingerprint == "" {
-		errLog("Fingerprint not found in account.")
+	if playFingerprint == "" {
+		errLog("Player not found in account.")
 		return false
 	}
 
-	data, err := readFile(DATA_DIR + ACCOUNT_DIR + desc.account.Fingerprint + "/" + fingerprint + ".json")
+	data, err := readFile(DATA_DIR + ACCOUNT_DIR + desc.account.Fingerprint + "/" + playFingerprint + ".json")
 	if err != nil {
 		return false
 	}
@@ -68,14 +64,14 @@ func (desc *descData) loadPlayer(plrStr string) bool {
 	player := &playerData{}
 	err = json.Unmarshal(data, player)
 	if err != nil {
-		errLog("loadAccount: Unable to unmarshal the data.")
+		errLog("loadPlayer: Unable to unmarshal the data.")
 		return false
 	}
 	player.valid = true
 
 	desc.player = player
 	desc.player.desc = desc
-	fmt.Println(desc.player)
+
 	playList = append(playList, player)
 	return true
 }
@@ -103,17 +99,17 @@ func (play *playerData) send(format string, args ...any) {
 func (play *playerData) sendToPlaying(format string, args ...any) {
 	for _, target := range descList {
 		if target.state == CON_PLAYING {
-			target.send(format, args...)
+			target.sendln(format, args...)
 		}
 	}
 }
 
 func cmdListCmds(desc *descData) {
-	desc.send("\r\nCommands:\r\n%v", strings.Join(cmdList, "\r\n"))
+	desc.sendln("\r\nCommands:\r\n%v", strings.Join(cmdList, "\r\n"))
 }
 
 func (play *playerData) quit(doClose bool) {
-	play.desc.send(textFiles["aurevoir"])
+	play.desc.sendln(textFiles["aurevoir"])
 
 	if doClose {
 		play.desc.state = CON_DISCONNECTED
@@ -126,4 +122,10 @@ func (play *playerData) quit(doClose bool) {
 		play.desc.numLines = 0
 		play.desc.inputLock.Unlock()
 	}
+}
+
+func (desc *descData) enterWorld() {
+	desc.state = CON_NEWS
+	desc.player.sendToPlaying("%v has arrived.", desc.account.tempCharName)
+
 }

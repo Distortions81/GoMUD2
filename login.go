@@ -77,7 +77,7 @@ type loginStates struct {
 var loginStateList = [CON_MAX]loginStates{
 	//Normal login
 	CON_LOGIN: {
-		prompt: "To create a new account type: NEW.\r\nLogin: ",
+		prompt: "To create a new account type: NEW\r\nLogin: ",
 		goDo:   gLogin,
 	},
 	CON_PASS: {
@@ -97,7 +97,7 @@ var loginStateList = [CON_MAX]loginStates{
 		goDo:   gNewLogin,
 	},
 	CON_NEW_LOGIN_CONFIRM: {
-		prompt: "(leave blank to choose a new login).\r\nConfirm login: ",
+		prompt: "(leave blank to choose a new login)\r\nConfirm login: ",
 		goDo:   gNewLoginConfirm,
 		anyKey: true,
 	},
@@ -107,7 +107,7 @@ var loginStateList = [CON_MAX]loginStates{
 		hideInfo: true,
 	},
 	CON_NEW_PASSPHRASE_CONFIRM: {
-		prompt:   "(leave blank to choose a new passphrase).\r\nConfirm passphrase: ",
+		prompt:   "(leave blank to choose a new passphrase)\r\nConfirm passphrase: ",
 		goDo:     gNewPassphraseConfirm,
 		anyKey:   true,
 		hideInfo: true,
@@ -123,7 +123,7 @@ var loginStateList = [CON_MAX]loginStates{
 		goDo:   gCharNewName,
 	},
 	CON_CHAR_CREATE_CONFIRM: {
-		prompt: "(leave blank to choose a new name).\r\nConfirm character name:",
+		prompt: "(leave blank to choose a new name)\r\nConfirm character name:",
 		goDo:   gCharConfirmName,
 		anyKey: true,
 	},
@@ -136,23 +136,24 @@ var loginStateList = [CON_MAX]loginStates{
 // Normal login
 func gLogin(desc *descData, input string) {
 	if accountIndex[input] != nil {
-		desc.loadAccount(accountIndex[input].Fingerprint)
+		err := desc.loadAccount(accountIndex[input].Fingerprint)
 		if desc.account != nil {
-			desc.sendln("Welcome %v!", input)
+			desc.sendln("Welcome back %v!", input)
 			desc.state = CON_PASS
 		} else {
-			desc.sendln("Unable to load that account.")
+			desc.sendln("ERROR: Sorry, unable to load that account!")
+			critLog("%v: %v: Unable to load account: %v (%v)", desc.id, desc.cAddr, input, err)
 			desc.close()
 			return
 		}
 
 	} else if strings.EqualFold("new", input) {
-		errLog("#%v Someone is creating a new login.", desc.id)
+		critLog("#%v: %v is creating a new login.", desc.id, desc.cAddr)
 		desc.state = CON_NEW_LOGIN
 
 	} else {
 		desc.sendln("Invalid login.")
-		errLog("#%v Someone tried a login that does not exist!", desc.id)
+		critLog("#%v: %v tried a login that does not exist!", desc.id, desc.cAddr)
 		desc.close()
 		return
 	}
@@ -161,12 +162,12 @@ func gLogin(desc *descData, input string) {
 func gPass(desc *descData, input string) {
 
 	if bcrypt.CompareHashAndPassword(desc.account.PassHash, []byte(input)) == nil {
-		desc.send("Pass okay.")
+		desc.sendln("Passphrase accepted.")
 		desc.state = CON_CHAR_LIST
 	} else {
 
-		desc.send("Incorrect passphrase.")
-		errLog("#%v Someone tried a invalid password!", desc.id)
+		desc.sendln("Incorrect passphrase.")
+		critLog("#%v: %v tried a invalid password!", desc.id, desc.cAddr)
 		desc.close()
 	}
 }
@@ -176,13 +177,13 @@ func gNews(desc *descData, input string) {
 }
 
 func gShowNews(desc *descData) {
-	desc.send("\r\n" + textFiles["news"] + "\r\n[Press return to enter the world]")
+	desc.sendln("\r\n" + textFiles["news"] + "\r\n[Press return to enter the world]")
 }
 
 // New login
 func gNewLogin(desc *descData, input string) {
 	if nameBad(input) {
-		desc.send("Sorry, that login is not appropriate.")
+		desc.sendln("Sorry, that login is not appropriate.")
 		return
 	}
 
@@ -264,28 +265,28 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 		desc.account.tempPass = ""
 
 		if err != nil {
-			errLog("ERROR: #%v password hashing failed!!!: %v", desc.id, err.Error())
+			critLog("ERROR: #%v password hashing failed!!!: %v", desc.id, err.Error())
 			desc.sendln("ERROR: something went wrong... Sorry!")
 			desc.close()
 			return
 		}
 	} else {
-		desc.sendln("Passwords did not match! Try again.")
+		desc.sendln("Passwords did not match! Goodbye!")
 		return
 	}
 
 	err := desc.account.createAccountDir()
 	if err != nil {
-		desc.send("Unable to create account! Pleaselet moderators knows!")
+		desc.sendln("Unable to create account! Pleaselet moderators knows!")
 		desc.close()
 	}
 
 	notSaved := desc.account.saveAccount()
 	if notSaved {
-		desc.send("Unable to save account! Please let moderators know!")
+		desc.sendln("Unable to save account! Please let moderators know!")
 		desc.close()
 	} else {
-		desc.send("Account created and saved.")
+		desc.sendln("Account created and saved.")
 		newAcc := &accountIndexData{
 			Login:       desc.account.Login,
 			Fingerprint: desc.account.Fingerprint,
@@ -310,10 +311,10 @@ func (desc *descData) suggestPasswords() {
 	for _, item := range passSuggestions {
 		buf = buf + item + "\n\r"
 	}
-	desc.send(buf)
+	desc.sendln(buf)
 }
 
 func gNewPassPrompt(desc *descData) {
 	desc.suggestPasswords()
-	desc.send("\r\n(minumum 8 characters long)\r\nPassphrase: ")
+	desc.sendln("\r\n(minumum 8 characters long)\r\nPassphrase: ")
 }

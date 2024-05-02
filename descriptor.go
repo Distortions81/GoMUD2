@@ -98,7 +98,7 @@ func (desc *descData) readDescLoop() {
 				} else if desc.telnet.subType == TermOpt_CHARSET {
 					desc.getCharset()
 				} else {
-					errLog("#%v: GOT unknown sub data: %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], string(desc.telnet.subData))
+					//errLog("#%v: GOT unknown sub data: %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], string(desc.telnet.subData))
 				}
 
 				desc.telnet.subMode = false
@@ -114,7 +114,7 @@ func (desc *descData) readDescLoop() {
 
 			desc.handleTelCmd(command, option)
 
-			errLog("#%v: Client: %v %v", desc.id, TermCmd2Txt[int(command)], TermOpt2TXT[int(option)])
+			//errLog("#%v: Client: %v %v", desc.id, TermCmd2Txt[int(command)], TermOpt2TXT[int(option)])
 		default:
 			if desc.telnet.subMode {
 				desc.captureSubSeqData(data)
@@ -149,7 +149,7 @@ func (desc *descData) getTermType() {
 	desc.telnet.termType = telSnFilter(string(desc.telnet.subData))
 	match := termTypeMap[desc.telnet.termType]
 
-	errLog("#%v: GOT %v: %s", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.subData)
+	//errLog("#%v: GOT %v: %s", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.subData)
 	if match != nil {
 		desc.telnet.options = match
 		if match.CharMap != nil {
@@ -175,7 +175,7 @@ func (desc *descData) getTermType() {
 func (desc *descData) getCharset() {
 	desc.telnet.charset = telSnFilter(string(desc.telnet.subData))
 	desc.setCharset()
-	errLog("#%v: GOT %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.charset)
+	//errLog("#%v: GOT %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.charset)
 
 	desc.sendSub(desc.telnet.charset, TermOpt_CHARSET, SB_ACCEPTED)
 }
@@ -273,7 +273,9 @@ func (desc *descData) send(format string, args ...any) error {
 
 	//Send telnet go-ahead
 	if !desc.telnet.options.SUPGA {
-		data = data + string([]byte{TermCmd_IAC, TermCmd_GOAHEAD})
+		if !strings.HasSuffix(data, "\n") {
+			data = data + string([]byte{TermCmd_IAC, TermCmd_GOAHEAD})
+		}
 	}
 
 	//Character map translation
@@ -287,7 +289,7 @@ func (desc *descData) send(format string, args ...any) error {
 	dlen := len(outBytes)
 	l, err := desc.conn.Write(outBytes)
 	if err != nil || dlen != l {
-		errLog("#%v: %v: write failed (connection lost)", desc.id, desc.cAddr)
+		//errLog("#%v: %v: write failed (connection lost)", desc.id, desc.cAddr)
 		return err
 	}
 
