@@ -114,13 +114,13 @@ func gCharConfirmName(desc *descData, input string) {
 
 func (acc *accountData) createAccountDir() error {
 	if acc.Fingerprint == "" {
-		critLog("account has no fingerprint: %v", acc.Login)
+		critLog("createAccountDir: account has no fingerprint: %v", acc.Login)
 		return fmt.Errorf("no fingerprint")
 	}
 
 	err := os.Mkdir(DATA_DIR+ACCOUNT_DIR+acc.Fingerprint, 0755)
 	if err != nil {
-		critLog("unable to make directory for account: %v", acc.Fingerprint)
+		critLog("createAccountDir: unable to make directory for account: %v", acc.Fingerprint)
 		return err
 	}
 	return nil
@@ -134,7 +134,7 @@ func (acc *accountData) saveAccount() (error bool) {
 	if acc == nil {
 		return true
 	} else if acc.Fingerprint == "" {
-		critLog("Account '%v' doesn't have a fingerprint.", acc.Login)
+		critLog("saveAccount: Account '%v' doesn't have a fingerprint.", acc.Login)
 		return
 	}
 	acc.Version = ACCOUNT_VERSION
@@ -176,7 +176,7 @@ func (desc *descData) loadAccount(fingerprint string) error {
 }
 
 func loadAccountIndex() error {
-	file := DATA_DIR + ACC_INDEX_FILE
+	file := DATA_DIR + ACCOUNT_DIR + ACC_INDEX_FILE
 	data, err := readFile(file)
 	if err != nil {
 		return err
@@ -204,7 +204,7 @@ func saveAccountIndex() error {
 		return err
 	}
 
-	file := DATA_DIR + ACC_INDEX_FILE
+	file := DATA_DIR + ACCOUNT_DIR + ACC_INDEX_FILE
 	tempFile := file + ".tmp"
 	err = saveFile(tempFile, outbuf.Bytes())
 	if err != nil {

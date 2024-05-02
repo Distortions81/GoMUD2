@@ -186,7 +186,7 @@ func (desc *descData) captureSubSeqData(data byte) {
 		desc.telnet.subMode = false
 		desc.telnet.subData = []byte{}
 		desc.telnet.subLength = 0
-		errLog("#%v subsequece size went over %v, abort", desc.id, maxSubLen)
+		errLog("#%v subsequence size went over %v, abort", desc.id, maxSubLen)
 		return
 	}
 

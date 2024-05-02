@@ -14,10 +14,10 @@ func (player *playerData) savePlayer() bool {
 	enc.SetIndent("", "\t")
 
 	if player == nil {
-		critLog("Nil player.")
+		critLog("savePlayer: Nil player.")
 		return false
 	} else if player.Fingerprint == "" {
-		critLog("Player '%v' doesn't have a fingerprint.", player.Name)
+		critLog("savePlayer: Player '%v' doesn't have a fingerprint.", player.Name)
 		return false
 	}
 	player.Version = PLAYER_VERSION
@@ -52,7 +52,7 @@ func (desc *descData) loadPlayer(plrStr string) bool {
 		}
 	}
 	if playFingerprint == "" {
-		errLog("Player not found in account.")
+		errLog("loadPlayer: Player not found in account.")
 		return false
 	}
 

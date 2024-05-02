@@ -10,12 +10,12 @@ var greetBuf string
 
 const textExt = ".txt"
 
-func ReadTextFiles() {
+func readTextFiles() {
 	textFiles = make(map[string]string)
 
 	dir, err := os.ReadDir(DATA_DIR + TEXTS_DIR)
 	if err != nil {
-		errLog("ReadTextFiles: Unable to read texts dir.")
+		errLog("readTextFiles: Unable to read texts dir.")
 		os.Exit(1)
 	}
 
@@ -28,13 +28,13 @@ func ReadTextFiles() {
 		}
 		data, err := os.ReadFile(DATA_DIR + TEXTS_DIR + fname.Name())
 		if err != nil {
-			errLog("ReadTextFiles: Unable to read file: %v. Error: %v", fname, err.Error())
+			errLog("readTextFiles: Unable to read file: %v. Error: %v", fname, err.Error())
 			os.Exit(1)
 		}
 
 		shortName := strings.TrimSuffix(fname.Name(), textExt)
 		textFiles[shortName] = ANSIColor(string(data))
-		//errLog("ReadTextFiles: Read: %v", fname.Name())
+		//errLog("readTextFiles: Read: %v", fname.Name())
 	}
 
 	//Login prompt

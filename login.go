@@ -142,7 +142,7 @@ func gLogin(desc *descData, input string) {
 			desc.state = CON_PASS
 		} else {
 			desc.sendln("ERROR: Sorry, unable to load that account!")
-			critLog("%v: %v: Unable to load account: %v (%v)", desc.id, desc.cAddr, input, err)
+			critLog("gLogin: %v: %v: Unable to load account: %v (%v)", desc.id, desc.cAddr, input, err)
 			desc.close()
 			return
 		}
