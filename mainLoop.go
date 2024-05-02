@@ -20,16 +20,16 @@ func mainLoop() {
 		start := time.Now()
 
 		descLock.Lock()
-		//Remove dead players
-		var newPlayList []*playerData
-		for _, target := range playList {
+		//Remove dead characters
+		var newCharacterList []*characterData
+		for _, target := range characterList {
 			if !target.valid {
-				errLog("Removed player %v", target.Name)
+				errLog("Removed character %v", target.Name)
 				continue
 			}
-			newPlayList = append(newPlayList, target)
+			newCharacterList = append(newCharacterList, target)
 		}
-		playList = newPlayList
+		characterList = newCharacterList
 
 		//Remove dead descriptors
 		var newDescList []*descData

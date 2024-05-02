@@ -5,19 +5,21 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/hako/durafmt"
 )
 
 type commandData struct {
 	level pLEVEL
 	hint  string
-	goDo  func(play *playerData, data string)
+	goDo  func(player *characterData, data string)
 	args  []string
 }
 
 var commandList = map[string]*commandData{
 	"say":    {hint: "sends a message", goDo: cmdSay, args: []string{"message"}},
 	"quit":   {hint: "quits and disconnects.", goDo: cmdQuit},
-	"logout": {hint: "quits back to character selection.", goDo: cmdLogout},
+	"logout": {hint: "go back to account character selection.", goDo: cmdLogout},
 	"who":    {hint: "show players online", goDo: cmdWho},
 }
 
@@ -46,24 +48,32 @@ func init() {
 	sort.Strings(cmdList)
 }
 
-func cmdSay(play *playerData, input string) {
+func cmdSay(player *characterData, input string) {
 
 	trimInput := strings.TrimSpace(input)
-	play.sendToPlaying("%v: %v", play.desc.player.Name, trimInput)
+	player.sendToPlaying("%v: %v", player.desc.character.Name, trimInput)
 }
 
-func cmdQuit(play *playerData, input string) {
-	play.quit(true)
+func cmdQuit(player *characterData, input string) {
+	player.quit(true)
 }
 
-func cmdLogout(play *playerData, input string) {
-	play.quit(false)
+func cmdLogout(player *characterData, input string) {
+	player.quit(false)
 }
 
-func cmdWho(play *playerData, input string) {
+func cmdWho(player *characterData, input string) {
 	var buf string = "Players online:\r\n"
-	for _, target := range playList {
-		buf = buf + fmt.Sprintf("%30v -- %v\r\n", target.Name, time.Since(target.LoginTime))
+	for _, target := range characterList {
+		if !target.valid {
+			continue
+		}
+		var idleTime string
+		if time.Since(target.desc.idleTime) > time.Minute {
+			idleTime = fmt.Sprintf(" (idle %v)", durafmt.Parse(time.Since(target.loginTime).Round(time.Second)).LimitFirstN(2))
+		}
+		buf = buf + fmt.Sprintf("%30v -- %v%v\r\n", target.Name, durafmt.Parse(time.Since(target.loginTime).Round(time.Second)).LimitFirstN(2), idleTime)
+
 	}
-	play.send(buf)
+	player.send(buf)
 }

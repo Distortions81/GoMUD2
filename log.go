@@ -43,6 +43,9 @@ func critLog(format string, args ...any) {
 	doLog(elog, format, args...)
 
 	for _, d := range descList {
+		if !d.valid {
+			continue
+		}
 		if d.state == CON_PLAYING {
 			d.sendln("ERROR: "+format, args...)
 		}

@@ -1,5 +1,7 @@
 package main
 
+import "time"
+
 func (desc *descData) interp() {
 	var input string
 
@@ -26,15 +28,14 @@ func (desc *descData) interp() {
 		desc.inputLock.Unlock()
 	}
 
+	desc.idleTime = time.Now()
+
 	//Playing, or disconnected
 	if desc.state == CON_PLAYING {
-		if desc.player != nil {
-			desc.player.handleCommands(input)
-			mudLog("%v: %v", desc.player.Name, input)
+		if desc.character != nil {
+			desc.character.handleCommands(input)
+			mudLog("%v: %v", desc.character.Name, input)
 		}
-		return
-	} else if desc.state == CON_DISCONNECTED {
-		desc.sendln(textFiles["aurevoir"])
 		return
 	}
 

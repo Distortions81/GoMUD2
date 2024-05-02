@@ -63,6 +63,7 @@ var accountIndex = make(map[string]*accountIndexData)
 type accountIndexData struct {
 	Login       string
 	Fingerprint string
+	Added       time.Time
 }
 
 type loginStates struct {
@@ -117,6 +118,10 @@ var loginStateList = [CON_MAX]loginStates{
 	CON_CHAR_LIST: {
 		goPrompt: gCharList,
 		goDo:     gCharSelect,
+	},
+	CON_RECONNECT_CONFIRM: {
+		prompt: "That character is already playing!\r\nIf you join, the other connection will be kicked!\r\nAre you sure you want to continue? (y/n)",
+		goDo:   gReconnectConfirm,
 	},
 	CON_CHAR_CREATE: {
 		prompt: "Character name:",
@@ -174,6 +179,7 @@ func gPass(desc *descData, input string) {
 
 func gNews(desc *descData, input string) {
 	desc.state = CON_PLAYING
+	desc.character.sendToPlaying("%v has arrived.", desc.character.Name)
 }
 
 func gShowNews(desc *descData) {
@@ -194,7 +200,7 @@ func gNewLogin(desc *descData, input string) {
 			Login:       input,
 			Fingerprint: makeFingerprintString(),
 			CreDate:     time.Now(),
-			LastOnline:  time.Now(),
+			ModDate:     time.Now(),
 		}
 		desc.state = CON_NEW_LOGIN_CONFIRM
 	} else {
@@ -245,24 +251,24 @@ func gNewPassphrase(desc *descData, input string) {
 		return
 	}
 
-	desc.account.tempPass = input
+	desc.account.tempString = input
 	desc.state = CON_NEW_PASSPHRASE_CONFIRM
 }
 
 func gNewPassphraseConfirm(desc *descData, input string) {
 	if input == "" {
 		desc.state = CON_NEW_PASSPHRASE
-		desc.account.tempPass = ""
+		desc.account.tempString = ""
 		desc.sendln("Okay, lets start over!")
 		return
 	}
-	if input == desc.account.tempPass {
+	if input == desc.account.tempString {
 
 		desc.sendln("Hashing password... one moment please!")
 		var err error
 		desc.account.PassHash, err = bcrypt.GenerateFromPassword([]byte(input), PASSPHRASE_HASH_COST)
 		desc.sendln("Okay, passwords match!")
-		desc.account.tempPass = ""
+		desc.account.tempString = ""
 
 		if err != nil {
 			critLog("ERROR: #%v password hashing failed!!!: %v", desc.id, err.Error())
@@ -290,6 +296,7 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 		newAcc := &accountIndexData{
 			Login:       desc.account.Login,
 			Fingerprint: desc.account.Fingerprint,
+			Added:       time.Now(),
 		}
 		accountIndex[desc.account.Login] = newAcc
 		saveAccountIndex()

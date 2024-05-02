@@ -16,10 +16,10 @@ const (
 )
 
 var (
-	topID    uint64
-	descList []*descData
-	descLock sync.Mutex
-	playList []*playerData
+	topID         uint64
+	descList      []*descData
+	descLock      sync.Mutex
+	characterList []*characterData
 )
 
 type descData struct {
@@ -28,6 +28,7 @@ type descData struct {
 	reader            *bufio.Reader
 	state             int
 	host, addr, cAddr string
+	idleTime          time.Time
 
 	tls bool
 
@@ -40,23 +41,24 @@ type descData struct {
 	numLines   int
 	lineBuffer []string
 
-	account *accountData
-	player  *playerData
+	account   *accountData
+	character *characterData
 
 	connectTime time.Time
 	valid       bool
 }
 
-type playerData struct {
+type characterData struct {
 	Version     int
 	Fingerprint string
 
 	Name string
 	desc *descData
 
-	LoginTime time.Time
-	SaveTime  time.Time
-	CreDate   time.Time
+	SaveTime time.Time
+	CreDate  time.Time
+
+	loginTime time.Time
 
 	dirty bool
 	valid bool
@@ -83,12 +85,10 @@ type accountData struct {
 	Login    string
 	PassHash []byte
 
-	tempPass     string
-	tempCharName string
+	tempString string
 
-	CreDate    time.Time
-	ModDate    time.Time
-	LastOnline time.Time
+	CreDate time.Time
+	ModDate time.Time
 
 	Characters []accountIndexData
 	Banned     *banData `json:",omitempty"`

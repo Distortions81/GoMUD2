@@ -12,19 +12,23 @@ import (
 
 func gCharList(desc *descData) {
 	numChars := len(desc.account.Characters)
-
 	if numChars <= 0 {
 		desc.sendln("You don't have any characters right now.\r\nType NEW to create one:")
 		return
 	}
+
 	var buf string = "\r\n"
 	for i, item := range desc.account.Characters {
-		buf = buf + fmt.Sprintf("#%v: %v\r\n", i+1, item.Login)
+		var playing string
+		if target := checkPlaying(item.Login, item.Fingerprint); target != nil {
+			playing = " (PLAYING)"
+		}
+		buf = buf + fmt.Sprintf("#%v: %v%v\r\n", i+1, item.Login, playing)
 	}
 	if numChars < MAX_CHAR_SLOTS {
 		buf = buf + "Type NEW to create a new character.\r\n"
 	}
-	buf = buf + "Select a player by number or name: "
+	buf = buf + "Enter a character by #number or name: "
 	desc.sendln(buf)
 }
 
@@ -32,42 +36,66 @@ func gCharSelect(desc *descData, input string) {
 
 	if strings.EqualFold(input, "new") {
 		if len(desc.account.Characters) < MAX_CHAR_SLOTS {
-			desc.sendln("Okay, creating new character!")
+			desc.sendln("Okay, lets choose a name for the new character.")
 			desc.state = CON_CHAR_CREATE
-			return
 		} else {
-			desc.sendln("Sorry, you have hit the limit.")
-			return
+			desc.sendln("Sorry, you have hit the max number of characters.")
 		}
-	} else {
-		num, err := strconv.Atoi(input)
-		if err != nil {
-			for _, item := range desc.account.Characters {
-				if strings.EqualFold(item.Login, input) {
-					if desc.loadPlayer(item.Login) {
-						desc.enterWorld()
-						return
-					} else {
-						desc.sendln("Unable to load that character.")
-						return
-					}
+		return
+	}
+	num, err := strconv.Atoi(input)
+	if err != nil {
+		for _, item := range desc.account.Characters {
+			if strings.EqualFold(item.Login, input) {
+				if target := checkPlaying(item.Login, item.Fingerprint); target != nil {
+					desc.account.tempString = item.Login
+					desc.state = CON_RECONNECT_CONFIRM
+					return
 				}
-			}
-			desc.sendln("Didn't find a character by the name: %v", input)
-		} else {
-			if num > 0 && num <= len(desc.account.Characters) {
-				if desc.loadPlayer(desc.account.Characters[num-1].Login) {
+				if desc.loadCharacter(item.Login) {
 					desc.enterWorld()
 					return
 				} else {
 					desc.sendln("Unable to load that character.")
 					return
 				}
-			} else {
-				desc.sendln("That player doesn't seem to exist.")
 			}
 		}
+		desc.sendln("Didn't find a character by the name: %v", input)
+	} else {
+		if num > 0 && num <= len(desc.account.Characters) {
+			var target *characterData
+			if target = checkPlaying(desc.account.Characters[num-1].Login, desc.account.Characters[num-1].Fingerprint); target != nil {
+				target.send("Someone is attempting to play this character! You may be kicked!")
+				desc.account.tempString = desc.account.Characters[num-1].Login
+				desc.state = CON_RECONNECT_CONFIRM
+				return
+			}
+			if desc.loadCharacter(desc.account.Characters[num-1].Login) {
+				desc.enterWorld()
+				return
+			} else {
+				desc.sendln("Unable to load that character.")
+				return
+			}
+		} else {
+			desc.sendln("That character doesn't seem to exist.")
+		}
 	}
+}
+
+func gReconnectConfirm(desc *descData, input string) {
+	filtered := strings.TrimSpace(input)
+	filtered = strings.ToLower(filtered)
+	if strings.HasPrefix(filtered, "y") {
+		if desc.loadCharacter(desc.account.tempString) {
+			desc.enterWorld()
+		}
+	} else {
+		gCharList(desc)
+		desc.state = CON_CHAR_LIST
+	}
+	desc.account.tempString = ""
 }
 
 func gCharNewName(desc *descData, input string) {
@@ -82,7 +110,7 @@ func gCharNewName(desc *descData, input string) {
 		return
 	}
 
-	desc.account.tempCharName = input
+	desc.account.tempString = input
 	desc.state = CON_CHAR_CREATE_CONFIRM
 }
 
@@ -91,22 +119,22 @@ func gCharConfirmName(desc *descData, input string) {
 		desc.sendln("Okay, we can try again.")
 		desc.state = CON_CHAR_CREATE
 		return
-	} else if input == desc.account.tempCharName {
-		desc.sendln("Okay, you will be called %v.", input)
-		desc.player = &playerData{
+	} else if input == desc.account.tempString {
+		desc.sendln("Okay, your new character be called %v.", input)
+		desc.character = &characterData{
 			Fingerprint: makeFingerprintString(),
 			Name:        input,
 			desc:        desc,
 			valid:       true,
-			LoginTime:   time.Now(),
+			loginTime:   time.Now(),
 		}
 		desc.account.Characters = append(desc.account.Characters,
-			accountIndexData{Login: desc.account.tempCharName, Fingerprint: desc.player.Fingerprint})
-		desc.player.sendToPlaying("Welcome %v to the lands!", desc.account.tempCharName)
+			accountIndexData{Login: desc.account.tempString, Fingerprint: desc.character.Fingerprint, Added: time.Now()})
+		desc.character.sendToPlaying("--> {GW{gelcome{x %v to the lands! <--", desc.account.tempString)
 		desc.account.ModDate = time.Now()
 		desc.account.saveAccount()
-		desc.player.savePlayer()
-		desc.state = CON_NEWS
+		desc.character.saveCharacter()
+		desc.enterWorld()
 	} else {
 		desc.sendln("Names did not match. Try again, or blank line to choose a new name.")
 	}
@@ -138,9 +166,8 @@ func (acc *accountData) saveAccount() (error bool) {
 		return
 	}
 	acc.Version = ACCOUNT_VERSION
-	fileName := DATA_DIR + ACCOUNT_DIR + acc.Fingerprint + "/" + ACCOUNT_FILE
-
 	acc.ModDate = time.Now()
+	fileName := DATA_DIR + ACCOUNT_DIR + acc.Fingerprint + "/" + ACCOUNT_FILE
 
 	err := enc.Encode(&acc)
 	if err != nil {

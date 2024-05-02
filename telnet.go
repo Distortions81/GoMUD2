@@ -60,7 +60,7 @@ func (desc *descData) close() {
 	}
 	desc.state = CON_DISCONNECTED
 	if desc.account != nil {
-		desc.account.tempPass = ""
+		desc.account.tempString = ""
 	}
 	desc.valid = false
 	if desc.conn != nil {

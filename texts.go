@@ -6,7 +6,7 @@ import (
 )
 
 var textFiles map[string]string
-var greetBuf string
+var greetBuf, aurevoirBuf string
 
 const textExt = ".txt"
 
@@ -41,4 +41,5 @@ func readTextFiles() {
 	lItem := loginStateList[CON_LOGIN]
 	promptStr := lItem.prompt
 	greetBuf = LICENSE + textFiles["greet"] + promptStr
+	aurevoirBuf = textFiles["aurevoir"]
 }
