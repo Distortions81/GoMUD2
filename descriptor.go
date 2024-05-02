@@ -9,9 +9,8 @@ import (
 )
 
 const (
-	maxInputLineLength = 1024 * 10
-	connDeadline       = time.Second * 15
-	maxLines           = 500
+	maxInputLineLength = 1024
+	maxLines           = 50
 	maxSubLen          = 128
 )
 

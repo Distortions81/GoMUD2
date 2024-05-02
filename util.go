@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -115,15 +114,12 @@ func wideCheck(input string, target string) bool {
 		}
 	}
 
-	var tmp io.Reader = strings.NewReader(squished)
-	tmp = transform.NewReader(tmp, DEFAULT_CHARMAP.NewEncoder())
-
 	//Caps-insensitive matching
 	if strings.EqualFold(squished, target) {
-		errLog("wideCheck: MATCH: input: %v, target: %v, normalized: %v, squished: %v", input, target, result, squished)
+		//errLog("wideCheck: MATCH: input: %v, target: %v, normalized: %v, squished: %v", input, target, result, squished)
 		return true
 	} else {
-		errLog("wideCheck: input: %v, normalized: %v, squished: %v", input, result, squished)
+		//errLog("wideCheck: input: %v, normalized: %v, squished: %v", input, result, squished)
 		return false
 	}
 }

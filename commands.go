@@ -7,9 +7,6 @@ import (
 	"time"
 )
 
-const WARN_CHAT_REPEAT = 5
-const MAX_CHAT_REPEAT = 10
-
 type commandData struct {
 	level pLEVEL
 	hint  string
@@ -18,7 +15,7 @@ type commandData struct {
 }
 
 var commandList = map[string]*commandData{
-	"say":    {hint: "sends a message", goDo: cmdChat, args: []string{"message"}},
+	"say":    {hint: "sends a message", goDo: cmdSay, args: []string{"message"}},
 	"quit":   {hint: "quits and disconnects.", goDo: cmdQuit},
 	"logout": {hint: "quits back to character selection.", goDo: cmdLogout},
 	"who":    {hint: "show players online", goDo: cmdWho},
@@ -49,21 +46,10 @@ func init() {
 	sort.Strings(cmdList)
 }
 
-func cmdChat(play *playerData, input string) {
-	trimInput := strings.TrimSpace(input)
-	if strings.EqualFold(trimInput, play.desc.lastChat) {
-		play.desc.chatRepeatCount++
-		if play.desc.chatRepeatCount >= MAX_CHAT_REPEAT {
-			play.desc.state = CON_DISCONNECTED
-			return
-		} else if play.desc.chatRepeatCount >= WARN_CHAT_REPEAT {
-			play.desc.send("Stop repeating yourself please.")
-			return
-		}
-	}
-	play.desc.lastChat = trimInput
+func cmdSay(play *playerData, input string) {
 
-	play.sendToPlaying("%v: %v", play.desc.player.Name, input)
+	trimInput := strings.TrimSpace(input)
+	play.sendToPlaying("%v: %v", play.desc.player.Name, trimInput)
 }
 
 func cmdQuit(play *playerData, input string) {

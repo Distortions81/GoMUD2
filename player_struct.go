@@ -11,7 +11,9 @@ import (
 
 type pLEVEL int
 
-const ()
+const (
+	CHAT_SPAM_HISTORY = 10
+)
 
 var (
 	topID    uint64
@@ -34,9 +36,6 @@ type descData struct {
 	inputLock      sync.Mutex
 	inputBufferLen int
 	inputBuffer    []byte
-
-	lastChat        string
-	chatRepeatCount int
 
 	numLines   int
 	lineBuffer []string
