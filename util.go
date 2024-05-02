@@ -14,15 +14,11 @@ import (
 	"golang.org/x/text/unicode/norm"
 )
 
-func makeFingerprintString(id string) string {
+func makeFingerprintString() string {
 	p1 := RandStringRunes(32)
 	p2 := TimeStringRunes()
 
-	if id == "" {
-		return (p1 + "-" + p2)
-	} else {
-		return (p1 + "-" + p2 + "-" + id)
-	}
+	return (p1 + "-" + p2)
 }
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_")

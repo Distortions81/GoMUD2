@@ -2,6 +2,7 @@ package main
 
 import (
 	"strings"
+	"time"
 
 	"github.com/martinhoefling/goxkcdpwgen/xkcdpwgen"
 	passwordvalidator "github.com/wagslane/go-password-validator"
@@ -57,20 +58,10 @@ const (
 	CON_MAX
 )
 
-var accountIndex map[string]*accountIndexData
-var playerIndex []*playerIndexData
-
-func init() {
-	accountIndex = make(map[string]*accountIndexData)
-}
+var accountIndex = make(map[string]*accountIndexData)
 
 type accountIndexData struct {
 	Login       string
-	Fingerprint string
-}
-
-type playerIndexData struct {
-	Name        string
 	Fingerprint string
 }
 
@@ -144,9 +135,16 @@ var loginStateList = [CON_MAX]loginStates{
 
 // Normal login
 func gLogin(desc *descData, input string) {
-	if input == "tester" {
-		desc.sendln("Welcome %v!", input)
-		desc.state = CON_PASS
+	if accountIndex[input] != nil {
+		desc.loadAccount(accountIndex[input].Fingerprint)
+		if desc.account != nil {
+			desc.sendln("Welcome %v!", input)
+			desc.state = CON_PASS
+		} else {
+			desc.sendln("Unable to load that account.")
+			desc.close()
+			return
+		}
 
 	} else if strings.EqualFold("new", input) {
 		errLog("#%v Someone is creating a new login.", desc.id)
@@ -161,17 +159,15 @@ func gLogin(desc *descData, input string) {
 }
 
 func gPass(desc *descData, input string) {
-	if input == "passphrase" {
-		desc.send("Pass okay.")
 
-		//TODO replace when we add load
-		desc.account = &accountData{Login: input, Fingerprint: makeFingerprintString("")}
+	if bcrypt.CompareHashAndPassword(desc.account.PassHash, []byte(input)) == nil {
+		desc.send("Pass okay.")
 		desc.state = CON_CHAR_LIST
 	} else {
+
 		desc.send("Incorrect passphrase.")
 		errLog("#%v Someone tried a invalid password!", desc.id)
 		desc.close()
-		return
 	}
 }
 
@@ -193,7 +189,12 @@ func gNewLogin(desc *descData, input string) {
 	inputLen := len([]byte(input))
 	if inputLen >= MIN_LOGIN_LEN && inputLen <= MAX_LOGIN_LEN {
 		desc.sendln("Okay, login is: %v", input)
-		desc.account = &accountData{Login: input, Fingerprint: makeFingerprintString("")}
+		desc.account = &accountData{
+			Login:       input,
+			Fingerprint: makeFingerprintString(),
+			CreDate:     time.Now(),
+			LastOnline:  time.Now(),
+		}
 		desc.state = CON_NEW_LOGIN_CONFIRM
 	} else {
 		desc.sendln("Sorry, that is not an acceptable login.")
@@ -273,19 +274,22 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 		return
 	}
 
-	err := createAccountDir(desc.account)
+	err := desc.account.createAccountDir()
 	if err != nil {
 		desc.send("Unable to create account! Pleaselet moderators knows!")
 		desc.close()
 	}
 
-	notSaved := saveAccount(desc.account)
+	notSaved := desc.account.saveAccount()
 	if notSaved {
 		desc.send("Unable to save account! Please let moderators know!")
 		desc.close()
 	} else {
 		desc.send("Account created and saved.")
-		newAcc := &accountIndexData{Login: desc.account.Login, Fingerprint: desc.account.Fingerprint}
+		newAcc := &accountIndexData{
+			Login:       desc.account.Login,
+			Fingerprint: desc.account.Fingerprint,
+		}
 		accountIndex[desc.account.Login] = newAcc
 		saveAccountIndex()
 	}

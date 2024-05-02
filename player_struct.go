@@ -48,7 +48,8 @@ type descData struct {
 }
 
 type playerData struct {
-	Version int
+	Version     int
+	Fingerprint string
 
 	Name string
 	desc *descData
@@ -89,7 +90,7 @@ type accountData struct {
 	ModDate    time.Time
 	LastOnline time.Time
 
-	Characters []string
+	Characters []accountIndexData
 	Banned     *banData `json:",omitempty"`
 
 	dirty bool

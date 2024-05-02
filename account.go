@@ -19,7 +19,7 @@ func gCharList(desc *descData) {
 	}
 	var buf string = "\r\n"
 	for i, item := range desc.account.Characters {
-		buf = buf + fmt.Sprintf("#%v: %v\r\n", i+1, item)
+		buf = buf + fmt.Sprintf("#%v: %v\r\n", i+1, item.Login)
 	}
 	if numChars < MAX_CHAR_SLOTS {
 		buf = buf + "Type NEW to create a new character.\r\n"
@@ -44,28 +44,28 @@ func gCharSelect(desc *descData, input string) {
 		num, err := strconv.Atoi(input)
 		if err != nil {
 			for _, item := range desc.account.Characters {
-				if strings.EqualFold(item, input) {
-					desc.send("DEBUG: Would have loaded: %v", input)
-
-					newPlayer := &playerData{Name: input, desc: desc, valid: true, LoginTime: time.Now()}
-					desc.player = newPlayer
-					playList = append(playList, newPlayer)
-					desc.state = CON_NEWS
-					desc.player.sendToPlaying("%v has arrived.", desc.account.tempCharName)
-					return
+				if strings.EqualFold(item.Login, input) {
+					if desc.loadPlayer(item.Login) {
+						desc.state = CON_NEWS
+						desc.player.sendToPlaying("%v has arrived.", desc.account.tempCharName)
+						return
+					} else {
+						desc.send("Unable to load that character.")
+						return
+					}
 				}
 			}
 			desc.send("Didn't find a character by the name: %v", input)
 		} else {
 			if num > 0 && num <= numChars {
-				selectedChar := desc.account.Characters[num-1]
-
-				newPlayer := &playerData{Name: selectedChar, desc: desc, valid: true, LoginTime: time.Now()}
-				desc.player = newPlayer
-				playList = append(playList, newPlayer)
-				desc.state = CON_NEWS
-				desc.send("DEBUG: Would have loaded %v", selectedChar)
-				return
+				if desc.loadPlayer(desc.account.Characters[num-1].Login) {
+					desc.state = CON_NEWS
+					desc.player.sendToPlaying("%v has arrived.", desc.account.tempCharName)
+					return
+				} else {
+					desc.send("Unable to load that character.")
+					return
+				}
 			} else {
 				desc.send("That player doesn't seem to exist.")
 			}
@@ -96,17 +96,26 @@ func gCharConfirmName(desc *descData, input string) {
 		return
 	} else if input == desc.account.tempCharName {
 		desc.send("Okay, you will be called %v.", input)
-		desc.account.Characters = append(desc.account.Characters, desc.account.tempCharName)
-		desc.player = &playerData{Name: input, desc: desc, valid: true, LoginTime: time.Now()}
+		desc.player = &playerData{
+			Fingerprint: makeFingerprintString(),
+			Name:        input,
+			desc:        desc,
+			valid:       true,
+			LoginTime:   time.Now(),
+		}
+		desc.account.Characters = append(desc.account.Characters,
+			accountIndexData{Login: desc.account.tempCharName, Fingerprint: desc.player.Fingerprint})
 		desc.player.sendToPlaying("Welcome %v to the lands!", desc.account.tempCharName)
-
+		desc.account.ModDate = time.Now()
+		desc.account.saveAccount()
+		desc.player.savePlayer()
 		desc.state = CON_NEWS
 	} else {
 		desc.send("Names did not match. Try again, or blank line to choose a new name.")
 	}
 }
 
-func createAccountDir(acc *accountData) error {
+func (acc *accountData) createAccountDir() error {
 	if acc.Fingerprint == "" {
 		critLog("account has no fingerprint: %v", acc.Login)
 		return fmt.Errorf("no fingerprint")
@@ -120,7 +129,7 @@ func createAccountDir(acc *accountData) error {
 	return nil
 }
 
-func saveAccount(acc *accountData) (error bool) {
+func (acc *accountData) saveAccount() (error bool) {
 	outbuf := new(bytes.Buffer)
 	enc := json.NewEncoder(outbuf)
 	enc.SetIndent("", "\t")
@@ -151,8 +160,8 @@ func saveAccount(acc *accountData) (error bool) {
 	return false
 }
 
-func loadAccount(desc *descData, acc *accountData) error {
-	data, err := readFile("file")
+func (desc *descData) loadAccount(fingerprint string) error {
+	data, err := readFile(DATA_DIR + ACCOUNT_DIR + fingerprint + "/" + ACCOUNT_FILE)
 	if err != nil {
 		return err
 	}
@@ -187,7 +196,6 @@ func loadAccountIndex() error {
 }
 
 func saveAccountIndex() error {
-
 	outbuf := new(bytes.Buffer)
 	enc := json.NewEncoder(outbuf)
 	enc.SetIndent("", "\t")
@@ -199,53 +207,6 @@ func saveAccountIndex() error {
 	}
 
 	file := DATA_DIR + ACC_INDEX_FILE
-	tempFile := file + ".tmp"
-	err = saveFile(tempFile, outbuf.Bytes())
-	if err != nil {
-		critLog("saveAccountIndex: saveFile failed %v", err.Error())
-		return err
-	}
-	err = os.Rename(tempFile, file)
-	if err != nil {
-		critLog("saveAccountIndex: rename failed %v", err.Error())
-		return err
-	}
-	errLog("Account index saved.")
-
-	return nil
-}
-
-func loadPlayerIndex(acc *accountData) error {
-	file := DATA_DIR + acc.Fingerprint + PLAYER_INDEX_FILE
-	data, err := readFile(file)
-	if err != nil {
-		return err
-	}
-
-	newIndex := make(map[string]*accountIndexData)
-	err = json.Unmarshal(data, &newIndex)
-	if err != nil {
-		errLog("loadAccountIndex: Unable to unmarshal the data.")
-		return err
-	}
-
-	accountIndex = newIndex
-	return nil
-}
-
-func savePlayerIndex(acc *accountData) error {
-
-	outbuf := new(bytes.Buffer)
-	enc := json.NewEncoder(outbuf)
-	enc.SetIndent("", "\t")
-
-	err := enc.Encode(&accountIndex)
-	if err != nil {
-		critLog("saveAccountIndex: enc.Encode: %v", err.Error())
-		return err
-	}
-
-	file := DATA_DIR + acc.Fingerprint + PLAYER_INDEX_FILE
 	tempFile := file + ".tmp"
 	err = saveFile(tempFile, outbuf.Bytes())
 	if err != nil {
