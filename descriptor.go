@@ -96,7 +96,7 @@ func (desc *descData) readDescLoop() {
 				} else if desc.telnet.subType == TermOpt_CHARSET {
 					desc.getCharset()
 				} else {
-					//errLog("#%v: GOT unknown sub data: %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], string(desc.telnet.subData))
+					errLog("#%v: GOT unknown sub data: %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], string(desc.telnet.subData))
 				}
 
 				desc.telnet.subMode = false

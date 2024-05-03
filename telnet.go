@@ -31,9 +31,11 @@ func (desc *descData) sendSub(data string, args ...byte) error {
 		return err
 	}
 
-	if len(args) > 1 {
-		//errLog("#%v: Sent sub: %v %v %d", desc.id, data, TermOpt2TXT[int(args[0])], args[1])
-	}
+	/*
+		if len(args) > 1 {
+			errLog("#%v: Sent sub: %v %v %d", desc.id, data, TermOpt2TXT[int(args[0])], args[1])
+		}
+	*/
 
 	return nil
 }

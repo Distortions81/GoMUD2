@@ -10,10 +10,9 @@ import (
 )
 
 type commandData struct {
-	level pLEVEL
-	hint  string
-	goDo  func(player *characterData, data string)
-	args  []string
+	hint string
+	goDo func(player *characterData, data string)
+	args []string
 }
 
 var commandList = map[string]*commandData{

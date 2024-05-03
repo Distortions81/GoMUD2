@@ -37,7 +37,7 @@ var makeDirs = []string{
 	LOGS_DIR}
 
 func init() {
-	for i, _ := range commandList {
+	for i := range commandList {
 		nameBlacklist = append(nameBlacklist, strings.ToLower(i))
 	}
 }

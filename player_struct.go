@@ -9,12 +9,6 @@ import (
 	"golang.org/x/text/encoding/charmap"
 )
 
-type pLEVEL int
-
-const (
-	CHAT_SPAM_HISTORY = 10
-)
-
 var (
 	topID         uint64
 	descList      []*descData
@@ -94,7 +88,6 @@ type accountData struct {
 	Banned     *banData `json:",omitempty"`
 
 	dirty bool
-	valid bool
 }
 
 type banData struct {
