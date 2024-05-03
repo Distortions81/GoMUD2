@@ -1,6 +1,11 @@
 package main
 
-import "time"
+import (
+	"sync"
+	"time"
+)
+
+var postTick sync.Mutex
 
 func (desc *descData) interp() {
 	var input string
@@ -27,6 +32,9 @@ func (desc *descData) interp() {
 
 		desc.inputLock.Unlock()
 	}
+
+	postTick.Lock()
+	defer postTick.Unlock()
 
 	desc.idleTime = time.Now()
 

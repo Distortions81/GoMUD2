@@ -60,8 +60,8 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 	target := checkPlaying(plrStr, playFingerprint)
 
 	if target != nil {
-		target.send("You are being kicked, someone else is logging in to this character!")
 		target.send(aurevoirBuf)
+		target.send("Another connection from your account has forcely taken over control of this character.")
 		target.desc.close()
 
 		player = target
@@ -126,13 +126,19 @@ func (player *characterData) quit(doClose bool) {
 		player.valid = false
 	} else {
 		player.send("\r\nChoose a character to play:")
-		player.desc.state = CON_CHAR_LIST
-		gCharList(player.desc)
 		player.desc.inputLock.Lock()
 		player.desc.lineBuffer = []string{}
 		player.desc.numLines = 0
-		player.desc.inputLock.Unlock()
 		player.valid = false
+		player.desc.inputLock.Unlock()
+
+		go func(target *characterData) {
+			postTick.Lock()
+			defer postTick.Unlock()
+
+			target.desc.state = CON_CHAR_LIST
+			gCharList(target.desc)
+		}(player)
 	}
 }
 

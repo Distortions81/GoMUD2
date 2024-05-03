@@ -39,8 +39,9 @@ func (desc *descData) sendSub(data string, args ...byte) error {
 }
 
 func (desc *descData) inputFull() {
-	buf := "Input buffer full! Closing connection..."
-	desc.sendln("\r\n%v", buf)
+	desc.send(aurevoirBuf)
+	buf := "Input buffer full! Stop spamming. Closing connection..."
+	desc.sendln(buf)
 	critLog("#%v: ERROR: %v: %v", desc.id, desc.cAddr, buf)
 	desc.close()
 }
@@ -59,9 +60,6 @@ func (desc *descData) close() {
 		return
 	}
 	desc.state = CON_DISCONNECTED
-	if desc.account != nil {
-		desc.account.tempString = ""
-	}
 	desc.valid = false
 	if desc.conn != nil {
 		desc.conn.Close()

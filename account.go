@@ -67,7 +67,8 @@ func gCharSelect(desc *descData, input string) {
 		if num > 0 && num <= len(desc.account.Characters) {
 			var target *characterData
 			if target = checkPlaying(desc.account.Characters[num-1].Login, desc.account.Characters[num-1].Fingerprint); target != nil {
-				target.send("Someone is attempting to play this character! You may be kicked!")
+				target.send(textFiles["warn"])
+				target.send("Another connection from your account is attempting to play this character.\r\nYou may be disconnected if they choose the kick option.")
 				desc.account.tempString = desc.account.Characters[num-1].Login
 				desc.state = CON_RECONNECT_CONFIRM
 				return
@@ -93,10 +94,9 @@ func gReconnectConfirm(desc *descData, input string) {
 	if strings.HasPrefix(filtered, "y") {
 		var newPlayer *characterData
 		if newPlayer = desc.loadCharacter(desc.account.tempString); newPlayer != nil {
-			desc.enterWorld(desc.character)
+			desc.enterWorld(newPlayer)
 		}
 	} else {
-		gCharList(desc)
 		desc.state = CON_CHAR_LIST
 	}
 	desc.account.tempString = ""
