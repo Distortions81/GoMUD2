@@ -10,7 +10,7 @@ Galaxium
 Voidstorm
 Starshock
 Nebulon
-Darkflare
+--Darkflare
 Thundercore
 Stellarax
 Lunacore

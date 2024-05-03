@@ -3,8 +3,8 @@ package main
 import "strings"
 
 const (
-	VERSION  = "v0.0.3a-04302024-1714533857-"
-	CODENAME = "Darkflare"
+	VERSION  = "v0.0.4a-05032024-0539"
+	CODENAME = "Stellarax"
 
 	LICENSE = "goMUD2: " + VERSION + CODENAME + "\n" +
 		"Copyright 2024 Carl Frank Otto III (carlotto81@gmail.com). All rights reserved.\n"
