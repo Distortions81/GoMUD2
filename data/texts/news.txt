@@ -1,7 +1,16 @@
 ---NEWS---
-Distortions: 4/27/2024
+Distortions -- April 25th - May 2nd 2024
 
-Test...
+Changelog (129 commits):
+From scratch: Threaded networking, ANSI color with styles, telnet commands, mud client detection,
+Unicode support, character map negotiation,
+character map translation, acccounts, characters, fast-relog (logout),
+reconnect to 'already playing' characters,
+passphrase generation, passphrase scoring,
+threaded input buffering with flooding-kick, basic new character name checks,
+accounts/character names/passphrases support unicode,
+high security password hashing, support for TLS/SSL secure connections,
+account/character unique fingerprint IDs. Basic say/who/quit commands.
 
 {iFor more information, see the Discord!{i
 {uhttps://discord.gg/8WaUA9STPj
