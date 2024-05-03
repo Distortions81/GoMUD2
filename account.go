@@ -52,8 +52,9 @@ func gCharSelect(desc *descData, input string) {
 					desc.state = CON_RECONNECT_CONFIRM
 					return
 				}
-				if desc.loadCharacter(item.Login) {
-					desc.enterWorld()
+				var newPlayer *characterData
+				if newPlayer = desc.loadCharacter(item.Login); newPlayer != nil {
+					desc.enterWorld(newPlayer)
 					return
 				} else {
 					desc.sendln("Unable to load that character.")
@@ -71,8 +72,9 @@ func gCharSelect(desc *descData, input string) {
 				desc.state = CON_RECONNECT_CONFIRM
 				return
 			}
-			if desc.loadCharacter(desc.account.Characters[num-1].Login) {
-				desc.enterWorld()
+			var newPlayer *characterData
+			if newPlayer = desc.loadCharacter(desc.account.Characters[num-1].Login); newPlayer != nil {
+				desc.enterWorld(newPlayer)
 				return
 			} else {
 				desc.sendln("Unable to load that character.")
@@ -87,9 +89,11 @@ func gCharSelect(desc *descData, input string) {
 func gReconnectConfirm(desc *descData, input string) {
 	filtered := strings.TrimSpace(input)
 	filtered = strings.ToLower(filtered)
+
 	if strings.HasPrefix(filtered, "y") {
-		if desc.loadCharacter(desc.account.tempString) {
-			desc.enterWorld()
+		var newPlayer *characterData
+		if newPlayer = desc.loadCharacter(desc.account.tempString); newPlayer != nil {
+			desc.enterWorld(desc.character)
 		}
 	} else {
 		gCharList(desc)
@@ -134,7 +138,7 @@ func gCharConfirmName(desc *descData, input string) {
 		desc.account.ModDate = time.Now()
 		desc.account.saveAccount()
 		desc.character.saveCharacter()
-		desc.enterWorld()
+		desc.enterWorld(desc.character)
 	} else {
 		desc.sendln("Names did not match. Try again, or blank line to choose a new name.")
 	}

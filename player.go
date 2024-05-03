@@ -39,9 +39,9 @@ func (player *characterData) saveCharacter() bool {
 	return false
 }
 
-func (desc *descData) loadCharacter(plrStr string) bool {
+func (desc *descData) loadCharacter(plrStr string) *characterData {
 	if desc == nil || desc.account == nil {
-		return false
+		return nil
 	}
 
 	playFingerprint := ""
@@ -53,7 +53,7 @@ func (desc *descData) loadCharacter(plrStr string) bool {
 	}
 	if playFingerprint == "" {
 		errLog("loadPlayer: Player not found in account.")
-		return false
+		return nil
 	}
 
 	player := &characterData{}
@@ -68,25 +68,16 @@ func (desc *descData) loadCharacter(plrStr string) bool {
 	} else {
 		data, err := readFile(DATA_DIR + ACCOUNT_DIR + desc.account.Fingerprint + "/" + playFingerprint + ".json")
 		if err != nil {
-			return false
+			return nil
 		}
 
 		err = json.Unmarshal(data, player)
 		if err != nil {
 			errLog("loadPlayer: Unable to unmarshal the data.")
-			return false
+			return nil
 		}
 	}
-	player.valid = true
-	player.loginTime = time.Now()
-
-	desc.character = player
-	desc.character.desc = desc
-
-	if target == nil {
-		characterList = append(characterList, player)
-	}
-	return true
+	return player
 }
 
 func (player *characterData) handleCommands(input string) {
@@ -128,6 +119,7 @@ func (player *characterData) quit(doClose bool) {
 
 	player.desc.sendln(aurevoirBuf)
 	player.saveCharacter()
+	player.send("Character saved.")
 
 	if doClose {
 		player.desc.state = CON_DISCONNECTED
@@ -144,7 +136,12 @@ func (player *characterData) quit(doClose bool) {
 	}
 }
 
-func (desc *descData) enterWorld() {
+func (desc *descData) enterWorld(player *characterData) {
+	player.valid = true
+	desc.character = player
+	desc.character.desc = desc
+	desc.character.loginTime = time.Now()
+	characterList = append(characterList, player)
 	desc.state = CON_NEWS
 }
 
