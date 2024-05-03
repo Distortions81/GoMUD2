@@ -24,6 +24,7 @@ func mainLoop() {
 		var newCharacterList []*characterData
 		for _, target := range characterList {
 			if !target.valid {
+				target.sendToPlaying("%v slowly fades away.", target.Name)
 				errLog("Removed character %v", target.Name)
 				continue
 			}

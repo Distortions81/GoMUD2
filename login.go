@@ -179,7 +179,6 @@ func gPass(desc *descData, input string) {
 
 func gNews(desc *descData, input string) {
 	desc.state = CON_PLAYING
-	desc.character.sendToPlaying("%v has arrived.", desc.character.Name)
 }
 
 func gShowNews(desc *descData) {

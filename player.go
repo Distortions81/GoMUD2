@@ -153,6 +153,11 @@ func (desc *descData) enterWorld(player *characterData) {
 	desc.character.loginTime = time.Now()
 	characterList = append(characterList, player)
 	desc.state = CON_NEWS
+	go func(desc *descData) {
+		postTick.Lock()
+		defer postTick.Unlock()
+		desc.character.sendToPlaying("%v fades into view.", desc.character.Name)
+	}(desc)
 }
 
 func checkPlaying(name string, fingerprint string) *characterData {
