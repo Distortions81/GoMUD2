@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	DEFAULT_PORT     = 7777
+	DEFAULT_PORT     = 33333
 	DEFAULT_TLS_PORT = DEFAULT_PORT + 1
 
 	SERVER_BOOTING = iota
@@ -35,8 +35,8 @@ func main() {
 	bootTime = time.Now()
 
 	port = flag.Int("port", DEFAULT_PORT, "port")
-	portTLS = flag.Int("portTLS", DEFAULT_TLS_PORT, "TLS Port")
-	noTLS = flag.Bool("noSSL", false, "disable TLS listener")
+	//portTLS = flag.Int("portTLS", DEFAULT_TLS_PORT, "TLS Port")
+	noTLS = flag.Bool("noSSL", true, "disable TLS listener")
 	bindIP = flag.String("bindIP", "localhost", "Bind to a specific IP.")
 	flag.Parse()
 
@@ -53,14 +53,14 @@ func main() {
 	readTextFiles()
 
 	setupListener()
-	setupListenerTLS()
+	//setupListenerTLS()
 
 	loadAccountIndex()
 
 	serverState.Store(SERVER_RUNNING)
 
 	go waitNewConnection()
-	go waitNewConnectionSSL()
+	//go waitNewConnectionSSL()
 	go mainLoop()
 
 	//After starting loops, wait here for process signals
