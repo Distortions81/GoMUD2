@@ -106,13 +106,10 @@ func gReconnectConfirm(desc *descData, input string) {
 }
 
 func gCharNewName(desc *descData, input string) {
+
+	input = nameReduce(input)
 	if nameBad(input) {
 		desc.sendln("Sorry, that name is not appropriate.")
-		return
-	}
-
-	if !characterNameAvailable(input) {
-		desc.sendln("Sorry, that name is already taken.")
 		return
 	}
 
@@ -122,13 +119,20 @@ func gCharNewName(desc *descData, input string) {
 		return
 	}
 
+	if !characterNameAvailable(input) {
+		desc.sendln("Sorry, that name is already taken.")
+		return
+	}
+
+	desc.sendln("Okay, you want to be called %v?", input)
 	desc.account.tempString = input
 	desc.state = CON_CHAR_CREATE_CONFIRM
 }
 
 func gCharConfirmName(desc *descData, input string) {
+	input = nameReduce(input)
 	if input == "" {
-		desc.sendln("Okay, we can try again.")
+		desc.sendln("Okay, we can try a different name.")
 		desc.state = CON_CHAR_CREATE
 		return
 	} else if input == desc.account.tempString {

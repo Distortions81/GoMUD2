@@ -3,6 +3,7 @@ module goMUD2
 go 1.22.0
 
 require (
+	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/martinhoefling/goxkcdpwgen v0.1.1
 	github.com/muesli/reflow v0.3.0
 	github.com/wagslane/go-password-validator v0.3.0
@@ -12,7 +13,6 @@ require (
 )
 
 require (
-	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b // indirect
-	github.com/mattn/go-runewidth v0.0.12 // indirect
-	github.com/rivo/uniseg v0.2.0 // indirect
+	github.com/mattn/go-runewidth v0.0.15 // indirect
+	github.com/rivo/uniseg v0.4.7 // indirect
 )

@@ -143,7 +143,15 @@ var loginStateList = [CON_MAX]loginStates{
 
 // Normal login
 func gLogin(desc *descData, input string) {
-	if accountIndex[input] != nil {
+
+	if strings.EqualFold("new", input) {
+		critLog("#%v: %v is creating a new login.", desc.id, desc.cAddr)
+		desc.state = CON_NEW_LOGIN
+
+	} else if inputLen := len(input); inputLen < MIN_LOGIN_LEN || inputLen > MAX_LOGIN_LEN {
+		desc.close()
+		return
+	} else if accountIndex[input] != nil {
 		err := desc.loadAccount(accountIndex[input].Fingerprint)
 		if desc.account != nil {
 			desc.sendln("Welcome back %v!", input)
@@ -155,11 +163,6 @@ func gLogin(desc *descData, input string) {
 			desc.close()
 			return
 		}
-
-	} else if strings.EqualFold("new", input) {
-		critLog("#%v: %v is creating a new login.", desc.id, desc.cAddr)
-		desc.state = CON_NEW_LOGIN
-
 	} else {
 		desc.sendln("Invalid login.")
 		critLog("#%v: %v tried a login that does not exist!", desc.id, desc.cAddr)
@@ -190,11 +193,6 @@ func gShowNews(desc *descData) {
 
 // New login
 func gNewLogin(desc *descData, input string) {
-	if nameBad(input) {
-		desc.sendln("Sorry, that login is not appropriate.")
-		return
-	}
-
 	if !accountNameAvailable(input) {
 		var buf string = "Few quick random number suffixes:"
 		for x := 0; x < NUM_LOGIN_VARIANTS; x++ {

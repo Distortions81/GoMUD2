@@ -6,7 +6,7 @@ import (
 
 const (
 	ROUND_LENGTH_uS  = 250000 //0.25s
-	CONNECT_THROTTLE = time.Millisecond
+	CONNECT_THROTTLE = time.Millisecond * 10
 	LAG_THRESH       = time.Millisecond
 )
 
