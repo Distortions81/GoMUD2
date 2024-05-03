@@ -24,10 +24,9 @@ var (
 
 	signalHandle chan os.Signal
 
-	port, portTLS *int
-	noTLS         *bool
-	bindIP        *string
-	serverState   atomic.Int32
+	port        *int
+	bindIP      *string
+	serverState atomic.Int32
 )
 
 func main() {
@@ -36,7 +35,7 @@ func main() {
 
 	port = flag.Int("port", DEFAULT_PORT, "port")
 	//portTLS = flag.Int("portTLS", DEFAULT_TLS_PORT, "TLS Port")
-	noTLS = flag.Bool("noSSL", true, "disable TLS listener")
+	//noTLS = flag.Bool("noSSL", true, "disable TLS listener")
 	bindIP = flag.String("bindIP", "localhost", "Bind to a specific IP.")
 	flag.Parse()
 
