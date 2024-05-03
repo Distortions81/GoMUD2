@@ -57,13 +57,15 @@ func handleDesc(conn net.Conn, tls bool) {
 	//Send greeting
 	err := desc.sendln(greetBuf)
 	if err != nil {
-		desc.close(true)
+		desc.close()
 		return
 	}
 
 	desc.readDescLoop()
 
-	desc.close(true)
+	descLock.Lock()
+	desc.close()
+	descLock.Unlock()
 }
 
 func (desc *descData) readDescLoop() {

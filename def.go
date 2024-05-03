@@ -1,5 +1,7 @@
 package main
 
+import "strings"
+
 const (
 	VERSION  = "v0.0.3a-04302024-1714533857-"
 	CODENAME = "Darkflare"
@@ -33,6 +35,12 @@ var makeDirs = []string{
 	DATA_DIR + AREA_DIR,
 	DATA_DIR + TEXTS_DIR,
 	LOGS_DIR}
+
+func init() {
+	for i, _ := range commandList {
+		nameBlacklist = append(nameBlacklist, strings.ToLower(i))
+	}
+}
 
 var nameBlacklist = []string{
 	"new",

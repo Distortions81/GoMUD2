@@ -37,7 +37,7 @@ func mainLoop() {
 		for _, desc := range descList {
 			if desc.state == CON_DISCONNECTED || !desc.valid {
 				errLog("Removed #%v", desc.id)
-				desc.close(true)
+				desc.conn.Close()
 				continue
 			}
 			newDescList = append(newDescList, desc)

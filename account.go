@@ -96,7 +96,7 @@ func gReconnectConfirm(desc *descData, input string) {
 		if newPlayer = desc.loadCharacter(desc.account.tempString); newPlayer == nil {
 			desc.send(warnBuf)
 			desc.send("Sorry, loading the character failed.")
-			desc.close(true)
+			desc.close()
 			return
 		}
 	} else {
@@ -108,6 +108,11 @@ func gReconnectConfirm(desc *descData, input string) {
 func gCharNewName(desc *descData, input string) {
 	if nameBad(input) {
 		desc.sendln("Sorry, that name is not appropriate.")
+		return
+	}
+
+	if !characterNameAvailable(input) {
+		desc.sendln("Sorry, that name is already taken.")
 		return
 	}
 
@@ -127,6 +132,11 @@ func gCharConfirmName(desc *descData, input string) {
 		desc.state = CON_CHAR_CREATE
 		return
 	} else if input == desc.account.tempString {
+		if !characterNameAvailable(input) {
+			desc.sendln("Sorry, that name is already taken.")
+			return
+		}
+
 		desc.sendln("Okay, your new character be called %v.", input)
 		desc.character = &characterData{
 			Fingerprint: makeFingerprintString(),

@@ -1,12 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
 	"github.com/martinhoefling/goxkcdpwgen/xkcdpwgen"
 	passwordvalidator "github.com/wagslane/go-password-validator"
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/exp/rand"
 )
 
 const (
@@ -15,6 +17,7 @@ const (
 	PASSPHRASE_HASH_COST  = 10
 	MIN_PASS_ENTROPY_BITS = 52
 	MAX_CHAR_SLOTS        = 15
+	NUM_LOGIN_VARIANTS    = 5
 
 	NUM_PASS_SUGGEST = 10
 
@@ -149,7 +152,7 @@ func gLogin(desc *descData, input string) {
 			desc.send(warnBuf)
 			desc.sendln("ERROR: Sorry, unable to load that account!")
 			critLog("gLogin: %v: %v: Unable to load account: %v (%v)", desc.id, desc.cAddr, input, err)
-			desc.close(true)
+			desc.close()
 			return
 		}
 
@@ -160,7 +163,7 @@ func gLogin(desc *descData, input string) {
 	} else {
 		desc.sendln("Invalid login.")
 		critLog("#%v: %v tried a login that does not exist!", desc.id, desc.cAddr)
-		desc.close(true)
+		desc.close()
 		return
 	}
 }
@@ -173,7 +176,7 @@ func gPass(desc *descData, input string) {
 	} else {
 		desc.sendln("Incorrect passphrase.")
 		critLog("#%v: %v tried a invalid password!", desc.id, desc.cAddr)
-		desc.close(true)
+		desc.close()
 	}
 }
 
@@ -189,6 +192,16 @@ func gShowNews(desc *descData) {
 func gNewLogin(desc *descData, input string) {
 	if nameBad(input) {
 		desc.sendln("Sorry, that login is not appropriate.")
+		return
+	}
+
+	if !accountNameAvailable(input) {
+		var buf string = "Few quick random number suffixes:"
+		for x := 0; x < NUM_LOGIN_VARIANTS; x++ {
+			buf = buf + fmt.Sprintf("%v%v\r\n", input, rand.Intn(999))
+		}
+		buf = buf + "\r\nSorry, that login is already in use. Please pick another one!"
+		desc.send(buf)
 		return
 	}
 
@@ -209,6 +222,10 @@ func gNewLogin(desc *descData, input string) {
 
 func gNewLoginConfirm(desc *descData, input string) {
 	if input == desc.account.Login {
+		if !accountNameAvailable(input) {
+			desc.send("Sorry, that login is already in use.")
+			return
+		}
 		desc.sendln("Okay, login confirmed: %v", input)
 		desc.state = CON_NEW_PASSPHRASE
 	} else {
@@ -273,7 +290,7 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 			desc.send(warnBuf)
 			critLog("ERROR: #%v password hashing failed!!!: %v", desc.id, err.Error())
 			desc.sendln("ERROR: something went wrong... Sorry!")
-			desc.close(true)
+			desc.close()
 			return
 		}
 	} else {
@@ -285,7 +302,7 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 	if err != nil {
 		desc.send(warnBuf)
 		desc.sendln("Unable to create account! Pleaselet moderators knows!")
-		desc.close(true)
+		desc.close()
 		return
 	}
 
@@ -293,7 +310,7 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 	if notSaved {
 		desc.send(warnBuf)
 		desc.sendln("Unable to save account! Please let moderators know!")
-		desc.close(true)
+		desc.close()
 		return
 	} else {
 		desc.sendln("Account created and saved.")
@@ -318,9 +335,9 @@ func (desc *descData) suggestPasswords() {
 		passSuggestions = append(passSuggestions, sugPass)
 	}
 
-	buf := "\r\nSuggested passphrases:\n\r\n\r"
+	buf := "\r\nSuggested passphrases:\r\n\r\n"
 	for _, item := range passSuggestions {
-		buf = buf + item + "\n\r"
+		buf = buf + item + "\r\n"
 	}
 	desc.sendln(buf)
 }

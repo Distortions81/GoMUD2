@@ -61,7 +61,7 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 	if target != nil {
 		target.send(aurevoirBuf)
 		target.send("Another connection from your account has forcely taken over control of this character.")
-		target.desc.close(false)
+		target.desc.close()
 
 		desc.character = target
 		target.desc.character.desc = desc
@@ -137,10 +137,9 @@ func (player *characterData) quit(doClose bool) {
 		player.desc.inputLock.Unlock()
 
 		go func(target *characterData) {
-			postTick.Lock()
-			defer postTick.Unlock()
-
+			descLock.Lock()
 			target.desc.state = CON_CHAR_LIST
+			defer descLock.Unlock()
 			gCharList(target.desc)
 		}(player)
 	}
@@ -154,17 +153,47 @@ func (desc *descData) enterWorld(player *characterData) {
 	characterList = append(characterList, player)
 	desc.state = CON_NEWS
 	go func(desc *descData) {
-		postTick.Lock()
-		defer postTick.Unlock()
+		descLock.Lock()
+		defer descLock.Unlock()
 		desc.character.sendToPlaying("%v fades into view.", desc.character.Name)
 	}(desc)
 }
 
 func checkPlaying(name string, fingerprint string) *characterData {
 	for _, item := range characterList {
-		if item.Name == name || item.Fingerprint == fingerprint {
-			return item
+		if item.desc != nil && item.desc.state == CON_PLAYING {
+			if item.Name == name || item.Fingerprint == fingerprint {
+				return item
+			}
 		}
 	}
 	return nil
+}
+
+func accountNameAvailable(name string) bool {
+	for _, item := range accountIndex {
+		if strings.EqualFold(item.Login, name) {
+			return false
+		}
+	}
+	return true
+}
+
+func characterNameAvailable(name string) bool {
+	var accs, chars int
+	defer func() { errLog("characterNameAvailable: searched %v accounts and %v characters.", accs, chars) }()
+
+	for _, item := range accountIndex {
+		accs++
+		desc := descData{}
+		desc.loadAccount(item.Fingerprint)
+		for _, item := range desc.account.Characters {
+			chars++
+			if strings.EqualFold(item.Login, name) {
+				return false
+			}
+		}
+	}
+
+	return true
 }

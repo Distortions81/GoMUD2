@@ -56,13 +56,10 @@ func (desc *descData) readByte() (byte, error) {
 	return data, nil
 }
 
-func (desc *descData) close(force bool) {
+func (desc *descData) close() {
 	if desc == nil {
 		return
 	}
 	desc.state = CON_DISCONNECTED
 	desc.valid = false
-	if force && desc.conn != nil {
-		desc.conn.Close()
-	}
 }
