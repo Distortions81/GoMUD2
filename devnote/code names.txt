@@ -12,7 +12,7 @@ Starshock
 Nebulon
 --Darkflare
 Thundercore
-Stellarax
+--Stellarax
 Lunacore
 Ignitionex
 Meteorix
