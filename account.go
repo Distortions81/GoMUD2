@@ -93,8 +93,11 @@ func gReconnectConfirm(desc *descData, input string) {
 
 	if strings.HasPrefix(filtered, "y") {
 		var newPlayer *characterData
-		if newPlayer = desc.loadCharacter(desc.account.tempString); newPlayer != nil {
-			desc.enterWorld(newPlayer)
+		if newPlayer = desc.loadCharacter(desc.account.tempString); newPlayer == nil {
+			desc.send(warnBuf)
+			desc.send("Sorry, loading the character failed.")
+			desc.close(true)
+			return
 		}
 	} else {
 		desc.state = CON_CHAR_LIST

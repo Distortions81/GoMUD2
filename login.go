@@ -146,9 +146,10 @@ func gLogin(desc *descData, input string) {
 			desc.sendln("Welcome back %v!", input)
 			desc.state = CON_PASS
 		} else {
+			desc.send(warnBuf)
 			desc.sendln("ERROR: Sorry, unable to load that account!")
 			critLog("gLogin: %v: %v: Unable to load account: %v (%v)", desc.id, desc.cAddr, input, err)
-			desc.close()
+			desc.close(true)
 			return
 		}
 
@@ -159,7 +160,7 @@ func gLogin(desc *descData, input string) {
 	} else {
 		desc.sendln("Invalid login.")
 		critLog("#%v: %v tried a login that does not exist!", desc.id, desc.cAddr)
-		desc.close()
+		desc.close(true)
 		return
 	}
 }
@@ -170,10 +171,9 @@ func gPass(desc *descData, input string) {
 		desc.sendln("Passphrase accepted.")
 		desc.state = CON_CHAR_LIST
 	} else {
-
 		desc.sendln("Incorrect passphrase.")
 		critLog("#%v: %v tried a invalid password!", desc.id, desc.cAddr)
-		desc.close()
+		desc.close(true)
 	}
 }
 
@@ -271,9 +271,10 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 		desc.account.tempString = ""
 
 		if err != nil {
+			desc.send(warnBuf)
 			critLog("ERROR: #%v password hashing failed!!!: %v", desc.id, err.Error())
 			desc.sendln("ERROR: something went wrong... Sorry!")
-			desc.close()
+			desc.close(true)
 			return
 		}
 	} else {
@@ -283,14 +284,18 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 
 	err := desc.account.createAccountDir()
 	if err != nil {
+		desc.send(warnBuf)
 		desc.sendln("Unable to create account! Pleaselet moderators knows!")
-		desc.close()
+		desc.close(true)
+		return
 	}
 
 	notSaved := desc.account.saveAccount()
 	if notSaved {
+		desc.send(warnBuf)
 		desc.sendln("Unable to save account! Please let moderators know!")
-		desc.close()
+		desc.close(true)
+		return
 	} else {
 		desc.sendln("Account created and saved.")
 		newAcc := &accountIndexData{

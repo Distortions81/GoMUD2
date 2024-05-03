@@ -6,7 +6,7 @@ import (
 )
 
 var textFiles map[string]string
-var greetBuf, aurevoirBuf string
+var greetBuf, aurevoirBuf, warnBuf string
 
 const textExt = ".txt"
 
@@ -42,4 +42,5 @@ func readTextFiles() {
 	promptStr := lItem.prompt
 	greetBuf = LICENSE + textFiles["greet"] + promptStr
 	aurevoirBuf = textFiles["aurevoir"]
+	warnBuf = textFiles["warn"]
 }

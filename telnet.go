@@ -39,11 +39,12 @@ func (desc *descData) sendSub(data string, args ...byte) error {
 }
 
 func (desc *descData) inputFull() {
-	desc.send(aurevoirBuf)
+	desc.send(warnBuf)
 	buf := "Input buffer full! Stop spamming. Closing connection..."
 	desc.sendln(buf)
 	critLog("#%v: ERROR: %v: %v", desc.id, desc.cAddr, buf)
-	desc.close()
+	desc.valid = false
+	desc.state = CON_DISCONNECTED
 }
 
 func (desc *descData) readByte() (byte, error) {
@@ -55,13 +56,13 @@ func (desc *descData) readByte() (byte, error) {
 	return data, nil
 }
 
-func (desc *descData) close() {
+func (desc *descData) close(force bool) {
 	if desc == nil {
 		return
 	}
 	desc.state = CON_DISCONNECTED
 	desc.valid = false
-	if desc.conn != nil {
+	if force && desc.conn != nil {
 		desc.conn.Close()
 	}
 }

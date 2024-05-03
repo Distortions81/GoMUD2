@@ -56,28 +56,29 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 		return nil
 	}
 
-	player := &characterData{}
 	target := checkPlaying(plrStr, playFingerprint)
 
 	if target != nil {
 		target.send(aurevoirBuf)
 		target.send("Another connection from your account has forcely taken over control of this character.")
-		target.desc.close()
-
-		player = target
+		target.desc.valid = false
+		desc.character = target
+		desc.state = CON_PLAYING
+		return target
 	} else {
 		data, err := readFile(DATA_DIR + ACCOUNT_DIR + desc.account.Fingerprint + "/" + playFingerprint + ".json")
 		if err != nil {
 			return nil
 		}
 
+		player := &characterData{}
 		err = json.Unmarshal(data, player)
 		if err != nil {
 			errLog("loadPlayer: Unable to unmarshal the data.")
 			return nil
 		}
+		return player
 	}
-	return player
 }
 
 func (player *characterData) handleCommands(input string) {
