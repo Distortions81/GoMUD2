@@ -61,9 +61,12 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 	if target != nil {
 		target.send(aurevoirBuf)
 		target.send("Another connection from your account has forcely taken over control of this character.")
-		target.desc.valid = false
+		target.desc.close(false)
+
 		desc.character = target
+		target.desc.character.desc = desc
 		desc.state = CON_PLAYING
+
 		return target
 	} else {
 		data, err := readFile(DATA_DIR + ACCOUNT_DIR + desc.account.Fingerprint + "/" + playFingerprint + ".json")
