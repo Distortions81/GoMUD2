@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	SSL_PEM = "server.pem"
-	SSL_KEY = "server.key"
+	SSL_PEM = "fullchain.pem"
+	SSL_KEY = "privkey.pem"
 )
 
 var (

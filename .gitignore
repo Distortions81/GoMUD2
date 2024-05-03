@@ -3,3 +3,4 @@ data/server.pem
 log/*.log
 accounts/
 data/accountIndex.json
+goMUD2
