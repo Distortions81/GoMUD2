@@ -2,9 +2,9 @@
 Distortions -- April 25th - May 2nd 2024
 
 Changelog (129 commits):
-From scratch: Threaded networking, ANSI color with styles, telnet commands, mud client detection,
-Unicode support, character map negotiation,
-character map translation, acccounts, characters, fast-relog (logout),
+From scratch: Threaded networking, ANSI color with styles, telnet commands,
+mud client detection, Unicode support, character map negotiation,
+character map translation, accounts, characters, fast-relog (logout),
 reconnect to 'already playing' characters,
 passphrase generation, passphrase scoring,
 threaded input buffering with flooding-kick, basic new character name checks,
