@@ -161,10 +161,8 @@ func (desc *descData) enterWorld(player *characterData) {
 
 func checkPlaying(name string, fingerprint string) *characterData {
 	for _, item := range characterList {
-		if item.desc != nil && item.desc.state == CON_PLAYING {
-			if item.Name == name || item.Fingerprint == fingerprint {
-				return item
-			}
+		if item.Name == name || item.Fingerprint == fingerprint {
+			return item
 		}
 	}
 	return nil
