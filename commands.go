@@ -24,29 +24,6 @@ var commandList = map[string]*commandData{
 
 var cmdList []string
 
-func init() {
-	cmdList = []string{}
-
-	for iName, cmd := range commandList {
-		tName := fmt.Sprintf("%15v", iName)
-		var buf string
-		if cmd.args == nil {
-			buf = tName + " -- " + cmd.hint
-		} else {
-			buf = tName + " -- " + cmd.hint + " : " + iName + " "
-			for a, aName := range cmd.args {
-				if a > 0 {
-					buf = buf + " "
-				}
-				buf = buf + fmt.Sprintf("<%v>", aName)
-			}
-		}
-		cmdList = append(cmdList, buf)
-	}
-
-	sort.Strings(cmdList)
-}
-
 func cmdSay(player *characterData, input string) {
 
 	trimInput := strings.TrimSpace(input)
@@ -75,4 +52,27 @@ func cmdWho(player *characterData, input string) {
 
 	}
 	player.send(buf)
+}
+
+func init() {
+	cmdList = []string{}
+
+	for iName, cmd := range commandList {
+		tName := fmt.Sprintf("%15v", iName)
+		var buf string
+		if cmd.args == nil {
+			buf = tName + " -- " + cmd.hint
+		} else {
+			buf = tName + " -- " + cmd.hint + " : " + iName + " "
+			for a, aName := range cmd.args {
+				if a > 0 {
+					buf = buf + " "
+				}
+				buf = buf + fmt.Sprintf("<%v>", aName)
+			}
+		}
+		cmdList = append(cmdList, buf)
+	}
+
+	sort.Strings(cmdList)
 }

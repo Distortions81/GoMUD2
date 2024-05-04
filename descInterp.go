@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"time"
 )
 
@@ -32,21 +33,23 @@ func (desc *descData) interp() {
 
 	desc.idleTime = time.Now()
 
-	//Playing, or disconnected
+	//If playing
 	if desc.state == CON_PLAYING {
 		if desc.character != nil {
+			//Run command
 			desc.character.handleCommands(input)
 			mudLog("%v: %v", desc.character.Name, input)
 		}
 		return
 	}
 
-	//Handle login
+	//Block empty lines, unless login state is set otherwise
 	if input == "" && !loginStateList[desc.state].anyKey {
 		//Ignore blank lines, unless set
 		return
 	}
 
+	//Run login state function
 	if loginStateList[desc.state].goDo != nil {
 		loginStateList[desc.state].goDo(desc, input)
 	}
@@ -71,5 +74,22 @@ func (desc *descData) interp() {
 			//errLog("#%v No longer suppressing echo for login/pass", desc.id)
 			desc.sendCmd(TermCmd_WONT, TermOpt_ECHO)
 		}
+	}
+}
+
+func cmdListCmds(desc *descData) {
+	desc.sendln("\r\nCommands:\r\n%v", strings.Join(cmdList, "\r\n"))
+}
+
+func (player *characterData) handleCommands(input string) {
+	cmd, args, _ := strings.Cut(input, " ")
+
+	cmd = strings.ToLower(cmd)
+	command := commandList[cmd]
+
+	if command != nil {
+		command.goDo(player, args)
+	} else {
+		cmdListCmds(player.desc)
 	}
 }

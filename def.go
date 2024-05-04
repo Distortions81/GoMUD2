@@ -36,13 +36,14 @@ var makeDirs = []string{
 	DATA_DIR + TEXTS_DIR,
 	LOGS_DIR}
 
+// Add commands to reserved names
 func init() {
 	for i := range commandList {
-		nameBlacklist = append(nameBlacklist, strings.ToLower(i))
+		reservedNames = append(reservedNames, strings.ToLower(i))
 	}
 }
 
-var nameBlacklist = []string{
+var reservedNames = []string{
 	"new",
 	"admin",
 	"moderator",

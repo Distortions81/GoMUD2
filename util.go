@@ -11,8 +11,8 @@ import (
 )
 
 func makeFingerprintString() string {
-	p1 := RandStringRunes(32)
-	p2 := TimeStringRunes()
+	p1 := randStringRunes(32)
+	p2 := timeStringRunes()
 
 	return (p1 + "-" + p2)
 }
@@ -20,7 +20,7 @@ func makeFingerprintString() string {
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_")
 var numRunes = len(letterRunes) - 1
 
-func RandStringRunes(n int) string {
+func randStringRunes(n int) string {
 	b := make([]rune, n)
 	for i := range b {
 		b[i] = letterRunes[rand.Intn(numRunes)]
@@ -28,7 +28,7 @@ func RandStringRunes(n int) string {
 	return string(b)
 }
 
-func TimeStringRunes() string {
+func timeStringRunes() string {
 	un := strconv.FormatInt(time.Now().UnixNano(), 10)
 	unLen := len(un)
 
@@ -79,8 +79,8 @@ func readFile(filePath string) ([]byte, error) {
 }
 
 // Returns false if name is prohibited
-func nameBad(name string) bool {
-	for _, item := range nameBlacklist {
+func nameReserved(name string) bool {
+	for _, item := range reservedNames {
 		if item == name {
 			return true
 		}

@@ -10,6 +10,15 @@ import (
 	"time"
 )
 
+func accountNameAvailable(name string) bool {
+	for _, item := range accountIndex {
+		if strings.EqualFold(item.Login, name) {
+			return false
+		}
+	}
+	return true
+}
+
 func gCharList(desc *descData) {
 	numChars := len(desc.account.Characters)
 	if numChars <= 0 {
@@ -108,7 +117,7 @@ func gReconnectConfirm(desc *descData, input string) {
 func gCharNewName(desc *descData, input string) {
 
 	input = nameReduce(input)
-	if nameBad(input) {
+	if nameReserved(input) {
 		desc.sendln("Sorry, that name is not appropriate.")
 		return
 	}

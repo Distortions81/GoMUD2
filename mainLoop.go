@@ -5,9 +5,8 @@ import (
 )
 
 const (
-	ROUND_LENGTH_uS  = 250000 //0.25s
-	CONNECT_THROTTLE = time.Millisecond * 10
-	LAG_THRESH       = time.Millisecond
+	ROUND_LENGTH_uS  = 250000                //0.25s
+	CONNECT_THROTTLE = time.Millisecond * 10 //100 connections per second
 )
 
 func mainLoop() {
@@ -50,14 +49,13 @@ func mainLoop() {
 		}
 		descLock.Unlock()
 
-		since := time.Since(start)
-		if since > time.Millisecond {
-			errLog("Round took %v", since.Round(LAG_THRESH).String())
-		}
-
 		//Sleep for remaining round time
 		timeLeft := roundTime - time.Since(start)
-		time.Sleep(timeLeft)
 
+		if timeLeft <= 0 {
+			errLog("Round took %v", time.Duration(timeLeft).String())
+		} else {
+			time.Sleep(timeLeft)
+		}
 	}
 }

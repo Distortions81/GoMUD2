@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"net"
 	"os"
 	"strconv"
@@ -13,11 +14,10 @@ const (
 )
 
 var (
-	listener *net.TCPListener
-	//listenerTLS net.Listener
+	listener    *net.TCPListener
+	listenerTLS net.Listener
 )
 
-/*
 func setupListenerTLS() {
 	if *noTLS {
 		return
@@ -48,7 +48,6 @@ func setupListenerTLS() {
 
 	errLog("TLS listener online at: %s", addr.String())
 }
-*/
 
 func setupListener() {
 	//Find network
@@ -69,7 +68,6 @@ func setupListener() {
 	errLog("TCP listener online at: %s", addr.String())
 }
 
-/*
 func waitNewConnectionSSL() {
 
 	if !*noTLS && portTLS != nil && listenerTLS != nil {
@@ -89,7 +87,6 @@ func waitNewConnectionSSL() {
 		listenerTLS.Close()
 	}
 }
-*/
 
 func waitNewConnection() {
 

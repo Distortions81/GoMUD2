@@ -14,15 +14,16 @@ import (
 const (
 	MAX_PASSPHRASE_LENGTH = 72
 	MIN_PASSPHRASE_LENGTH = 8
+
 	PASSPHRASE_HASH_COST  = 10
 	MIN_PASS_ENTROPY_BITS = 52
-	MAX_CHAR_SLOTS        = 15
-	NUM_LOGIN_VARIANTS    = 5
 
-	NUM_PASS_SUGGEST = 10
+	MAX_CHAR_SLOTS     = 15
+	NUM_LOGIN_VARIANTS = 5
+	NUM_PASS_SUGGEST   = 10
 
 	MAX_LOGIN_LEN = 48
-	MIN_LOGIN_LEN = 3
+	MIN_LOGIN_LEN = 4
 
 	MAX_NAME_LEN = 30
 	MIN_NAME_LEN = 2
@@ -97,11 +98,11 @@ var loginStateList = [CON_MAX]loginStates{
 
 	//New login
 	CON_NEW_LOGIN: {
-		prompt: "(LOGIN NAME -- NOT character name. Up to 48 chars long. Spaces allowed.)\r\nNEW login: ",
+		prompt: "[Login name (not character), up to 48 chars long. Spaces and symbols allowed!]\r\nNEW login: ",
 		goDo:   gNewLogin,
 	},
 	CON_NEW_LOGIN_CONFIRM: {
-		prompt: "(leave blank to choose a new login)\r\nConfirm login: ",
+		prompt: "(blank line to go back)\r\nConfirm login: ",
 		goDo:   gNewLoginConfirm,
 		anyKey: true,
 	},
@@ -111,7 +112,7 @@ var loginStateList = [CON_MAX]loginStates{
 		hideInfo: true,
 	},
 	CON_NEW_PASSPHRASE_CONFIRM: {
-		prompt:   "(leave blank to choose a new passphrase)\r\nConfirm passphrase: ",
+		prompt:   "(blank line to go back)\r\nConfirm passphrase: ",
 		goDo:     gNewPassphraseConfirm,
 		anyKey:   true,
 		hideInfo: true,
@@ -131,7 +132,7 @@ var loginStateList = [CON_MAX]loginStates{
 		goDo:   gCharNewName,
 	},
 	CON_CHAR_CREATE_CONFIRM: {
-		prompt: "(leave blank to choose a new name)\r\nConfirm character name:",
+		prompt: "(blank line to go back)\r\nConfirm character name:",
 		goDo:   gCharConfirmName,
 		anyKey: true,
 	},

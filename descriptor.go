@@ -73,6 +73,7 @@ func (desc *descData) readDescLoop() {
 	var lastByte byte
 	for serverState.Load() == SERVER_RUNNING {
 
+		//Read byte
 		data, err := desc.readByte()
 		if err != nil {
 			return
@@ -125,8 +126,8 @@ func (desc *descData) readDescLoop() {
 				}
 
 				//Detect line end
-				if (lastByte == '\n' && data == '\r') ||
-					(lastByte == '\r' && data == '\n') {
+				if (lastByte == '\r' && data == '\n') ||
+					(lastByte != '\r' && data == '\n') {
 					desc.ingestLine()
 					continue
 				}
@@ -157,11 +158,13 @@ func (desc *descData) getTermType() {
 	}
 	for n, item := range termTypeMap {
 		if strings.HasPrefix(desc.telnet.termType, n) {
+			errLog("Found client prefix match: %v", desc.telnet.termType)
 			desc.telnet.options = item
 			if item.CharMap != nil {
 				desc.telnet.charMap = item.CharMap
 			}
 		} else if strings.HasSuffix(desc.telnet.termType, n) {
+			errLog("Found client suffix match: %v", desc.telnet.termType)
 			desc.telnet.options = item
 			if item.CharMap != nil {
 				desc.telnet.charMap = item.CharMap
@@ -269,7 +272,7 @@ func (desc *descData) send(format string, args ...any) error {
 		data = format
 	}
 
-	//Send telnet go-ahead
+	//Add telnet go-ahead if enabled, and there is no newline
 	if !desc.telnet.options.SUPGA {
 		if !strings.HasSuffix(data, "\n") {
 			data = data + string([]byte{TermCmd_IAC, TermCmd_GOAHEAD})
@@ -287,7 +290,7 @@ func (desc *descData) send(format string, args ...any) error {
 	dlen := len(outBytes)
 	l, err := desc.conn.Write(outBytes)
 	if err != nil || dlen != l {
-		//errLog("#%v: %v: write failed (connection lost)", desc.id, desc.cAddr)
+		errLog("#%v: %v: write failed (connection lost)", desc.id, desc.cAddr)
 		return err
 	}
 
