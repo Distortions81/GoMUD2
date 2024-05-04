@@ -1,383 +1,230 @@
 package main
 
-import "strings"
-
-type cModes struct {
-	reset, bright, italic, underline, blink, inverse, strike bool
-}
-
-// Subsitute color codes with ANSI color, with a color reset at the end if needed
-func ANSIColor(in string) string {
-	didColor := false
-
+func ANSIColor(input string) string {
 	output := ""
-	input := in
+	length := len(input)
+	var lastColor string
+	var wasBold bool
+	for i := 0; i < length; i++ {
+		cur := input[i]
+		var next byte
+		if i+1 < length {
+			next = input[i+1]
+		}
 
-	var length int
-	var lfgColor, lbgColor string
-	var cm cModes
-
-	for i := 0; ; i++ {
-		length = len(input)
-
-		if i < length {
-			cur := input[i]
-			if i+1 < length {
-				next := input[i+1]
-
-				if cur == '{' {
-					if next == '{' {
-						output = input[:i] + "{" + input[i+2:]
-						input = output
-						continue
-					}
-					if next == 'n' {
-						output = input[:i] + "\r\n" + input[i+2:]
-						input = output
-						continue
-					}
-					nm, fgcolor, bgcolor := convertColor(next)
-					if nm.reset && !cm.reset {
-						fgcolor = ""
-						bgcolor = ""
-						lfgColor = ""
-						lbgColor = ""
-						cm.blink = false
-						cm.bright = false
-						cm.inverse = false
-						cm.italic = false
-						cm.strike = false
-						cm.underline = false
-						didColor = false
-					}
-					if fgcolor != "" {
-						if strings.EqualFold(fgcolor, lfgColor) {
-							output = input[:i] + input[i+2:]
-							input = output
-							continue
-						} else {
-							lfgColor = fgcolor
-						}
-					}
-
-					if bgcolor != "" {
-						if bgcolor == lbgColor {
-							output = input[:i] + input[i+2:]
-							input = output
-							continue
-						} else {
-							lbgColor = bgcolor
-							fgcolor = bgcolor
-						}
-					}
-
-					am := cModes{}
-					dm := cModes{}
-
-					if nm.reset {
-						am.reset = true
-					}
-					cm.reset = nm.reset
-
-					if !cm.bright && nm.bright {
-						am.bright = true
-						cm.bright = true
-					} else if cm.bright && !nm.bright {
-						dm.bright = true
-						cm.bright = false
-					}
-
-					if !cm.italic && nm.italic {
-						am.italic = true
-						cm.italic = true
-					} else if cm.italic && nm.italic {
-						dm.italic = true
-						cm.italic = false
-					}
-
-					if !cm.underline && nm.underline {
-						am.underline = true
-						cm.underline = true
-					} else if cm.underline && nm.underline {
-						dm.underline = true
-						cm.underline = false
-					}
-
-					if !cm.blink && nm.blink {
-						am.blink = true
-						cm.blink = true
-					} else if cm.blink && nm.blink {
-						dm.blink = true
-						cm.blink = false
-					}
-
-					if !cm.inverse && nm.inverse {
-						am.inverse = true
-						cm.inverse = true
-					} else if cm.inverse && nm.inverse {
-						dm.inverse = true
-						cm.inverse = false
-					}
-
-					if !cm.strike && nm.strike {
-						am.strike = true
-						cm.strike = true
-					} else if cm.strike && nm.strike {
-						dm.strike = true
-						cm.strike = false
-					}
-
-					//TODO: Combine successive codes
-					ansiCode := getColorNew(am, dm, fgcolor)
-
-					//Remove color code, and insert ANSI sequence
-					if !am.reset {
-						didColor = true
-					}
-					output = input[:i] + ansiCode + input[i+2:]
-					input = output
-
+		if cur == '{' {
+			if next == '{' {
+				continue
+			} else if next == 'x' {
+				if lastColor != "" {
+					output = output + ESC + "0m"
+					wasBold = false
+					lastColor = ""
 				}
+				i++
+				continue
+			} else {
+				color, bold := codeToANSI(next)
+				if color != "" && (color != lastColor || bold != wasBold) {
+					if bold != wasBold {
+						if bold {
+							output = output + ESC + "1;" + color + "m"
+						} else {
+							output = output + ESC + "0;" + color + "m"
+						}
+						wasBold = bold
+					} else {
+						output = output + ESC + color + "m"
+					}
+
+					if color != "" {
+						lastColor = color
+					}
+				}
+
+				i++
+				continue
 			}
 		} else {
-			break
+			output = output + string(cur)
 		}
 	}
-	if didColor {
-		input = input + getColorNew(cModes{reset: true}, cModes{}, "")
+	if lastColor != "" || wasBold {
+		output = output + ESC + "0m"
 	}
-	return input
-
+	return output
 }
 
 // Just strip color codes and produce normal text
-func StripColorCodes(in string) string {
+func StripColorCodes(input string) string {
 	output := ""
-	input := in
+	length := len(input)
+	for i := 0; i < length; i++ {
+		cur := input[i]
+		var next byte
+		if i+1 < length {
+			next = input[i+1]
+		}
 
-	for i := 0; ; i++ {
-		length := len(input) - 1
-		if i < length {
-			cur := input[i]
-
-			if i+1 < length {
-				next := input[i+1]
-
-				if cur == '{' {
-					if next == '{' {
-						output = input[:i] + "{" + input[i+2:]
-						input = output
-					} else if next == 'n' {
-						output = input[:i] + "\r\n" + input[i+2:]
-						input = output
-						continue
-					} else {
-						output = input[:i] + input[i+2:]
-						input = output
-					}
-				}
+		if cur == '{' {
+			if next == '{' {
+				continue
+			} else {
+				i++
+				continue
 			}
 		} else {
-			break
+			output = output + string(cur)
 		}
 	}
-	return input
-
+	return output
 }
 
-// Convert a single color code character to a ANSI color sequence
-func convertColor(i byte) (modes cModes, fgColor, bgColor string) {
-	switch i {
+func codeToANSI(color byte) (string, bool) {
 
-	//Styles
-	case 'x': //reset
-		return cModes{reset: true}, "", ""
-	case 'l': //bright
-		return cModes{bright: true}, "", ""
-	case 'i': //italic
-		return cModes{italic: true}, "", ""
-	case 'u': //underline
-		return cModes{underline: true}, "", ""
-	case '=': //blink
-		return cModes{blink: true}, "", ""
-	case 'v': //inverse
-		return cModes{inverse: true}, "", ""
-	case 's': //strikethrough
-		return cModes{strike: true}, "", ""
+	switch color {
+	case 'k':
+		return C_BLACK, false
+	case 'r':
+		return C_RED, false
+	case 'g':
+		return C_GREEN, false
+	case 'y':
+		return C_YELLOW, false
+	case 'b':
+		return C_BLUE, false
+	case 'm':
+		return C_MAGENTA, false
+	case 'c':
+		return C_CYAN, false
+	case 'w':
+		return C_WHITE, false
 
-	//Foreground colors
-	case 'k': //black
-		return cModes{}, "30", ""
-	case 'r': //red
-		return cModes{}, "31", ""
-	case 'g': //green
-		return cModes{}, "32", ""
-	case 'y': //yellow
-		return cModes{}, "33", ""
-	case 'b': //blue
-		return cModes{}, "34", ""
-	case 'm': //magenta
-		return cModes{}, "35", ""
-	case 'c': //cyan
-		return cModes{}, "36", ""
-	case 'w': //white
-		return cModes{}, "37", ""
-	case 'd': //default
-		return cModes{}, "39", ""
-
-	//Light foreground colors
-	case 'K': //black
-		return cModes{bright: true}, "30", ""
-	case 'R': //red
-		return cModes{bright: true}, "31", ""
-	case 'G': //green
-		return cModes{bright: true}, "32", ""
-	case 'Y': //yellow
-		return cModes{bright: true}, "33", ""
-	case 'B': //blue
-		return cModes{bright: true}, "34", ""
-	case 'M': //magenta
-		return cModes{bright: true}, "35", ""
-	case 'C': //cyan
-		return cModes{bright: true}, "36", ""
-	case 'W': //white
-		return cModes{bright: true}, "37", ""
-
-	//Background colors
-	case '!': //black
-		return cModes{}, "", "40"
-	case '@': //red
-		return cModes{}, "", "41"
-	case '#': //green
-		return cModes{}, "", "42"
-	case '$': //yellow
-		return cModes{}, "", "43"
-	case '%': //blue
-		return cModes{}, "", "44"
-	case '^': //magenta
-		return cModes{}, "", "45"
-	case '&': //cyan
-		return cModes{}, "", "46"
-	case '*': //white
-		return cModes{}, "", "47"
-	case 'D': //default
-		return cModes{}, "", "49"
-
+	case 'K':
+		return C_BLACK, true
+	case 'R':
+		return C_RED, true
+	case 'G':
+		return C_GREEN, true
+	case 'Y':
+		return C_YELLOW, true
+	case 'B':
+		return C_BLUE, true
+	case 'M':
+		return C_MAGENTA, true
+	case 'C':
+		return C_CYAN, true
+	case 'W':
+		return C_WHITE, true
 	default:
-		return cModes{}, "", ""
+		return "", false
 	}
 }
 
-func getColorNew(add, del cModes, color string) string {
-	buf := "\033["
-	var numArgs int
+const (
+	//Octal codes \000
+	BELL      = "\007"
+	BACKSPACE = "\010"
+	HTAB      = "\011"
+	VTAB      = "\013"
+	FORMFEED  = "\014"
+	NEWLINE   = "\015\012"
+	ESC       = "\033["
+	DEL_CHAR  = "\0177"
+)
 
-	if add.reset || del.reset {
-		if numArgs > 0 {
-			buf = buf + ";"
-		}
-		buf = buf + "0"
-		numArgs++
-	}
-	if add.bright {
-		if numArgs > 0 {
-			buf = buf + ";"
-		}
-		buf = buf + "1"
-		numArgs++
-	}
-	if add.italic {
-		if numArgs > 0 {
-			buf = buf + ";"
-		}
-		buf = buf + "3"
-		numArgs++
-	}
-	if add.underline {
-		if numArgs > 0 {
-			buf = buf + ";"
-		}
-		buf = buf + "4"
-		numArgs++
-	}
-	if add.blink {
-		if numArgs > 0 {
-			buf = buf + ";"
-		}
-		buf = buf + "5"
-		numArgs++
-	}
-	if add.inverse {
-		if numArgs > 0 {
-			buf = buf + ";"
-		}
-		buf = buf + "7"
-		numArgs++
-	}
-	if add.strike {
-		if numArgs > 0 {
-			buf = buf + ";"
-		}
-		buf = buf + "9"
-		numArgs++
-	}
+// Enable style
+const (
+	C_NONE    = "0"
+	C_BOLD    = "1"
+	C_DIM     = "2"
+	C_ITALIC  = "3"
+	C_UNDER   = "4"
+	C_INVERSE = "7"
+	C_STRIKE  = "9"
+)
 
-	//Remove mode
-	if del.bright {
-		if numArgs > 0 {
-			buf = buf + ";"
-		}
-		buf = buf + "22"
-		numArgs++
-	}
-	if del.italic {
-		if numArgs > 0 {
-			buf = buf + ";"
-		}
-		buf = buf + "23"
-		numArgs++
-	}
-	if del.underline {
-		if numArgs > 0 {
-			buf = buf + ";"
-		}
-		buf = buf + "24"
-		numArgs++
-	}
-	if del.blink {
-		if numArgs > 0 {
-			buf = buf + ";"
-		}
-		buf = buf + "25"
-		numArgs++
-	}
-	if del.inverse {
-		if numArgs > 0 {
-			buf = buf + ";"
-		}
-		buf = buf + "27"
-		numArgs++
-	}
-	if del.strike {
-		if numArgs > 0 {
-			buf = buf + ";"
-		}
-		buf = buf + "29"
-		numArgs++
-	}
+// Disable style
+const (
+	R_BOLD    = "22"
+	R_DIM     = "22"
+	R_ITALIC  = "23"
+	R_UNDER   = "24"
+	R_INVERSE = "27"
+	R_STRIKE  = "29"
+)
 
-	if color != "" {
-		if numArgs > 0 {
-			buf = buf + ";"
-		}
-		buf = buf + color
-		numArgs++
-	}
+// Foreground color
+const (
+	C_BLACK   = "30"
+	C_RED     = "31"
+	C_GREEN   = "32"
+	C_YELLOW  = "33"
+	C_BLUE    = "34"
+	C_MAGENTA = "35"
+	C_CYAN    = "36"
+	C_WHITE   = "37"
+	C_DEFAULT = "39"
+)
 
-	if numArgs > 0 {
-		buf = buf + "m"
-		return buf
-	} else {
-		return ""
-	}
-}
+// Foreground color
+const (
+	CB_BLACK   = "30"
+	CB_RED     = "31"
+	CB_GREEN   = "32"
+	CB_YELLOW  = "33"
+	CB_BLUE    = "34"
+	CB_MAGENTA = "35"
+	CB_CYAN    = "36"
+	CB_WHITE   = "37"
+	CB_DEFAULT = "39"
+)
+
+// Background color
+const (
+	BG_BLACK   = "40"
+	BG_RED     = "41"
+	BG_GREEN   = "42"
+	BG_YELLOW  = "43"
+	BG_BLUE    = "44"
+	BG_MAGENTA = "45"
+	BG_CYAN    = "46"
+	BG_WHITE   = "47"
+	BG_DEFAULT = "49"
+)
+
+// aixterm bright colors
+const (
+	XB_BLACK   = "90"
+	XB_RED     = "91"
+	XB_GREEN   = "92"
+	XB_YELLOW  = "93"
+	XB_BLUE    = "94"
+	XB_MAGENTA = "95"
+	XB_CYAN    = "96"
+	XB_WHITE   = "97"
+)
+
+// aixterm bright background color
+const (
+	XG_BLACK   = "90"
+	XG_RED     = "91"
+	XG_GREEN   = "92"
+	XG_YELLOW  = "93"
+	XG_BLUE    = "94"
+	XG_MAGENTA = "95"
+	XG_CYAN    = "96"
+	XG_WHITE   = "97"
+)
+
+// 8-bit color
+const (
+	EB_FG = "38;5{"
+	EB_BG = "48;5"
+)
+
+// 24-bit color
+const (
+	TFB_FG = "38;2"
+	TFB_BG = "48;2"
+)
