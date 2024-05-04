@@ -92,7 +92,7 @@ func ANSIColor(i []byte) []byte {
 				if val.isBG && curBGColor != val.code {
 					nextBGColor = val.code
 				}
-				if val.style != bold && val.isFG {
+				if !val.isFG {
 					nextStyle.ToggleFlag(val.style)
 				} else {
 					nextStyle.AddFlag(val.style)
