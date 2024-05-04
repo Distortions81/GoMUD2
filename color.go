@@ -67,6 +67,7 @@ func (f *Bitmask) AddFlag(flag Bitmask)     { *f |= flag }
 func (f *Bitmask) ClearFlag(flag Bitmask)   { *f &= ^flag }
 func (f *Bitmask) ToggleFlag(flag Bitmask)  { *f ^= flag }
 
+// Combines multiple color codes, allows styles to be toggled on and off
 func ANSIColor(i []byte) []byte {
 	var out []byte
 	il := len(i)
@@ -104,6 +105,7 @@ func ANSIColor(i []byte) []byte {
 				break
 			}
 		} else {
+
 			if nextColor != "" || nextBGColor != "" || nextStyle != curStyle {
 				var cout []byte
 				if nextStyle.HasFlag(bold) && !curStyle.HasFlag(bold) {
