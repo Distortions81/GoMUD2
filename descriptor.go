@@ -279,14 +279,14 @@ func (desc *descData) send(format string, args ...any) error {
 		}
 	}
 
-	data = ANSIColor(data)
-
 	//Character map translation
 	if !desc.telnet.options.UTF {
 		outBytes = encodeFromUTF(desc.telnet.charMap, data)
 	} else {
 		outBytes = []byte(data)
 	}
+
+	outBytes = ANSIColor(outBytes)
 
 	//Write, check for err or invalid len
 	dlen := len(outBytes)

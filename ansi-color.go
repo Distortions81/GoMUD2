@@ -1,6 +1,6 @@
 package main
 
-func ANSIColor(input string) string {
+func aNSIColor(input string) string {
 	output := ""
 	length := len(input)
 	var lastColor string
