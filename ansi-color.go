@@ -16,7 +16,7 @@ func ANSIColor(input string) string {
 			if next == '{' {
 				continue
 			} else if next == 'x' {
-				if lastColor != "" {
+				if lastColor != "" || wasBold {
 					output = output + ESC + "0m"
 					wasBold = false
 					lastColor = ""
