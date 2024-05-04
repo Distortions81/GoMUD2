@@ -91,10 +91,14 @@ func ANSIColor(i []byte) []byte {
 				if val.isBG && curBGColor != val.code {
 					nextBGColor = val.code
 				}
+				if val.style != bold {
+					nextStyle.ToggleFlag(val.style)
+				} else {
+					nextStyle.AddFlag(val.style)
+				}
 				if val.notBold {
 					nextStyle.ClearFlag(bold)
 				}
-				nextStyle.AddFlag(val.style)
 				continue
 			} else {
 				break
@@ -152,7 +156,7 @@ func ANSIColor(i []byte) []byte {
 					nextColor = ""
 					nextBGColor = ""
 
-					out = append(out, []byte("[")...)
+					out = append(out, []byte("\033[")...)
 					out = append(out, cout...)
 				}
 			}
