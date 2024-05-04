@@ -140,12 +140,14 @@ func ANSIColor(i []byte) []byte {
 						cout = append(cout, ';')
 					}
 					cout = append(cout, []byte(nextColor)...)
+					nextColor = ""
 				}
 				if nextBGColor != "" {
 					if nextColor != "" {
 						cout = append(cout, ';')
 					}
 					cout = append(cout, []byte(nextColor)...)
+					nextBGColor = ""
 				}
 				if len(cout) > 0 {
 					cout = append(cout, 'm')
@@ -153,8 +155,6 @@ func ANSIColor(i []byte) []byte {
 					curStyle = nextStyle
 					curColor = nextColor
 					curBGColor = nextBGColor
-					nextColor = ""
-					nextBGColor = ""
 
 					out = append(out, []byte("\033[")...)
 					out = append(out, cout...)
