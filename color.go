@@ -23,7 +23,7 @@ type ctData struct {
 	code, disCode string
 	style         Bitmask
 
-	isBG, isFG, notBold,
+	isBG, isFG, removeBold,
 	isStyle bool
 }
 
@@ -37,14 +37,14 @@ var colorTable map[byte]*ctData = map[byte]*ctData{
 	'6': {code: "46", isBG: true},
 	'7': {code: "47", isBG: true},
 
-	'k': {code: "30", isFG: true, notBold: true},
-	'r': {code: "31", isFG: true, notBold: true},
-	'g': {code: "32", isFG: true, notBold: true},
-	'y': {code: "33", isFG: true, notBold: true},
-	'b': {code: "34", isFG: true, notBold: true},
-	'm': {code: "35", isFG: true, notBold: true},
-	'c': {code: "36", isFG: true, notBold: true},
-	'w': {code: "37", isFG: true, notBold: true},
+	'k': {code: "30", isFG: true, removeBold: true},
+	'r': {code: "31", isFG: true, removeBold: true},
+	'g': {code: "32", isFG: true, removeBold: true},
+	'y': {code: "33", isFG: true, removeBold: true},
+	'b': {code: "34", isFG: true, removeBold: true},
+	'm': {code: "35", isFG: true, removeBold: true},
+	'c': {code: "36", isFG: true, removeBold: true},
+	'w': {code: "37", isFG: true, removeBold: true},
 
 	'K': {code: "30", isFG: true, style: bold},
 	'R': {code: "31", isFG: true, style: bold},
@@ -92,12 +92,12 @@ func ANSIColor(i []byte) []byte {
 				if val.isBG && curBGColor != val.code {
 					nextBGColor = val.code
 				}
-				if val.style != bold {
+				if val.style != bold && val.isFG {
 					nextStyle.ToggleFlag(val.style)
 				} else {
 					nextStyle.AddFlag(val.style)
 				}
-				if val.notBold {
+				if val.removeBold {
 					nextStyle.ClearFlag(bold)
 				}
 				continue
