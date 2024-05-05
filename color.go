@@ -12,15 +12,6 @@ const (
 	strike
 )
 
-var (
-	curStyle, nextStyle Bitmask
-	curColor,
-	curBGColor,
-
-	nextColor,
-	nextBGColor string
-)
-
 type ctData struct {
 	code, disCode string
 	style         Bitmask
@@ -70,8 +61,17 @@ func (f *Bitmask) AddFlag(flag Bitmask)     { *f |= flag }
 func (f *Bitmask) ClearFlag(flag Bitmask)   { *f &= ^flag }
 func (f *Bitmask) ToggleFlag(flag Bitmask)  { *f ^= flag }
 
-// Combines multiple color codes, allows styles to be toggled on and off
+// Combines multiple color codes, allows styles to be toggled on and off and ignores any code that would set/unset a state that is already set/unset
 func ANSIColor(i []byte) []byte {
+	var (
+		curStyle, nextStyle Bitmask
+		curColor,
+		curBGColor,
+
+		nextColor,
+		nextBGColor string
+	)
+
 	var out []byte
 	il := len(i)
 
