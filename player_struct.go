@@ -51,6 +51,7 @@ type characterData struct {
 
 	SaveTime time.Time
 	CreDate  time.Time
+	idleTime time.Time
 
 	loginTime time.Time
 

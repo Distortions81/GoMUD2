@@ -26,6 +26,8 @@ func mainLoop() {
 				target.sendToPlaying("%v slowly fades away.", target.Name)
 				errLog("Removed character %v", target.Name)
 				continue
+			} else if time.Since(target.idleTime) > CHARACTER_IDLE {
+				target.quit(true)
 			}
 			newCharacterList = append(newCharacterList, target)
 		}
@@ -34,9 +36,16 @@ func mainLoop() {
 		//Remove dead descriptors
 		var newDescList []*descData
 		for _, desc := range descList {
-			if desc.state == CON_DISCONNECTED || !desc.valid {
-				errLog("Removed #%v", desc.id)
-				desc.conn.Close()
+			if desc.state == CON_LOGIN &&
+				time.Since(desc.idleTime) > LOGIN_AFK {
+				desc.sendln("\r\nIdle too long, disconnecting.")
+				desc.killDesc()
+			} else if desc.state != CON_PLAYING &&
+				time.Since(desc.idleTime) > AFK_DESC {
+				desc.sendln("\r\nIdle too long, disconnecting.")
+				desc.killDesc()
+			} else if desc.state == CON_DISCONNECTED || !desc.valid {
+				desc.killDesc()
 				continue
 			}
 			newDescList = append(newDescList, desc)
@@ -57,5 +66,14 @@ func mainLoop() {
 		} else {
 			time.Sleep(timeLeft)
 		}
+	}
+}
+
+func (desc *descData) killDesc() {
+	errLog("Removed #%v", desc.id)
+	desc.valid = false
+	desc.conn.Close()
+	if desc.character != nil {
+		desc.character.desc = nil
 	}
 }

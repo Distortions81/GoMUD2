@@ -27,6 +27,7 @@ func (desc *descData) enterWorld(player *characterData) {
 	desc.character = player
 	desc.character.desc = desc
 	desc.character.loginTime = time.Now()
+	desc.character.idleTime = time.Now()
 	characterList = append(characterList, player)
 	desc.state = CON_NEWS
 	go func(desc *descData) {

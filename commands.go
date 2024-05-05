@@ -49,12 +49,14 @@ func cmdWho(player *characterData, input string) {
 		if !target.valid {
 			continue
 		}
-		var idleTime string
-		if time.Since(target.desc.idleTime) > time.Minute {
-			idleTime = fmt.Sprintf(" (idle %v)", durafmt.Parse(time.Since(target.loginTime).Round(time.Second)).LimitFirstN(2))
+		var idleTime, unlink string
+		if time.Since(target.idleTime) > time.Minute {
+			idleTime = fmt.Sprintf(" (idle %v)", durafmt.Parse(time.Since(target.idleTime).Round(time.Second)).LimitFirstN(2))
 		}
-		buf = buf + fmt.Sprintf("%30v -- %v%v\r\n", target.Name, durafmt.Parse(time.Since(target.loginTime).Round(time.Second)).LimitFirstN(2), idleTime)
-
+		if target.desc == nil || (target.desc != nil && !target.desc.valid) {
+			unlink = " (no link)"
+		}
+		buf = buf + fmt.Sprintf("%30v -- %v%v%v\r\n", target.Name, durafmt.Parse(time.Since(target.loginTime).Round(time.Second)).LimitFirstN(2), idleTime, unlink)
 	}
 	player.send(buf)
 }

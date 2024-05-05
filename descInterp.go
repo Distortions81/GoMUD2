@@ -5,6 +5,10 @@ import (
 	"time"
 )
 
+const LOGIN_AFK = time.Second * 30
+const AFK_DESC = time.Minute * 5
+const CHARACTER_IDLE = time.Minute * 15
+
 func (desc *descData) interp() {
 	var input string
 
@@ -38,6 +42,7 @@ func (desc *descData) interp() {
 		if desc.character != nil {
 			//Run command
 			desc.character.handleCommands(input)
+			desc.character.idleTime = time.Now()
 			mudLog("%v: %v", desc.character.Name, input)
 		}
 		return

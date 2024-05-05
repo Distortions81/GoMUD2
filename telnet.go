@@ -66,4 +66,7 @@ func (desc *descData) close() {
 	}
 	desc.state = CON_DISCONNECTED
 	desc.valid = false
+	if desc.character != nil {
+		desc.character.desc = nil
+	}
 }
