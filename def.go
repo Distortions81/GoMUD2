@@ -13,11 +13,12 @@ const (
 	DATA_DIR    = "data/"
 	ACCOUNT_DIR = "accounts/"
 	AREA_DIR    = "areas/"
+	HELPS_DIR   = "helps/"
 	TEXTS_DIR   = "texts/"
-	LOGS_DIR    = "log/"
+
+	LOGS_DIR = "log/"
 
 	//Files
-	HELP_FILE      = "helps.json"
 	ACCOUNT_FILE   = "acc.json"
 	ACC_INDEX_FILE = "accountIndex.json"
 
