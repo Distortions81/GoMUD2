@@ -62,7 +62,7 @@ func (desc *descData) interp() {
 	//Show prompt from next state
 	if loginStateList[desc.state].goPrompt != nil {
 		loginStateList[desc.state].goPrompt(desc)
-	} else {
+	} else if loginStateList[desc.state].prompt != "" {
 		desc.sendln("\r\n" + loginStateList[desc.state].prompt)
 	}
 
