@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"strings"
 	"time"
 
@@ -15,7 +16,6 @@ const (
 	MAX_PASSPHRASE_LENGTH = 72
 	MIN_PASSPHRASE_LENGTH = 8
 
-	PASSPHRASE_HASH_COST  = 15
 	MIN_PASS_ENTROPY_BITS = 52
 
 	MAX_CHAR_SLOTS     = 15
@@ -284,7 +284,20 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 		desc.idleTime = time.Now()
 		desc.sendln("Hashing password, one moment please...")
 		hashLock.Lock()
-		hashList = append(hashList, &toHashData{id: desc.id, desc: desc, pass: []byte(desc.account.tempString), hash: []byte{}, failed: false, started: time.Now()})
+		hashDepth := len(hashList)
+		if hashDepth > HASH_DEPTH_MAX {
+			desc.send("Sorry, over %v other hash requests are already in the queue. Try again later!", hashDepth)
+			desc.state = CON_NEW_PASSPHRASE
+			desc.account.tempString = ""
+			return
+		} else {
+			if hashDepth > 0 {
+				desc.send("%v hash requests in the queue, please wait...\r\nApprox wait time: %v.", hashDepth+1, int(math.Round(lastHashTime.Seconds()))*(hashDepth+1))
+			} else {
+				desc.send("Should take about %d seconds.", int(math.Round(lastHashTime.Seconds())))
+			}
+		}
+		hashList = append(hashList, &toHashData{id: desc.id, desc: desc, pass: []byte(desc.account.tempString), hash: []byte{}, failed: false, doEncrypt: true, started: time.Now()})
 		hashLock.Unlock()
 		desc.account.tempString = ""
 	} else {

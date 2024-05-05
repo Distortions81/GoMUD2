@@ -7,9 +7,19 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+const (
+	HASH_SLEEP           = time.Millisecond * 100
+	HASH_TIMEOUT         = time.Second * 30
+	PASSPHRASE_HASH_COST = 15
+	HASH_DEPTH_MAX       = 100
+)
+
+var lastHashTime time.Duration = time.Second * 5
+
 type toHashData struct {
-	id   uint64
-	desc *descData
+	isTest bool
+	id     uint64
+	desc   *descData
 
 	pass      []byte
 	hash      []byte
@@ -17,7 +27,9 @@ type toHashData struct {
 
 	complete bool
 	failed   bool
-	started  time.Time
+
+	started     time.Time
+	workStarted time.Time
 }
 
 var hashList []*toHashData
@@ -39,10 +51,11 @@ func hashReceiver() {
 			hashGenFail(item)
 			removeFirstHash()
 
-		} else if time.Since(item.started) > HASH_TIMEOUT {
+		} else if !item.workStarted.IsZero() && time.Since(item.started) > HASH_TIMEOUT {
 			item.desc.send("The password hashing timed out. Sorry!")
 			errLog("#%v: Password hashing timed out...", item.id)
 			removeFirstHash()
+			item.desc.close()
 		}
 
 	}
@@ -67,12 +80,15 @@ func hasherDaemon() {
 
 		var err error
 		start := time.Now()
+		item.workStarted = time.Now()
 		hashLock.Unlock()
 
 		item.hash, err = bcrypt.GenerateFromPassword([]byte(item.pass), PASSPHRASE_HASH_COST)
 
 		hashLock.Lock()
-		errLog("Password hash took %v.", time.Since(start).Round(time.Microsecond))
+		took := time.Since(start).Round(time.Millisecond)
+		errLog("Password hash took %v.", took)
+		lastHashTime = took
 
 		if err != nil {
 			item.failed = true
@@ -87,6 +103,13 @@ func hasherDaemon() {
 }
 
 func hashGenComplete(item *toHashData) {
+	if item.isTest {
+		return
+	}
+	if item.desc == nil {
+		errLog("Player left before password hash finished.")
+		return
+	}
 	item.desc.sendln("Hashing complete!")
 
 	//Create account
@@ -134,7 +157,7 @@ func hashGenComplete(item *toHashData) {
 
 func hashGenFail(item *toHashData) {
 	item.desc.send("Somthing went wrong hashing your password. Sorry!")
-	errLog("#%v password hash returned not complete or failed!", item.id)
+	errLog("#%v password hash failed!", item.id)
 }
 
 func removeFirstHash() {

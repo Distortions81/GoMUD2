@@ -263,6 +263,9 @@ func (desc *descData) handleTelCmd(command, option byte) {
 }
 
 func (desc *descData) send(format string, args ...any) error {
+	if desc == nil {
+		return nil
+	}
 	var outBytes []byte
 
 	//Format string if args supplied
@@ -274,7 +277,7 @@ func (desc *descData) send(format string, args ...any) error {
 	}
 
 	//Add telnet go-ahead if enabled, and there is no newline
-	if !desc.telnet.options.SUPGA {
+	if desc.telnet.options != nil && !desc.telnet.options.SUPGA {
 		if !strings.HasSuffix(data, "\n") {
 			data = data + string([]byte{TermCmd_IAC, TermCmd_GOAHEAD})
 		}

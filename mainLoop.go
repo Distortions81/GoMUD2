@@ -9,8 +9,6 @@ import (
 const (
 	ROUND_LENGTH_uS  = 250000                //0.25s
 	CONNECT_THROTTLE = time.Millisecond * 10 //100 connections per second
-	HASH_SLEEP       = time.Millisecond * 100
-	HASH_TIMEOUT     = time.Second * 30
 )
 
 func mainLoop() {
@@ -78,7 +76,9 @@ func removeDeadDesc() {
 	//Remove dead descriptors
 	var newDescList []*descData
 	for _, desc := range descList {
-		if desc.state == CON_LOGIN &&
+		if desc.state == CON_HASH_WAIT {
+			continue
+		} else if desc.state == CON_LOGIN &&
 			time.Since(desc.idleTime) > LOGIN_AFK {
 			desc.sendln("\r\nIdle too long, disconnecting.")
 			desc.killDesc()
