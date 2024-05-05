@@ -21,7 +21,7 @@ var commandList = map[string]*commandData{
 	"logout": {hint: "go back to account character selection.", goDo: cmdLogout},
 	"who":    {hint: "show players online", goDo: cmdWho},
 	"help":   {hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}},
-	"pinfo":  {hint: "shows desc and char lists.", goDo: cmdPinfo},
+	"cinfo":  {hint: "shows desc and char lists.", goDo: cmdCinfo},
 }
 
 type cmdListItem struct {
@@ -31,10 +31,14 @@ type cmdListItem struct {
 
 var cmdListStr []cmdListItem
 
-func cmdPinfo(player *characterData, input string) {
+func cmdCinfo(player *characterData, input string) {
 	player.send("Characters:")
 	for _, item := range characterList {
-		player.send("valid: %v: name: %v", item.valid, item.Name)
+		if item.desc != nil {
+			player.send("valid: %v: name: %v id: %v", item.valid, item.Name, item.desc.id)
+		} else {
+			player.send("valid: %v: name: %v (no link)", item.valid, item.Name)
+		}
 	}
 	player.send("\r\nDescriptors:")
 	for _, item := range descList {
