@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 
@@ -45,7 +46,12 @@ func cmdLogout(player *characterData, input string) {
 
 func cmdWho(player *characterData, input string) {
 	var buf string = "Players online:\r\n"
-	for _, target := range characterList {
+
+	tmpCharList := characterList
+	sort.Slice(tmpCharList, func(i, j int) bool {
+		return tmpCharList[i].desc.id < tmpCharList[j].desc.id
+	})
+	for _, target := range tmpCharList {
 		if !target.valid {
 			continue
 		}
@@ -81,5 +87,7 @@ func init() {
 		cmdListStr = append(cmdListStr, cmdListItem{name: iName, help: buf})
 	}
 
-	//sort.Strings(cmdListStr)
+	sort.Slice(cmdListStr, func(i, j int) bool {
+		return cmdListStr[i].name < cmdListStr[j].name
+	})
 }

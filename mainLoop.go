@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/exp/rand"
 )
 
 const (
@@ -182,6 +183,13 @@ func mainLoop() {
 		//Interpret all
 		for _, desc := range descList {
 			desc.interp()
+		}
+
+		//Shuffle descriptor list
+		numDesc := len(descList) - 1
+		if numDesc > 1 {
+			j := rand.Intn(numDesc) + 1
+			descList[0], descList[j] = descList[j], descList[0]
 		}
 		descLock.Unlock()
 

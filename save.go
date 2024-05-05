@@ -83,7 +83,7 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 		target.desc.close()
 
 		desc.character = target
-		target.desc.character.desc = desc
+		desc.character.desc = desc
 		desc.state = CON_PLAYING
 
 		return target
