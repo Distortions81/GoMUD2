@@ -53,8 +53,10 @@ func (desc *descData) readByte() (byte, error) {
 	data, err := desc.reader.ReadByte()
 	if err != nil {
 		errLog("#%v: %v: Connection closed by server.", desc.id, desc.cAddr)
+		descLock.Lock()
 		desc.valid = false
 		desc.state = CON_DISCONNECTED
+		descLock.Unlock()
 		return 0, err
 	}
 	return data, nil
