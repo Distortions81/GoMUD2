@@ -6,7 +6,7 @@ const (
 	VERSION  = "v0.0.5a-05052024-1059"
 	CODENAME = "Starshock"
 
-	LICENSE = "goMUD2: " + VERSION + CODENAME + "\n" +
+	LICENSE = "goMUD2: " + VERSION + "-" + CODENAME + "\n" +
 		"Copyright 2024 Carl Frank Otto III (carlotto81@gmail.com). All rights reserved.\n"
 
 		//Directories
