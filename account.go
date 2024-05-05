@@ -11,7 +11,7 @@ import (
 )
 
 func accountNameAvailable(name string) bool {
-	return accountIndex[name] != nil
+	return accountIndex[name] == nil
 }
 
 func gCharList(desc *descData) {

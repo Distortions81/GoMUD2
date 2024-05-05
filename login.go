@@ -15,7 +15,7 @@ const (
 	MAX_PASSPHRASE_LENGTH = 72
 	MIN_PASSPHRASE_LENGTH = 8
 
-	PASSPHRASE_HASH_COST  = 10
+	PASSPHRASE_HASH_COST  = 12
 	MIN_PASS_ENTROPY_BITS = 52
 
 	MAX_CHAR_SLOTS     = 15
@@ -53,6 +53,7 @@ const (
 	//Playing
 	CON_PLAYING
 
+	CON_HASH_WAIT
 	/*
 	 * Don't delete this
 	 * MUST remain at the end
@@ -196,7 +197,7 @@ func gShowNews(desc *descData) {
 // New login
 func gNewLogin(desc *descData, input string) {
 	if !accountNameAvailable(input) {
-		var buf string = "Few quick random number suffixes:"
+		var buf string = "Few quick random number suffixes:\r\n"
 		for x := 0; x < NUM_LOGIN_VARIANTS; x++ {
 			buf = buf + fmt.Sprintf("%v%v\r\n", input, rand.Intn(999))
 		}
@@ -279,50 +280,16 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 		return
 	}
 	if input == desc.account.tempString {
-
-		desc.sendln("Hashing password... one moment please!")
-		var err error
-		desc.account.PassHash, err = bcrypt.GenerateFromPassword([]byte(input), PASSPHRASE_HASH_COST)
-		desc.sendln("Okay, passwords match!")
+		desc.state = CON_HASH_WAIT
+		desc.idleTime = time.Now()
+		desc.sendln("Hashing password, one moment please...")
+		hashLock.Lock()
+		hashList = append(hashList, &toHashData{id: desc.id, desc: desc, pass: []byte(desc.account.tempString), hash: []byte{}, failed: false, started: time.Now()})
+		hashLock.Unlock()
 		desc.account.tempString = ""
-
-		if err != nil {
-			desc.send(warnBuf)
-			critLog("ERROR: #%v password hashing failed!!!: %v", desc.id, err.Error())
-			desc.sendln("ERROR: something went wrong... Sorry!")
-			desc.close()
-			return
-		}
 	} else {
-		desc.sendln("Passwords did not match! Goodbye!")
-		return
+		desc.sendln("Passwords did not match!")
 	}
-
-	err := desc.account.createAccountDir()
-	if err != nil {
-		desc.send(warnBuf)
-		desc.sendln("Unable to create account! Pleaselet moderators knows!")
-		desc.close()
-		return
-	}
-
-	notSaved := desc.account.saveAccount()
-	if notSaved {
-		desc.send(warnBuf)
-		desc.sendln("Unable to save account! Please let moderators know!")
-		desc.close()
-		return
-	} else {
-		desc.sendln("Account created and saved.")
-		newAcc := &accountIndexData{
-			Login:       desc.account.Login,
-			Fingerprint: desc.account.Fingerprint,
-			Added:       time.Now(),
-		}
-		accountIndex[desc.account.Login] = newAcc
-		saveAccountIndex()
-	}
-	desc.state = CON_CHAR_LIST
 }
 
 func (desc *descData) suggestPasswords() {

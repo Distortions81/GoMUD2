@@ -56,6 +56,7 @@ func handleDesc(conn net.Conn, tls bool) {
 	//Send greeting
 	err := desc.sendln(greetBuf)
 	if err != nil {
+		descLock.Unlock()
 		desc.close()
 		return
 	}
