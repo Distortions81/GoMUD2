@@ -9,8 +9,8 @@ import (
 
 const (
 	HASH_SLEEP           = time.Millisecond * 100
-	HASH_TIMEOUT         = time.Second * 30
-	PASSPHRASE_HASH_COST = 15
+	HASH_TIMEOUT         = time.Second * 60
+	PASSPHRASE_HASH_COST = 10
 	HASH_DEPTH_MAX       = 100
 )
 
@@ -51,7 +51,7 @@ func hashReceiver() {
 			hashGenFail(item)
 			removeFirstHash()
 
-		} else if !item.workStarted.IsZero() && time.Since(item.started) > HASH_TIMEOUT {
+		} else if !item.workStarted.IsZero() && time.Since(item.workStarted) > HASH_TIMEOUT {
 			item.desc.send("The password hashing timed out. Sorry!")
 			errLog("#%v: Password hashing timed out...", item.id)
 			removeFirstHash()
@@ -86,6 +86,7 @@ func hasherDaemon() {
 		item.hash, err = bcrypt.GenerateFromPassword([]byte(item.pass), PASSPHRASE_HASH_COST)
 
 		hashLock.Lock()
+
 		took := time.Since(start).Round(time.Millisecond)
 		errLog("Password hash took %v.", took)
 		lastHashTime = took
@@ -111,6 +112,7 @@ func hashGenComplete(item *toHashData) {
 		return
 	}
 	item.desc.sendln("Passphrase hashing complete!")
+	item.desc.account.PassHash = item.hash
 
 	//Create account
 	err := item.desc.account.createAccountDir()
@@ -119,7 +121,6 @@ func hashGenComplete(item *toHashData) {
 		item.desc.sendln("Unable to create account! Please let moderators know!")
 		errLog("#%v unable to create account!", item.id)
 		item.desc.close()
-		hashLock.Lock()
 		return
 	}
 
@@ -132,23 +133,21 @@ func hashGenComplete(item *toHashData) {
 		item.desc.sendln("Unable to save account! Please let moderators know!")
 		errLog("#%v unable to save account!", item.id)
 		item.desc.close()
-		hashLock.Lock()
 		return
-	} else {
-
-		//save success
-		item.desc.sendln("Account created and saved.")
-		newAcc := &accountIndexData{
-			Login:       item.desc.account.Login,
-			Fingerprint: item.desc.account.Fingerprint,
-			Added:       time.Now(),
-		}
-
-		//Update acc index
-		accountIndex[item.desc.account.Login] = newAcc
-		saveAccountIndex()
-		item.desc.account.saveAccount()
 	}
+
+	newAcc := &accountIndexData{
+		Login:       item.desc.account.Login,
+		Fingerprint: item.desc.account.Fingerprint,
+		Added:       time.Now(),
+	}
+
+	//Update acc index
+	accountIndex[item.desc.account.Login] = newAcc
+	saveAccountIndex()
+
+	//save success
+	item.desc.sendln("Account created and saved.")
 
 	//Send to char menu
 	item.desc.state = CON_CHAR_LIST
