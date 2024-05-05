@@ -1,25 +1,25 @@
 {
-	"Topic": "basics",
-	"Created": "2024-05-04T19:22:35.138950345-06:00",
-	"Modified": "2024-05-04T19:22:35.138953209-06:00",
-	"Helps": [
-		{
-			"Name": "Color",
-			"Description": "Mud text codes for color and styles.",
-			"Created": "2024-05-04T19:22:35.138955583-06:00",
-			"Modified": "2024-05-04T19:22:35.138957958-06:00",
-			"Keywords": [
-				"ansi",
-				"color",
-				"colour",
-				"style",
-				"text",
-				"codes"
-			],
-			"Authors": [
-				"System"
-			],
-			"Text": "Mud Text Codes:{n{nText codes start with {{ and end with a letter, number or symbol.{nThe style or color applied persists until turned off or until the end{nof the page. For styles, the style toggles on and off with the same code.{nSuch as {{!bold{{!. Finally, you can reset the color AND style with: {{x{nTo display a '{{' type {{{{{n{n Background colors:       Styles:{n {{0 {wBlack   {x              {{! {!Bold{!{n {{1 {1Red     {x              {{* {*Italic{*{n {{2 {2Green   {x              {{_ {_Underscore{_{n {{3 {3Yellow  {x              {{^ {^Inverse{^{n {{4 {4Blue    {x              {{~ {~Strike-through{~{n {{5 {5Magenta {x              {{x {xReset All{n {{6 {6Cyan    {x              {{n {xNew-line{n {{7 {7{kWhite   {x{n{n Bright colors:           Normal colors:{n {{K {wDark Grey{x             {{k {wBlack        {x{n {{R {RRed      {x             {{r {rRed          {x{n {{G {GGreen    {x             {{g {gGreen        {x{n {{Y {YYellow   {x             {{y {yYellow       {x{n {{B {BBlue     {x             {{b {bBlue         {x{n {{M {MMagenta  {x             {{m {mMagenta      {x{n {{C {CCyan     {x             {{c {cCyan         {x{n {{W {WWhite    {x             {{w {wGray         {x{n{nFor legibility, black is shown as gray above.{nNote:  Some MUD clients support some features that others do not.{nBG and FG colors can be combined: {1{CRed BG, Cyan FG{x{nSome client do not support bright BG colors.{n"
-		}
-	]
+  "Topic": "basics",
+  "Created": "2024-05-04T19:22:35.138950345-06:00",
+  "Modified": "2024-05-04T19:22:35.138953209-06:00",
+  "Helps": [
+    {
+      "Name": "Color",
+      "Description": "Mud text codes for colors and styles.",
+      "Created": "2024-05-04T19:22:35.138955583-06:00",
+      "Modified": "2024-05-04T19:22:35.138957958-06:00",
+      "Keywords": [
+        "ansi",
+        "color",
+        "colour",
+        "style",
+        "text",
+        "codes"
+      ],
+      "Authors": [
+        "Distortions"
+      ],
+      "Text": "Mud Text Codes:{n{nText codes start with {{ and end with a letter, number or symbol.{nThe style or color applied persists until turned off or until the end{nof the page. For styles, the style toggles on and off with the same code.{nSuch as {{!bold{{!. Finally, you can reset the color AND style with: {{x{nTo display a '{{' type {{{{{n{n Background colors:       Styles:{n {{0 {wBlack   {x              {{! {!Bold{!{n {{1 {1Red     {x              {{* {*Italic{*{n {{2 {2Green   {x              {{_ {_Underscore{_{n {{3 {3Yellow  {x              {{^ {^Inverse{^{n {{4 {4Blue    {x              {{~ {~Strike-through{~{n {{5 {5Magenta {x              {{x {xReset All{n {{6 {6Cyan    {x              {{n {xNew-line{n {{7 {7{kWhite   {x{n{n Bright colors:           Normal colors:{n {{K {wDark Grey{x             {{k {wBlack        {x{n {{R {RRed      {x             {{r {rRed          {x{n {{G {GGreen    {x             {{g {gGreen        {x{n {{Y {YYellow   {x             {{y {yYellow       {x{n {{B {BBlue     {x             {{b {bBlue         {x{n {{M {MMagenta  {x             {{m {mMagenta      {x{n {{C {CCyan     {x             {{c {cCyan         {x{n {{W {WWhite    {x             {{w {wGray         {x{n{nFor legibility, black is shown as gray above.{nNote:  Some MUD clients support some features that others do not.{nBG and FG colors can be combined: {1{CRed BG, Cyan FG{x{nSome client do not support bright BG colors.{n"
+    }
+  ]
 }
