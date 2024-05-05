@@ -43,7 +43,6 @@ func handleDesc(conn net.Conn, tls bool) {
 		host: hostStr, addr: ipStr, cAddr: cAddr,
 		state: CON_LOGIN, telnet: tnd, valid: true, idleTime: time.Now()}
 	descList = append(descList, desc)
-	descLock.Unlock()
 
 	//Connect log message
 	if tls {
@@ -60,6 +59,7 @@ func handleDesc(conn net.Conn, tls bool) {
 		desc.close()
 		return
 	}
+	descLock.Unlock()
 
 	desc.readDescLoop()
 
