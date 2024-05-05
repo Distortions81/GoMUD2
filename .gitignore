@@ -4,3 +4,4 @@ data/accountIndex.json
 goMUD2
 data/*.pem
 data/*.key
+out/
