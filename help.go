@@ -9,6 +9,9 @@ import (
 	"time"
 )
 
+var helpFiles []*helpTopicData
+
+/*
 var helpFiles []*helpTopicData = []*helpTopicData{
 	{
 		Topic:    "basics",
@@ -27,7 +30,7 @@ var helpFiles []*helpTopicData = []*helpTopicData{
 		},
 		dirty: true,
 	},
-}
+}*/
 
 type helpTopicData struct {
 	Topic             string
@@ -126,10 +129,10 @@ func loadHelps() {
 }
 
 func loadHelp(file string) *helpTopicData {
-	data, err := readFile(DATA_DIR + HELPS_DIR)
+	data, err := readFile(DATA_DIR + HELPS_DIR + file)
 
 	if err != nil {
-		errLog("loadHelp: Unable to load account file: %v", err)
+		errLog("loadHelp: Unable to read file: %v", err)
 		return nil
 	}
 
