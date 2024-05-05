@@ -11,12 +11,7 @@ import (
 )
 
 func accountNameAvailable(name string) bool {
-	for _, item := range accountIndex {
-		if strings.EqualFold(item.Login, name) {
-			return false
-		}
-	}
-	return true
+	return accountIndex[name] != nil
 }
 
 func gCharList(desc *descData) {
