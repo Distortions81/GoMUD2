@@ -8,7 +8,7 @@ Novaflux
 Warpfire
 Galaxium
 Voidstorm
-Starshock
+--Starshock
 Nebulon
 --Darkflare
 Thundercore
