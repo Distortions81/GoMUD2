@@ -292,9 +292,9 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 			return
 		} else {
 			if hashDepth > 0 {
-				desc.send("%v hash requests in the queue, please wait...\r\nApprox wait time: %v.", hashDepth+1, int(math.Round(lastHashTime.Seconds()))*(hashDepth+1))
+				desc.send("%v hash requests in the queue... Approx wait time: %v seconds.", hashDepth+1, int(math.Round(lastHashTime.Seconds()))*(hashDepth+1))
 			} else {
-				desc.send("Should take about %d seconds.", int(math.Round(lastHashTime.Seconds())))
+				desc.send("Should take about %d seconds.", int(math.Round(lastHashTime.Seconds()))+1)
 			}
 		}
 		hashList = append(hashList, &toHashData{id: desc.id, desc: desc, pass: []byte(desc.account.tempString), hash: []byte{}, failed: false, doEncrypt: true, started: time.Now()})

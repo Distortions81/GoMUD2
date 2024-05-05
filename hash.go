@@ -107,10 +107,10 @@ func hashGenComplete(item *toHashData) {
 		return
 	}
 	if item.desc == nil {
-		errLog("Player left before password hash finished.")
+		critLog("Player left before password hash finished.")
 		return
 	}
-	item.desc.sendln("Hashing complete!")
+	item.desc.sendln("Passphrase hashing complete!")
 
 	//Create account
 	err := item.desc.account.createAccountDir()
