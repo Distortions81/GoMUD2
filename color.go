@@ -2,6 +2,8 @@ package main
 
 type Bitmask uint32
 
+const ANSI_ESC = "\033["
+
 const (
 	bold = 1 << iota
 	italic
@@ -28,32 +30,33 @@ type ctData struct {
 }
 
 var colorTable map[byte]*ctData = map[byte]*ctData{
-	'0': {code: "40", isBG: true},
-	'1': {code: "41", isBG: true},
-	'2': {code: "42", isBG: true},
-	'3': {code: "43", isBG: true},
-	'4': {code: "44", isBG: true},
-	'5': {code: "45", isBG: true},
-	'6': {code: "46", isBG: true},
-	'7': {code: "47", isBG: true},
+	//bg colors
+	'0': {code: "40", isBG: true}, //black
+	'1': {code: "41", isBG: true}, //red
+	'2': {code: "42", isBG: true}, //green
+	'3': {code: "43", isBG: true}, //yellow
+	'4': {code: "44", isBG: true}, //blue
+	'5': {code: "45", isBG: true}, //magenta
+	'6': {code: "46", isBG: true}, //cyan
+	'7': {code: "47", isBG: true}, //white
 
-	'k': {code: "30", isFG: true, removeBold: true},
-	'r': {code: "31", isFG: true, removeBold: true},
-	'g': {code: "32", isFG: true, removeBold: true},
-	'y': {code: "33", isFG: true, removeBold: true},
-	'b': {code: "34", isFG: true, removeBold: true},
-	'm': {code: "35", isFG: true, removeBold: true},
-	'c': {code: "36", isFG: true, removeBold: true},
-	'w': {code: "37", isFG: true, removeBold: true},
+	'k': {code: "30", isFG: true, removeBold: true}, //black
+	'r': {code: "31", isFG: true, removeBold: true}, //red
+	'g': {code: "32", isFG: true, removeBold: true}, //green
+	'y': {code: "33", isFG: true, removeBold: true}, //yellow
+	'b': {code: "34", isFG: true, removeBold: true}, //blue
+	'm': {code: "35", isFG: true, removeBold: true}, //magenta
+	'c': {code: "36", isFG: true, removeBold: true}, //cyan
+	'w': {code: "37", isFG: true, removeBold: true}, //white
 
-	'K': {code: "30", isFG: true, style: bold},
-	'R': {code: "31", isFG: true, style: bold},
-	'G': {code: "32", isFG: true, style: bold},
-	'Y': {code: "33", isFG: true, style: bold},
-	'B': {code: "34", isFG: true, style: bold},
-	'M': {code: "35", isFG: true, style: bold},
-	'C': {code: "36", isFG: true, style: bold},
-	'W': {code: "37", isFG: true, style: bold},
+	'K': {code: "30", isFG: true, style: bold}, //black
+	'R': {code: "31", isFG: true, style: bold}, //red
+	'G': {code: "32", isFG: true, style: bold}, //green
+	'Y': {code: "33", isFG: true, style: bold}, //yellow
+	'B': {code: "34", isFG: true, style: bold}, //blue
+	'M': {code: "35", isFG: true, style: bold}, //magenta
+	'C': {code: "36", isFG: true, style: bold}, //cyan
+	'W': {code: "37", isFG: true, style: bold}, //white
 
 	'!': {code: "1", disCode: "22", isStyle: true, style: bold},
 	'*': {code: "3", disCode: "23", isStyle: true, style: italic},
@@ -80,6 +83,12 @@ func ANSIColor(i []byte) []byte {
 				// escaped {{
 				if i[x] == '{' {
 					out = append(out, '{')
+					continue
+				} else if i[x] == 'x' {
+					out = append(out, []byte("\033[0m")...)
+					continue
+				} else if i[x] == 'n' {
+					out = append(out, []byte("\r\n")...)
 					continue
 				}
 				val := colorTable[i[x]]
@@ -137,19 +146,19 @@ func ANSIColor(i []byte) []byte {
 				} else if !nextStyle.HasFlag(strike) && curStyle.HasFlag(strike) {
 					cout = append(cout, colorTable['~'].disCode...)
 				}
-				if nextColor != "" {
+				if nextBGColor != "" {
 					if len(cout) > 0 {
 						cout = append(cout, ';')
 					}
-					cout = append(cout, []byte(nextColor)...)
-					nextColor = ""
+					cout = append(cout, []byte(nextBGColor)...)
+					nextBGColor = ""
 				}
-				if nextBGColor != "" {
+				if nextColor != "" {
 					if nextColor != "" {
 						cout = append(cout, ';')
 					}
 					cout = append(cout, []byte(nextColor)...)
-					nextBGColor = ""
+					nextColor = ""
 				}
 				if len(cout) > 0 {
 					cout = append(cout, 'm')
@@ -158,7 +167,7 @@ func ANSIColor(i []byte) []byte {
 					curColor = nextColor
 					curBGColor = nextBGColor
 
-					out = append(out, []byte("\033[")...)
+					out = append(out, []byte(ANSI_ESC)...)
 					out = append(out, cout...)
 				}
 			}
