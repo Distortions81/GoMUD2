@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"sort"
 	"strings"
 	"time"
 
@@ -20,9 +19,15 @@ var commandList = map[string]*commandData{
 	"quit":   {hint: "quits and disconnects.", goDo: cmdQuit},
 	"logout": {hint: "go back to account character selection.", goDo: cmdLogout},
 	"who":    {hint: "show players online", goDo: cmdWho},
+	"help":   {hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}},
 }
 
-var cmdList []string
+type cmdListItem struct {
+	name string
+	help string
+}
+
+var cmdListStr []cmdListItem
 
 func cmdSay(player *characterData, input string) {
 
@@ -55,7 +60,7 @@ func cmdWho(player *characterData, input string) {
 }
 
 func init() {
-	cmdList = []string{}
+	cmdListStr = []cmdListItem{}
 
 	for iName, cmd := range commandList {
 		tName := fmt.Sprintf("%15v", iName)
@@ -71,8 +76,8 @@ func init() {
 				buf = buf + fmt.Sprintf("<%v>", aName)
 			}
 		}
-		cmdList = append(cmdList, buf)
+		cmdListStr = append(cmdListStr, cmdListItem{name: iName, help: buf})
 	}
 
-	sort.Strings(cmdList)
+	//sort.Strings(cmdListStr)
 }

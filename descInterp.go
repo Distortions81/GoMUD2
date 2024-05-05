@@ -78,7 +78,11 @@ func (desc *descData) interp() {
 }
 
 func cmdListCmds(desc *descData) {
-	desc.sendln("\r\nCommands:\r\n%v", strings.Join(cmdList, "\r\n"))
+	buf := "\r\nCommands:\r\n"
+	for _, item := range cmdListStr {
+		buf = buf + item.help + "\r\n"
+	}
+	desc.send(buf)
 }
 
 func (player *characterData) handleCommands(input string) {
