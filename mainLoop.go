@@ -27,7 +27,9 @@ func mainLoop() {
 				errLog("Removed character %v", target.Name)
 				continue
 			} else if time.Since(target.idleTime) > CHARACTER_IDLE {
+				target.send("Idle too long, quitting...")
 				target.quit(true)
+				continue
 			}
 			newCharacterList = append(newCharacterList, target)
 		}
@@ -40,10 +42,12 @@ func mainLoop() {
 				time.Since(desc.idleTime) > LOGIN_AFK {
 				desc.sendln("\r\nIdle too long, disconnecting.")
 				desc.killDesc()
+				continue
 			} else if desc.state != CON_PLAYING &&
 				time.Since(desc.idleTime) > AFK_DESC {
 				desc.sendln("\r\nIdle too long, disconnecting.")
 				desc.killDesc()
+				continue
 			} else if desc.state == CON_DISCONNECTED || !desc.valid {
 				desc.killDesc()
 				continue
@@ -62,7 +66,7 @@ func mainLoop() {
 		timeLeft := roundTime - time.Since(start)
 
 		if timeLeft <= 0 {
-			errLog("Round took %v", time.Duration(timeLeft).String())
+			errLog("Round went over: %v", time.Duration(timeLeft).Round(time.Microsecond).Abs().String())
 		} else {
 			time.Sleep(timeLeft)
 		}
