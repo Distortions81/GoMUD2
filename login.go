@@ -45,6 +45,7 @@ const (
 	CON_NEW_PASSPHRASE
 	CON_NEW_PASSPHRASE_CONFIRM
 	CON_RECONNECT_CONFIRM
+	CON_HASH_WAIT
 
 	CON_CHAR_LIST
 	CON_CHAR_CREATE
@@ -53,7 +54,6 @@ const (
 	//Playing
 	CON_PLAYING
 
-	CON_HASH_WAIT
 	/*
 	 * Don't delete this
 	 * MUST remain at the end
@@ -283,12 +283,14 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 		desc.state = CON_HASH_WAIT
 		desc.idleTime = time.Now()
 		desc.sendln("Hashing password, one moment please...")
+
 		hashLock.Lock()
 		hashDepth := len(hashList)
 		if hashDepth > HASH_DEPTH_MAX {
 			desc.send("Sorry, over %v other hash requests are already in the queue. Try again later!", hashDepth)
 			desc.state = CON_NEW_PASSPHRASE
 			desc.account.tempString = ""
+			hashLock.Unlock()
 			return
 		} else {
 			if hashDepth > 0 {
@@ -298,6 +300,7 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 			}
 		}
 		hashList = append(hashList, &toHashData{id: desc.id, desc: desc, pass: []byte(desc.account.tempString), hash: []byte{}, failed: false, doEncrypt: true, started: time.Now()})
+
 		hashLock.Unlock()
 		desc.account.tempString = ""
 	} else {
