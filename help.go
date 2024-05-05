@@ -91,12 +91,18 @@ func cmdHelp(player *characterData, input string) {
 		}
 	}
 
-	player.send("Sorry, I didn't find a help page for that.")
-	player.send("Help topics: %v", strings.Join(helpKeywords, ", "))
+	if input != "" {
+		player.send("Sorry, I didn't find a help page for that.")
+	}
+	if len(helpKeywords) > 0 {
+		player.send("Help topics: %v", strings.Join(helpKeywords, ", "))
+	} else {
+		player.send("No help topics found?")
+	}
 }
 
 func showHelpItem(player *characterData, help helpData) {
-	buf := fmt.Sprintf("HELP: %v: (%v)\r\n%v", help.Name, strings.Join(help.Keywords, ", "), help.Text)
+	buf := fmt.Sprintf("HELP: %v (%v)\r\n\r\n%v", help.Name, strings.Join(help.Keywords, ", "), help.Text)
 	player.send(buf)
 }
 
@@ -116,6 +122,7 @@ func loadHelps() {
 			if strings.HasSuffix(item.Name(), ".json") {
 				help := loadHelp(item.Name())
 				if help != nil {
+					errLog("Loaded: %v", help.Topic)
 					helpFiles = append(helpFiles, help)
 					helpKeywords = append(helpKeywords, help.Topic)
 				}
@@ -171,9 +178,9 @@ func saveHelps() {
 	for _, topic := range helpFiles {
 		if topic.dirty {
 			saveHelp(topic)
-			helpKeywords = append(helpKeywords, topic.Topic)
 			critLog("--> Saved help file: %v", topic.Topic)
 		}
+		helpKeywords = append(helpKeywords, topic.Topic)
 	}
 }
 
