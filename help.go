@@ -3,12 +3,31 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"os"
 	"strings"
 	"time"
 )
 
-var helpFiles []*helpTopicData
+var helpFiles []*helpTopicData = []*helpTopicData{
+	{
+		Topic:    "basics",
+		Created:  time.Now(),
+		Modified: time.Now(),
+		Helps: []helpData{
+			{
+				Name:        "Color",
+				Created:     time.Now(),
+				Modified:    time.Now(),
+				Authors:     []string{"System"},
+				Keywords:    []string{"ansi", "color", "colour"},
+				Description: "This is a test help file.",
+				Text:        "WIP.",
+			},
+		},
+		dirty: true,
+	},
+}
 
 type helpTopicData struct {
 	Topic             string
@@ -19,7 +38,8 @@ type helpTopicData struct {
 }
 
 type helpData struct {
-	Title             string
+	Name              string
+	Description       string
 	Created, Modified time.Time
 
 	Keywords []string
@@ -36,17 +56,52 @@ func cmdHelp(player *characterData, input string) {
 			return
 		}
 	}
+	count := 0
+	buf := ""
 	for _, topic := range helpFiles {
 		if topic.Topic == input {
-
+			for _, help := range topic.Helps {
+				if count > 0 {
+					buf = buf + ", "
+				}
+				buf = buf + help.Name
+				count++
+			}
+			if count > 0 {
+				player.send("Found these help topics:\r\n" + buf)
+				return
+			}
+		}
+	}
+	for _, topic := range helpFiles {
+		for _, help := range topic.Helps {
+			if strings.EqualFold(input, help.Name) {
+				showHelpItem(player, help)
+				return
+			}
+			for _, keyword := range help.Keywords {
+				if strings.EqualFold(input, keyword) {
+					showHelpItem(player, help)
+					return
+				}
+			}
 		}
 	}
 
 	player.send("Sorry, I didn't find a help page for that.")
+	player.send("Help topics: %v", strings.Join(helpKeywords, ", "))
 }
 
+func showHelpItem(player *characterData, help helpData) {
+	buf := fmt.Sprintf("HELP: %v: (%v)\r\n%v", help.Name, strings.Join(help.Keywords, ", "), help.Text)
+	player.send(buf)
+}
+
+var helpKeywords []string
+
 func loadHelps() {
-	helpFiles = []*helpTopicData{}
+	helpKeywords = []string{}
+	//helpFiles = []*helpTopicData{}
 
 	dir, err := os.ReadDir(DATA_DIR + HELPS_DIR)
 	if err != nil {
@@ -59,6 +114,7 @@ func loadHelps() {
 				help := loadHelp(item.Name())
 				if help != nil {
 					helpFiles = append(helpFiles, help)
+					helpKeywords = append(helpKeywords, help.Topic)
 				}
 			}
 		}
@@ -100,16 +156,19 @@ func createNewHelp(player *characterData, topicStr, title string) {
 		if strings.EqualFold(topic.Topic, strings.TrimSpace(topicStr)) {
 			newHelp := helpData{topic: topic, Created: time.Now(),
 				Modified: time.Now(), Authors: []string{player.Name},
-				Text: "Work in progress.", Title: title}
+				Text: "Work in progress.", Name: title}
 			topic.Helps = append(topic.Helps, newHelp)
 		}
 	}
 }
 
 func saveHelps() {
+	helpKeywords = []string{}
+
 	for _, topic := range helpFiles {
 		if topic.dirty {
 			saveHelp(topic)
+			helpKeywords = append(helpKeywords, topic.Topic)
 			critLog("--> Saved help file: %v", topic.Topic)
 		}
 	}

@@ -1,0 +1,22 @@
+{
+	"Topic": "basics",
+	"Created": "2024-05-04T19:22:35.138950345-06:00",
+	"Modified": "2024-05-04T19:22:35.138953209-06:00",
+	"Helps": [
+		{
+			"Name": "Color",
+			"Description": "This is a test help file.",
+			"Created": "2024-05-04T19:22:35.138955583-06:00",
+			"Modified": "2024-05-04T19:22:35.138957958-06:00",
+			"Keywords": [
+				"ansi",
+				"color",
+				"colour"
+			],
+			"Authors": [
+				"System"
+			],
+			"Text": "WIP."
+		}
+	]
+}

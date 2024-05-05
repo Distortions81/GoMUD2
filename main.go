@@ -53,6 +53,7 @@ func main() {
 	startLogs()
 	readTextFiles()
 	loadHelps()
+	saveHelps()
 
 	setupListener()
 	setupListenerTLS()
