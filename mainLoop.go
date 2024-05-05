@@ -21,9 +21,9 @@ func mainLoop() {
 		start := time.Now()
 
 		descLock.Lock()
-		hashReceiver()
 		removeDeadChar()
 		removeDeadDesc()
+		hashReceiver()
 		interpAllDesc()
 		descShuffle()
 		descLock.Unlock()
@@ -77,6 +77,7 @@ func removeDeadDesc() {
 	var newDescList []*descData
 	for _, desc := range descList {
 		if desc.state == CON_HASH_WAIT {
+			newDescList = append(newDescList, desc)
 			continue
 		} else if desc.state == CON_LOGIN &&
 			time.Since(desc.idleTime) > LOGIN_AFK {
