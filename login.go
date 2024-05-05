@@ -180,7 +180,8 @@ func gPass(desc *descData, input string) {
 	} else {
 		desc.sendln("Incorrect passphrase.")
 		critLog("#%v: %v tried a invalid password!", desc.id, desc.cAddr)
-		desc.close()
+		desc.state = CON_DISCONNECTED
+		desc.valid = false
 	}
 }
 
