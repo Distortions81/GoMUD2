@@ -70,6 +70,8 @@ func ANSIColor(i []byte) []byte {
 
 		nextColor,
 		nextBGColor string
+
+		hasColor bool
 	)
 
 	var out []byte
@@ -84,7 +86,8 @@ func ANSIColor(i []byte) []byte {
 				if i[x] == '{' {
 					out = append(out, '{')
 					continue
-				} else if i[x] == 'x' {
+				} else if i[x] == 'x' && hasColor {
+					hasColor = false
 					out = append(out, []byte("\033[0m")...)
 					continue
 				} else if i[x] == 'n' {
@@ -151,6 +154,7 @@ func ANSIColor(i []byte) []byte {
 						cout = append(cout, ';')
 					}
 					cout = append(cout, []byte(nextBGColor)...)
+					hasColor = true
 					nextBGColor = ""
 				}
 				if nextColor != "" {
@@ -158,6 +162,7 @@ func ANSIColor(i []byte) []byte {
 						cout = append(cout, ';')
 					}
 					cout = append(cout, []byte(nextColor)...)
+					hasColor = true
 					nextColor = ""
 				}
 				if len(cout) > 0 {
@@ -167,6 +172,7 @@ func ANSIColor(i []byte) []byte {
 					curColor = nextColor
 					curBGColor = nextBGColor
 
+					hasColor = true
 					out = append(out, []byte(ANSI_ESC)...)
 					out = append(out, cout...)
 				}
