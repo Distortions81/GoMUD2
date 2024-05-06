@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hako/durafmt"
 	"github.com/martinhoefling/goxkcdpwgen/xkcdpwgen"
 	passwordvalidator "github.com/wagslane/go-password-validator"
 	"golang.org/x/crypto/bcrypt"
@@ -292,13 +293,12 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 		} else {
 			if hashDepth > 0 {
 				willTake := int(math.Round(lastHashTime.Seconds())) * (hashDepth + 1)
-				if willTake > 2 {
+				if willTake > 3 {
 					desc.send("%v password requests in the queue. Approx wait time: %v seconds.", hashDepth+1, willTake)
 				}
 			} else {
-				willTake := int(math.Round(lastHashTime.Seconds())) + 1
-				if willTake > 2 {
-					desc.send("Should take about %d seconds.", willTake)
+				if lastHashTime.Seconds() > 3 {
+					desc.send("Should take about %v.", durafmt.Parse(lastHashTime.Round(time.Second)).LimitFirstN(2))
 				}
 			}
 		}
