@@ -80,17 +80,21 @@ func removeDeadDesc() {
 		if desc.state == CON_HASH_WAIT {
 			newDescList = append(newDescList, desc)
 			continue
+
 		} else if desc.state == CON_LOGIN &&
 			time.Since(desc.idleTime) > LOGIN_AFK {
 			desc.sendln("\r\nIdle too long, disconnecting.")
 			desc.killDesc()
 			continue
+
+		} else if desc.state == CON_DISCONNECTED ||
+			!desc.valid {
+			desc.killDesc()
+			continue
+
 		} else if desc.state != CON_PLAYING &&
 			time.Since(desc.idleTime) > AFK_DESC {
 			desc.sendln("\r\nIdle too long, disconnecting.")
-			desc.killDesc()
-			continue
-		} else if desc.state == CON_DISCONNECTED || !desc.valid {
 			desc.killDesc()
 			continue
 		}
