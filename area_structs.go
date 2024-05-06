@@ -21,9 +21,43 @@ const (
 	DIR_WEST
 	DIR_DOWN
 	DIR_UP
+	DIR_CUSTOM
 
 	//Keep at end
 	DIR_MAX
+)
+
+var dirToString [DIR_MAX]string = [DIR_MAX]string{
+	DIR_NORTH:  "North",
+	DIR_EAST:   "East",
+	DIR_SOUTH:  "South",
+	DIR_WEST:   "West",
+	DIR_DOWN:   "Down",
+	DIR_UP:     "Up",
+	DIR_CUSTOM: "Custom",
+}
+
+var dirToStringColor [DIR_MAX]string = [DIR_MAX]string{
+	DIR_NORTH:  "{RN{rorth",
+	DIR_EAST:   "{GE{gast",
+	DIR_SOUTH:  "{BS{bouth",
+	DIR_WEST:   "{MW{mest",
+	DIR_DOWN:   "{WD{wown",
+	DIR_UP:     "{YU{yp",
+	DIR_CUSTOM: "{wC{kustom",
+}
+
+const (
+	EXIT_NORMAL = 1 << iota
+	EXIT_DOOR
+	EXIT_HIDDEN
+	EXIT_PERSONAL
+	EXIT_GUILD
+	EXIT_IMMORTAL
+	EXIT_KEYED
+
+	//Keep at end
+	EXIT_MAX
 )
 
 type locData struct {
@@ -53,14 +87,16 @@ type roomData struct {
 	CreDate time.Time
 	ModDate time.Time
 
-	Exits []exitData
+	Exits []*exitData
 
 	pArea *areaData
 }
 
 type exitData struct {
+	ExitType  int
+	DoorName  string
 	Direction DIR
-	Name      string
+	DirName   string
 	ToLoc     locData
 
 	pToLoc *roomData

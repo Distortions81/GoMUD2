@@ -28,7 +28,11 @@ func (desc *descData) enterWorld(player *characterData) {
 	desc.character.desc = desc
 	desc.character.loginTime = time.Now()
 	desc.character.idleTime = time.Now()
+	if player.Room == nil {
+		player.Room = areaList[1].Rooms[1]
+	}
 	charList = append(charList, player)
+
 	desc.state = CON_NEWS
 	go func(desc *descData) {
 		descLock.Lock()

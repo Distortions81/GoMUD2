@@ -45,9 +45,10 @@ type descData struct {
 type characterData struct {
 	Version     int
 	Fingerprint string
+	desc        *descData
 
 	Name string
-	desc *descData
+	Room *roomData
 
 	SaveTime time.Time
 	CreDate  time.Time

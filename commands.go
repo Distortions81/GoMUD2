@@ -22,6 +22,7 @@ var commandList = map[string]*commandData{
 	"who":    {hint: "show players online", goDo: cmdWho},
 	"help":   {hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}},
 	"cinfo":  {hint: "shows desc and char lists.", goDo: cmdCinfo},
+	"look":   {hint: "look around the room.", goDo: cmdLook},
 }
 
 type cmdListItem struct {
