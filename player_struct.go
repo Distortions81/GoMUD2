@@ -10,10 +10,10 @@ import (
 )
 
 var (
-	topID         uint64
-	descList      []*descData
-	descLock      sync.Mutex
-	characterList []*characterData
+	topID    uint64
+	descList []*descData
+	descLock sync.Mutex
+	charList []*characterData
 )
 
 type descData struct {
