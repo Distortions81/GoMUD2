@@ -285,10 +285,10 @@ func saveAccountIndex() error {
 
 func alreadyPlayingWarnVictim(target *characterData) {
 	target.send(textFiles["warn"])
-	target.send("Another connection on your account is attempting to play this character. If they choose 'yes', you will be kicked.")
+	target.send("Another connection on your account is attempting to play this character.\r\nIf they choose 'yes' to confirm you will be kicked.")
 }
 
 func gAlreadyPlayingWarn(desc *descData) {
 	desc.send(textFiles["warn"])
-	desc.send("That character is already playing.\r\nDo you wish to disconnect the other session and take control of the character?")
+	desc.send("That character is already playing.\r\nDo you wish to disconnect the other session and take control of the character? (y/N)")
 }

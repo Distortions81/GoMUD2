@@ -83,7 +83,7 @@ func cmdWho(player *characterData, input string) {
 		}
 		buf = buf + fmt.Sprintf("%30v -- %v%v%v\r\n", target.Name, durafmt.Parse(time.Since(target.loginTime).Round(time.Second)).LimitFirstN(2), idleTime, unlink)
 	}
-	buf = buf + fmt.Sprintf("\r\n%v players online. Uptime:", durafmt.Parse(time.Since(bootTime).Round(time.Second)).LimitFirstN(2))
+	buf = buf + fmt.Sprintf("\r\n%v players online. Uptime: %v", numPlayers, durafmt.Parse(time.Since(bootTime).Round(time.Second)).LimitFirstN(2))
 	player.send(buf)
 }
 
