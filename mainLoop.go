@@ -57,7 +57,7 @@ func interpAllDesc() {
 func removeDeadChar() {
 	//Remove dead characters
 	var newCharacterList []*characterData
-	for _, target := range characterList {
+	for _, target := range charList {
 		if !target.valid {
 			target.sendToPlaying("%v slowly fades away.", target.Name)
 			errLog("Removed character %v", target.Name)
@@ -69,7 +69,7 @@ func removeDeadChar() {
 		}
 		newCharacterList = append(newCharacterList, target)
 	}
-	characterList = newCharacterList
+	charList = newCharacterList
 }
 
 func removeDeadDesc() {
