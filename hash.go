@@ -52,7 +52,7 @@ func hashReceiver() {
 			removeFirstHash()
 
 		} else if !item.workStarted.IsZero() && time.Since(item.workStarted) > HASH_TIMEOUT {
-			item.desc.send("The password hashing timed out. Sorry!")
+			item.desc.send("The password processing timed out. Sorry!")
 			errLog("#%v: Password hashing timed out...", item.id)
 			removeFirstHash()
 			item.desc.close()
@@ -111,14 +111,14 @@ func hashGenComplete(item *toHashData) {
 		critLog("Player left before password hash finished.")
 		return
 	}
-	item.desc.sendln("Passphrase hashing complete!")
+	item.desc.sendln("Passphrase processing complete!")
 	item.desc.account.PassHash = item.hash
 
 	//Create account
 	err := item.desc.account.createAccountDir()
 	if err != nil {
 		item.desc.send(warnBuf)
-		item.desc.sendln("Unable to create account! Please let moderators know!")
+		item.desc.sendln("Unable to create account!")
 		errLog("#%v unable to create account!", item.id)
 		item.desc.close()
 		return
@@ -130,7 +130,7 @@ func hashGenComplete(item *toHashData) {
 
 		//Save failure
 		item.desc.send(warnBuf)
-		item.desc.sendln("Unable to save account! Please let moderators know!")
+		item.desc.sendln("Unable to save account!")
 		errLog("#%v unable to save account!", item.id)
 		item.desc.close()
 		return
@@ -155,7 +155,7 @@ func hashGenComplete(item *toHashData) {
 }
 
 func hashGenFail(item *toHashData) {
-	item.desc.send("Somthing went wrong hashing your password. Sorry!")
+	item.desc.send("Somthing went wrong processing your password. Sorry!")
 	errLog("#%v password hash failed!", item.id)
 }
 
