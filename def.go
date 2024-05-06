@@ -56,4 +56,5 @@ var reservedNames = []string{
 	"nobody",
 	"imm",
 	"immortal",
+	"back",
 }

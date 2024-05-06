@@ -17,8 +17,10 @@ func accountNameAvailable(name string) bool {
 func gCharList(desc *descData) {
 	numChars := len(desc.account.Characters)
 	if numChars <= 0 {
-		desc.sendln("You don't have any characters right now.\r\nType NEW to create one:")
+		desc.sendln("You're starting fresh with no characters.")
 		return
+	} else {
+		desc.sendln("Your characters:")
 	}
 
 	var buf string = "\r\n"
@@ -30,49 +32,58 @@ func gCharList(desc *descData) {
 		buf = buf + fmt.Sprintf("#%v: %v%v\r\n", i+1, item.Login, playing)
 	}
 	if numChars < MAX_CHAR_SLOTS {
-		buf = buf + "Type NEW to create a new character.\r\n"
+		buf = buf + "Type 'NEW' to create a new character."
 	}
-	buf = buf + "Enter a character by #number or name: "
+	buf = buf + "Select a character by #number or name: "
 	desc.sendln(buf)
+}
+
+func accCreateCharacter(desc *descData) {
+	if len(desc.account.Characters) < MAX_CHAR_SLOTS {
+		desc.state = CON_CHAR_CREATE
+	} else {
+		desc.sendln("Character creation limit (%v) reached.\r\nNo new characters can be added.", MAX_CHAR_SLOTS)
+	}
 }
 
 func gCharSelect(desc *descData, input string) {
 
+	input = strings.TrimSpace(input)
 	if strings.EqualFold(input, "new") {
-		if len(desc.account.Characters) < MAX_CHAR_SLOTS {
-			desc.sendln("Okay, lets choose a name for the new character.")
-			desc.state = CON_CHAR_CREATE
-		} else {
-			desc.sendln("Sorry, you have hit the max number of characters.")
-		}
+		accCreateCharacter(desc)
 		return
 	}
-	num, err := strconv.Atoi(input)
-	if err != nil {
+	nStr, _ := strings.CutPrefix(input, "#")
+	num, err := strconv.Atoi(nStr)
+	if err != nil { //Find by name
 		for _, item := range desc.account.Characters {
-			if strings.EqualFold(item.Login, input) {
-				if target := checkPlaying(item.Login, item.Fingerprint); target != nil {
-					desc.account.tempString = item.Login
-					desc.state = CON_RECONNECT_CONFIRM
-					return
-				}
-				var newPlayer *characterData
-				if newPlayer = desc.loadCharacter(item.Login); newPlayer != nil {
-					desc.enterWorld(newPlayer)
-					return
-				} else {
-					desc.sendln("Unable to load that character.")
-					return
-				}
+			if !strings.EqualFold(item.Login, input) {
+				continue
 			}
+			if target := checkPlaying(item.Login, item.Fingerprint); target != nil {
+				alreadyPlayingWarnVictim(target)
+				desc.account.tempString = item.Login
+				desc.state = CON_RECONNECT_CONFIRM
+				return
+			}
+			var newPlayer *characterData
+			if newPlayer = desc.loadCharacter(item.Login); newPlayer != nil {
+				desc.enterWorld(newPlayer)
+				return
+			} else {
+				desc.sendln("Failed to load character %v.")
+				critLog("Unable to load characer %v!", item.Login)
+				return
+			}
+
 		}
-		desc.sendln("Didn't find a character by the name: %v", input)
-	} else {
+		desc.sendln("No matches found for %v.", input)
+		return
+	} else { //Find by number
 		if num > 0 && num <= len(desc.account.Characters) {
 			var target *characterData
 			if target = checkPlaying(desc.account.Characters[num-1].Login, desc.account.Characters[num-1].Fingerprint); target != nil {
-				target.send(textFiles["warn"])
-				target.send("Another connection from your account is attempting to play this character.\r\nYou may be disconnected if they choose the kick option.")
+				alreadyPlayingWarnVictim(target)
 				desc.account.tempString = desc.account.Characters[num-1].Login
 				desc.state = CON_RECONNECT_CONFIRM
 				return
@@ -82,11 +93,11 @@ func gCharSelect(desc *descData, input string) {
 				desc.enterWorld(newPlayer)
 				return
 			} else {
-				desc.sendln("Unable to load that character.")
+				desc.sendln("Error: Unable to load requested character.")
 				return
 			}
 		} else {
-			desc.sendln("That character doesn't seem to exist.")
+			desc.sendln("That character isn't listed.")
 		}
 	}
 }
@@ -98,8 +109,7 @@ func gReconnectConfirm(desc *descData, input string) {
 	if strings.HasPrefix(filtered, "y") {
 		var newPlayer *characterData
 		if newPlayer = desc.loadCharacter(desc.account.tempString); newPlayer == nil {
-			desc.send(warnBuf)
-			desc.send("Sorry, loading the character failed.")
+			desc.send("Loading the character failed.")
 			desc.close()
 			return
 		}
@@ -113,39 +123,37 @@ func gCharNewName(desc *descData, input string) {
 
 	input = nameReduce(input)
 	if nameReserved(input) {
-		desc.sendln("Sorry, that name is not appropriate.")
+		desc.sendln("The name you've chosen for your character is not allowed or is reserved.\r\nPlease try a different name.")
 		return
 	}
 
 	newNameLen := len(input)
 	if newNameLen < MIN_NAME_LEN && newNameLen > MAX_NAME_LEN {
-		desc.sendln("Sorry, the name must be more than %v and less than %v. Try again!", MIN_NAME_LEN, MAX_NAME_LEN)
+		desc.sendln("Character names must be between %v and %v in length.\r\nPlease choose another.", MIN_NAME_LEN, MAX_NAME_LEN)
 		return
 	}
 
 	if !characterNameAvailable(input) {
-		desc.sendln("Sorry, that name is already taken.")
+		desc.sendln("Unfortunately, the name you've chosen is already taken.")
 		return
 	}
 
-	desc.sendln("Okay, you want to be called %v?", input)
 	desc.account.tempString = input
 	desc.state = CON_CHAR_CREATE_CONFIRM
 }
 
 func gCharConfirmName(desc *descData, input string) {
 	input = nameReduce(input)
-	if input == "" {
+	if input == "" || strings.EqualFold(input, "back") {
 		desc.sendln("Okay, we can try a different name.")
 		desc.state = CON_CHAR_CREATE
 		return
 	} else if input == desc.account.tempString {
 		if !characterNameAvailable(input) {
-			desc.sendln("Sorry, that name is already taken.")
+			desc.sendln("Unfortunately, the name you've chosen is already taken.")
 			return
 		}
 
-		desc.sendln("Okay, your new character be called %v.", input)
 		desc.character = &characterData{
 			Fingerprint: makeFingerprintString(),
 			Name:        input,
@@ -161,7 +169,7 @@ func gCharConfirmName(desc *descData, input string) {
 		desc.character.saveCharacter()
 		desc.enterWorld(desc.character)
 	} else {
-		desc.sendln("Names did not match. Try again, or blank line to choose a new name.")
+		desc.sendln("Names did not match. Try again, or type 'back' to choose a new name.")
 	}
 }
 
@@ -179,7 +187,7 @@ func (acc *accountData) createAccountDir() error {
 	return nil
 }
 
-func (acc *accountData) saveAccount() (error bool) {
+func (acc *accountData) saveAccount() bool {
 	outbuf := new(bytes.Buffer)
 	enc := json.NewEncoder(outbuf)
 	enc.SetIndent("", "\t")
@@ -188,7 +196,7 @@ func (acc *accountData) saveAccount() (error bool) {
 		return true
 	} else if acc.Fingerprint == "" {
 		critLog("saveAccount: Account '%v' doesn't have a fingerprint.", acc.Login)
-		return
+		return true
 	}
 	acc.Version = ACCOUNT_VERSION
 	acc.ModDate = time.Now()
@@ -271,4 +279,14 @@ func saveAccountIndex() error {
 	errLog("Account index saved.")
 
 	return nil
+}
+
+func alreadyPlayingWarnVictim(target *characterData) {
+	target.send(textFiles["warn"])
+	target.send("Another connection on your account is attempting to play this character. If they choose 'yes', you will be kicked.")
+}
+
+func gAlreadyPlayingWarn(desc *descData) {
+	desc.send(textFiles["warn"])
+	desc.send("That character is already playing.\r\nDo you wish to disconnect the other session and take control of the character?")
 }

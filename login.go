@@ -83,7 +83,7 @@ type loginStates struct {
 var loginStateList = [CON_MAX]loginStates{
 	//Normal login
 	CON_LOGIN: {
-		prompt: "To create a new account type: NEW\r\nLogin: ",
+		prompt: "To create a new account type: NEW\r\nAccount name: ",
 		goDo:   gLogin,
 	},
 	CON_PASS: {
@@ -99,11 +99,11 @@ var loginStateList = [CON_MAX]loginStates{
 
 	//New login
 	CON_NEW_LOGIN: {
-		prompt: "[Login name (not character), up to 48 chars long. Spaces and symbols allowed!]\r\nNEW login: ",
+		prompt: "(up to 48 characters, spaces and symbols are accepted)\r\nPlease type your desired account name:",
 		goDo:   gNewLogin,
 	},
 	CON_NEW_LOGIN_CONFIRM: {
-		prompt: "(blank line to go back)\r\nConfirm login: ",
+		prompt: "(type 'back' to go back)\r\nConfirm account name: ",
 		goDo:   gNewLoginConfirm,
 		anyKey: true,
 	},
@@ -113,7 +113,7 @@ var loginStateList = [CON_MAX]loginStates{
 		hideInfo: true,
 	},
 	CON_NEW_PASSPHRASE_CONFIRM: {
-		prompt:   "(blank line to go back)\r\nConfirm passphrase: ",
+		prompt:   "(type 'back' to go back)\r\nConfirm passphrase: ",
 		goDo:     gNewPassphraseConfirm,
 		anyKey:   true,
 		hideInfo: true,
@@ -125,15 +125,15 @@ var loginStateList = [CON_MAX]loginStates{
 		goDo:     gCharSelect,
 	},
 	CON_RECONNECT_CONFIRM: {
-		prompt: "That character is already playing!\r\nIf you join, the other connection will be kicked!\r\nAre you sure you want to continue? (y/n)",
-		goDo:   gReconnectConfirm,
+		goPrompt: gAlreadyPlayingWarn,
+		goDo:     gReconnectConfirm,
 	},
 	CON_CHAR_CREATE: {
 		prompt: "Character name:",
 		goDo:   gCharNewName,
 	},
 	CON_CHAR_CREATE_CONFIRM: {
-		prompt: "(blank line to go back)\r\nConfirm character name:",
+		prompt: "(type 'back' to go back)\r\nConfirm character name:",
 		goDo:   gCharConfirmName,
 		anyKey: true,
 	},
@@ -166,7 +166,7 @@ func gLogin(desc *descData, input string) {
 			return
 		}
 	} else {
-		desc.sendln("Invalid login.")
+		desc.sendln("Login name not found.")
 		critLog("#%v: %v tried a login that does not exist!", desc.id, desc.cAddr)
 		desc.close()
 		return
@@ -176,7 +176,6 @@ func gLogin(desc *descData, input string) {
 func gPass(desc *descData, input string) {
 
 	if bcrypt.CompareHashAndPassword(desc.account.PassHash, []byte(input)) == nil {
-		desc.sendln("Passphrase accepted.")
 		desc.state = CON_CHAR_LIST
 	} else {
 		desc.sendln("Incorrect passphrase.")
@@ -191,61 +190,59 @@ func gNews(desc *descData, input string) {
 }
 
 func gShowNews(desc *descData) {
-	desc.sendln("\r\n" + textFiles["news"] + "\r\n[Press return to enter the world]")
+	desc.sendln("\r\n" + textFiles["news"] + "\r\n[Press enter to proceed]")
 }
 
 // New login
 func gNewLogin(desc *descData, input string) {
+	inputLen := len([]byte(input))
+	if inputLen < MIN_LOGIN_LEN && inputLen > MAX_LOGIN_LEN {
+		desc.sendln("Login names must be between %v and %v characters in length.", MIN_LOGIN_LEN, MAX_LOGIN_LEN)
+		return
+	}
 	if !accountNameAvailable(input) {
-		var buf string = "Few quick random number suffixes:\r\n"
+		var buf string = "A few quick random variations:\r\n"
 		for x := 0; x < NUM_LOGIN_VARIANTS; x++ {
 			buf = buf + fmt.Sprintf("%v%v\r\n", input, rand.Intn(999))
 		}
-		buf = buf + "\r\nSorry, that login is already in use. Please pick another one!"
+		buf = buf + "\r\nSorry, that login name is already in use.\r\n Please pick another one!"
 		desc.send(buf)
 		return
 	}
 
-	inputLen := len([]byte(input))
-	if inputLen >= MIN_LOGIN_LEN && inputLen <= MAX_LOGIN_LEN {
-		desc.sendln("Okay, login is: %v", input)
-		desc.account = &accountData{
-			Login:       input,
-			Fingerprint: makeFingerprintString(),
-			CreDate:     time.Now(),
-			ModDate:     time.Now(),
-		}
-		desc.state = CON_NEW_LOGIN_CONFIRM
-	} else {
-		desc.sendln("Sorry, that is not an acceptable login.")
+	desc.account = &accountData{
+		Login:       input,
+		Fingerprint: makeFingerprintString(),
+		CreDate:     time.Now(),
+		ModDate:     time.Now(),
 	}
+	desc.state = CON_NEW_LOGIN_CONFIRM
+
 }
 
 func gNewLoginConfirm(desc *descData, input string) {
 	if input == desc.account.Login {
 		if !accountNameAvailable(input) {
-			desc.send("Sorry, that login is already in use.")
+			desc.send("Sorry, that login name is already in use.")
 			return
 		}
-		desc.sendln("Okay, login confirmed: %v", input)
 		desc.state = CON_NEW_PASSPHRASE
 	} else {
-		if input == "" {
+		if input == "" || strings.EqualFold(input, "back") {
 			desc.sendln("Okay, let's try again.")
 			desc.state = CON_NEW_LOGIN
 		} else {
-			desc.sendln("Login didn't match. Try again, or leave blank to start over.")
+			desc.sendln("Login names didn't match.\r\nTry again, to type 'back' to go back.")
 		}
 	}
 }
 
 func gNewPassphrase(desc *descData, input string) {
 	//min/max password len
-	if len([]byte(input)) > MAX_PASSPHRASE_LENGTH {
+	passLen := len([]byte(input))
+	if passLen < MIN_PASSPHRASE_LENGTH &&
+		passLen > MAX_PASSPHRASE_LENGTH {
 		desc.sendln("Sorry, that passphrase is TOO LONG! Try again!")
-		return
-	} else if len([]byte(input)) < MIN_PASSPHRASE_LENGTH {
-		desc.sendln("Sorry, that passphrase is TOO SHORT!")
 		return
 	}
 
@@ -264,7 +261,7 @@ func gNewPassphrase(desc *descData, input string) {
 	} else if entropy >= MIN_PASS_ENTROPY_BITS {
 		desc.sendln("Somewhat simple password. %v bits of entropy.", entropy)
 	} else {
-		desc.sendln("Sorry, please use a more complex passphrase.\r\n%v bits of entropy is NOT good enough.", entropy)
+		desc.sendln("Please try again with a more complex passphrase.\r\n")
 		return
 	}
 
@@ -273,21 +270,21 @@ func gNewPassphrase(desc *descData, input string) {
 }
 
 func gNewPassphraseConfirm(desc *descData, input string) {
-	if input == "" {
+	if input == "" || strings.EqualFold(input, "back") {
 		desc.state = CON_NEW_PASSPHRASE
 		desc.account.tempString = ""
-		desc.sendln("Okay, lets start over!")
+		desc.sendln("Okay, lets try again.")
 		return
 	}
 	if input == desc.account.tempString {
 		desc.state = CON_HASH_WAIT
 		desc.idleTime = time.Now()
-		desc.sendln("Hashing password, one moment please...")
+		desc.sendln("Processing password, one moment please...")
 
 		hashLock.Lock()
 		hashDepth := len(hashList)
 		if hashDepth > HASH_DEPTH_MAX {
-			desc.send("Sorry, over %v other hash requests are already in the queue. Try again later!", hashDepth)
+			desc.send("Sorry, %v other password requests are already in the queue. Try again later!", hashDepth)
 			desc.state = CON_NEW_PASSPHRASE
 			desc.account.tempString = ""
 			hashLock.Unlock()
@@ -296,7 +293,7 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 			if hashDepth > 0 {
 				willTake := int(math.Round(lastHashTime.Seconds())) * (hashDepth + 1)
 				if willTake > 2 {
-					desc.send("%v hash requests in the queue... Approx wait time: %v seconds.", hashDepth+1, willTake)
+					desc.send("%v password requests in the queue. Approx wait time: %v seconds.", hashDepth+1, willTake)
 				}
 			} else {
 				willTake := int(math.Round(lastHashTime.Seconds())) + 1
@@ -310,7 +307,7 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 		hashLock.Unlock()
 		desc.account.tempString = ""
 	} else {
-		desc.sendln("Passwords did not match!")
+		desc.sendln("Passphrases did not match!")
 	}
 }
 
@@ -333,5 +330,5 @@ func (desc *descData) suggestPasswords() {
 
 func gNewPassPrompt(desc *descData) {
 	desc.suggestPasswords()
-	desc.sendln("\r\n(minumum 8 characters long)\r\nPassphrase: ")
+	desc.sendln("\r\n(%v to %v characters long)\r\nPassphrase: ", MIN_PASSPHRASE_LENGTH, MAX_PASSPHRASE_LENGTH)
 }
