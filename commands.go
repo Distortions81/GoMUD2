@@ -62,18 +62,20 @@ func cmdLogout(player *characterData, input string) {
 
 func cmdWho(player *characterData, input string) {
 	var buf string = "Players online:\r\n"
+	var tmpCharList []*characterData = charList
 
-	tmpCharList := charList
 	numPlayers := len(tmpCharList)
 	if numPlayers > 1 {
 		sort.Slice(tmpCharList, func(i, j int) bool {
+			if tmpCharList[i].desc == nil {
+				return false
+			} else if tmpCharList[j].desc == nil {
+				return true
+			}
 			return tmpCharList[i].desc.id < tmpCharList[j].desc.id
 		})
 	}
 	for _, target := range tmpCharList {
-		if !target.valid {
-			continue
-		}
 		var idleTime, unlink string
 		if time.Since(target.idleTime) > time.Minute {
 			idleTime = fmt.Sprintf(" (idle %v)", durafmt.Parse(time.Since(target.idleTime).Round(time.Second)).LimitFirstN(2))

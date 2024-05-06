@@ -24,7 +24,7 @@ func gCharList(desc *descData) {
 
 		for i, item := range desc.account.Characters {
 			var playing string
-			if target := checkPlaying(item.Login, item.Fingerprint); target != nil {
+			if target := checkPlayingPrint(item.Login, item.Fingerprint); target != nil {
 				playing = " (PLAYING)"
 			}
 			buf = buf + fmt.Sprintf("#%v: %v%v\r\n", i+1, item.Login, playing)
@@ -62,7 +62,7 @@ func gCharSelect(desc *descData, input string) {
 			if !strings.EqualFold(item.Login, input) {
 				continue
 			}
-			if target := checkPlaying(item.Login, item.Fingerprint); target != nil {
+			if target := checkPlayingPrint(item.Login, item.Fingerprint); target != nil {
 				alreadyPlayingWarnVictim(target)
 				desc.account.tempString = item.Login
 				desc.state = CON_RECONNECT_CONFIRM
@@ -77,14 +77,13 @@ func gCharSelect(desc *descData, input string) {
 				critLog("Unable to load characer %v!", item.Login)
 				return
 			}
-
 		}
 		desc.sendln("No matches found for %v.", input)
 		return
 	} else { //Find by number
 		if num > 0 && num <= len(desc.account.Characters) {
 			var target *characterData
-			if target = checkPlaying(desc.account.Characters[num-1].Login, desc.account.Characters[num-1].Fingerprint); target != nil {
+			if target = checkPlayingPrint(desc.account.Characters[num-1].Login, desc.account.Characters[num-1].Fingerprint); target != nil {
 				alreadyPlayingWarnVictim(target)
 				desc.account.tempString = desc.account.Characters[num-1].Login
 				desc.state = CON_RECONNECT_CONFIRM
@@ -285,10 +284,10 @@ func saveAccountIndex() error {
 
 func alreadyPlayingWarnVictim(target *characterData) {
 	target.send(textFiles["warn"])
-	target.send("Another connection on your account is attempting to play this character.\r\nIf they choose 'yes' to confirm you will be kicked.")
+	target.send("\r\nAnother connection on your account is attempting to play this character.\r\nIf they choose 'yes' to confirm you will be kicked.")
 }
 
 func gAlreadyPlayingWarn(desc *descData) {
 	desc.send(textFiles["warn"])
-	desc.send("That character is already playing.\r\nDo you wish to disconnect the other session and take control of the character? (y/N)")
+	desc.send("\r\nThat character is already playing.\r\nDo you wish to disconnect the other session and take control of the character? (y/N)")
 }

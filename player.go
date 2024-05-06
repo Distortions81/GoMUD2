@@ -37,12 +37,24 @@ func (desc *descData) enterWorld(player *characterData) {
 	}(desc)
 }
 
-func checkPlaying(name string, fingerprint string) *characterData {
+func checkPlayingPrint(name string, fingerprint string) *characterData {
 	for _, item := range charList {
 		if !item.valid {
 			continue
 		}
 		if item.Name == name || item.Fingerprint == fingerprint {
+			return item
+		}
+	}
+	return nil
+}
+
+func checkPlaying(name string) *characterData {
+	for _, item := range charList {
+		if !item.valid {
+			continue
+		}
+		if item.Name == name {
 			return item
 		}
 	}

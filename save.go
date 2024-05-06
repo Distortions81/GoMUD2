@@ -75,11 +75,11 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 		return nil
 	}
 
-	target := checkPlaying(plrStr, playFingerprint)
+	target := checkPlayingPrint(plrStr, playFingerprint)
 
 	if target != nil {
 		target.send(aurevoirBuf)
-		target.send("Another connection from your account has forcely taken over control of this character.")
+		target.send("Another connection from your account has forcefully taken over control of this character.")
 		target.desc.close()
 
 		desc.character = target
