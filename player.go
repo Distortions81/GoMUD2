@@ -28,7 +28,7 @@ func (desc *descData) enterWorld(player *characterData) {
 	desc.character.desc = desc
 	desc.character.loginTime = time.Now()
 	desc.character.idleTime = time.Now()
-	characterList = append(characterList, player)
+	charList = append(charList, player)
 	desc.state = CON_NEWS
 	go func(desc *descData) {
 		descLock.Lock()
@@ -38,7 +38,7 @@ func (desc *descData) enterWorld(player *characterData) {
 }
 
 func checkPlaying(name string, fingerprint string) *characterData {
-	for _, item := range characterList {
+	for _, item := range charList {
 		if !item.valid {
 			continue
 		}
