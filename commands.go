@@ -33,7 +33,7 @@ var cmdListStr []cmdListItem
 
 func cmdCinfo(player *characterData, input string) {
 	player.send("Characters:")
-	for _, item := range characterList {
+	for _, item := range charList {
 		if item.desc != nil {
 			player.send("valid: %v: name: %v id: %v", item.valid, item.Name, item.desc.id)
 		} else {
@@ -63,10 +63,13 @@ func cmdLogout(player *characterData, input string) {
 func cmdWho(player *characterData, input string) {
 	var buf string = "Players online:\r\n"
 
-	tmpCharList := characterList
-	sort.Slice(tmpCharList, func(i, j int) bool {
-		return tmpCharList[i].desc.id < tmpCharList[j].desc.id
-	})
+	tmpCharList := charList
+	numPlayers := len(tmpCharList)
+	if numPlayers > 1 {
+		sort.Slice(tmpCharList, func(i, j int) bool {
+			return tmpCharList[i].desc.id < tmpCharList[j].desc.id
+		})
+	}
 	for _, target := range tmpCharList {
 		if !target.valid {
 			continue
@@ -80,6 +83,7 @@ func cmdWho(player *characterData, input string) {
 		}
 		buf = buf + fmt.Sprintf("%30v -- %v%v%v\r\n", target.Name, durafmt.Parse(time.Since(target.loginTime).Round(time.Second)).LimitFirstN(2), idleTime, unlink)
 	}
+	buf = buf + fmt.Sprintf("\r\n%v players online. Uptime:", durafmt.Parse(time.Since(bootTime).Round(time.Second)).LimitFirstN(2))
 	player.send(buf)
 }
 
