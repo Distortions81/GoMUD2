@@ -129,7 +129,7 @@ var loginStateList = [CON_MAX]loginStates{
 		goDo:     gReconnectConfirm,
 	},
 	CON_CHAR_CREATE: {
-		prompt: "Character name:",
+		prompt: "A-z only, no spaces, number or symbols are allowed.\r\nCharacter name:",
 		goDo:   gCharNewName,
 	},
 	CON_CHAR_CREATE_CONFIRM: {
@@ -205,7 +205,7 @@ func gNewLogin(desc *descData, input string) {
 		for x := 0; x < NUM_LOGIN_VARIANTS; x++ {
 			buf = buf + fmt.Sprintf("%v%v\r\n", input, rand.Intn(999))
 		}
-		buf = buf + "\r\nSorry, that login name is already in use.\r\n Please pick another one!"
+		buf = buf + "\r\nSorry, that login name is already in use.\r\nPlease pick another one!"
 		desc.send(buf)
 		return
 	}

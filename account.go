@@ -15,26 +15,28 @@ func accountNameAvailable(name string) bool {
 }
 
 func gCharList(desc *descData) {
-	numChars := len(desc.account.Characters)
-	if numChars <= 0 {
-		desc.sendln("You're starting fresh with no characters.")
-		return
-	} else {
-		desc.sendln("Your characters:")
-	}
-
 	var buf string = "\r\n"
-	for i, item := range desc.account.Characters {
-		var playing string
-		if target := checkPlaying(item.Login, item.Fingerprint); target != nil {
-			playing = " (PLAYING)"
+	numChars := len(desc.account.Characters)
+	if numChars == 0 {
+		desc.sendln("\r\nYou're starting fresh with no characters.")
+	} else {
+		desc.sendln("\r\nYour characters:")
+
+		for i, item := range desc.account.Characters {
+			var playing string
+			if target := checkPlaying(item.Login, item.Fingerprint); target != nil {
+				playing = " (PLAYING)"
+			}
+			buf = buf + fmt.Sprintf("#%v: %v%v\r\n", i+1, item.Login, playing)
 		}
-		buf = buf + fmt.Sprintf("#%v: %v%v\r\n", i+1, item.Login, playing)
+		buf = buf + "\r\n"
 	}
 	if numChars < MAX_CHAR_SLOTS {
-		buf = buf + "Type 'NEW' to create a new character."
+		buf = buf + "Type 'NEW' to create a new character.\r\n"
 	}
-	buf = buf + "Select a character by #number or name: "
+	if numChars > 0 {
+		buf = buf + "Select a character by #number or name: "
+	}
 	desc.sendln(buf)
 }
 
