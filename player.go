@@ -39,6 +39,9 @@ func (desc *descData) enterWorld(player *characterData) {
 
 func checkPlaying(name string, fingerprint string) *characterData {
 	for _, item := range characterList {
+		if !item.valid {
+			continue
+		}
 		if item.Name == name || item.Fingerprint == fingerprint {
 			return item
 		}
@@ -66,8 +69,10 @@ func (player *characterData) quit(doClose bool) {
 		go func(target *characterData) {
 			descLock.Lock()
 			target.desc.state = CON_CHAR_LIST
-			defer descLock.Unlock()
+			target.valid = false
 			gCharList(target.desc)
+			descLock.Unlock()
 		}(player)
+
 	}
 }
