@@ -54,6 +54,7 @@ func cmdGo(player *characterData, input string) {
 			}
 		}
 	}
+	player.send("Go where?")
 }
 
 func (player *characterData) goExit(exit *exitData) {
