@@ -71,21 +71,6 @@ func cmdTelnet(player *characterData, input string) {
 	player.send(buf)
 }
 
-func cmdCinfo(player *characterData, input string) {
-	player.send("Characters:")
-	for _, item := range charList {
-		if item.desc != nil {
-			player.send("valid: %v: name: %v id: %v", item.valid, item.Name, item.desc.id)
-		} else {
-			player.send("valid: %v: name: %v (no link)", item.valid, item.Name)
-		}
-	}
-	player.send("\r\nDescriptors:")
-	for _, item := range descList {
-		player.send("id: %v, addr: %v, state: %v", item.id, item.cAddr, item.state)
-	}
-}
-
 func cmdSay(player *characterData, input string) {
 	trimInput := strings.TrimSpace(input)
 	chatLen := len(trimInput)

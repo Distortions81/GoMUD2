@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"time"
 )
 
@@ -58,7 +59,7 @@ func checkPlaying(name string) *characterData {
 		if !item.valid {
 			continue
 		}
-		if item.Name == name {
+		if strings.EqualFold(item.Name, name) {
 			return item
 		}
 	}

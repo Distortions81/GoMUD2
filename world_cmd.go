@@ -25,7 +25,7 @@ func cmdLook(player *characterData, input string) {
 			exitList = "None"
 		}
 		player.send(fmt.Sprintf(
-			"%v:\r\n%v\r\nExits: %v",
+			"\r\n%v:\r\n%v\r\nExits: %v",
 			room.Name, room.Description,
 			exitList))
 
