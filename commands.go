@@ -24,11 +24,11 @@ type commandData struct {
 // command names and shorthands must be lower case
 var commandList = map[string]*commandData{
 	"say":    {hint: "sends a message", goDo: cmdSay, args: []string{"message"}},
-	"quit":   {noShort: true, hint: "quits and disconnects.", goDo: cmdQuit},
-	"logout": {noShort: true, hint: "go back to account character selection.", goDo: cmdLogout},
+	"quit":   {noShort: true, hint: "quit and disconnect.", goDo: cmdQuit},
+	"logout": {noShort: true, hint: "quit and go back to character selection menu.", goDo: cmdLogout},
 	"who":    {hint: "show players online", goDo: cmdWho},
 	"help":   {hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}},
-	"cinfo":  {hint: "shows desc and char lists.", goDo: cmdCinfo},
+	"cinfo":  {hint: "show desc & char lists.", goDo: cmdCinfo},
 	"look":   {hint: "look around the room.", goDo: cmdLook},
 	"go":     {hint: "go", goDo: cmdGo, args: []string{"exit name"}},
 }
@@ -105,7 +105,7 @@ func cmdWho(player *characterData, input string) {
 			onlineTime = durafmt.Parse(time.Since(target.loginTime).Round(time.Minute)).LimitFirstN(2).Format(shortUnits)
 			onlineTime = strings.ReplaceAll(onlineTime, " ", "")
 		}
-		buf = buf + fmt.Sprintf("%30v -- %v%v%v\r\n", target.Name, onlineTime, idleTime, unlink)
+		buf = buf + fmt.Sprintf("%31v - %v%v%v\r\n", target.Name, onlineTime, idleTime, unlink)
 	}
 	uptime := durafmt.Parse(time.Since(bootTime).Round(time.Second)).LimitFirstN(2).Format(shortUnits)
 	uptime = strings.ReplaceAll(uptime, " ", "")
