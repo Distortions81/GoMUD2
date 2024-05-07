@@ -8,10 +8,10 @@ var areaList map[int]*areaData = make(map[int]*areaData)
 
 func init() {
 	sysRooms := make(map[int]*roomData)
-	sysRooms[1] = &roomData{
-		Version: 1, ID: 1, Loc: locData{Area: 1, Room: 1}, Name: "The void", Description: "Nothing here."}
-	areaList[1] = &areaData{
-		Version: 1, ID: 1, Name: "System Area", Rooms: sysRooms}
+	sysRooms[0] = &roomData{
+		Version: 1, ID: 0, Name: "The void", Description: "Nothing here."}
+	areaList[0] = &areaData{
+		Version: 1, ID: 0, Name: "System Area", Rooms: sysRooms}
 }
 
 const (
