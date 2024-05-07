@@ -168,8 +168,8 @@ func createNewHelpTopic(topic string) {
 func createNewHelp(player *characterData, topicStr, title string) {
 	for _, topic := range helpFiles {
 		if strings.EqualFold(topic.Topic, strings.TrimSpace(topicStr)) {
-			newHelp := helpData{topic: topic, Created: time.Now(),
-				Modified: time.Now(), Authors: []string{player.Name},
+			newHelp := helpData{topic: topic, Created: time.Now().UTC(),
+				Modified: time.Now().UTC(), Authors: []string{player.Name},
 				Text: "Work in progress.", Name: title}
 			topic.Helps = append(topic.Helps, newHelp)
 		}

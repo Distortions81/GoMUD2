@@ -210,8 +210,8 @@ func gNewLogin(desc *descData, input string) {
 	desc.account = &accountData{
 		Login:       input,
 		Fingerprint: makeFingerprintString(),
-		CreDate:     time.Now(),
-		ModDate:     time.Now(),
+		CreDate:     time.Now().UTC(),
+		ModDate:     time.Now().UTC(),
 	}
 	desc.state = CON_NEW_LOGIN_CONFIRM
 

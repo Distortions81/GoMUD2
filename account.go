@@ -163,9 +163,9 @@ func gCharConfirmName(desc *descData, input string) {
 			loginTime:   time.Now(),
 		}
 		desc.account.Characters = append(desc.account.Characters,
-			accountIndexData{Login: desc.account.tempString, Fingerprint: desc.character.Fingerprint, Added: time.Now()})
+			accountIndexData{Login: desc.account.tempString, Fingerprint: desc.character.Fingerprint, Added: time.Now().UTC()})
 		desc.character.sendToPlaying("--> {GW{gelcome{x %v to the lands! <--", desc.account.tempString)
-		desc.account.ModDate = time.Now()
+		desc.account.ModDate = time.Now().UTC()
 		desc.account.saveAccount()
 		desc.character.saveCharacter()
 		desc.enterWorld(desc.character)
@@ -200,7 +200,7 @@ func (acc *accountData) saveAccount() bool {
 		return true
 	}
 	acc.Version = ACCOUNT_VERSION
-	acc.ModDate = time.Now()
+	acc.ModDate = time.Now().UTC()
 	fileName := DATA_DIR + ACCOUNT_DIR + acc.Fingerprint + "/" + ACCOUNT_FILE
 
 	err := enc.Encode(&acc)

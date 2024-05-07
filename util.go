@@ -29,7 +29,7 @@ func randStringRunes(n int) string {
 }
 
 func timeStringRunes() string {
-	un := strconv.FormatInt(time.Now().UnixNano(), 10)
+	un := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
 	unLen := len(un)
 
 	b := make([]rune, unLen)

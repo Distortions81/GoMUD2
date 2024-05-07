@@ -94,6 +94,9 @@ func removeDeadDesc() {
 
 		} else if desc.state != CON_PLAYING &&
 			time.Since(desc.idleTime) > AFK_DESC {
+			if desc.character != nil && desc.character.Level < 0 {
+				continue
+			}
 			desc.sendln("\r\nIdle too long, disconnecting.")
 			desc.killDesc()
 			continue

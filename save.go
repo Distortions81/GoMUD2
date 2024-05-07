@@ -40,7 +40,7 @@ func (player *characterData) saveCharacter() bool {
 		return false
 	}
 	player.Version = CHARACTER_VERSION
-	player.SaveTime = time.Now()
+	player.SaveTime = time.Now().UTC()
 	fileName := DATA_DIR + ACCOUNT_DIR + player.desc.account.Fingerprint + "/" + player.Fingerprint + ".json"
 
 	err := enc.Encode(&player)
