@@ -10,15 +10,17 @@ import (
 )
 
 type commandData struct {
-	hint string
-	goDo func(player *characterData, data string)
-	args []string
+	noShort bool
+	hint    string
+	goDo    func(player *characterData, data string)
+	args    []string
 }
 
+// command names and shorthands must be lower case
 var commandList = map[string]*commandData{
 	"say":    {hint: "sends a message", goDo: cmdSay, args: []string{"message"}},
-	"quit":   {hint: "quits and disconnects.", goDo: cmdQuit},
-	"logout": {hint: "go back to account character selection.", goDo: cmdLogout},
+	"quit":   {noShort: true, hint: "quits and disconnects.", goDo: cmdQuit},
+	"logout": {noShort: true, hint: "go back to account character selection.", goDo: cmdLogout},
 	"who":    {hint: "show players online", goDo: cmdWho},
 	"help":   {hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}},
 	"cinfo":  {hint: "shows desc and char lists.", goDo: cmdCinfo},
