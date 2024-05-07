@@ -96,7 +96,6 @@ func cmdWho(player *characterData, input string) {
 			idleStr := durafmt.Parse(time.Since(target.idleTime).Round(time.Minute)).LimitFirstN(2).Format(shortUnits)
 			idleStr = strings.ReplaceAll(idleStr, " ", "")
 			idleTime = fmt.Sprintf(" (idle %v)", idleStr)
-
 		}
 		if target.desc == nil || (target.desc != nil && !target.desc.valid) {
 			unlink = " (no link)"
@@ -105,8 +104,8 @@ func cmdWho(player *characterData, input string) {
 		if time.Since(target.loginTime) > (time.Minute * 5) {
 			onlineTime = durafmt.Parse(time.Since(target.loginTime).Round(time.Minute)).LimitFirstN(2).Format(shortUnits)
 			onlineTime = strings.ReplaceAll(onlineTime, " ", "")
-			buf = buf + fmt.Sprintf("%30v -- %v%v%v\r\n", target.Name, onlineTime, idleTime, unlink)
 		}
+		buf = buf + fmt.Sprintf("%30v -- %v%v%v\r\n", target.Name, onlineTime, idleTime, unlink)
 	}
 	uptime := durafmt.Parse(time.Since(bootTime).Round(time.Second)).LimitFirstN(2).Format(shortUnits)
 	uptime = strings.ReplaceAll(uptime, " ", "")
