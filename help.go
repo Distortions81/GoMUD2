@@ -53,6 +53,10 @@ type helpData struct {
 }
 
 func cmdHelp(player *characterData, input string) {
+	if player.desc != nil && strings.EqualFold("commands", input) {
+		cmdListCmds(player.desc)
+		return
+	}
 	for _, item := range cmdListStr {
 		if strings.EqualFold(strings.TrimSpace(input), item.name) {
 			player.send(item.help)
@@ -95,7 +99,7 @@ func cmdHelp(player *characterData, input string) {
 		player.send("Sorry, I didn't find a help page for that.")
 	}
 	if len(helpKeywords) > 0 {
-		player.send("Help topics: %v", strings.Join(helpKeywords, ", "))
+		player.send("Help topics: commands, %v", strings.Join(helpKeywords, ", "))
 	} else {
 		player.send("No help topics found?")
 	}
