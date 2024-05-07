@@ -91,14 +91,49 @@ func cmdListCmds(desc *descData) {
 }
 
 func (player *characterData) handleCommands(input string) {
-	cmd, args, _ := strings.Cut(input, " ")
+	cmdStr, args, _ := strings.Cut(input, " ")
 
-	cmd = strings.ToLower(cmd)
-	command := commandList[cmd]
+	cmdStr = strings.ToLower(cmdStr)
+	command := commandList[cmdStr]
 
 	if command != nil {
 		command.goDo(player, args)
 	} else {
+		//Find best partial match
+		var score map[*commandData]int = make(map[*commandData]int)
+		cmdStrLen := len(cmdStr)
+		for c, cmd := range commandList {
+			if cmd.noShort {
+				continue
+			}
+			cLen := len(c)
+			fail := false
+
+			minLen := min(cLen, cmdStrLen)
+			for x := 0; x < minLen && !fail; x++ {
+				for y := 0; y < minLen && !fail; y++ {
+					if c[x] == cmdStr[y] {
+						score[cmd]++
+					} else {
+						score[cmd] = 0
+						fail = true
+					}
+				}
+			}
+		}
+		var bestMatch *commandData
+		var highScore int
+		for cmd, score := range score {
+			if score > highScore {
+				highScore = score
+				bestMatch = cmd
+			}
+		}
+		if highScore > 0 && bestMatch != nil {
+			bestMatch.goDo(player, args)
+			return
+		}
+		player.send("That isn't an available command.")
 		cmdListCmds(player.desc)
 	}
 }
