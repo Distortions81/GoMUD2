@@ -11,6 +11,8 @@ import (
 
 const MAX_CHAT_LENGTH = 2048
 
+var shortUnits durafmt.Units
+
 type commandData struct {
 	name    string
 	noShort bool
@@ -91,18 +93,20 @@ func cmdWho(player *characterData, input string) {
 	for _, target := range tmpCharList {
 		var idleTime, unlink string
 		if time.Since(target.idleTime) > time.Minute {
-			idleTime = fmt.Sprintf(" (idle %v)", durafmt.Parse(time.Since(target.idleTime).Round(time.Second)).LimitFirstN(2))
+			idleTime = fmt.Sprintf(" (idle %v)", durafmt.Parse(time.Since(target.idleTime).Round(time.Second)).LimitFirstN(2).Format(shortUnits))
 		}
 		if target.desc == nil || (target.desc != nil && !target.desc.valid) {
 			unlink = " (no link)"
 		}
-		buf = buf + fmt.Sprintf("%30v -- %v%v%v\r\n", target.Name, durafmt.Parse(time.Since(target.loginTime).Round(time.Second)).LimitFirstN(2), idleTime, unlink)
+		buf = buf + fmt.Sprintf("%30v -- %v%v%v\r\n", target.Name, durafmt.Parse(time.Since(target.loginTime).Round(time.Second)).LimitFirstN(2).Format(shortUnits), idleTime, unlink)
 	}
-	buf = buf + fmt.Sprintf("\r\n%v players online. Uptime: %v", numPlayers, durafmt.Parse(time.Since(bootTime).Round(time.Second)).LimitFirstN(2))
+	buf = buf + fmt.Sprintf("\r\n%v players online. Uptime: %v", numPlayers, durafmt.Parse(time.Since(bootTime).Round(time.Second)).LimitFirstN(2).Format(shortUnits))
 	player.send(buf)
 }
 
 func init() {
+	shortUnits, _ = durafmt.DefaultUnitsCoder.Decode("y:yrs,wk:wks,d:d,h:h,m:m,s:s,ms:ms,us:us")
+
 	cmdListStr = []cmdListItem{}
 
 	for iName, cmd := range commandList {
