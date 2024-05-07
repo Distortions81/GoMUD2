@@ -31,6 +31,7 @@ var commandList = map[string]*commandData{
 	"cinfo":  {hint: "show desc & char lists.", goDo: cmdCinfo},
 	"look":   {hint: "look around the room.", goDo: cmdLook},
 	"go":     {hint: "go", goDo: cmdGo, args: []string{"exit name"}},
+	"telnet": {hint: "telnet options", goDo: cmdTelnet},
 }
 
 type cmdListItem struct {
@@ -39,6 +40,32 @@ type cmdListItem struct {
 }
 
 var cmdListStr []cmdListItem
+
+func cmdTelnet(player *characterData, input string) {
+	if player.desc == nil {
+		return
+	}
+	telnet := player.desc.telnet
+	buf := "Telnet options:\r\n"
+	buf = buf + fmt.Sprintf("Term Type: %v\r\nCharset: %v\r\n", telnet.termType, telnet.charset)
+
+	if telnet.options == nil {
+		return
+	}
+	if telnet.options.UTF {
+		buf = buf + "Supports UTF-8\r\n"
+	}
+	if telnet.options.SUPGA {
+		buf = buf + "Supressing GoAhead\r\n"
+	}
+	if telnet.options.ANSI256 {
+		buf = buf + "Supports 256 color mode\r\n"
+	}
+	if telnet.options.ANSI24 {
+		buf = buf + "Supports 24-bit true-color\r\n"
+	}
+	player.send(buf)
+}
 
 func cmdCinfo(player *characterData, input string) {
 	player.send("Characters:")
