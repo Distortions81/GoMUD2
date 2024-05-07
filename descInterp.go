@@ -82,12 +82,15 @@ func (desc *descData) interp() {
 	}
 }
 
-func cmdListCmds(desc *descData) {
+func (player *characterData) listCommands() {
 	buf := "\r\nCommands:\r\n"
 	for _, item := range cmdListStr {
+		if item.cmd.level > player.Level {
+			continue
+		}
 		buf = buf + item.help + "\r\n"
 	}
-	desc.send(buf)
+	player.send(buf)
 }
 
 func (player *characterData) handleCommands(input string) {
@@ -97,9 +100,10 @@ func (player *characterData) handleCommands(input string) {
 	command := commandList[cmdStr]
 
 	if command != nil {
-		command.goDo(player, args)
+		if command.checkCommandLevel(player) {
+			command.goDo(player, args)
+		}
 	} else {
-
 		//Find best partial match
 		var scores map[*commandData]int = make(map[*commandData]int)
 		cmdStrLen := len(cmdStr)
@@ -138,12 +142,22 @@ func (player *characterData) handleCommands(input string) {
 				return
 			} else {
 				if highScoreCmd.goDo != nil {
-					highScoreCmd.goDo(player, args)
+					if command.checkCommandLevel(player) {
+						highScoreCmd.goDo(player, args)
+					}
 					return
 				}
 			}
 		}
 		player.send("That isn't an available command.")
-		cmdListCmds(player.desc)
+		player.listCommands()
 	}
+}
+
+func (command *commandData) checkCommandLevel(player *characterData) bool {
+	if command != nil && command.level > player.Level {
+		player.send("Sorry, you aren't high enough level to use this command.")
+		return false
+	}
+	return true
 }

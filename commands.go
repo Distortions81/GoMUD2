@@ -17,6 +17,7 @@ type commandData struct {
 	name    string
 	noShort bool
 	hint    string
+	level   int
 	goDo    func(player *characterData, data string)
 	args    []string
 }
@@ -28,13 +29,17 @@ var commandList = map[string]*commandData{
 	"logout": {noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
 	"who":    {hint: "show players online", goDo: cmdWho},
 	"help":   {hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}},
-	"cinfo":  {hint: "shows list of connections and characters in the world", goDo: cmdCinfo},
 	"look":   {hint: "look around the room", goDo: cmdLook},
 	"go":     {hint: "go", goDo: cmdGo, args: []string{"exit name"}},
 	"telnet": {hint: "telnet options", goDo: cmdTelnet},
+
+	//Wiz
+	"cinfo": {level: LEVEL_IMPLEMENTOR, hint: "shows list of connections and characters in the world", goDo: cmdCinfo},
+	"pset":  {level: LEVEL_IMPLEMENTOR, hint: "set player parameters", goDo: cmdPset},
 }
 
 type cmdListItem struct {
+	cmd  *commandData
 	name string
 	help string
 }
@@ -149,7 +154,7 @@ func init() {
 				buf = buf + fmt.Sprintf("<%v>", aName)
 			}
 		}
-		cmdListStr = append(cmdListStr, cmdListItem{name: iName, help: buf})
+		cmdListStr = append(cmdListStr, cmdListItem{name: iName, help: buf, cmd: cmd})
 	}
 
 	sort.Slice(cmdListStr, func(i, j int) bool {

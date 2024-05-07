@@ -39,6 +39,7 @@ func (desc *descData) enterWorld(player *characterData) {
 		descLock.Lock()
 		defer descLock.Unlock()
 		desc.character.sendToPlaying("%v fades into view.", desc.character.Name)
+		desc.character.listCommands()
 	}(desc)
 }
 

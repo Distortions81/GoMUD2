@@ -54,7 +54,7 @@ type helpData struct {
 
 func cmdHelp(player *characterData, input string) {
 	if player.desc != nil && strings.EqualFold("commands", input) {
-		cmdListCmds(player.desc)
+		player.listCommands()
 		return
 	}
 	for _, item := range cmdListStr {

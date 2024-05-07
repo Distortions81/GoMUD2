@@ -138,10 +138,6 @@ var loginStateList = [CON_MAX]loginStates{
 		goDo:   gCharConfirmName,
 		anyKey: true,
 	},
-
-	CON_PLAYING: {
-		goPrompt: cmdListCmds,
-	},
 }
 
 // Normal login

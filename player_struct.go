@@ -9,6 +9,18 @@ import (
 	"golang.org/x/text/encoding/charmap"
 )
 
+type LEVEL int
+
+const (
+	LEVEL_NEWBIE = 0
+	LEVEL_PLAYER = 1
+
+	LEVEL_BUILDER     = LEVEL_IMPLEMENTOR - 3
+	LEVEL_MODERATOR   = LEVEL_IMPLEMENTOR - 2
+	LEVEL_ADMIN       = LEVEL_IMPLEMENTOR - 1
+	LEVEL_IMPLEMENTOR = 1 << 32
+)
+
 var (
 	topID    uint64
 	descList []*descData
@@ -47,8 +59,9 @@ type characterData struct {
 	Fingerprint string
 	desc        *descData
 
-	Name string
-	Room *roomData
+	Name  string
+	Room  *roomData
+	Level int
 
 	SaveTime time.Time
 	CreDate  time.Time
