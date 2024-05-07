@@ -24,12 +24,12 @@ type commandData struct {
 // command names and shorthands must be lower case
 var commandList = map[string]*commandData{
 	"say":    {hint: "sends a message", goDo: cmdSay, args: []string{"message"}},
-	"quit":   {noShort: true, hint: "quit and disconnect.", goDo: cmdQuit},
-	"logout": {noShort: true, hint: "quit and go back to character selection menu.", goDo: cmdLogout},
+	"quit":   {noShort: true, hint: "quit and disconnect", goDo: cmdQuit},
+	"logout": {noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
 	"who":    {hint: "show players online", goDo: cmdWho},
 	"help":   {hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}},
-	"cinfo":  {hint: "show desc & char lists.", goDo: cmdCinfo},
-	"look":   {hint: "look around the room.", goDo: cmdLook},
+	"cinfo":  {hint: "shows list of connections and characters in the world", goDo: cmdCinfo},
+	"look":   {hint: "look around the room", goDo: cmdLook},
 	"go":     {hint: "go", goDo: cmdGo, args: []string{"exit name"}},
 	"telnet": {hint: "telnet options", goDo: cmdTelnet},
 }
@@ -47,13 +47,17 @@ func cmdTelnet(player *characterData, input string) {
 	}
 	telnet := player.desc.telnet
 	buf := "Telnet options:\r\n"
-	buf = buf + fmt.Sprintf("Term Type: %v\r\nCharset: %v\r\n", telnet.termType, telnet.charset)
+	termType := "Not detected."
+	if telnet.termType != "" {
+		termType = telnet.termType
+	}
+	buf = buf + fmt.Sprintf("Mud client: %v\r\nCharset: %v\r\n", termType, telnet.charset)
 
 	if telnet.options == nil {
 		return
 	}
 	if telnet.options.UTF {
-		buf = buf + "Supports UTF-8\r\n"
+		buf = buf + "Supports UTF8\r\n"
 	}
 	if telnet.options.SUPGA {
 		buf = buf + "Supressing GoAhead\r\n"
