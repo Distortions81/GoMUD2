@@ -10,10 +10,6 @@ import (
 	"golang.org/x/exp/rand"
 )
 
-func directionName(exit *exitData) string {
-	return dirToStringColor[exit.Direction]
-}
-
 func makeFingerprintString() string {
 	p1 := randStringRunes(32)
 	p2 := timeStringRunes()
