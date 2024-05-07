@@ -88,6 +88,7 @@ func ANSIColor(i []byte) []byte {
 					continue
 				} else if i[x] == 'x' && hasColor {
 					hasColor = false
+					nextStyle.ClearFlag(bold)
 					out = append(out, []byte("\033[0m")...)
 					continue
 				} else if i[x] == 'n' {
