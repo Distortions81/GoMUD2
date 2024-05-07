@@ -9,6 +9,8 @@ import (
 	"github.com/hako/durafmt"
 )
 
+const MAX_CHAT_LENGTH = 2048
+
 type commandData struct {
 	name    string
 	noShort bool
@@ -52,9 +54,15 @@ func cmdCinfo(player *characterData, input string) {
 }
 
 func cmdSay(player *characterData, input string) {
-
 	trimInput := strings.TrimSpace(input)
-	player.sendToPlaying("%v: %v", player.desc.character.Name, trimInput)
+	chatLen := len(trimInput)
+	if chatLen == 0 {
+		player.send("Say what?")
+	} else if chatLen < MAX_CHAT_LENGTH {
+		player.sendToPlaying("%v: %v", player.desc.character.Name, trimInput)
+	} else {
+		player.send("That is a wall of text. Maybe consider mailing it?")
+	}
 }
 
 func cmdQuit(player *characterData, input string) {
