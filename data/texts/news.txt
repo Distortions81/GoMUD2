@@ -21,5 +21,13 @@ password hashing (encrypt) was rewritten to be asynchronous
 This prevents a small lag hitch for the rest of the mud when
 a new account is created.
 
+May 5th - 6th (30 commits):
+added connection order shuffling . added better partial command
+matching. added basic help. added basic look command. added basic
+go <exit> command. Changed time units to short form. 1h23m3s. Show
+connected and idle time in who. added uptime to who. added telnet
+options command. added say character limit. added help 'commands'.
+added afk kick, different for login menu, character menu and playing.
+
 {*For more information, see the Discord!{*
 {_https://discord.gg/8WaUA9STPj{_
