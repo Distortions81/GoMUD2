@@ -10,6 +10,7 @@ import (
 )
 
 type commandData struct {
+	name    string
 	noShort bool
 	hint    string
 	goDo    func(player *characterData, data string)
@@ -97,6 +98,7 @@ func init() {
 	cmdListStr = []cmdListItem{}
 
 	for iName, cmd := range commandList {
+		cmd.name = iName
 		tName := fmt.Sprintf("%15v", iName)
 		var buf string
 		if cmd.args == nil {

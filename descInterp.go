@@ -99,39 +99,49 @@ func (player *characterData) handleCommands(input string) {
 	if command != nil {
 		command.goDo(player, args)
 	} else {
-		//Find best partial match
-		var score map[*commandData]int = make(map[*commandData]int)
-		cmdStrLen := len(cmdStr)
-		for c, cmd := range commandList {
-			if cmd.noShort {
-				continue
-			}
-			cLen := len(c)
-			fail := false
 
-			minLen := min(cLen, cmdStrLen)
-			for x := 0; x < minLen && !fail; x++ {
-				for y := 0; y < minLen && !fail; y++ {
-					if c[x] == cmdStr[y] {
-						score[cmd]++
+		//Find best partial match
+		var scores map[*commandData]int = make(map[*commandData]int)
+		cmdStrLen := len(cmdStr)
+		var highScoreCmd *commandData
+		var highScore = 0
+		for x := 0; x < 2; x++ {
+			for c, cmd := range commandList {
+				if x == 0 && cmd.noShort {
+					continue
+				}
+				cLen := len(c) - 1
+
+				if cLen < cmdStrLen {
+					continue
+				}
+				for x := 0; x < cmdStrLen; x++ {
+
+					if c[x] == cmdStr[x] {
+						scores[cmd]++
+						continue
 					} else {
-						score[cmd] = 0
-						fail = true
+						scores[cmd] = 0
+						break
 					}
+
+				}
+				if scores[cmd] > highScore {
+					highScore = scores[cmd]
+					highScoreCmd = cmd
 				}
 			}
 		}
-		var bestMatch *commandData
-		var highScore int
-		for cmd, score := range score {
-			if score > highScore {
-				highScore = score
-				bestMatch = cmd
+		if highScore > 0 && highScoreCmd != nil {
+			if highScoreCmd.noShort {
+				player.send("Did you mean %v? You must type that command in full.", highScoreCmd.name)
+				return
+			} else {
+				if highScoreCmd.goDo != nil {
+					highScoreCmd.goDo(player, args)
+					return
+				}
 			}
-		}
-		if highScore > 0 && bestMatch != nil {
-			bestMatch.goDo(player, args)
-			return
 		}
 		player.send("That isn't an available command.")
 		cmdListCmds(player.desc)
