@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 )
 
@@ -40,14 +41,17 @@ func (id uuidData) toString() string {
 		byteSlice[i] = byte(id.m >> (i * 8) & 0xFF)
 	}
 	mStr := base64.RawURLEncoding.EncodeToString(byteSlice)
-	return fmt.Sprintf("%v-%v-%v", tStr, rStr, mStr)
+	return fmt.Sprintf("%v*%v*%v", tStr, rStr, mStr)
 }
 
-func stringToUUID(input string) {
-
+func stringToUUID(input string) (int bool) {
+	parts := strings.Split(input, "*")
+	if len(parts) != 3 {
+		return
+	}
 }
 
-func test() {
+func init() {
 
 	id := makeUUID()
 	fmt.Println(id.toString())
