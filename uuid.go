@@ -1,10 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"encoding/base64"
+	"encoding/binary"
 	"fmt"
 	"math/rand"
-	"strings"
 	"time"
 )
 
@@ -23,46 +24,36 @@ func (ida uuidData) sameUUID(idb uuidData) bool {
 }
 
 func (id uuidData) hasUUID() bool {
-	return id.t != 0 && id.r != 0 && id.m != 0
+	return id.t != 0 && id.m != 0
 }
 
 func (id uuidData) toString() string {
-	byteSlice := make([]byte, 8)
-	for i := 0; i < 8; i++ {
-		byteSlice[i] = byte(id.t >> (i * 8) & 0xFF)
-	}
-	tStr := base64.RawURLEncoding.EncodeToString(byteSlice)
-
-	for i := 0; i < 8; i++ {
-		byteSlice[i] = byte(id.r >> (i * 8) & 0xFF)
-	}
-	rStr := base64.RawURLEncoding.EncodeToString(byteSlice)
-	for i := 0; i < 8; i++ {
-		byteSlice[i] = byte(id.m >> (i * 8) & 0xFF)
-	}
-	mStr := base64.RawURLEncoding.EncodeToString(byteSlice)
-	return fmt.Sprintf("%v*%v*%v", tStr, rStr, mStr)
+	buf := new(bytes.Buffer)
+	binary.Write(buf, binary.LittleEndian, id.t)
+	binary.Write(buf, binary.LittleEndian, id.r)
+	binary.Write(buf, binary.LittleEndian, id.m)
+	return base64.RawURLEncoding.EncodeToString(buf.Bytes())
 }
 
-func stringToUUID(input string) (int bool) {
-	parts := strings.Split(input, "*")
-	if len(parts) != 3 {
-		return
-	}
+func stringToUUID(input string) uuidData {
+
+	b, _ := base64.RawURLEncoding.DecodeString(input)
+	buf := bytes.NewBuffer(b)
+
+	id := uuidData{}
+	binary.Read(buf, binary.LittleEndian, &id.t)
+	binary.Read(buf, binary.LittleEndian, &id.r)
+	binary.Read(buf, binary.LittleEndian, &id.m)
+	return id
 }
 
-func init() {
+func test() {
 
 	id := makeUUID()
-	fmt.Println(id.toString())
+	idStr := id.toString()
 
-	start := time.Now().UTC()
-	var x int
-	for x = 0; x < 10000000; x++ {
-		test := makeUUID()
-		if test.sameUUID(id) {
-			fmt.Println("Meep")
-		}
-	}
-	fmt.Printf("%v UUID gen+check took %v\n", x, time.Since(start))
+	fmt.Println(id)
+	fmt.Println(idStr)
+	fmt.Println(stringToUUID(idStr))
+	fmt.Println(stringToUUID(idStr).toString())
 }

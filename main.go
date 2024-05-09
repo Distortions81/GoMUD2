@@ -50,6 +50,9 @@ func main() {
 		}
 	}
 
+	test()
+	return
+
 	startLogs()
 	readTextFiles()
 	loadHelps()
