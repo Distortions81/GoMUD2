@@ -40,7 +40,7 @@ func main() {
 	portTLS = flag.Int("portTLS", DEFAULT_TLS_PORT, "TLS Port")
 	noTLS = flag.Bool("noSSL", true, "disable TLS listener")
 	bindIP = flag.String("bindIP", "localhost", "Bind to a specific IP.")
-	makeSysArea = flag.Bool("makeSysArea", true, "create and save system_area.are")
+	makeSysArea = flag.Bool("makeSysArea", false, "create and save system_area.are")
 	flag.Parse()
 
 	//Make sure all directories we need are created
