@@ -24,7 +24,7 @@ func (ida uuidData) sameUUID(idb uuidData) bool {
 }
 
 func (id uuidData) hasUUID() bool {
-	return id.t != 0 && id.m != 0
+	return id.t != 0 && id.m != 0 //Don't check .r, random
 }
 
 func (id uuidData) toString() string {
