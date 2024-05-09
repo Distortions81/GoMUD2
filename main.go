@@ -50,10 +50,8 @@ func main() {
 		}
 	}
 
-	test()
-	return
-
 	startLogs()
+	loadMudID()
 	readTextFiles()
 	loadHelps()
 	saveHelps()

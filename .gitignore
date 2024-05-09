@@ -5,3 +5,4 @@ goMUD2
 data/*.pem
 data/*.key
 out/
+data/mud-id.txt

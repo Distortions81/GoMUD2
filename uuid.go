@@ -4,19 +4,25 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"math/rand"
+	"os"
+	"strconv"
 	"time"
 )
 
-const mudUUID = 3452345789345
+// Used to help prevent ID collisions
+const MudIDFIle = DATA_DIR + "mud-id.txt"
+
+var MudID int64
 
 type uuidData struct {
 	t, r, m int64
 }
 
 func makeUUID() uuidData {
-	return uuidData{t: time.Now().UTC().UnixNano(), r: rand.Int63(), m: mudUUID}
+	return uuidData{t: time.Now().UTC().UnixNano(), r: rand.Int63(), m: MudID}
 }
 
 func (ida uuidData) sameUUID(idb uuidData) bool {
@@ -36,7 +42,6 @@ func (id uuidData) toString() string {
 }
 
 func stringToUUID(input string) uuidData {
-
 	b, _ := base64.RawURLEncoding.DecodeString(input)
 	buf := bytes.NewBuffer(b)
 
@@ -47,13 +52,42 @@ func stringToUUID(input string) uuidData {
 	return id
 }
 
-func test() {
+func loadMudID() {
+	if _, err := os.Stat(MudIDFIle); errors.Is(err, os.ErrNotExist) {
+		critLog("%v does not exist, creating new mud id.", MudIDFIle)
+		writeMudID()
+		return
+	}
+	data, err := os.ReadFile(MudIDFIle)
+	if err != nil {
+		critLog("could not read %v", MudIDFIle)
+		os.Exit(1)
+	} else {
+		MudID, err = strconv.ParseInt(string(data), 10, 64)
+		if err != nil {
+			critLog("Unable to parse data in %v, creating new mud id.", MudIDFIle)
+			os.Remove(MudIDFIle)
+			writeMudID()
+			return
+		}
+		if MudID == 0 {
+			errLog("Read mud id was 0, generating new one.")
+			os.Remove(MudIDFIle)
+			writeMudID()
+			return
+		}
+		errLog("%v loaded: %v", MudIDFIle, MudID)
+	}
+}
 
-	id := makeUUID()
-	idStr := id.toString()
-
-	fmt.Println(id)
-	fmt.Println(idStr)
-	fmt.Println(stringToUUID(idStr))
-	fmt.Println(stringToUUID(idStr).toString())
+func writeMudID() {
+	if MudID == 0 {
+		MudID = rand.Int63()
+		critLog("Invalid mud id, generating new one: %v", MudID)
+	}
+	err := os.WriteFile(MudIDFIle, []byte(fmt.Sprintf("%v", MudID)), 0755)
+	if err != nil {
+		critLog("Unable to write %v", MudIDFIle)
+		os.Exit(1)
+	}
 }
