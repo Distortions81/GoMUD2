@@ -9,9 +9,9 @@ var areaList map[int]*areaData = make(map[int]*areaData)
 func init() {
 	sysRooms := make(map[int]*roomData)
 	sysRooms[0] = &roomData{
-		Version: 1, ID: 0, Name: "The void", Description: "Nothing here."}
+		Version: 1, VNUM: 0, Name: "The void", Description: "Nothing here."}
 	areaList[0] = &areaData{
-		Version: 1, ID: 0, Name: "System Area", Rooms: sysRooms}
+		Version: 1, VNUM: 0, Name: "System Area", Rooms: sysRooms}
 }
 
 const (
@@ -41,13 +41,14 @@ const (
 )
 
 type locData struct {
-	Area int
-	Room int
+	Area uuidData
+	Room uuidData
 }
 
 type areaData struct {
 	Version     int
-	ID          int
+	VNUM        int
+	UUID        uuidData
 	Name        string
 	Description string
 
@@ -59,7 +60,8 @@ type areaData struct {
 
 type roomData struct {
 	Version     int
-	ID          int
+	VNUM        int
+	UUID        uuidData
 	Loc         locData
 	Name        string
 	Description string
@@ -74,11 +76,12 @@ type roomData struct {
 }
 
 type exitData struct {
-	ExitType  int
-	DoorName  string
+	ExitType int
+	DoorName string
+
 	Direction DIR
 	DirName   string
-	ToLoc     locData
+	ToRoom    locData
 
 	pRoom *roomData
 }
