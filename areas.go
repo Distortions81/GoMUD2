@@ -9,6 +9,14 @@ import (
 	"time"
 )
 
+func saveAllAreas() {
+	for _, item := range areaList {
+		if !item.saveArea() {
+			errLog("saved area: %v", fileSafeName(item.Name))
+		}
+	}
+}
+
 // Returns false on error
 func (area *areaData) saveArea() bool {
 	outbuf := new(bytes.Buffer)
@@ -42,7 +50,7 @@ func (area *areaData) saveArea() bool {
 }
 
 func loadArea(name string) *areaData {
-	data, err := readFile(DATA_DIR + AREA_DIR + name + ".json")
+	data, err := readFile(DATA_DIR + AREA_DIR + name)
 	if err != nil {
 		return nil
 	}

@@ -27,6 +27,7 @@ var (
 	port        *int
 	portTLS     *int
 	noTLS       *bool
+	makeSysArea *bool
 	bindIP      *string
 	serverState atomic.Int32
 )
@@ -39,6 +40,7 @@ func main() {
 	portTLS = flag.Int("portTLS", DEFAULT_TLS_PORT, "TLS Port")
 	noTLS = flag.Bool("noSSL", true, "disable TLS listener")
 	bindIP = flag.String("bindIP", "localhost", "Bind to a specific IP.")
+	makeSysArea = flag.Bool("makeSysArea", true, "create and save system_area.are")
 	flag.Parse()
 
 	//Make sure all directories we need are created
@@ -52,8 +54,15 @@ func main() {
 
 	startLogs()
 	loadMudID()
+
+	if *makeSysArea {
+		makeSystemArea()
+		saveAllAreas()
+	}
 	loadAllAreas()
+
 	readTextFiles()
+
 	loadHelps()
 	saveHelps()
 

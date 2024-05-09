@@ -6,12 +6,12 @@ type DIR int
 
 var areaList map[int]*areaData = make(map[int]*areaData)
 
-func init() {
+func makeSystemArea() {
 	sysRooms := make(map[int]*roomData)
 	sysRooms[0] = &roomData{
-		Version: 1, VNUM: 0, Name: "The void", Description: "Nothing here."}
+		Version: 1, VNUM: 0, Name: "The void", Description: "Nothing here.", UUID: makeUUID()}
 	areaList[0] = &areaData{
-		Version: 1, VNUM: 0, Name: "System Area", Rooms: sysRooms}
+		Version: 1, VNUM: 0, Name: "System Area", Rooms: sysRooms, UUID: makeUUID()}
 }
 
 const (
