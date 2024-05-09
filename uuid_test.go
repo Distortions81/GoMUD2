@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestMain(t *testing.T) {
+func Test(t *testing.T) {
 
 	loadMudID()
 
@@ -21,7 +21,7 @@ func TestMain(t *testing.T) {
 
 	idStrToID := stringToUUID(idStr)
 	if id != idStrToID {
-		log.Fatalln("UUID conversion failed.")
+		log.Fatalln("UUID string to id failed.")
 	}
 
 	var lastUUID uuidData = makeUUID()
@@ -31,7 +31,7 @@ func TestMain(t *testing.T) {
 			log.Fatalf("Duplicate unixnano on interation %v.\n", x)
 		}
 		if lastUUID.r == id.r {
-			log.Fatalf("Duplicate rand on interation %v.\n", x)
+			log.Fatalf("Duplicate rand on interation %v (false positive is possible): rand: %v\n", x, lastUUID.r)
 		}
 		lastUUID = id
 	}
