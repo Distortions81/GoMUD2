@@ -67,9 +67,9 @@ const (
 var accountIndex = make(map[string]*accountIndexData)
 
 type accountIndexData struct {
-	Login       string
-	Fingerprint string
-	Added       time.Time
+	Login string
+	UUID  uuidData
+	Added time.Time
 }
 
 type loginStates struct {
@@ -151,7 +151,7 @@ func gLogin(desc *descData, input string) {
 		desc.close()
 		return
 	} else if accountIndex[input] != nil {
-		err := desc.loadAccount(accountIndex[input].Fingerprint)
+		err := desc.loadAccount(accountIndex[input].UUID)
 		if desc.account != nil {
 			desc.sendln("Welcome back %v!", input)
 			desc.state = CON_PASS
@@ -208,10 +208,10 @@ func gNewLogin(desc *descData, input string) {
 	}
 
 	desc.account = &accountData{
-		Login:       input,
-		Fingerprint: makeFingerprintString(),
-		CreDate:     time.Now().UTC(),
-		ModDate:     time.Now().UTC(),
+		Login:   input,
+		UUID:    makeUUID(),
+		CreDate: time.Now().UTC(),
+		ModDate: time.Now().UTC(),
 	}
 	desc.state = CON_NEW_LOGIN_CONFIRM
 

@@ -27,11 +27,11 @@ func Test(t *testing.T) {
 	var lastUUID uuidData = makeUUID()
 	for x := 0; x < 1000000; x++ {
 		id := makeUUID()
-		if lastUUID.t == id.t {
+		if lastUUID.T == id.T {
 			log.Fatalf("Duplicate unixnano on interation %v.\n", x)
 		}
-		if lastUUID.r == id.r {
-			log.Fatalf("Duplicate rand on interation %v (false positive is possible): rand: %v\n", x, lastUUID.r)
+		if lastUUID.R == id.R {
+			log.Fatalf("Duplicate rand on interation %v (false positive is possible): rand: %v\n", x, lastUUID.R)
 		}
 		lastUUID = id
 	}
@@ -43,9 +43,9 @@ func Test(t *testing.T) {
 	}
 	idC := makeUUID()
 	if idA.sameUUID(idC) &&
-		idA.m != idC.m &&
-		idA.r != idC.r &&
-		idA.t != idC.t {
+		idA.M != idC.M &&
+		idA.R != idC.R &&
+		idA.T != idC.T {
 		log.Fatalln("sameUUID() returned match on non-match.")
 	}
 }

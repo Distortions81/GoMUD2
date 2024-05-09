@@ -14,7 +14,7 @@ func characterNameAvailable(name string) bool {
 	for _, item := range accountIndex {
 		accs++
 		desc := descData{}
-		desc.loadAccount(item.Fingerprint)
+		desc.loadAccount(item.UUID)
 		for _, item := range desc.account.Characters {
 			chars++
 			if strings.EqualFold(item.Login, name) {
@@ -35,13 +35,13 @@ func (player *characterData) saveCharacter() bool {
 	if player == nil {
 		critLog("savePlayer: Nil player.")
 		return false
-	} else if player.Fingerprint == "" {
-		critLog("savePlayer: Player '%v' doesn't have a fingerprint.", player.Name)
+	} else if !player.UUID.hasUUID() {
+		critLog("savePlayer: Player '%v' doesn't have a UUID.", player.Name)
 		return false
 	}
 	player.Version = CHARACTER_VERSION
 	player.SaveTime = time.Now().UTC()
-	fileName := DATA_DIR + ACCOUNT_DIR + player.desc.account.Fingerprint + "/" + player.Fingerprint + ".json"
+	fileName := DATA_DIR + ACCOUNT_DIR + player.desc.account.UUID.toString() + "/" + player.UUID.toString() + ".json"
 
 	err := enc.Encode(&player)
 	if err != nil {
@@ -63,19 +63,19 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 		return nil
 	}
 
-	playFingerprint := ""
+	uuid := uuidData{}
 	for _, target := range desc.account.Characters {
 		if target.Login == plrStr {
-			playFingerprint = target.Fingerprint
+			uuid = target.UUID
 			break
 		}
 	}
-	if playFingerprint == "" {
+	if !uuid.hasUUID() {
 		errLog("loadPlayer: Player not found in account.")
 		return nil
 	}
 
-	target := checkPlayingPrint(plrStr, playFingerprint)
+	target := checkPlayingPrint(plrStr, uuid)
 
 	if target != nil {
 		target.send(aurevoirBuf)
@@ -88,7 +88,7 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 
 		return target
 	} else {
-		data, err := readFile(DATA_DIR + ACCOUNT_DIR + desc.account.Fingerprint + "/" + playFingerprint + ".json")
+		data, err := readFile(DATA_DIR + ACCOUNT_DIR + desc.account.UUID.toString() + "/" + uuid.toString() + ".json")
 		if err != nil {
 			return nil
 		}

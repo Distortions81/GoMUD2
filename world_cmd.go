@@ -64,8 +64,8 @@ func (player *characterData) goExit(exit *exitData) {
 }
 
 func (player *characterData) printToRoom(buf string) {
-	if player.Room != nil && player.Room.Players != nil {
-		for _, target := range player.Room.Players {
+	if player.Room != nil && player.Room.players != nil {
+		for _, target := range player.Room.players {
 			target.send(buf)
 		}
 	}

@@ -67,7 +67,7 @@ type roomData struct {
 	CreDate time.Time
 	ModDate time.Time
 
-	Players []*characterData
+	players []*characterData
 	Exits   []*exitData
 
 	pArea *areaData

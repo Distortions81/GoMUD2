@@ -137,9 +137,9 @@ func hashGenComplete(item *toHashData) {
 	}
 
 	newAcc := &accountIndexData{
-		Login:       item.desc.account.Login,
-		Fingerprint: item.desc.account.Fingerprint,
-		Added:       time.Now().UTC(),
+		Login: item.desc.account.Login,
+		UUID:  item.desc.account.UUID,
+		Added: time.Now().UTC(),
 	}
 
 	//Update acc index

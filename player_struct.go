@@ -55,9 +55,9 @@ type descData struct {
 }
 
 type characterData struct {
-	Version     int
-	Fingerprint string
-	desc        *descData
+	Version int
+	UUID    uuidData
+	desc    *descData
 
 	Name  string
 	Room  *roomData
@@ -88,8 +88,8 @@ type telnetData struct {
 }
 
 type accountData struct {
-	Version     int
-	Fingerprint string
+	Version int
+	UUID    uuidData
 
 	Login    string
 	PassHash []byte

@@ -2,50 +2,9 @@ package main
 
 import (
 	"os"
-	"strconv"
 	"strings"
 	"sync"
-	"time"
-
-	"golang.org/x/exp/rand"
 )
-
-func makeFingerprintString() string {
-	p1 := randStringRunes(32)
-	p2 := timeStringRunes()
-
-	return (p1 + "-" + p2)
-}
-
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_")
-var numRunes = len(letterRunes) - 1
-
-func randStringRunes(n int) string {
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(numRunes)]
-	}
-	return string(b)
-}
-
-func timeStringRunes() string {
-	un := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
-	unLen := len(un)
-
-	b := make([]rune, unLen)
-	for i := range b {
-		var p2 int64
-		for x := 0; x < 7; x++ {
-			p1, err := strconv.ParseInt(string(un[i]), 10, 64)
-			if err != nil {
-				continue
-			}
-			p2 += p1
-		}
-		b[i] = letterRunes[p2]
-	}
-	return string(b)
-}
 
 // Saves as a temp file, then renames
 var saveFileLock sync.Mutex

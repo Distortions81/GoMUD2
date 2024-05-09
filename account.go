@@ -24,7 +24,7 @@ func gCharList(desc *descData) {
 
 		for i, item := range desc.account.Characters {
 			var playing string
-			if target := checkPlayingPrint(item.Login, item.Fingerprint); target != nil {
+			if target := checkPlayingPrint(item.Login, item.UUID); target != nil {
 				playing = " (PLAYING)"
 			}
 			buf = buf + fmt.Sprintf("#%v: %v%v\r\n", i+1, item.Login, playing)
@@ -62,7 +62,7 @@ func gCharSelect(desc *descData, input string) {
 			if !strings.EqualFold(item.Login, input) {
 				continue
 			}
-			if target := checkPlayingPrint(item.Login, item.Fingerprint); target != nil {
+			if target := checkPlayingPrint(item.Login, item.UUID); target != nil {
 				alreadyPlayingWarnVictim(target)
 				desc.account.tempString = item.Login
 				desc.state = CON_RECONNECT_CONFIRM
@@ -83,7 +83,7 @@ func gCharSelect(desc *descData, input string) {
 	} else { //Find by number
 		if num > 0 && num <= len(desc.account.Characters) {
 			var target *characterData
-			if target = checkPlayingPrint(desc.account.Characters[num-1].Login, desc.account.Characters[num-1].Fingerprint); target != nil {
+			if target = checkPlayingPrint(desc.account.Characters[num-1].Login, desc.account.Characters[num-1].UUID); target != nil {
 				alreadyPlayingWarnVictim(target)
 				desc.account.tempString = desc.account.Characters[num-1].Login
 				desc.state = CON_RECONNECT_CONFIRM
@@ -156,14 +156,14 @@ func gCharConfirmName(desc *descData, input string) {
 		}
 
 		desc.character = &characterData{
-			Fingerprint: makeFingerprintString(),
-			Name:        input,
-			desc:        desc,
-			valid:       true,
-			loginTime:   time.Now(),
+			UUID:      makeUUID(),
+			Name:      input,
+			desc:      desc,
+			valid:     true,
+			loginTime: time.Now(),
 		}
 		desc.account.Characters = append(desc.account.Characters,
-			accountIndexData{Login: desc.account.tempString, Fingerprint: desc.character.Fingerprint, Added: time.Now().UTC()})
+			accountIndexData{Login: desc.account.tempString, UUID: desc.character.UUID, Added: time.Now().UTC()})
 		desc.character.sendToPlaying("--> {GW{gelcome{x %v to the lands! <--", desc.account.tempString)
 		desc.account.ModDate = time.Now().UTC()
 		desc.account.saveAccount()
@@ -175,14 +175,14 @@ func gCharConfirmName(desc *descData, input string) {
 }
 
 func (acc *accountData) createAccountDir() error {
-	if acc.Fingerprint == "" {
-		critLog("createAccountDir: account has no fingerprint: %v", acc.Login)
-		return fmt.Errorf("no fingerprint")
+	if !acc.UUID.hasUUID() {
+		critLog("createAccountDir: account has no UUID: %v", acc.Login)
+		return fmt.Errorf("no UUID")
 	}
 
-	err := os.Mkdir(DATA_DIR+ACCOUNT_DIR+acc.Fingerprint, 0755)
+	err := os.Mkdir(DATA_DIR+ACCOUNT_DIR+acc.UUID.toString(), 0755)
 	if err != nil {
-		critLog("createAccountDir: unable to make directory for account: %v", acc.Fingerprint)
+		critLog("createAccountDir: unable to make directory for account: %v", acc.UUID.toString())
 		return err
 	}
 	return nil
@@ -195,13 +195,13 @@ func (acc *accountData) saveAccount() bool {
 
 	if acc == nil {
 		return true
-	} else if acc.Fingerprint == "" {
-		critLog("saveAccount: Account '%v' doesn't have a fingerprint.", acc.Login)
+	} else if !acc.UUID.hasUUID() {
+		critLog("saveAccount: Account '%v' doesn't have a UUID.", acc.Login)
 		return true
 	}
 	acc.Version = ACCOUNT_VERSION
 	acc.ModDate = time.Now().UTC()
-	fileName := DATA_DIR + ACCOUNT_DIR + acc.Fingerprint + "/" + ACCOUNT_FILE
+	fileName := DATA_DIR + ACCOUNT_DIR + acc.UUID.toString() + "/" + ACCOUNT_FILE
 
 	err := enc.Encode(&acc)
 	if err != nil {
@@ -218,8 +218,8 @@ func (acc *accountData) saveAccount() bool {
 	return false
 }
 
-func (desc *descData) loadAccount(fingerprint string) error {
-	data, err := readFile(DATA_DIR + ACCOUNT_DIR + fingerprint + "/" + ACCOUNT_FILE)
+func (desc *descData) loadAccount(uuid uuidData) error {
+	data, err := readFile(DATA_DIR + ACCOUNT_DIR + uuid.toString() + "/" + ACCOUNT_FILE)
 	if err != nil {
 		errLog("loadAccount: Unable to load account file: %v", err)
 		return err

@@ -43,12 +43,12 @@ func (desc *descData) enterWorld(player *characterData) {
 	}(desc)
 }
 
-func checkPlayingPrint(name string, fingerprint string) *characterData {
+func checkPlayingPrint(name string, uuid uuidData) *characterData {
 	for _, item := range charList {
 		if !item.valid {
 			continue
 		}
-		if item.Name == name || item.Fingerprint == fingerprint {
+		if item.Name == name || item.UUID.sameUUID(uuid) {
 			return item
 		}
 	}
