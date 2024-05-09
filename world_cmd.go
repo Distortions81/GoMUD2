@@ -6,11 +6,11 @@ import (
 )
 
 func cmdLook(player *characterData, input string) {
-	if player.Room == nil {
+	if player.room == nil {
 		player.send("You are floating in the void.")
 		return
 	}
-	room := player.Room
+	room := player.room
 	if input == "" {
 		var exitList string
 		var exitCount int
@@ -34,11 +34,11 @@ func cmdLook(player *characterData, input string) {
 
 func cmdGo(player *characterData, input string) {
 	input = strings.ToLower(input)
-	if player.Room == nil {
+	if player.room == nil {
 		player.send("There is nowhere to go.")
 		return
 	}
-	for _, exit := range player.Room.Exits {
+	for _, exit := range player.room.Exits {
 		if exit.Direction == DIR_CUSTOM {
 			if strings.HasPrefix(strings.ToLower(exit.DirName), input) {
 				player.goExit(exit)
@@ -58,14 +58,14 @@ func cmdGo(player *characterData, input string) {
 }
 
 func (player *characterData) goExit(exit *exitData) {
-	if player.Room != nil && exit != nil && exit.pRoom != nil {
-		player.Room = exit.pRoom
+	if player.room != nil && exit != nil && exit.pRoom != nil {
+		player.room = exit.pRoom
 	}
 }
 
 func (player *characterData) printToRoom(buf string) {
-	if player.Room != nil && player.Room.players != nil {
-		for _, target := range player.Room.players {
+	if player.room != nil && player.room.players != nil {
+		for _, target := range player.room.players {
 			target.send(buf)
 		}
 	}

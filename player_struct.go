@@ -60,7 +60,7 @@ type characterData struct {
 	desc    *descData
 
 	Name  string
-	Room  *roomData
+	room  *roomData
 	Level int
 
 	SaveTime time.Time

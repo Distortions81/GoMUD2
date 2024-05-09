@@ -126,7 +126,7 @@ func loadHelps() {
 			if strings.HasSuffix(item.Name(), ".json") {
 				help := loadHelp(item.Name())
 				if help != nil {
-					errLog("Loaded: %v", help.Topic)
+					errLog("Loaded help: %v", item.Name())
 					helpFiles = append(helpFiles, help)
 					helpKeywords = append(helpKeywords, help.Topic)
 				}

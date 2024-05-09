@@ -52,6 +52,7 @@ func main() {
 
 	startLogs()
 	loadMudID()
+	loadAllAreas()
 	readTextFiles()
 	loadHelps()
 	saveHelps()

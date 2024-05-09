@@ -56,6 +56,7 @@ type areaData struct {
 	ModDate time.Time
 
 	Rooms map[int]*roomData
+	dirty bool
 }
 
 type roomData struct {

@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"strings"
 	"sync"
 )
 
@@ -35,30 +34,4 @@ func readFile(filePath string) ([]byte, error) {
 		return nil, err
 	}
 	return data, nil
-}
-
-// Returns false if name is prohibited
-func nameReserved(name string) bool {
-	for _, item := range reservedNames {
-		if item == name {
-			return true
-		}
-	}
-
-	return false
-}
-
-func nameReduce(name string) string {
-	name = strings.ToLower(name)
-	var newName string
-	for _, l := range name {
-		if l >= 'a' && l <= 'z' {
-			newName = newName + string(l)
-		}
-	}
-	return toTitle(newName)
-}
-
-func toTitle(s string) string {
-	return strings.ToUpper(s[:1]) + strings.ToLower(s[1:])
 }
