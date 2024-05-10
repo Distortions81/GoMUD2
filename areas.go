@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"io/fs"
 	"os"
 	"strings"
 	"time"
@@ -102,16 +101,16 @@ func loadAllAreas() {
 		critLog("Unable to read %v", DATA_DIR+AREA_DIR)
 		return
 	}
-	var i int
-	var item fs.DirEntry
-	for i, item = range dir {
+	count := 0
+	for _, item := range dir {
 		if item.IsDir() {
 			continue
 		} else if strings.HasSuffix(item.Name(), ".json") {
+			count++
 			errLog("loading area: %v", item.Name())
 			newArea := loadArea(item.Name())
 			areaList[newArea.UUID] = newArea
 		}
 	}
-	errLog("Loaded %v areas.", i)
+	errLog("Loaded %v areas.", count)
 }
