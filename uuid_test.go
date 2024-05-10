@@ -19,12 +19,12 @@ func Test(t *testing.T) {
 		log.Fatalln("Failed to convert UUID to string.")
 	}
 
-	idStrToID := stringToUUID(idStr)
+	idStrToID := DecodeUUIDString(idStr)
 	if id != idStrToID {
 		log.Fatalln("UUID string to id failed.")
 	}
 
-	var lastUUID uuidData = makeUUID()
+	var lastUUID UUIDIntData = makeUUID()
 	for x := 0; x < 1000000; x++ {
 		id := makeUUID()
 		if lastUUID.T == id.T {

@@ -156,7 +156,7 @@ func gCharConfirmName(desc *descData, input string) {
 		}
 
 		desc.character = &characterData{
-			UUID:      makeUUID(),
+			UUID:      makeUUIDString(),
 			Name:      input,
 			desc:      desc,
 			valid:     true,
@@ -175,14 +175,14 @@ func gCharConfirmName(desc *descData, input string) {
 }
 
 func (acc *accountData) createAccountDir() error {
-	if !acc.UUID.hasUUID() {
+	if acc.UUID == "" {
 		critLog("createAccountDir: account has no UUID: %v", acc.Login)
 		return fmt.Errorf("no UUID")
 	}
 
-	err := os.Mkdir(DATA_DIR+ACCOUNT_DIR+acc.UUID.toString(), 0755)
+	err := os.Mkdir(DATA_DIR+ACCOUNT_DIR+acc.UUID, 0755)
 	if err != nil {
-		critLog("createAccountDir: unable to make directory for account: %v", acc.UUID.toString())
+		critLog("createAccountDir: unable to make directory for account: %v", acc.UUID)
 		return err
 	}
 	return nil
@@ -195,13 +195,13 @@ func (acc *accountData) saveAccount() bool {
 
 	if acc == nil {
 		return true
-	} else if !acc.UUID.hasUUID() {
+	} else if acc.UUID == "" {
 		critLog("saveAccount: Account '%v' doesn't have a UUID.", acc.Login)
 		return true
 	}
 	acc.Version = ACCOUNT_VERSION
 	acc.ModDate = time.Now().UTC()
-	fileName := DATA_DIR + ACCOUNT_DIR + acc.UUID.toString() + "/" + ACCOUNT_FILE
+	fileName := DATA_DIR + ACCOUNT_DIR + acc.UUID + "/" + ACCOUNT_FILE
 
 	err := enc.Encode(&acc)
 	if err != nil {
@@ -218,8 +218,8 @@ func (acc *accountData) saveAccount() bool {
 	return false
 }
 
-func (desc *descData) loadAccount(uuid uuidData) error {
-	data, err := readFile(DATA_DIR + ACCOUNT_DIR + uuid.toString() + "/" + ACCOUNT_FILE)
+func (desc *descData) loadAccount(uuid string) error {
+	data, err := readFile(DATA_DIR + ACCOUNT_DIR + uuid + "/" + ACCOUNT_FILE)
 	if err != nil {
 		errLog("loadAccount: Unable to load account file: %v", err)
 		return err

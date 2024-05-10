@@ -4,21 +4,15 @@ import "time"
 
 type DIR int
 
-var areaList map[int]*areaData = make(map[int]*areaData)
-
-func makeSystemArea() {
-	sysRooms := make(map[int]*roomData)
-	sysRooms[0] = &roomData{
-		Version: 1, VNUM: 0, Name: "The void", Description: "Nothing here.", UUID: makeUUID()}
-	areaList[0] = &areaData{
-		Version: 1, VNUM: 0, Name: "System Area", Rooms: sysRooms, UUID: makeUUID()}
-}
-
 const (
 	DIR_NORTH = iota
+	DIR_NORTH_EAST
 	DIR_EAST
+	DIR_SOUTH_EAST
 	DIR_SOUTH
+	DIR_SOUTH_WEST
 	DIR_WEST
+	DIR_NORTH_WEST
 	DIR_DOWN
 	DIR_UP
 	DIR_CUSTOM
@@ -40,30 +34,24 @@ const (
 	EXIT_MAX
 )
 
-type locData struct {
-	Area uuidData
-	Room uuidData
-}
-
 type areaData struct {
 	Version     int
+	UUID        string
 	VNUM        int
-	UUID        uuidData
 	Name        string
 	Description string
 
 	CreDate time.Time
 	ModDate time.Time
 
-	Rooms map[int]*roomData
+	Rooms map[string]*roomData
 	dirty bool
 }
 
 type roomData struct {
 	Version     int
+	UUID        string `json:"-"`
 	VNUM        int
-	UUID        uuidData
-	Loc         locData
 	Name        string
 	Description string
 
@@ -76,13 +64,20 @@ type roomData struct {
 	pArea *areaData
 }
 
+type LocData struct {
+	AreaUUID string
+	RoomUUID string
+
+	Area, Room int
+}
+
 type exitData struct {
 	ExitType int
 	DoorName string
 
 	Direction DIR
 	DirName   string
-	ToRoom    locData
+	ToRoom    LocData
 
 	pRoom *roomData
 }

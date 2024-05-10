@@ -9,6 +9,19 @@ import (
 	"time"
 )
 
+var areaList map[string]*areaData = make(map[string]*areaData)
+var sAreaUUID, sRoomUUID string
+
+func makeSystemArea() {
+	sAreaUUID, sRoomUUID = makeUUIDString(), makeUUIDString()
+
+	sysRooms := make(map[string]*roomData)
+	sysRooms[sRoomUUID] = &roomData{
+		Version: 1, UUID: sRoomUUID, VNUM: 0, Name: "The void", Description: "Nothing here."}
+	areaList[sAreaUUID] = &areaData{
+		Version: 1, UUID: sAreaUUID, VNUM: 0, Name: "system", Rooms: sysRooms}
+}
+
 func saveAllAreas() {
 	for _, item := range areaList {
 		if !item.saveArea() {
@@ -26,7 +39,7 @@ func (area *areaData) saveArea() bool {
 	if area == nil {
 		critLog("saveArea: Nil area data.")
 		return false
-	} else if !area.UUID.hasUUID() {
+	} else if area.UUID == "" {
 		critLog("saveArea: Area '%v' doesn't have a UUID.", fileSafeName(area.Name))
 		return false
 	}
@@ -61,6 +74,25 @@ func loadArea(name string) *areaData {
 		errLog("loadPlayer: Unable to unmarshal the data.")
 		return nil
 	}
+
+	//Add UUID back, we don't want this in the save twice per room
+	for r, room := range area.Rooms {
+		room.UUID = r
+	}
+
+	//Link default system area
+	if sAreaUUID == "" || sRoomUUID == "" {
+		if area.VNUM == 0 {
+			sAreaUUID = area.UUID
+			for _, room := range area.Rooms {
+				if room.VNUM == 0 {
+					sRoomUUID = room.UUID
+					break
+				}
+			}
+		}
+	}
+
 	return area
 }
 
@@ -77,7 +109,8 @@ func loadAllAreas() {
 			continue
 		} else if strings.HasSuffix(item.Name(), ".json") {
 			errLog("loading area: %v", item.Name())
-			loadArea(item.Name())
+			newArea := loadArea(item.Name())
+			areaList[newArea.UUID] = newArea
 		}
 	}
 	errLog("Loaded %v areas.", i)

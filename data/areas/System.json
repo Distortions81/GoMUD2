@@ -1,0 +1,20 @@
+{
+	"Version": 1,
+	"UUID": "SCobXjsEzhdFzU9mmcBNCwkVAVbVmFIX",
+	"VNUM": 0,
+	"Name": "system",
+	"Description": "",
+	"CreDate": "0001-01-01T00:00:00Z",
+	"ModDate": "2024-05-10T03:52:41.103166841Z",
+	"Rooms": {
+		"1TwbXjsEzhfRXNuvnIfYEQkVAVbVmFIX": {
+			"Version": 1,
+			"VNUM": 0,
+			"Name": "The void",
+			"Description": "Nothing here.",
+			"CreDate": "0001-01-01T00:00:00Z",
+			"ModDate": "0001-01-01T00:00:00Z",
+			"Exits": null
+		}
+	}
+}

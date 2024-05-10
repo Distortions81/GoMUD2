@@ -15,10 +15,10 @@ const (
 	LEVEL_NEWBIE = 0
 	LEVEL_PLAYER = 1
 
-	LEVEL_BUILDER     = LEVEL_IMPLEMENTOR - 3
-	LEVEL_MODERATOR   = LEVEL_IMPLEMENTOR - 2
-	LEVEL_ADMIN       = LEVEL_IMPLEMENTOR - 1
-	LEVEL_IMPLEMENTOR = -1
+	LEVEL_BUILDER     = LEVEL_IMPLEMENTOR - 30
+	LEVEL_MODERATOR   = LEVEL_IMPLEMENTOR - 20
+	LEVEL_ADMIN       = LEVEL_IMPLEMENTOR - 10
+	LEVEL_IMPLEMENTOR = 1000
 )
 
 var (
@@ -56,7 +56,7 @@ type descData struct {
 
 type characterData struct {
 	Version int
-	UUID    uuidData
+	UUID    string
 	desc    *descData
 
 	Name  string
@@ -89,7 +89,7 @@ type telnetData struct {
 
 type accountData struct {
 	Version int
-	UUID    uuidData
+	UUID    string
 
 	Login    string
 	PassHash []byte

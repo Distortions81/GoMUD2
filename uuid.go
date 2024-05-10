@@ -17,23 +17,28 @@ const MudIDFIle = DATA_DIR + "mud-id.txt"
 
 var MudID int64
 
-type uuidData struct {
+type UUIDIntData struct {
 	T, R, M int64
 }
 
-func makeUUID() uuidData {
-	return uuidData{T: time.Now().UTC().UnixNano(), R: rand.Int63(), M: MudID}
+func makeUUID() UUIDIntData {
+	return UUIDIntData{T: time.Now().UTC().UnixNano(), R: rand.Int63(), M: MudID}
 }
 
-func (ida uuidData) sameUUID(idb uuidData) bool {
-	return ida.hasUUID() && ida.T == idb.T && ida.R == idb.R && ida.M == idb.M
+func makeUUIDString() string {
+	id := UUIDIntData{T: time.Now().UTC().UnixNano(), R: rand.Int63(), M: MudID}
+	return id.toString()
 }
 
-func (id uuidData) hasUUID() bool {
+func (id UUIDIntData) hasUUID() bool {
 	return id.T != 0 && id.M != 0 //Don't check .r, random
 }
 
-func (id uuidData) toString() string {
+func (ida UUIDIntData) sameUUID(idb UUIDIntData) bool {
+	return ida.T == idb.T && ida.R == idb.R && ida.M == idb.M
+}
+
+func (id UUIDIntData) toString() string {
 	buf := new(bytes.Buffer)
 	binary.Write(buf, binary.LittleEndian, id.T)
 	binary.Write(buf, binary.LittleEndian, id.R)
@@ -41,11 +46,12 @@ func (id uuidData) toString() string {
 	return base64.RawURLEncoding.EncodeToString(buf.Bytes())
 }
 
-func stringToUUID(input string) uuidData {
+// Not generally needed
+func DecodeUUIDString(input string) UUIDIntData {
 	b, _ := base64.RawURLEncoding.DecodeString(input)
 	buf := bytes.NewBuffer(b)
 
-	id := uuidData{}
+	id := UUIDIntData{}
 	binary.Read(buf, binary.LittleEndian, &id.T)
 	binary.Read(buf, binary.LittleEndian, &id.R)
 	binary.Read(buf, binary.LittleEndian, &id.M)

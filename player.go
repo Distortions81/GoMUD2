@@ -30,7 +30,8 @@ func (desc *descData) enterWorld(player *characterData) {
 	desc.character.loginTime = time.Now()
 	desc.character.idleTime = time.Now()
 	if player.room == nil {
-		player.room = areaList[0].Rooms[0]
+		errLog("Loading default room: area: %v, room: %v", sAreaUUID, sRoomUUID)
+		player.room = areaList[sAreaUUID].Rooms[sRoomUUID]
 	}
 	charList = append(charList, player)
 
@@ -43,12 +44,12 @@ func (desc *descData) enterWorld(player *characterData) {
 	}(desc)
 }
 
-func checkPlayingPrint(name string, uuid uuidData) *characterData {
+func checkPlayingPrint(name string, uuid string) *characterData {
 	for _, item := range charList {
 		if !item.valid {
 			continue
 		}
-		if item.Name == name || item.UUID.sameUUID(uuid) {
+		if item.Name == name || item.UUID == uuid {
 			return item
 		}
 	}

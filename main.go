@@ -58,6 +58,7 @@ func main() {
 	if *makeSysArea {
 		makeSystemArea()
 		saveAllAreas()
+		critLog("System area created.")
 	}
 	loadAllAreas()
 

@@ -35,13 +35,13 @@ func (player *characterData) saveCharacter() bool {
 	if player == nil {
 		critLog("savePlayer: Nil player.")
 		return false
-	} else if !player.UUID.hasUUID() {
+	} else if player.UUID == "" {
 		critLog("savePlayer: Player '%v' doesn't have a UUID.", player.Name)
 		return false
 	}
 	player.Version = CHARACTER_VERSION
 	player.SaveTime = time.Now().UTC()
-	fileName := DATA_DIR + ACCOUNT_DIR + player.desc.account.UUID.toString() + "/" + player.UUID.toString() + ".json"
+	fileName := DATA_DIR + ACCOUNT_DIR + player.desc.account.UUID + "/" + player.UUID + ".json"
 
 	err := enc.Encode(&player)
 	if err != nil {
@@ -63,14 +63,14 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 		return nil
 	}
 
-	uuid := uuidData{}
+	uuid := ""
 	for _, target := range desc.account.Characters {
 		if target.Login == plrStr {
 			uuid = target.UUID
 			break
 		}
 	}
-	if !uuid.hasUUID() {
+	if uuid == "" {
 		errLog("loadPlayer: Player not found in account.")
 		return nil
 	}
@@ -88,7 +88,7 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 
 		return target
 	} else {
-		data, err := readFile(DATA_DIR + ACCOUNT_DIR + desc.account.UUID.toString() + "/" + uuid.toString() + ".json")
+		data, err := readFile(DATA_DIR + ACCOUNT_DIR + desc.account.UUID + "/" + uuid + ".json")
 		if err != nil {
 			return nil
 		}

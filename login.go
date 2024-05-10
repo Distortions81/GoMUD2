@@ -68,7 +68,7 @@ var accountIndex = make(map[string]*accountIndexData)
 
 type accountIndexData struct {
 	Login string
-	UUID  uuidData
+	UUID  string
 	Added time.Time
 }
 
@@ -209,7 +209,7 @@ func gNewLogin(desc *descData, input string) {
 
 	desc.account = &accountData{
 		Login:   input,
-		UUID:    makeUUID(),
+		UUID:    makeUUIDString(),
 		CreDate: time.Now().UTC(),
 		ModDate: time.Now().UTC(),
 	}
