@@ -45,7 +45,11 @@ func nameReduce(name string) string {
 }
 
 func toTitle(s string) string {
-	return strings.ToUpper(s[:1]) + strings.ToLower(s[1:])
+	if len(s) > 0 {
+		return strings.ToUpper(s[:1]) + strings.ToLower(s[1:])
+	} else {
+		return strings.ToUpper(s)
+	}
 }
 
 func fileSafeName(name string) string {
