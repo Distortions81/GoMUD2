@@ -31,6 +31,7 @@ func (desc *descData) enterWorld(player *characterData) {
 	desc.character.idleTime = time.Now()
 	if player.room == nil {
 		player.room = areaList[sAreaUUID].Rooms[sRoomUUID]
+		player.room.players = append(player.room.players, player)
 	}
 	charList = append(charList, player)
 

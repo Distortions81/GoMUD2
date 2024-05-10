@@ -16,7 +16,7 @@ func makeSystemArea() {
 
 	sysRooms := make(map[string]*roomData)
 	sysRooms[sRoomUUID] = &roomData{
-		Version: 1, UUID: sRoomUUID, VNUM: 0, Name: "The void", Description: "Nothing here."}
+		Version: 1, UUID: sRoomUUID, VNUM: 0, Name: "The void", Description: "You are floating in a void."}
 	areaList[sAreaUUID] = &areaData{
 		Version: 1, UUID: sAreaUUID, VNUM: 0, Name: "system", Rooms: sysRooms}
 }
