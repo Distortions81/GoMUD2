@@ -9,7 +9,7 @@ import (
 
 func characterNameAvailable(name string) bool {
 	var accs, chars int
-	defer func() { errLog("characterNameAvailable: searched %v accounts and %v characters.", accs, chars) }()
+	//defer func() { errLog("characterNameAvailable: searched %v accounts and %v characters.", accs, chars) }()
 
 	for _, item := range accountIndex {
 		accs++
