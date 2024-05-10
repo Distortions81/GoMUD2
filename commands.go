@@ -24,17 +24,17 @@ type commandData struct {
 
 // command names and shorthands must be lower case
 var commandList = map[string]*commandData{
-	"say":    {hint: "sends a message", goDo: cmdSay, args: []string{"message"}},
-	"quit":   {noShort: true, hint: "quit and disconnect", goDo: cmdQuit},
-	"logout": {noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
-	"who":    {hint: "show players online", goDo: cmdWho},
-	"help":   {hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}},
-	"look":   {hint: "look around the room", goDo: cmdLook},
-	"go":     {hint: "go", goDo: cmdGo, args: []string{"exit name"}},
-	"telnet": {hint: "telnet options", goDo: cmdTelnet},
+	"say":    {level: LEVEL_NEWBIE, hint: "sends a message", goDo: cmdSay, args: []string{"message"}},
+	"quit":   {level: LEVEL_ANY, noShort: true, hint: "quit and disconnect", goDo: cmdQuit},
+	"logout": {level: LEVEL_PLAYER, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
+	"who":    {level: LEVEL_ANY, hint: "show players online", goDo: cmdWho},
+	"help":   {level: LEVEL_ANY, hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}},
+	"look":   {level: LEVEL_ANY, hint: "look around the room", goDo: cmdLook},
+	"go":     {level: LEVEL_ANY, hint: "go", goDo: cmdGo, args: []string{"exit name"}},
+	"telnet": {level: LEVEL_ANY, hint: "telnet options", goDo: cmdTelnet},
 
 	//Wiz
-	"cinfo": {level: LEVEL_IMPLEMENTOR, hint: "shows list of connections and characters in the world", goDo: cmdCinfo},
+	"cinfo": {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdCinfo},
 	"pset":  {level: LEVEL_IMPLEMENTOR, hint: "set player parameters", goDo: cmdPset},
 }
 
@@ -82,7 +82,8 @@ func cmdSay(player *characterData, input string) {
 	if chatLen == 0 {
 		player.send("Say what?")
 	} else if chatLen < MAX_CHAT_LENGTH {
-		player.sendToPlaying("%v: %v", player.desc.character.Name, trimInput)
+		player.sendToRoom("%v says: %v", player.desc.character.Name, trimInput)
+		player.send("You say: %v", trimInput)
 	} else {
 		player.send("That is a wall of text. Maybe consider mailing it?")
 	}

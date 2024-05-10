@@ -13,13 +13,20 @@ func (player *characterData) send(format string, args ...any) {
 }
 
 func (player *characterData) sendToPlaying(format string, args ...any) {
-	for _, target := range descList {
-		if !target.valid {
+	for _, target := range charList {
+		if target == player {
 			continue
 		}
-		if target.state == CON_PLAYING {
-			target.sendln(format, args...)
+		target.send(format, args...)
+	}
+}
+
+func (player *characterData) sendToRoom(format string, args ...any) {
+	for _, target := range charList {
+		if target == player {
+			continue
 		}
+		target.send(format, args...)
 	}
 }
 

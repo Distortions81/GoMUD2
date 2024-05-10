@@ -12,6 +12,7 @@ import (
 type LEVEL int
 
 const (
+	LEVEL_ANY    = -1000
 	LEVEL_NEWBIE = 0
 	LEVEL_PLAYER = 1
 
