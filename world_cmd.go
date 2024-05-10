@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -10,45 +9,13 @@ func cmdLook(player *characterData, input string) {
 		player.send("You are floating in the nil.")
 		return
 	}
-	buf := ""
-	room := player.room
+
 	if input == "" {
-		var exitList string
-		var exitCount int
-		for _, exit := range room.Exits {
-			if exitCount != 0 {
-				exitList = exitList + ", "
-			}
-			exitList = exitList + dirToTextColor[exit.Direction]
-			exitCount++
-		}
-
-		playersList := ""
-		if len(room.players) > 0 {
-			playersList = "\r\nWho's here: "
-			for i, target := range room.players {
-				if i != 0 {
-					playersList = playersList + ", "
-				}
-				playersList = playersList + target.Name
-			}
-			if playersList != "" {
-				playersList = playersList + "\r\n"
-			}
-		}
-
-		if exitCount == 0 {
-			exitList = "None"
-		}
-		buf = buf + fmt.Sprintf(
-			"\r\n%v:\r\n%v\r\n%vExits: %v",
-			room.Name, room.Description,
-			playersList, exitList)
+		lookRoom(player)
 	} else {
-		buf = "Who? What? Huh?"
+		player.send("Who? What? Huh?")
 	}
 
-	player.send(buf)
 }
 
 func cmdGo(player *characterData, input string) {
