@@ -9,7 +9,6 @@ import (
 	"github.com/hako/durafmt"
 	"github.com/martinhoefling/goxkcdpwgen/xkcdpwgen"
 	passwordvalidator "github.com/wagslane/go-password-validator"
-	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/exp/rand"
 )
 
@@ -38,6 +37,7 @@ const (
 	CON_WELCOME
 	CON_LOGIN
 	CON_PASS
+	CON_CHECK_PASS
 	CON_NEWS
 
 	//New users
@@ -172,13 +172,16 @@ func gLogin(desc *descData, input string) {
 
 func gPass(desc *descData, input string) {
 
-	if bcrypt.CompareHashAndPassword(desc.account.PassHash, []byte(input)) == nil {
-		desc.state = CON_CHAR_LIST
-	} else {
-		desc.sendln("Incorrect passphrase.")
-		critLog("#%v: %v tried a invalid password!", desc.id, desc.cAddr)
+	hashLock.Lock()
+	defer hashLock.Unlock()
+	if len(hashList) > HASH_DEPTH_MAX {
+		desc.send("Sorry, too many password requests are already in the queue. Please try again later.")
 		desc.state = CON_DISCONNECTED
 		desc.valid = false
+	} else {
+		desc.send("Checking your password, one moment.")
+		hashList = append(hashList, &toHashData{id: desc.id, desc: desc, pass: []byte(input), failed: false, doEncrypt: false, started: time.Now()})
+		desc.state = CON_CHECK_PASS
 	}
 }
 
@@ -287,8 +290,9 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 		hashLock.Lock()
 		hashDepth := len(hashList)
 		if hashDepth > HASH_DEPTH_MAX {
-			desc.send("Sorry, %v other password requests are already in the queue. Try again later!", hashDepth)
-			desc.state = CON_NEW_PASSPHRASE
+			desc.send("Sorry, too many password requests are already in the queue. Please try again later.")
+			desc.state = CON_DISCONNECTED
+			desc.valid = false
 			desc.account.tempString = ""
 			hashLock.Unlock()
 			return

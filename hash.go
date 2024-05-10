@@ -8,13 +8,14 @@ import (
 )
 
 const (
-	HASH_SLEEP           = time.Millisecond * 100
+	HASH_SLEEP           = time.Millisecond * 10
 	HASH_TIMEOUT         = time.Second * 60
-	PASSPHRASE_HASH_COST = 15
+	PASSPHRASE_HASH_COST = 12
 	HASH_DEPTH_MAX       = 100
 )
 
 var lastHashTime time.Duration = time.Second * 5
+var lastHashCheckTime time.Duration = time.Second * 5
 
 type toHashData struct {
 	isTest bool
@@ -25,8 +26,9 @@ type toHashData struct {
 	hash      []byte
 	doEncrypt bool
 
-	complete bool
-	failed   bool
+	complete    bool
+	failed      bool
+	correctPass bool
 
 	started     time.Time
 	workStarted time.Time
@@ -44,7 +46,11 @@ func hashReceiver() {
 		item := hashList[0]
 
 		if item.complete && !item.failed {
-			hashGenComplete(item)
+			if item.doEncrypt {
+				hashGenComplete(item)
+			} else {
+				passCheckComplete(item)
+			}
 			removeFirstHash()
 
 		} else if item.failed {
@@ -83,13 +89,32 @@ func hasherDaemon() {
 		item.workStarted = time.Now()
 		hashLock.Unlock()
 
-		item.hash, err = bcrypt.GenerateFromPassword([]byte(item.pass), PASSPHRASE_HASH_COST)
+		passGood := false
+		if item.doEncrypt {
+			item.hash, err = bcrypt.GenerateFromPassword([]byte(item.pass), PASSPHRASE_HASH_COST)
+		} else {
+			if bcrypt.CompareHashAndPassword(item.desc.account.PassHash, []byte(item.pass)) == nil {
+				passGood = true
+			} else {
+				item.desc.sendln("Incorrect passphrase.")
+				critLog("#%v: tried a invalid password!", item.id)
+			}
+		}
 
 		hashLock.Lock()
 
-		took := time.Since(start).Round(time.Millisecond)
-		errLog("Password hash took %v.", took)
-		lastHashTime = took
+		if item.doEncrypt {
+			took := time.Since(start).Round(time.Millisecond)
+			errLog("Password hash took %v.", took)
+			lastHashTime = took
+		} else {
+			took := time.Since(start).Round(time.Millisecond)
+			errLog("Password check took %v.", took)
+			if passGood {
+				item.correctPass = true
+			}
+			lastHashCheckTime = took
+		}
 
 		if err != nil {
 			item.failed = true
@@ -100,6 +125,25 @@ func hasherDaemon() {
 		item.complete = true
 
 		hashLock.Unlock()
+	}
+}
+
+func passCheckComplete(item *toHashData) {
+	if item.isTest {
+		return
+	}
+	if item.desc == nil {
+		critLog("Player left before password check finished.")
+		return
+	}
+	if item.correctPass {
+		//Send to char menu
+		item.desc.state = CON_CHAR_LIST
+		gCharList(item.desc)
+	} else {
+		item.desc.send("Invalid passphrase.")
+		item.desc.state = CON_DISCONNECTED
+		item.desc.valid = false
 	}
 }
 
