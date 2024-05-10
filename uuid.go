@@ -30,32 +30,12 @@ func makeUUIDString() string {
 	return id.toString()
 }
 
-func (id UUIDIntData) hasUUID() bool {
-	return id.T != 0 && id.M != 0 //Don't check .r, random
-}
-
-func (ida UUIDIntData) sameUUID(idb UUIDIntData) bool {
-	return ida.T == idb.T && ida.R == idb.R && ida.M == idb.M
-}
-
 func (id UUIDIntData) toString() string {
 	buf := new(bytes.Buffer)
 	binary.Write(buf, binary.LittleEndian, id.T)
 	binary.Write(buf, binary.LittleEndian, id.R)
 	binary.Write(buf, binary.LittleEndian, id.M)
 	return base64.RawURLEncoding.EncodeToString(buf.Bytes())
-}
-
-// Not generally needed
-func DecodeUUIDString(input string) UUIDIntData {
-	b, _ := base64.RawURLEncoding.DecodeString(input)
-	buf := bytes.NewBuffer(b)
-
-	id := UUIDIntData{}
-	binary.Read(buf, binary.LittleEndian, &id.T)
-	binary.Read(buf, binary.LittleEndian, &id.R)
-	binary.Read(buf, binary.LittleEndian, &id.M)
-	return id
 }
 
 func loadMudID() {
@@ -96,4 +76,26 @@ func writeMudID() {
 		critLog("Unable to write %v", MudIDFile)
 		os.Exit(1)
 	}
+}
+
+// Not generally needed
+func (id UUIDIntData) hasUUID() bool {
+	return id.T != 0 && id.M != 0 //Don't check .r, random
+}
+
+// Not generally needed
+func (ida UUIDIntData) sameUUID(idb UUIDIntData) bool {
+	return ida.T == idb.T && ida.R == idb.R && ida.M == idb.M
+}
+
+// Not generally needed
+func DecodeUUIDString(input string) UUIDIntData {
+	b, _ := base64.RawURLEncoding.DecodeString(input)
+	buf := bytes.NewBuffer(b)
+
+	id := UUIDIntData{}
+	binary.Read(buf, binary.LittleEndian, &id.T)
+	binary.Read(buf, binary.LittleEndian, &id.R)
+	binary.Read(buf, binary.LittleEndian, &id.M)
+	return id
 }
