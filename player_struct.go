@@ -91,6 +91,7 @@ type telnetData struct {
 type accountData struct {
 	Version int
 	UUID    string
+	Level   int
 
 	Login    string
 	PassHash []byte

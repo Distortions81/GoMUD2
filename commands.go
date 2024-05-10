@@ -31,7 +31,7 @@ var commandList = map[string]*commandData{
 	"help":   {level: LEVEL_ANY, hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}},
 	"look":   {level: LEVEL_ANY, hint: "look around the room", goDo: cmdLook},
 	"go":     {level: LEVEL_ANY, hint: "go", goDo: cmdGo, args: []string{"exit name"}},
-	"telnet": {level: LEVEL_ANY, hint: "telnet options", goDo: cmdTelnet},
+	"telnet": {level: LEVEL_NEWBIE, hint: "telnet options", goDo: cmdTelnet},
 
 	//Wiz
 	"cinfo": {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdCinfo},
