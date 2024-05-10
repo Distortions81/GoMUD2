@@ -183,11 +183,17 @@ func gPass(desc *descData, input string) {
 }
 
 func gNews(desc *descData, input string) {
+	go func(desc *descData) {
+		descLock.Lock()
+		defer descLock.Unlock()
+		desc.character.sendToPlaying("%v fades into view.", desc.character.Name)
+		desc.character.listCommands()
+	}(desc)
 	desc.state = CON_PLAYING
 }
 
 func gShowNews(desc *descData) {
-	desc.sendln("\r\n" + textFiles["news"] + "\r\n[Press enter to proceed]")
+	desc.sendln("\r\n{1{K---NEWS---{x\r\n" + textFiles["news"] + "\r\n[Press enter to proceed]")
 }
 
 // New login

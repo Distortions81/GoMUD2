@@ -30,18 +30,11 @@ func (desc *descData) enterWorld(player *characterData) {
 	desc.character.loginTime = time.Now()
 	desc.character.idleTime = time.Now()
 	if player.room == nil {
-		errLog("Loading default room: area: %v, room: %v", sAreaUUID, sRoomUUID)
 		player.room = areaList[sAreaUUID].Rooms[sRoomUUID]
 	}
 	charList = append(charList, player)
 
 	desc.state = CON_NEWS
-	go func(desc *descData) {
-		descLock.Lock()
-		defer descLock.Unlock()
-		desc.character.sendToPlaying("%v fades into view.", desc.character.Name)
-		desc.character.listCommands()
-	}(desc)
 }
 
 func checkPlayingPrint(name string, uuid string) *characterData {

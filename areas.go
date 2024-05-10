@@ -107,9 +107,9 @@ func loadAllAreas() {
 			continue
 		} else if strings.HasSuffix(item.Name(), ".json") {
 			count++
-			errLog("loading area: %v", item.Name())
 			newArea := loadArea(item.Name())
 			areaList[newArea.UUID] = newArea
+			errLog("loaded area: %v", item.Name())
 		}
 	}
 	errLog("Loaded %v areas.", count)
