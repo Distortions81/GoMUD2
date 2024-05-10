@@ -266,15 +266,9 @@ func saveAccountIndex() error {
 	}
 
 	file := DATA_DIR + ACCOUNT_DIR + ACC_INDEX_FILE
-	tempFile := file + ".tmp"
-	err = saveFile(tempFile, outbuf.Bytes())
+	err = saveFile(file, outbuf.Bytes())
 	if err != nil {
 		critLog("saveAccountIndex: saveFile failed %v", err.Error())
-		return err
-	}
-	err = os.Rename(tempFile, file)
-	if err != nil {
-		critLog("saveAccountIndex: rename failed %v", err.Error())
 		return err
 	}
 	errLog("Account index saved.")

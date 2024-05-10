@@ -5,9 +5,9 @@ import (
 	"sync"
 )
 
-// Saves as a temp file, then renames
 var saveFileLock sync.Mutex
 
+// Saves as a temp file, then renames when done.
 func saveFile(filePath string, data []byte) error {
 	saveFileLock.Lock()
 	defer saveFileLock.Unlock()

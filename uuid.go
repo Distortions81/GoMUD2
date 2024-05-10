@@ -13,7 +13,7 @@ import (
 )
 
 // Used to help prevent ID collisions
-const MudIDFIle = DATA_DIR + "mud-id.txt"
+const MudIDFile = DATA_DIR + "mud-id.txt"
 
 var MudID int64
 
@@ -59,30 +59,30 @@ func DecodeUUIDString(input string) UUIDIntData {
 }
 
 func loadMudID() {
-	if _, err := os.Stat(MudIDFIle); errors.Is(err, os.ErrNotExist) {
-		critLog("%v does not exist, creating new mud id.", MudIDFIle)
+	if _, err := os.Stat(MudIDFile); errors.Is(err, os.ErrNotExist) {
+		critLog("%v does not exist, creating new mud id.", MudIDFile)
 		writeMudID()
 		return
 	}
-	data, err := os.ReadFile(MudIDFIle)
+	data, err := os.ReadFile(MudIDFile)
 	if err != nil {
-		critLog("could not read %v", MudIDFIle)
+		critLog("could not read %v", MudIDFile)
 		os.Exit(1)
 	} else {
 		MudID, err = strconv.ParseInt(string(data), 10, 64)
 		if err != nil {
-			critLog("Unable to parse data in %v, creating new mud id.", MudIDFIle)
-			os.Remove(MudIDFIle)
+			critLog("Unable to parse data in %v, creating new mud id.", MudIDFile)
+			os.Remove(MudIDFile)
 			writeMudID()
 			return
 		}
 		if MudID == 0 {
 			errLog("Read mud id was 0, generating new one.")
-			os.Remove(MudIDFIle)
+			os.Remove(MudIDFile)
 			writeMudID()
 			return
 		}
-		errLog("%v loaded: %v", MudIDFIle, MudID)
+		errLog("%v loaded: %v", MudIDFile, MudID)
 	}
 }
 
@@ -91,9 +91,9 @@ func writeMudID() {
 		MudID = rand.Int63()
 		critLog("Invalid mud id, generating new one: %v", MudID)
 	}
-	err := os.WriteFile(MudIDFIle, []byte(fmt.Sprintf("%v", MudID)), 0755)
+	err := saveFile(MudIDFile, []byte(fmt.Sprintf("%v", MudID)))
 	if err != nil {
-		critLog("Unable to write %v", MudIDFIle)
+		critLog("Unable to write %v", MudIDFile)
 		os.Exit(1)
 	}
 }
