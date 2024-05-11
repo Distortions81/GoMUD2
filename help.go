@@ -181,13 +181,17 @@ func saveHelps() {
 
 	for _, topic := range helpFiles {
 		if topic.dirty {
-			saveHelp(topic)
-			critLog("--> Saved help file: %v", topic.Topic)
+			if saveHelp(topic) {
+				critLog("--> Saved help file: %v", topic.Topic)
+			} else {
+				critLog("--> Saving help file failed: %v", topic.Topic)
+			}
 		}
 		helpKeywords = append(helpKeywords, topic.Topic)
 	}
 }
 
+// Returns true on save
 func saveHelp(helpFile *helpTopicData) bool {
 	outbuf := new(bytes.Buffer)
 	enc := json.NewEncoder(outbuf)
@@ -196,13 +200,13 @@ func saveHelp(helpFile *helpTopicData) bool {
 	err := enc.Encode(&helpFile)
 	if err != nil {
 		critLog("saveHelp: enc.Encode: %v", err.Error())
-		return true
+		return false
 	}
 
 	err = saveFile(DATA_DIR+HELPS_DIR+helpFile.Topic+".json", outbuf.Bytes())
 	if err != nil {
 		critLog("saveHelp: saveFile failed %v", err.Error())
-		return true
+		return false
 	}
-	return false
+	return true
 }

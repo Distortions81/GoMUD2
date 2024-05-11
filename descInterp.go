@@ -84,11 +84,14 @@ func (desc *descData) interp() {
 
 func (player *characterData) listCommands() {
 	buf := "\r\nCommands:\r\n"
-	for _, item := range cmdListStr {
+	for i, item := range cmdListStr {
 		if item.cmd.level > player.Level {
 			continue
 		}
-		buf = buf + item.help + "\r\n"
+		if i > 0 {
+			buf = buf + "\r\n"
+		}
+		buf = buf + item.help
 	}
 	player.send(buf)
 }
@@ -154,6 +157,7 @@ func (player *characterData) handleCommands(input string) {
 	}
 }
 
+// Returns true if allowed
 func (command *commandData) checkCommandLevel(player *characterData) bool {
 	if command != nil && command.level > player.Level {
 		player.send("Sorry, you aren't high enough level to use this command.")

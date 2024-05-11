@@ -13,14 +13,17 @@ import (
 )
 
 const (
+	//Max bcrypt length
 	MAX_PASSPHRASE_LENGTH = 72
 	MIN_PASSPHRASE_LENGTH = 8
 
 	MIN_PASS_ENTROPY_BITS = 52
 
-	MAX_CHAR_SLOTS     = 15
-	NUM_LOGIN_VARIANTS = 5
-	NUM_PASS_SUGGEST   = 10
+	MAX_CHAR_SLOTS = 15
+	//Number of number-suffixed login names
+	//to show if the login is taken
+	NUM_LOGIN_SUFFIX = 5
+	NUM_PASS_SUGGEST = 10
 
 	MAX_LOGIN_LEN = 48
 	MIN_LOGIN_LEN = 4
@@ -64,6 +67,7 @@ const (
 	CON_MAX
 )
 
+// Quick login lookup
 var accountIndex = make(map[string]*accountIndexData)
 
 type accountIndexData struct {
@@ -174,12 +178,12 @@ func gPass(desc *descData, input string) {
 	hashLock.Lock()
 	defer hashLock.Unlock()
 	if len(hashList) > HASH_DEPTH_MAX {
-		desc.send("Sorry, too many password requests are already in the queue. Please try again later.")
+		desc.send("Sorry, too many passphrase requests are already in the queue. Please try again later.")
 		desc.state = CON_DISCONNECTED
 		desc.valid = false
 	} else {
-		desc.send("Checking your password, one moment.")
-		hashList = append(hashList, &toHashData{id: desc.id, desc: desc, pass: []byte(input), failed: false, doEncrypt: false, started: time.Now()})
+		desc.send("Checking your passphrase, one moment.")
+		hashList = append(hashList, &toHashData{id: desc.id, desc: desc, hash: desc.account.PassHash, pass: []byte(input), failed: false, doEncrypt: false, started: time.Now()})
 		desc.state = CON_CHECK_PASS
 	}
 }
@@ -207,7 +211,7 @@ func gNewLogin(desc *descData, input string) {
 	}
 	if !isAccNameAvail(input) {
 		var buf string = "A few quick random variations:\r\n"
-		for x := 0; x < NUM_LOGIN_VARIANTS; x++ {
+		for x := 0; x < NUM_LOGIN_SUFFIX; x++ {
 			buf = buf + fmt.Sprintf("%v%v\r\n", input, rand.Intn(999))
 		}
 		buf = buf + "\r\nSorry, that login name is already in use.\r\nPlease pick another one!"
@@ -227,6 +231,7 @@ func gNewLogin(desc *descData, input string) {
 
 func gNewLoginConfirm(desc *descData, input string) {
 	if input == desc.account.Login {
+		//Check again! We don't want a collision
 		if !isAccNameAvail(input) {
 			desc.send("Sorry, that login name is already in use.")
 			return
@@ -243,7 +248,7 @@ func gNewLoginConfirm(desc *descData, input string) {
 }
 
 func gNewPassphrase(desc *descData, input string) {
-	//min/max password len
+	//min/max passphrase len
 	passLen := len([]byte(input))
 	if passLen < MIN_PASSPHRASE_LENGTH &&
 		passLen > MAX_PASSPHRASE_LENGTH {
@@ -251,7 +256,7 @@ func gNewPassphrase(desc *descData, input string) {
 		return
 	}
 
-	//Check if password is decent
+	//Check if passphrase is decent
 	ef := passwordvalidator.GetEntropy(input)
 	entropy := int(ef)
 
@@ -264,7 +269,7 @@ func gNewPassphrase(desc *descData, input string) {
 	} else if entropy >= 62 {
 		desc.sendln("Reasonable passphrase. %v bits of entropy.", entropy)
 	} else if entropy >= MIN_PASS_ENTROPY_BITS {
-		desc.sendln("Somewhat simple password. %v bits of entropy.", entropy)
+		desc.sendln("Somewhat simple passphrase. %v bits of entropy.", entropy)
 	} else {
 		desc.sendln("Please try again with a more complex passphrase.\r\n")
 		return
@@ -284,12 +289,12 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 	if input == desc.account.tempString {
 		desc.state = CON_HASH_WAIT
 		desc.idleTime = time.Now()
-		desc.sendln("Processing password, one moment please...")
+		desc.sendln("Processing passphrase, one moment please...")
 
 		hashLock.Lock()
 		hashDepth := len(hashList)
 		if hashDepth > HASH_DEPTH_MAX {
-			desc.send("Sorry, too many password requests are already in the queue. Please try again later.")
+			desc.send("Sorry, too many passphrase requests are already in the queue. Please try again later.")
 			desc.state = CON_DISCONNECTED
 			desc.valid = false
 			desc.account.tempString = ""
@@ -299,7 +304,7 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 			if hashDepth > 0 {
 				willTake := int(math.Round(lastHashTime.Seconds())) * (hashDepth + 1)
 				if willTake > 3 {
-					desc.send("%v password requests in the queue. Approx wait time: %v seconds.", hashDepth+1, willTake)
+					desc.send("%v passphrase requests in the queue. Approx wait time: %v seconds.", hashDepth+1, willTake)
 				}
 			} else {
 				if lastHashTime.Seconds() > 3 {

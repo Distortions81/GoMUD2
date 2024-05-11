@@ -47,7 +47,7 @@ func critLog(format string, args ...any) {
 			continue
 		}
 		if d.state == CON_PLAYING {
-			d.sendln("ERROR: "+format, args...)
+			d.sendln(format, args...)
 		}
 	}
 }
@@ -60,15 +60,9 @@ func mudLog(format string, args ...any) {
 func doLog(dest *os.File, format string, args ...any) {
 	if args != nil {
 		buf := fmt.Sprintf(format, args...)
-		if dest != nil {
-			dest.WriteString(buf + "\n")
-		}
-		fmt.Println(buf)
+		log.Println(buf)
 	} else {
-		if dest != nil {
-			dest.WriteString(format + "\n")
-		}
-		fmt.Println(format)
+		log.Println(format)
 	}
 }
 

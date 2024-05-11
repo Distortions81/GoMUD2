@@ -58,8 +58,8 @@ func hashReceiver() {
 			removeFirstHash()
 
 		} else if !item.workStarted.IsZero() && time.Since(item.workStarted) > HASH_TIMEOUT {
-			item.desc.send("The password processing timed out. Sorry!")
-			errLog("#%v: Password hashing timed out...", item.id)
+			item.desc.send("The passphrase processing timed out. Sorry!")
+			errLog("#%v: passphrase hashing timed out...", item.id)
 			removeFirstHash()
 			item.desc.close()
 		}
@@ -93,11 +93,11 @@ func hasherDaemon() {
 		if item.doEncrypt {
 			item.hash, err = bcrypt.GenerateFromPassword([]byte(item.pass), PASSPHRASE_HASH_COST)
 		} else {
-			if bcrypt.CompareHashAndPassword(item.desc.account.PassHash, []byte(item.pass)) == nil {
+			if bcrypt.CompareHashAndPassword(item.hash, []byte(item.pass)) == nil {
 				passGood = true
 			} else {
 				item.desc.sendln("Incorrect passphrase.")
-				critLog("#%v: tried a invalid password!", item.id)
+				critLog("#%v: tried a invalid passphrase!", item.id)
 			}
 		}
 
@@ -105,11 +105,11 @@ func hasherDaemon() {
 
 		if item.doEncrypt {
 			took := time.Since(start).Round(time.Millisecond)
-			errLog("Password hash took %v.", took)
+			errLog("passphrase hash took %v.", took)
 			lastHashTime = took
 		} else {
 			took := time.Since(start).Round(time.Millisecond)
-			errLog("Password check took %v.", took)
+			errLog("passphrase check took %v.", took)
 			if passGood {
 				item.correctPass = true
 			}
@@ -118,7 +118,7 @@ func hasherDaemon() {
 
 		if err != nil {
 			item.failed = true
-			critLog("ERROR: #%v password hashing failed!!!: %v", item.id, err.Error())
+			critLog("ERROR: #%v passphrase hashing failed!!!: %v", item.id, err.Error())
 			hashLock.Unlock()
 			continue
 		}
@@ -133,7 +133,7 @@ func passCheckComplete(item *toHashData) {
 		return
 	}
 	if item.desc == nil {
-		critLog("Player left before password check finished.")
+		critLog("Player left before passphrase check finished.")
 		return
 	}
 	if item.correctPass {
@@ -152,11 +152,20 @@ func hashGenComplete(item *toHashData) {
 		return
 	}
 	if item.desc == nil {
-		critLog("Player left before password hash finished.")
+		critLog("Player left before passphrase hash finished.")
 		return
 	}
 	item.desc.sendln("Passphrase processing complete!")
 	item.desc.account.PassHash = item.hash
+
+	//Check again! We don't want a collision
+	//Otherwise could be exploitable.
+	if !isAccNameAvail(item.desc.account.Login) {
+		item.desc.send("Sorry, that login name is already in use.")
+		item.desc.valid = false
+		item.desc.state = CON_DISCONNECTED
+		return
+	}
 
 	//Create account
 	err := item.desc.account.createAccountDir()
@@ -169,9 +178,7 @@ func hashGenComplete(item *toHashData) {
 	}
 
 	//Save account
-	notSaved := item.desc.account.saveAccount()
-	if notSaved {
-
+	if !item.desc.account.saveAccount() {
 		//Save failure
 		item.desc.send(warnBuf)
 		item.desc.sendln("Unable to save account!")
@@ -199,8 +206,8 @@ func hashGenComplete(item *toHashData) {
 }
 
 func hashGenFail(item *toHashData) {
-	item.desc.send("Somthing went wrong processing your password. Sorry!")
-	errLog("#%v password hash failed!", item.id)
+	item.desc.send("Somthing went wrong processing your passphrase. Sorry!")
+	errLog("#%v passphrase hash failed!", item.id)
 }
 
 func removeFirstHash() {

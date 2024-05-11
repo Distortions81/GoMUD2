@@ -35,7 +35,7 @@ func saveAllAreas(dirty bool) {
 	}
 }
 
-// Returns false on error
+// Returns true on save
 func (area *areaData) saveArea() bool {
 	outbuf := new(bytes.Buffer)
 	enc := json.NewEncoder(outbuf)
@@ -64,7 +64,7 @@ func (area *areaData) saveArea() bool {
 		return false
 	}
 	area.dirty = false
-	return false
+	return true
 }
 
 func loadArea(name string) *areaData {

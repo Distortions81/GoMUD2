@@ -25,6 +25,7 @@ func (player *characterData) goTo(loc LocData) {
 
 }
 
+// returns true if removed
 func (player *characterData) fromRoom() bool {
 	if player != nil && player.room != nil {
 		numPlayers := len(player.room.players)
@@ -38,10 +39,11 @@ func (player *characterData) fromRoom() bool {
 				}
 			}
 		}
-		errLog("Character %v removed from room: %v", player.Name, player.room.Name)
+		//errLog("Character %v removed from room: %v", player.Name, player.room.Name)
 		player.room = nil
 		return true
 	}
+	critLog("Failed to remove character %v from room: %v / %v", player.Name, player.room.Name, player.room.UUID)
 	return false
 }
 
@@ -111,8 +113,12 @@ func checkPlaying(name string) *characterData {
 func (player *characterData) quit(doClose bool) {
 
 	player.desc.sendln(aurevoirBuf)
-	player.saveCharacter()
-	player.send("Character saved.")
+	if player.saveCharacter() {
+		player.send("Character saved.")
+	} else {
+		player.send("Saving character failed.")
+		return
+	}
 
 	if doClose {
 		player.desc.state = CON_DISCONNECTED

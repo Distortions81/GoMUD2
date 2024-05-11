@@ -6,7 +6,7 @@ characters, fast-relog (logout), reconnect to 'already playing'
 characters, passphrase generation, passphrase scoring, threaded
 input buffering with flooding-kick, basic new character name checks,
 accounts/character names/passphrases support unicode, high security
-password hashing, support for TLS/SSL secure connections,
+passphrase hashing, support for TLS/SSL secure connections,
 account/character unique fingerprint IDs, basic say/who/quit commands.
 
 May 2th - 4th (35 commits):
@@ -14,7 +14,7 @@ Added login menu idle kick and in-game idle kick. Rewrote ANSI color
 system. Added basic help file system (see help ansi). Fixed some
 relog/reconnect bugs. Added (no link) to who command to show player
 lost connection. Fixed a minor race condition with link loss. New
-password hashing (encrypt) was rewritten to be asynchronous
+passphrase hashing (encrypt) was rewritten to be asynchronous
 (on it's own cpu thread) and limited (queue, one at a time).
 This prevents a small lag hitch for the rest of the mud when
 a new account is created.

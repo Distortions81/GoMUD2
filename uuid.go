@@ -78,17 +78,17 @@ func writeMudID() {
 	}
 }
 
-// Not generally needed
+// Used for code testing only
 func (id UUIDIntData) hasUUID() bool {
 	return id.T != 0 && id.M != 0 //Don't check .r, random
 }
 
-// Not generally needed
+// Used for code testing only
 func (ida UUIDIntData) sameUUID(idb UUIDIntData) bool {
 	return ida.T == idb.T && ida.R == idb.R && ida.M == idb.M
 }
 
-// Not generally needed
+// Used for code testing only
 func DecodeUUIDString(input string) UUIDIntData {
 	b, _ := base64.RawURLEncoding.DecodeString(input)
 	buf := bytes.NewBuffer(b)

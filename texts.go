@@ -34,7 +34,7 @@ func readTextFiles() {
 
 		shortName := strings.TrimSuffix(fname.Name(), textExt)
 		textFiles[shortName] = string(ANSIColor(data))
-		//errLog("readTextFiles: Read: %v", fname.Name())
+		errLog("readTextFiles: Read: %v", fname.Name())
 	}
 
 	//Login prompt

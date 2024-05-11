@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// Returns true if available
 func isAccNameAvail(name string) bool {
 	return accountIndex[name] == nil
 }
@@ -146,11 +147,18 @@ func gCharConfirmName(desc *descData, input string) {
 		}
 		desc.account.Characters = append(desc.account.Characters,
 			accountIndexData{Login: desc.account.tempString, UUID: desc.character.UUID, Added: time.Now().UTC()})
-		desc.character.sendToPlaying("--> {GW{gelcome{x %v to the lands! <--", desc.account.tempString)
+
 		desc.account.ModDate = time.Now().UTC()
-		desc.account.saveAccount()
-		desc.character.saveCharacter()
-		desc.enterWorld(desc.character)
+		if desc.account.saveAccount() {
+			if desc.character.saveCharacter() {
+				desc.enterWorld(desc.character)
+			} else {
+				desc.valid = false
+				desc.state = CON_DISCONNECTED
+			}
+		}
+
+		desc.character.sendToPlaying("--> {GW{gelcome{x %v to the lands! <--", desc.account.tempString)
 	} else {
 		desc.sendln("Names did not match. Try again, or type 'back' to choose a new name.")
 	}
@@ -162,7 +170,13 @@ func (acc *accountData) createAccountDir() error {
 		return fmt.Errorf("no UUID")
 	}
 
-	err := os.Mkdir(DATA_DIR+ACCOUNT_DIR+acc.UUID, 0755)
+	path := DATA_DIR + ACCOUNT_DIR + acc.UUID
+	if _, err := os.Stat(path); err == nil {
+		critLog("Account directory already exists, aborting!")
+		return err
+	}
+
+	err := os.Mkdir(path, 0755)
 	if err != nil {
 		critLog("createAccountDir: unable to make directory for account: %v", acc.UUID)
 		return err
@@ -170,16 +184,17 @@ func (acc *accountData) createAccountDir() error {
 	return nil
 }
 
+// returns true on save
 func (acc *accountData) saveAccount() bool {
 	outbuf := new(bytes.Buffer)
 	enc := json.NewEncoder(outbuf)
 	enc.SetIndent("", "\t")
 
 	if acc == nil {
-		return true
+		return false
 	} else if acc.UUID == "" {
 		critLog("saveAccount: Account '%v' doesn't have a UUID.", acc.Login)
-		return true
+		return false
 	}
 	acc.Version = ACCOUNT_VERSION
 	acc.ModDate = time.Now().UTC()
@@ -188,16 +203,16 @@ func (acc *accountData) saveAccount() bool {
 	err := enc.Encode(&acc)
 	if err != nil {
 		critLog("saveAccount: enc.Encode: %v", err.Error())
-		return true
+		return false
 	}
 
 	err = saveFile(fileName, outbuf.Bytes())
 	if err != nil {
 		critLog("saveAccount: saveFile failed %v", err.Error())
-		return true
+		return false
 	}
 	acc.dirty = false
-	return false
+	return true
 }
 
 func (desc *descData) loadAccount(uuid string) error {

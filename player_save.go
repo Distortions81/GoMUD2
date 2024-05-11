@@ -26,7 +26,7 @@ func characterNameAvailable(name string) bool {
 	return true
 }
 
-// Returns false on error
+// Returns true on save
 func (player *characterData) saveCharacter() bool {
 	outbuf := new(bytes.Buffer)
 	enc := json.NewEncoder(outbuf)

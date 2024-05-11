@@ -22,7 +22,7 @@ func telSnFilter(data string) string {
 	return ttype
 }
 
-// Returns false if name is prohibited
+// Returns true if reserved
 func nameReserved(name string) bool {
 	for _, item := range reservedNames {
 		if item == name {
