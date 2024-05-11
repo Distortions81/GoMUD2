@@ -16,6 +16,9 @@ func isAccNameAvail(name string) bool {
 }
 
 func gCharList(desc *descData) {
+	//They logged in, reset the count.
+	attemptMap[desc.addr] = 0
+
 	var buf string = "\r\n"
 	numChars := len(desc.account.Characters)
 	if numChars == 0 {

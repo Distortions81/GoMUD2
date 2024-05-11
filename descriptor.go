@@ -12,24 +12,29 @@ const (
 	maxInputLineLength = 1024
 	maxLines           = 50
 	maxSubLen          = 128
+	MAX_CONNECT        = 15
 )
+
+var attemptMap map[string]int = make(map[string]int)
 
 // Handle incoming connections.
 func handleDesc(conn net.Conn, tls bool) {
-	//Start telnet negotiation
-	sendTelnetCmds(conn)
-
-	//Send greeting
-	_, err := conn.Write([]byte(greetBuf))
-	if err != nil {
-		descLock.Unlock()
-		conn.Close()
-		return
-	}
 
 	//Parse address
-	rAddr := conn.RemoteAddr().String()
-	ipStr, _, _ := net.SplitHostPort(rAddr)
+	addr := conn.RemoteAddr().String()
+	ipStr, _, _ := net.SplitHostPort(addr)
+
+	if attemptMap[ipStr] > MAX_CONNECT {
+		conn.Close()
+		return
+	} else if attemptMap[ipStr] == MAX_CONNECT {
+		conn.Close()
+		critLog("Too many connect attempts from %v. Blocking!", ipStr)
+		attemptMap[ipStr]++
+		return
+	}
+	attemptMap[ipStr]++
+
 	addrList, _ := net.LookupHost(ipStr)
 	hostStr := strings.Join(addrList, ", ")
 
@@ -37,6 +42,16 @@ func handleDesc(conn net.Conn, tls bool) {
 	cAddr := hostStr
 	if hostStr != ipStr {
 		cAddr = fmt.Sprintf("%v : %v", ipStr, hostStr)
+	}
+
+	//Start telnet negotiation
+	sendTelnetCmds(conn)
+
+	//Send greeting
+	_, err := conn.Write([]byte(greetBuf))
+	if err != nil {
+		conn.Close()
+		return
 	}
 
 	//Create descriptor
