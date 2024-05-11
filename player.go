@@ -84,7 +84,7 @@ func (desc *descData) enterWorld(player *characterData) {
 	desc.state = CON_NEWS
 }
 
-func checkPlayingPrint(name string, uuid string) *characterData {
+func checkPlayingUUID(name string, uuid string) *characterData {
 	for _, item := range charList {
 		if !item.valid {
 			continue

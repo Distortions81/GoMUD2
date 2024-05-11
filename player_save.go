@@ -75,7 +75,7 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 		return nil
 	}
 
-	target := checkPlayingPrint(plrStr, uuid)
+	target := checkPlayingUUID(plrStr, uuid)
 
 	if target != nil {
 		target.send(aurevoirBuf)
