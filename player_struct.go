@@ -44,6 +44,8 @@ type descData struct {
 	inputLock      sync.Mutex
 	inputBufferLen int
 	inputBuffer    []byte
+	outBuffer      []byte
+	sendOutput     bool
 
 	numLines   int
 	lineBuffer []string

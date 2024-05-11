@@ -68,12 +68,12 @@ var charsetList map[string]*charmap.Charmap = map[string]*charmap.Charmap{
 	"WINDOWS1258": charmap.Windows1258,
 }
 
-func encodeFromUTF(cmap *charmap.Charmap, input string) []byte {
+func encodeFromUTF(cmap *charmap.Charmap, input []byte) []byte {
 	f := wrap.NewWriter(0)
 	f.PreserveSpace = true
 	f.Newline = []rune{'\n'}
 	f.KeepNewlines = true
-	f.Write([]byte(input))
+	f.Write(input)
 	var tmp io.Reader = strings.NewReader(f.String())
 	tmp = transform.NewReader(tmp, cmap.NewEncoder()) // encode bytes to cmap
 	encBytes, _ := io.ReadAll(tmp)

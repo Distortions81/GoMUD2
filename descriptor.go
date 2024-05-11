@@ -266,7 +266,6 @@ func (desc *descData) send(format string, args ...any) error {
 	if desc == nil {
 		return nil
 	}
-	var outBytes []byte
 
 	//Format string if args supplied
 	var data string
@@ -276,30 +275,8 @@ func (desc *descData) send(format string, args ...any) error {
 		data = format
 	}
 
-	//Add telnet go-ahead if enabled, and there is no newline
-	if desc.telnet.options != nil && !desc.telnet.options.SUPGA {
-		if !strings.HasSuffix(data, "\n") {
-			data = data + string([]byte{TermCmd_IAC, TermCmd_GOAHEAD})
-		}
-	}
-
-	//Character map translation
-	if !desc.telnet.options.UTF {
-		outBytes = encodeFromUTF(desc.telnet.charMap, data)
-	} else {
-		outBytes = []byte(data)
-	}
-
-	outBytes = ANSIColor(outBytes)
-
-	//Write, check for err or invalid len
-	dlen := len(outBytes)
-	l, err := desc.conn.Write(outBytes)
-	if err != nil || dlen != l {
-		errLog("#%v: %v: write failed (connection lost)", desc.id, desc.cAddr)
-		return err
-	}
-
+	desc.outBuffer = append(desc.outBuffer, data...)
+	desc.sendOutput = true
 	return nil
 }
 
