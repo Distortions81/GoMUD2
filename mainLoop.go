@@ -60,8 +60,9 @@ func removeDeadChar() {
 	for _, target := range charList {
 		if !target.valid {
 			target.sendToPlaying("%v slowly fades away.", target.Name)
-			errLog("Removed character %v", target.Name)
+			errLog("Removed character %v from charList.", target.Name)
 			target.saveCharacter()
+			target.fromRoom()
 			continue
 		} else if time.Since(target.idleTime) > CHARACTER_IDLE {
 			target.send("Idle too long, quitting...")
