@@ -43,11 +43,4 @@ func readTextFiles() {
 	greetBuf = LICENSE + textFiles["greet"] + promptStr
 	aurevoirBuf = textFiles["aurevoir"]
 	warnBuf = textFiles["warn"]
-
-	/*
-		for x := 0; x < 254; x++ {
-			greetBuf = greetBuf + fmt.Sprintf(
-				"\033[%vm[%vm\033[0m ", x, x)
-		}
-	*/
 }
