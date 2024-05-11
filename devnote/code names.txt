@@ -9,7 +9,7 @@ Warpfire
 Galaxium
 Voidstorm
 --Starshock
-Nebulon
+--Nebulon
 --Darkflare
 Thundercore
 --Stellarax
