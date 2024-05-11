@@ -5,6 +5,14 @@ import (
 	"time"
 )
 
+func cmdAsave(player *characterData, input string) {
+	if player.Level < LEVEL_BUILDER {
+		return
+	}
+	saveAllAreas(false)
+	player.send("all areas saved.")
+}
+
 func makeRoom(area *areaData) *roomData {
 	return &roomData{Version: AREA_VERSION, UUID: makeUUIDString(), Name: "A new room", Description: "Just an empty room", CreDate: time.Now(), ModDate: time.Now(), players: []*characterData{}, Exits: []*exitData{}, pArea: area}
 }

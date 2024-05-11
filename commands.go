@@ -34,7 +34,8 @@ var commandList = map[string]*commandData{
 	"telnet": {level: LEVEL_NEWBIE, hint: "telnet options", goDo: cmdTelnet},
 
 	//OLC
-	"dig": {level: LEVEL_BUILDER, hint: "dig out new rooms", goDo: cmdDig, args: []string{"direction"}},
+	"dig":   {level: LEVEL_BUILDER, hint: "dig out new rooms", goDo: cmdDig, args: []string{"direction"}},
+	"asave": {level: LEVEL_BUILDER, hint: "save all areas", goDo: cmdAsave},
 
 	//Wiz
 	"cinfo": {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdCinfo},

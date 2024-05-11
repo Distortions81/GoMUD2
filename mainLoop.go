@@ -26,6 +26,7 @@ func mainLoop() {
 		hashReceiver()
 		interpAllDesc()
 		descShuffle()
+		saveAllAreas(true)
 		descLock.Unlock()
 
 		//Sleep for remaining round time

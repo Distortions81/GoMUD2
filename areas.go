@@ -23,10 +23,14 @@ func makeSystemArea() {
 		Version: 1, UUID: sAreaUUID, VNUM: 0, Name: "system", Rooms: sysRooms}
 }
 
-func saveAllAreas() {
+func saveAllAreas(dirty bool) {
 	for _, item := range areaList {
+		if dirty && !item.dirty {
+			continue
+		}
 		if !item.saveArea() {
-			errLog("saved area: %v", fileSafeName(item.Name))
+			critLog("Saved area: %v", fileSafeName(item.Name))
+			item.dirty = false
 		}
 	}
 }
