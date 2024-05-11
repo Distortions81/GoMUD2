@@ -165,7 +165,7 @@ func gLogin(desc *descData, input string) {
 		}
 	} else {
 		desc.sendln("Login name not found.")
-		critLog("#%v: %v tried a login that does not exist!", desc.id, desc.cAddr)
+		//critLog("#%v: %v tried a login that does not exist!", desc.id, desc.cAddr)
 		desc.close()
 		return
 	}
@@ -175,12 +175,13 @@ func gPass(desc *descData, input string) {
 
 	hashLock.Lock()
 	defer hashLock.Unlock()
-	if len(hashList) > HASH_DEPTH_MAX {
+	if HashDepth > HASH_DEPTH_MAX {
 		desc.send("Sorry, too many passphrase requests are already in the queue. Please try again later.")
 		desc.state = CON_DISCONNECTED
 		desc.valid = false
 	} else {
 		desc.send("Checking your passphrase, please wait.")
+		HashDepth++
 		hashList = append(hashList, &toHashData{id: desc.id, desc: desc, hash: desc.account.PassHash, pass: []byte(input), failed: false, doEncrypt: false, started: time.Now()})
 		desc.state = CON_CHECK_PASS
 	}
@@ -290,7 +291,7 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 		desc.sendln("Processing passphrase, please wait.")
 
 		hashLock.Lock()
-		if len(hashList) > HASH_DEPTH_MAX {
+		if HashDepth > HASH_DEPTH_MAX {
 			desc.send("Sorry, too many passphrase requests are already in the queue. Please try again later.")
 			desc.state = CON_DISCONNECTED
 			desc.valid = false
@@ -298,6 +299,7 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 			hashLock.Unlock()
 			return
 		}
+		HashDepth++
 		hashList = append(hashList, &toHashData{id: desc.id, desc: desc, pass: []byte(desc.account.tempString), hash: []byte{}, failed: false, doEncrypt: true, started: time.Now()})
 
 		hashLock.Unlock()

@@ -16,7 +16,7 @@ const (
 
 // Handle incoming connections.
 func handleDesc(conn net.Conn, tls bool) {
-	var tlsStr string
+	//var tlsStr string
 
 	//Parse address
 	rAddr := conn.RemoteAddr().String()
@@ -45,10 +45,12 @@ func handleDesc(conn net.Conn, tls bool) {
 	descList = append(descList, desc)
 
 	//Connect log message
-	if tls {
-		tlsStr = " (TLS)"
-	}
-	errLog("#%v: %v connected.%v", desc.id, desc.host, tlsStr)
+	/*
+		if tls {
+			tlsStr = " (TLS)"
+		}
+	*/
+	//errLog("#%v: %v connected.%v", desc.id, desc.host, tlsStr)
 
 	//Start telnet negotiation
 	desc.sendTelnetCmds()

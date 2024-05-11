@@ -17,8 +17,7 @@ const (
 	HASH_DEPTH_MAX       = 100
 )
 
-var lastHashTime time.Duration = time.Second * 5
-var lastHashCheckTime time.Duration = time.Second * 5
+var HashDepth int
 
 type toHashData struct {
 	isTest bool
@@ -45,30 +44,32 @@ func hashReceiver() {
 	hashLock.Lock()
 	defer hashLock.Unlock()
 
-	hashLen := len(hashList)
-	if hashLen > 0 {
-		item := hashList[0]
-
+	var newList []*toHashData
+	var newCount int
+	for _, item := range hashList {
 		if item.complete && !item.failed {
 			if item.doEncrypt {
 				hashGenComplete(item)
 			} else {
 				passCheckComplete(item)
 			}
-			removeFirstHash()
+			continue
 
 		} else if item.failed {
 			hashGenFail(item)
-			removeFirstHash()
+			continue
 
 		} else if !item.workStarted.IsZero() && time.Since(item.workStarted) > HASH_TIMEOUT {
 			item.desc.send("The passphrase processing timed out. Sorry!")
 			errLog("#%v: passphrase hashing timed out...", item.id)
-			removeFirstHash()
-			item.desc.close()
+			continue
 		}
 
+		newList = append(newList, item)
+		newCount++
 	}
+	hashList = newList
+	HashDepth = newCount
 }
 
 func hasherDaemon() {
@@ -96,8 +97,11 @@ func hasherDaemon() {
 		hashLock.Unlock()
 
 		for x := 0; x < workSize; x++ {
-			wg.Add()
-			go processHash(workList[(hashDepth-1)-x], &wg)
+			item := workList[(hashDepth-1)-x]
+			if item.desc != nil {
+				wg.Add()
+				go processHash(item, &wg)
+			}
 		}
 		wg.Wait()
 	}
@@ -116,7 +120,7 @@ func processHash(item *toHashData, wg *sizedwaitgroup.SizedWaitGroup) {
 			passGood = true
 		} else {
 			item.desc.sendln("Incorrect passphrase.")
-			critLog("#%v: tried a invalid passphrase!", item.id)
+			//critLog("#%v: tried a invalid passphrase!", item.id)
 		}
 	}
 
@@ -212,12 +216,4 @@ func hashGenComplete(item *toHashData) {
 func hashGenFail(item *toHashData) {
 	item.desc.send("Somthing went wrong processing your passphrase. Sorry!")
 	errLog("#%v passphrase hash failed!", item.id)
-}
-
-func removeFirstHash() {
-	if len(hashList) > 1 {
-		hashList = hashList[1:]
-	} else {
-		hashList = []*toHashData{}
-	}
 }

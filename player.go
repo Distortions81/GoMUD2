@@ -35,15 +35,13 @@ func (player *characterData) fromRoom() bool {
 			for c, char := range player.room.players {
 				if char.UUID == player.UUID {
 					player.room.players = append(player.room.players[:c], player.room.players[c+1:]...)
-					break
+					return true
 				}
 			}
 		}
-		//errLog("Character %v removed from room: %v", player.Name, player.room.Name)
-		player.room = nil
-		return true
+		critLog("Failed to remove character %v from room.", player.Name)
+		return false
 	}
-	critLog("Failed to remove character %v from room: %v / %v", player.Name, player.room.Name, player.room.UUID)
 	return false
 }
 

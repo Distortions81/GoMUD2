@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	ROUND_LENGTH_uS  = 250000                //0.25s
-	CONNECT_THROTTLE = time.Millisecond * 10 //100 connections per second
+	ROUND_LENGTH_uS  = 250000 //0.25s
+	CONNECT_THROTTLE = time.Millisecond
 )
 
 func mainLoop() {
@@ -61,7 +61,7 @@ func sendOutput() {
 
 			_, err := desc.conn.Write(desc.outBuffer)
 			if err != nil {
-				errLog("#%v: %v: write failed (connection lost)", desc.id, desc.cAddr)
+				//errLog("#%v: %v: write failed (connection lost)", desc.id, desc.cAddr)
 				desc.state = CON_DISCONNECTED
 				desc.valid = false
 			}
@@ -141,7 +141,7 @@ func removeDeadDesc() {
 }
 
 func (desc *descData) killDesc() {
-	errLog("Removed #%v", desc.id)
+	//errLog("Removed #%v", desc.id)
 	desc.valid = false
 	desc.conn.Close()
 	if desc.character != nil {
