@@ -16,7 +16,16 @@ const (
 
 // Handle incoming connections.
 func handleDesc(conn net.Conn, tls bool) {
-	//var tlsStr string
+	//Start telnet negotiation
+	sendTelnetCmds(conn)
+
+	//Send greeting
+	_, err := conn.Write([]byte(greetBuf))
+	if err != nil {
+		descLock.Unlock()
+		conn.Close()
+		return
+	}
 
 	//Parse address
 	rAddr := conn.RemoteAddr().String()
@@ -32,6 +41,7 @@ func handleDesc(conn net.Conn, tls bool) {
 
 	//Create descriptor
 	descLock.Lock()
+
 	topID++
 	tnd := telnetData{
 		charset: DEFAULT_CHARSET, charMap: DEFAULT_CHARMAP,
@@ -44,24 +54,6 @@ func handleDesc(conn net.Conn, tls bool) {
 		state: CON_LOGIN, telnet: tnd, valid: true, idleTime: time.Now()}
 	descList = append(descList, desc)
 
-	//Connect log message
-	/*
-		if tls {
-			tlsStr = " (TLS)"
-		}
-	*/
-	//errLog("#%v: %v connected.%v", desc.id, desc.host, tlsStr)
-
-	//Start telnet negotiation
-	desc.sendTelnetCmds()
-
-	//Send greeting
-	err := desc.sendln(greetBuf)
-	if err != nil {
-		descLock.Unlock()
-		desc.close()
-		return
-	}
 	descLock.Unlock()
 
 	desc.readDescLoop()

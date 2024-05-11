@@ -1,20 +1,19 @@
 package main
 
-func (desc *descData) sendTelnetCmds() {
-	desc.sendCmd(TermCmd_DO, TermOpt_SUP_GOAHEAD)
-	desc.sendCmd(TermCmd_DO, TermOpt_TERMINAL_TYPE)
-	desc.sendCmd(TermCmd_WILL, TermOpt_CHARSET)
-	desc.sendCmd(TermCmd_WILL, TermOpt_SUP_GOAHEAD)
+import "net"
+
+func sendTelnetCmds(conn net.Conn) {
+	sendCmd(conn, TermCmd_DO, TermOpt_SUP_GOAHEAD)
+	sendCmd(conn, TermCmd_DO, TermOpt_TERMINAL_TYPE)
+	sendCmd(conn, TermCmd_WILL, TermOpt_CHARSET)
+	sendCmd(conn, TermCmd_WILL, TermOpt_SUP_GOAHEAD)
 }
 
-func (desc *descData) sendCmd(command, option byte) error {
-	dlen, err := desc.conn.Write([]byte{TermCmd_IAC, command, option})
-	if err != nil || dlen != 3 {
-		//errLog("#%v: %v: command send failed (connection lost)", desc.id, desc.cAddr)
+func sendCmd(conn net.Conn, command, option byte) error {
+	_, err := conn.Write([]byte{TermCmd_IAC, command, option})
+	if err != nil {
 		return err
 	}
-
-	//errLog("#%v: Sent: %v %v", desc.id, TermCmd2Txt[int(command)], TermOpt2TXT[int(option)])
 	return nil
 }
 
