@@ -1,9 +1,12 @@
 package main
 
 import (
+	"runtime"
 	"sync"
 	"time"
 
+	"github.com/remeh/sizedwaitgroup"
+	"github.com/tklauser/numcpus"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -38,10 +41,11 @@ var hashList []*toHashData
 var hashLock sync.Mutex
 
 func hashReceiver() {
+
 	hashLock.Lock()
+	defer hashLock.Unlock()
 
 	hashLen := len(hashList)
-
 	if hashLen > 0 {
 		item := hashList[0]
 
@@ -65,67 +69,67 @@ func hashReceiver() {
 		}
 
 	}
-	hashLock.Unlock()
 }
 
 func hasherDaemon() {
+	numThreads, err := numcpus.GetOnline()
+	if err != nil {
+		numThreads = runtime.NumCPU()
+	}
+	wg := sizedwaitgroup.New(numThreads)
+
 	for serverState.Load() == SERVER_RUNNING {
 		time.Sleep(HASH_SLEEP)
-		hashLock.Lock()
-
-		if len(hashList) == 0 {
-			hashLock.Unlock()
-			continue
-		}
-
-		item := hashList[0]
-		if item.complete || item.failed {
-			hashLock.Unlock()
-			continue
-		}
-
-		var err error
-		start := time.Now()
-		item.workStarted = time.Now()
-		hashLock.Unlock()
-
-		passGood := false
-		if item.doEncrypt {
-			item.hash, err = bcrypt.GenerateFromPassword([]byte(item.pass), PASSPHRASE_HASH_COST)
-		} else {
-			if bcrypt.CompareHashAndPassword(item.hash, []byte(item.pass)) == nil {
-				passGood = true
-			} else {
-				item.desc.sendln("Incorrect passphrase.")
-				critLog("#%v: tried a invalid passphrase!", item.id)
-			}
-		}
 
 		hashLock.Lock()
-
-		if item.doEncrypt {
-			took := time.Since(start).Round(time.Millisecond)
-			errLog("passphrase hash took %v.", took)
-			lastHashTime = took
-		} else {
-			took := time.Since(start).Round(time.Millisecond)
-			errLog("passphrase check took %v.", took)
-			if passGood {
-				item.correctPass = true
-			}
-			lastHashCheckTime = took
-		}
-
-		if err != nil {
-			item.failed = true
-			critLog("ERROR: #%v passphrase hashing failed!!!: %v", item.id, err.Error())
+		hashDepth := len(hashList)
+		if hashDepth == 0 {
 			hashLock.Unlock()
 			continue
 		}
-		item.complete = true
 
+		workSize := numThreads
+		if workSize > hashDepth {
+			workSize = hashDepth
+		}
+		workList := hashList
 		hashLock.Unlock()
+
+		for x := 0; x < workSize; x++ {
+			wg.Add()
+			go processHash(workList[(hashDepth-1)-x], &wg)
+		}
+		wg.Wait()
 	}
+}
+
+func processHash(item *toHashData, wg *sizedwaitgroup.SizedWaitGroup) {
+	var err error
+
+	defer wg.Done()
+
+	passGood := false
+	if item.doEncrypt {
+		item.hash, err = bcrypt.GenerateFromPassword([]byte(item.pass), PASSPHRASE_HASH_COST)
+	} else {
+		if bcrypt.CompareHashAndPassword(item.hash, []byte(item.pass)) == nil {
+			passGood = true
+		} else {
+			item.desc.sendln("Incorrect passphrase.")
+			critLog("#%v: tried a invalid passphrase!", item.id)
+		}
+	}
+
+	if passGood {
+		item.correctPass = true
+	}
+
+	if err != nil {
+		item.failed = true
+		critLog("ERROR: #%v passphrase hashing failed!!!: %v", item.id, err.Error())
+		return
+	}
+	item.complete = true
 }
 
 func passCheckComplete(item *toHashData) {

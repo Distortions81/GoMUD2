@@ -2,11 +2,9 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"strings"
 	"time"
 
-	"github.com/hako/durafmt"
 	"github.com/martinhoefling/goxkcdpwgen/xkcdpwgen"
 	passwordvalidator "github.com/wagslane/go-password-validator"
 	"golang.org/x/exp/rand"
@@ -182,7 +180,7 @@ func gPass(desc *descData, input string) {
 		desc.state = CON_DISCONNECTED
 		desc.valid = false
 	} else {
-		desc.send("Checking your passphrase, one moment.")
+		desc.send("Checking your passphrase, please wait.")
 		hashList = append(hashList, &toHashData{id: desc.id, desc: desc, hash: desc.account.PassHash, pass: []byte(input), failed: false, doEncrypt: false, started: time.Now()})
 		desc.state = CON_CHECK_PASS
 	}
@@ -289,28 +287,16 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 	if input == desc.account.tempString {
 		desc.state = CON_HASH_WAIT
 		desc.idleTime = time.Now()
-		desc.sendln("Processing passphrase, one moment please...")
+		desc.sendln("Processing passphrase, please wait.")
 
 		hashLock.Lock()
-		hashDepth := len(hashList)
-		if hashDepth > HASH_DEPTH_MAX {
+		if len(hashList) > HASH_DEPTH_MAX {
 			desc.send("Sorry, too many passphrase requests are already in the queue. Please try again later.")
 			desc.state = CON_DISCONNECTED
 			desc.valid = false
 			desc.account.tempString = ""
 			hashLock.Unlock()
 			return
-		} else {
-			if hashDepth > 0 {
-				willTake := int(math.Round(lastHashTime.Seconds())) * (hashDepth + 1)
-				if willTake > 3 {
-					desc.send("%v passphrase requests in the queue. Approx wait time: %v seconds.", hashDepth+1, willTake)
-				}
-			} else {
-				if lastHashTime.Seconds() > 3 {
-					desc.send("Should take about %v.", durafmt.Parse(lastHashTime.Round(time.Second)).LimitFirstN(2))
-				}
-			}
 		}
 		hashList = append(hashList, &toHashData{id: desc.id, desc: desc, pass: []byte(desc.account.tempString), hash: []byte{}, failed: false, doEncrypt: true, started: time.Now()})
 

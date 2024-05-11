@@ -61,8 +61,10 @@ func doLog(dest *os.File, format string, args ...any) {
 	if args != nil {
 		buf := fmt.Sprintf(format, args...)
 		log.Println(buf)
+		fmt.Println(buf)
 	} else {
 		log.Println(format)
+		fmt.Println(format)
 	}
 }
 

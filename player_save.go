@@ -55,7 +55,7 @@ func (player *characterData) saveCharacter() bool {
 		return false
 	}
 	player.dirty = false
-	return false
+	return true
 }
 
 func (desc *descData) loadCharacter(plrStr string) *characterData {

@@ -74,14 +74,6 @@ func main() {
 
 	serverState.Store(SERVER_RUNNING)
 
-	/* Benchmark passphrase hash */
-	testHash := &toHashData{pass: []byte("This is a test 12345"), doEncrypt: true, started: time.Now(), isTest: true, id: 0}
-	hashList = append(hashList, testHash)
-
-	/* Benchmark passphrase hash */
-	testHash = &toHashData{pass: []byte("This is a test 12345"), doEncrypt: false, started: time.Now(), isTest: true, id: 1}
-	hashList = append(hashList, testHash)
-
 	go waitNewConnection()
 	go waitNewConnectionSSL()
 	go mainLoop()
