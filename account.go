@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func accountNameAvailable(name string) bool {
+func isAccNameAvail(name string) bool {
 	return accountIndex[name] == nil
 }
 
@@ -24,7 +24,7 @@ func gCharList(desc *descData) {
 
 		for i, item := range desc.account.Characters {
 			var playing string
-			if target := checkPlayingPrint(item.Login, item.UUID); target != nil {
+			if target := checkPlayingUUID(item.Login, item.UUID); target != nil {
 				playing = " (PLAYING)"
 			}
 			buf = buf + fmt.Sprintf("#%v: %v%v\r\n", i+1, item.Login, playing)
@@ -40,19 +40,15 @@ func gCharList(desc *descData) {
 	desc.sendln(buf)
 }
 
-func accCreateCharacter(desc *descData) {
-	if len(desc.account.Characters) < MAX_CHAR_SLOTS {
-		desc.state = CON_CHAR_CREATE
-	} else {
-		desc.sendln("Character creation limit (%v) reached.\r\nNo new characters can be added.", MAX_CHAR_SLOTS)
-	}
-}
-
 func gCharSelect(desc *descData, input string) {
 
 	input = strings.TrimSpace(input)
 	if strings.EqualFold(input, "new") {
-		accCreateCharacter(desc)
+		if len(desc.account.Characters) < MAX_CHAR_SLOTS {
+			desc.state = CON_CHAR_CREATE
+		} else {
+			desc.sendln("Character creation limit (%v) reached.\r\nNo new characters can be added.", MAX_CHAR_SLOTS)
+		}
 		return
 	}
 	nStr, _ := strings.CutPrefix(input, "#")
@@ -62,44 +58,30 @@ func gCharSelect(desc *descData, input string) {
 			if !strings.EqualFold(item.Login, input) {
 				continue
 			}
-			if target := checkPlayingPrint(item.Login, item.UUID); target != nil {
-				alreadyPlayingWarnVictim(target)
-				desc.account.tempString = item.Login
-				desc.state = CON_RECONNECT_CONFIRM
-				return
-			}
-			var newPlayer *characterData
-			if newPlayer = desc.loadCharacter(item.Login); newPlayer != nil {
-				desc.enterWorld(newPlayer)
-				return
-			} else {
-				desc.sendln("Failed to load character %v.")
-				critLog("Unable to load characer %v!", item.Login)
-				return
-			}
+			loadchar(desc, item.Login, item.UUID)
 		}
 		desc.sendln("No matches found for %v.", input)
 		return
 	} else { //Find by number
-		if num > 0 && num <= len(desc.account.Characters) {
-			var target *characterData
-			if target = checkPlayingPrint(desc.account.Characters[num-1].Login, desc.account.Characters[num-1].UUID); target != nil {
-				alreadyPlayingWarnVictim(target)
-				desc.account.tempString = desc.account.Characters[num-1].Login
-				desc.state = CON_RECONNECT_CONFIRM
-				return
-			}
-			var newPlayer *characterData
-			if newPlayer = desc.loadCharacter(desc.account.Characters[num-1].Login); newPlayer != nil {
-				desc.enterWorld(newPlayer)
-				return
-			} else {
-				desc.sendln("Error: Unable to load requested character.")
-				return
-			}
-		} else {
-			desc.sendln("That character isn't listed.")
-		}
+		loadchar(desc, desc.account.Characters[num-1].Login, desc.account.Characters[num-1].UUID)
+	}
+}
+
+func loadchar(desc *descData, login, uuid string) {
+	if target := checkPlayingUUID(login, uuid); target != nil {
+		alreadyPlayingWarnVictim(target)
+		desc.account.tempString = login
+		desc.state = CON_RECONNECT_CONFIRM
+		return
+	}
+	var newPlayer *characterData
+	if newPlayer = desc.loadCharacter(login); newPlayer != nil {
+		desc.enterWorld(newPlayer)
+		return
+	} else {
+		desc.sendln("Failed to load character %v.")
+		critLog("Unable to load characer %v!", login)
+		return
 	}
 }
 
