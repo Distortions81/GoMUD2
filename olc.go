@@ -9,6 +9,8 @@ func makeRoom(area *areaData) *roomData {
 	return &roomData{Version: AREA_VERSION, UUID: makeUUIDString(), Name: "A new room", Description: "Just an empty room", CreDate: time.Now(), ModDate: time.Now(), players: []*characterData{}, Exits: []*exitData{}, pArea: area}
 }
 
+// TO DO: currently works from player position, should use different value
+// with option of copying player position
 func cmdDig(player *characterData, input string) {
 	for i, item := range dirToStr {
 		if i == DIR_MAX {
@@ -21,6 +23,7 @@ func cmdDig(player *characterData, input string) {
 				player.room.Exits = append(player.room.Exits, &exitData{Direction: DIR(i), pRoom: newRoom})
 				newRoom.Exits = append(newRoom.Exits, &exitData{Direction: DIR(i).revDir(), pRoom: player.room})
 				player.send("New room created to the: %v", item)
+				player.room.pArea.dirty = true
 			}
 		}
 	}
