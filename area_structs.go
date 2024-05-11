@@ -111,16 +111,6 @@ var dirToStr [DIR_MAX]string = [DIR_MAX]string{
 	DIR_CUSTOM: "Custom",
 }
 
-var dirToText [DIR_MAX]string = [DIR_MAX]string{
-	DIR_NORTH:  "North",
-	DIR_EAST:   "East",
-	DIR_SOUTH:  "South",
-	DIR_WEST:   "West",
-	DIR_DOWN:   "Down",
-	DIR_UP:     "Up",
-	DIR_CUSTOM: "Custom",
-}
-
 var dirToTextColor [DIR_MAX]string = [DIR_MAX]string{
 	DIR_NORTH:  "{RN{rorth",
 	DIR_EAST:   "{GE{gast",
