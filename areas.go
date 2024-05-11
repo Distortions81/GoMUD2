@@ -92,6 +92,10 @@ func loadArea(name string) *areaData {
 		}
 	}
 
+	//Link area to room
+	for _, room := range area.Rooms {
+		room.pArea = area
+	}
 	return area
 }
 
