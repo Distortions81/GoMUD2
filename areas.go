@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+const VNUM_SKIP = 100
+
 var areaList map[string]*areaData = make(map[string]*areaData)
 var sAreaUUID, sRoomUUID string
 

@@ -82,41 +82,32 @@ type exitData struct {
 	pRoom *roomData
 }
 
-func linkAreaPointers() {
-	var linkLoops int
-
-	for _, area := range areaList {
-		for _, room := range area.Rooms {
-			room.pArea = area
-
-			linkLoops++
-			/*
-				for _, exit := range room.Exits {
-					exit.pToLoc
-				}
-			*/
-		}
-	}
-
-	errLog("Linked room and exits: %v", linkLoops)
-}
-
 var dirToStr [DIR_MAX]string = [DIR_MAX]string{
-	DIR_NORTH:  "North",
-	DIR_EAST:   "East",
-	DIR_SOUTH:  "South",
-	DIR_WEST:   "West",
-	DIR_DOWN:   "Down",
-	DIR_UP:     "Up",
+	DIR_NORTH:      "North",
+	DIR_NORTH_EAST: "Northeast",
+	DIR_EAST:       "East",
+	DIR_SOUTH_EAST: "Southeast",
+	DIR_SOUTH:      "South",
+	DIR_SOUTH_WEST: "Southwest",
+	DIR_WEST:       "West",
+	DIR_NORTH_WEST: "Northwest",
+	DIR_DOWN:       "Down",
+	DIR_UP:         "Up",
+
 	DIR_CUSTOM: "Custom",
 }
 
 var dirToTextColor [DIR_MAX]string = [DIR_MAX]string{
-	DIR_NORTH:  "{RN{rorth",
-	DIR_EAST:   "{GE{gast",
-	DIR_SOUTH:  "{BS{bouth",
-	DIR_WEST:   "{MW{mest",
-	DIR_DOWN:   "{WD{wown",
-	DIR_UP:     "{YU{yp",
-	DIR_CUSTOM: "{wC{kustom",
+	DIR_NORTH:      "{RN{rorth",
+	DIR_NORTH_EAST: "{RN{gE",
+	DIR_EAST:       "{GE{gast",
+	DIR_SOUTH_EAST: "{BS{GE",
+	DIR_SOUTH:      "{BS{bouth",
+	DIR_SOUTH_WEST: "{BS{mW",
+	DIR_WEST:       "{MW{mest",
+	DIR_NORTH_WEST: "{RN{mW",
+	DIR_DOWN:       "{CD{cown",
+	DIR_UP:         "{YU{yp",
+
+	DIR_CUSTOM: "Custom",
 }
