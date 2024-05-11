@@ -153,7 +153,6 @@ func gLogin(desc *descData, input string) {
 	} else if accountIndex[input] != nil {
 		err := desc.loadAccount(accountIndex[input].UUID)
 		if desc.account != nil {
-			desc.sendln("Welcome back %v!", input)
 			desc.state = CON_PASS
 		} else {
 			desc.send(warnBuf)
@@ -206,7 +205,7 @@ func gNewLogin(desc *descData, input string) {
 		desc.sendln("Login names must be between %v and %v characters in length.", MIN_LOGIN_LEN, MAX_LOGIN_LEN)
 		return
 	}
-	if !accountNameAvailable(input) {
+	if !isAccNameAvail(input) {
 		var buf string = "A few quick random variations:\r\n"
 		for x := 0; x < NUM_LOGIN_VARIANTS; x++ {
 			buf = buf + fmt.Sprintf("%v%v\r\n", input, rand.Intn(999))
@@ -228,7 +227,7 @@ func gNewLogin(desc *descData, input string) {
 
 func gNewLoginConfirm(desc *descData, input string) {
 	if input == desc.account.Login {
-		if !accountNameAvailable(input) {
+		if !isAccNameAvail(input) {
 			desc.send("Sorry, that login name is already in use.")
 			return
 		}
