@@ -33,7 +33,8 @@ func cmdGo(player *characterData, input string) {
 			}
 		} else {
 			dirStr := dirToStr[exit.Direction]
-			if strings.HasPrefix(dirStr, input) {
+			dirName := strings.ToLower(dirStr)
+			if strings.HasPrefix(dirName, input) {
 				player.goExit(exit)
 				player.send("You go %v", dirToTextColor[exit.Direction])
 				return
