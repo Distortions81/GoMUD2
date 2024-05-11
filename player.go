@@ -6,11 +6,6 @@ import (
 )
 
 func (player *characterData) goTo(loc LocData) {
-	defer func() {
-		if player.room == nil {
-			player.quit(true)
-		}
-	}()
 
 	area := areaList[loc.AreaUUID]
 	if area == nil {
