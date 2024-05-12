@@ -33,7 +33,7 @@ func cmdGo(player *characterData, input string) {
 				return
 			}
 		} else {
-			dirStr := dirToStr[exit.Direction]
+			dirStr := dirToText[exit.Direction]
 			dirName := strings.ToLower(dirStr)
 			if strings.HasPrefix(dirName, input) {
 				player.send("You go %v{x", dirToTextColor[exit.Direction])
@@ -48,9 +48,24 @@ func cmdGo(player *characterData, input string) {
 
 func (player *characterData) goExit(exit *exitData) {
 	if player.room != nil && exit != nil && exit.pRoom != nil {
+		var dirStr string
+		if exit.Direction == DIR_CUSTOM {
+			dirStr = exit.DirName
+		} else {
+			dirStr = dirToTextColor[exit.Direction]
+		}
+		player.sendToRoom("%v leaves %v{x", player.Name, dirStr)
 		player.fromRoom()
 		player.room = exit.pRoom
 		player.room.players = append(player.room.players, player)
+
+		if exit.Direction == DIR_CUSTOM {
+			dirStr = exit.DirName
+		} else {
+			newDir := exit.Direction.revDir()
+			dirStr = dirToTextColor[newDir]
+		}
+		player.sendToRoom("%v arrives from the %v{x", player.Name, dirStr)
 	}
 }
 

@@ -51,7 +51,7 @@ func makeRoom(area *areaData) *roomData {
 // TO DO: currently works from player position, should use different value
 // with option of copying player position
 func cmdDig(player *characterData, input string) {
-	for i, item := range dirToStr {
+	for i, item := range dirToText {
 		if i == DIR_MAX {
 			continue
 		}

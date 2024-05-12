@@ -63,7 +63,10 @@ func (player *characterData) sendToPlaying(format string, args ...any) {
 }
 
 func (player *characterData) sendToRoom(format string, args ...any) {
-	for _, target := range charList {
+	if player.room == nil {
+		return
+	}
+	for _, target := range player.room.players {
 		if target == player {
 			continue
 		}

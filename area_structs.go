@@ -82,7 +82,7 @@ type exitData struct {
 	pRoom *roomData
 }
 
-var dirToStr [DIR_MAX]string = [DIR_MAX]string{
+var dirToText [DIR_MAX]string = [DIR_MAX]string{
 	DIR_NORTH:      "North",
 	DIR_NORTH_EAST: "Northeast",
 	DIR_EAST:       "East",
