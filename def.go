@@ -2,6 +2,8 @@ package main
 
 import "strings"
 
+type FLAG uint64
+
 const (
 	VERSION  = "v0.0.7a-05112024-1101p"
 	CODENAME = "Nebulon"

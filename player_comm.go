@@ -1,21 +1,7 @@
 package main
 
-type FLAG uint64
-
-const (
-	CHAN_IMP = 1 << iota
-	CHAN_BUILDER
-	CHAN_NEWBIE
-	CHAN_ANNOUNCE
-	CHAN_GRATS
-	CHAN_MODERATION
-
-	//Keep at end, do not use
-	CHAN_MAX
-)
-
 type chanData struct {
-	Flag   int
+	Flag   FLAG
 	Name   string
 	Short  string
 	Desc   string
