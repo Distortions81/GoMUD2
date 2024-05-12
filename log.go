@@ -2,13 +2,11 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 )
 
 var (
-	mlog *os.File
-	elog *os.File
+	elog, mlog *os.File
 )
 
 func startLogs() {
@@ -29,8 +27,6 @@ func startLogs() {
 		os.Exit(1)
 		return
 	}
-
-	log.SetOutput(elog)
 }
 
 // Log errors, sprintf format
@@ -60,10 +56,10 @@ func mudLog(format string, args ...any) {
 func doLog(dest *os.File, format string, args ...any) {
 	if args != nil {
 		buf := fmt.Sprintf(format, args...)
-		log.Println(buf)
+		dest.Write([]byte(buf + "\n"))
 		fmt.Println(buf)
 	} else {
-		log.Println(format)
+		dest.Write([]byte(format + "\n"))
 		fmt.Println(format)
 	}
 }
