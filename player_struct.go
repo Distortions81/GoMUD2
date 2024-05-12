@@ -77,11 +77,14 @@ type characterData struct {
 	room  *roomData
 	Level int
 
+	Channels FLAG
+
 	OLCMode   int
 	OLCInvert bool
-	SaveTime  time.Time
-	CreDate   time.Time
-	idleTime  time.Time
+
+	SaveTime time.Time
+	CreDate  time.Time
+	idleTime time.Time
 
 	loginTime time.Time
 
