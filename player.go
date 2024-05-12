@@ -128,8 +128,8 @@ func (player *characterData) quit(doClose bool) {
 	} else {
 		player.send("\r\nChoose a character to play:")
 		player.desc.inputLock.Lock()
-		player.desc.lineBuffer = []string{}
-		player.desc.numLines = 0
+		player.desc.inputLines = []string{}
+		player.desc.numInputLines = 0
 		player.valid = false
 		player.desc.inputLock.Unlock()
 		player.fromRoom()

@@ -41,14 +41,14 @@ type descData struct {
 
 	telnet telnetData
 
-	inputLock      sync.Mutex
-	inputBufferLen int
-	inputBuffer    []byte
-	outBuffer      []byte
-	sendOutput     bool
+	inputLock sync.Mutex
+	inBufLen  int
+	inBuf     []byte
+	outBuf    []byte
+	haveOut   bool
 
-	numLines   int
-	lineBuffer []string
+	numInputLines int
+	inputLines    []string
 
 	account   *accountData
 	character *characterData

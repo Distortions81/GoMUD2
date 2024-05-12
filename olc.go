@@ -8,6 +8,15 @@ import (
 var olcList = map[string]*commandData{
 	"dig":   {level: LEVEL_BUILDER, hint: "dig out new rooms", goDo: cmdDig, args: []string{"direction"}},
 	"asave": {level: LEVEL_BUILDER, hint: "save all areas", goDo: cmdAsave},
+	"room":  {level: LEVEL_BUILDER, hint: "room edit mode", goDo: cmdRoom},
+}
+
+func cmdRoom(player *characterData, input string) {
+	player.OLCMode = OLC_ROOM
+
+	if strings.EqualFold(input, "exit") {
+		player.OLCMode = OLC_NONE
+	}
 }
 
 func interpOLC(player *characterData, input string) {

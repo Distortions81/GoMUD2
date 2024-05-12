@@ -42,31 +42,31 @@ func mainLoop() {
 
 func sendOutput() {
 	for _, desc := range descList {
-		if desc.sendOutput {
+		if desc.haveOut {
 
 			//Character map translation
 			if !desc.telnet.options.UTF {
-				desc.outBuffer = encodeFromUTF(desc.telnet.charMap, desc.outBuffer)
+				desc.outBuf = encodeFromUTF(desc.telnet.charMap, desc.outBuf)
 			}
 
 			//Color
-			desc.outBuffer = ANSIColor(desc.outBuffer)
+			desc.outBuf = ANSIColor(desc.outBuf)
 
 			//Add telnet go-ahead if enabled, and there is no newline
 			if desc.telnet.options != nil && !desc.telnet.options.SUPGA {
-				if desc.outBuffer[len(desc.outBuffer)-1] != '\n' {
-					desc.outBuffer = append(desc.outBuffer, []byte{TermCmd_IAC, TermCmd_GOAHEAD}...)
+				if desc.outBuf[len(desc.outBuf)-1] != '\n' {
+					desc.outBuf = append(desc.outBuf, []byte{TermCmd_IAC, TermCmd_GOAHEAD}...)
 				}
 			}
 
-			_, err := desc.conn.Write(desc.outBuffer)
+			_, err := desc.conn.Write(desc.outBuf)
 			if err != nil {
 				//errLog("#%v: %v: write failed (connection lost)", desc.id, desc.cAddr)
 				desc.state = CON_DISCONNECTED
 				desc.valid = false
 			}
-			desc.outBuffer = []byte{}
-			desc.sendOutput = false
+			desc.outBuf = []byte{}
+			desc.haveOut = false
 		}
 	}
 }

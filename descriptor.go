@@ -130,7 +130,7 @@ func (desc *descData) readDescLoop() {
 			} else {
 
 				//Limit line length
-				if desc.inputBufferLen > maxInputLineLength {
+				if desc.inBufLen > maxInputLineLength {
 					desc.inputFull()
 					return
 				}
@@ -146,8 +146,8 @@ func (desc *descData) readDescLoop() {
 
 				//No control chars, no delete, but allow valid UTF-8
 				if data >= ' ' && data != 127 {
-					desc.inputBufferLen += 1
-					desc.inputBuffer = append(desc.inputBuffer, data)
+					desc.inBufLen += 1
+					desc.inBuf = append(desc.inBuf, data)
 				}
 			}
 		}
@@ -211,7 +211,7 @@ func (desc *descData) ingestLine() {
 	desc.inputLock.Lock()
 
 	//Too many lines
-	if desc.numLines > maxLines {
+	if desc.numInputLines > maxLines {
 		desc.inputLock.Unlock()
 		desc.inputFull()
 		return
@@ -219,16 +219,16 @@ func (desc *descData) ingestLine() {
 	//Append line to buffer
 	var buf string
 	if !desc.telnet.options.UTF {
-		buf = encodeToUTF(desc.telnet.charMap, desc.inputBuffer)
+		buf = encodeToUTF(desc.telnet.charMap, desc.inBuf)
 	} else {
-		buf = string(desc.inputBuffer)
+		buf = string(desc.inBuf)
 	}
-	desc.lineBuffer = append(desc.lineBuffer, buf)
-	desc.numLines++
+	desc.inputLines = append(desc.inputLines, buf)
+	desc.numInputLines++
 
 	//Reset input buffer
-	desc.inputBuffer = []byte{}
-	desc.inputBufferLen = 0
+	desc.inBuf = []byte{}
+	desc.inBufLen = 0
 
 	desc.inputLock.Unlock()
 }
@@ -284,8 +284,8 @@ func (desc *descData) send(format string, args ...any) error {
 		data = format
 	}
 
-	desc.outBuffer = append(desc.outBuffer, data...)
-	desc.sendOutput = true
+	desc.outBuf = append(desc.outBuf, data...)
+	desc.haveOut = true
 	return nil
 }
 
