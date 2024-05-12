@@ -3,7 +3,7 @@ package main
 import "strings"
 
 const (
-	VERSION  = "v0.0.6a-05112024-1213"
+	VERSION  = "v0.0.7a-05112024-1101p"
 	CODENAME = "Nebulon"
 
 	LICENSE = "goMUD2: " + VERSION + "-" + CODENAME + "\n" +
