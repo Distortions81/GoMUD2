@@ -31,6 +31,7 @@ func (player *characterData) fromRoom() bool {
 		numPlayers := len(player.room.players)
 		if numPlayers == 1 {
 			player.room.players = []*characterData{}
+			return true
 		} else if numPlayers > 1 {
 			for c, char := range player.room.players {
 				if char.UUID == player.UUID {

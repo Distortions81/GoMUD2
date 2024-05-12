@@ -48,7 +48,9 @@ func cmdGo(player *characterData, input string) {
 
 func (player *characterData) goExit(exit *exitData) {
 	if player.room != nil && exit != nil && exit.pRoom != nil {
+		player.fromRoom()
 		player.room = exit.pRoom
+		player.room.players = append(player.room.players, player)
 	}
 }
 
