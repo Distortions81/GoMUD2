@@ -98,15 +98,8 @@ func loadArea(name string) *areaData {
 		}
 	}
 
-	//Link area to room
 	for _, room := range area.Rooms {
 		room.pArea = area
-		for _, exit := range room.Exits {
-			exit.pRoom = area.Rooms[exit.ToRoom.RoomUUID]
-			if exit.pRoom == nil {
-				errLog("area %v, room: %v, broken exit: %v", area.Name, room.Name, dirToStr[exit.Direction])
-			}
-		}
 	}
 	return area
 }
@@ -117,16 +110,33 @@ func loadAllAreas() {
 		critLog("Unable to read %v", DATA_DIR+AREA_DIR)
 		return
 	}
-	count := 0
+
 	for _, item := range dir {
 		if item.IsDir() {
 			continue
 		} else if strings.HasSuffix(item.Name(), ".json") {
-			count++
 			newArea := loadArea(item.Name())
 			areaList[newArea.UUID] = newArea
 			errLog("loaded area: %v", item.Name())
 		}
 	}
-	errLog("Loaded %v areas.", count)
+
+	relinkAreaPointers()
+}
+
+func relinkAreaPointers() {
+	var areaCount, roomCount, exitCount int
+	for _, area := range areaList {
+		areaCount++
+		for _, room := range area.Rooms {
+			room.pArea = area
+			roomCount++
+			for _, exit := range room.Exits {
+				exitCount++
+				exit.pRoom = areaList[exit.ToRoom.AreaUUID].Rooms[exit.ToRoom.RoomUUID]
+
+			}
+		}
+	}
+	errLog("Loaded %v area, %v rooms and %v exits..", areaCount, roomCount, exitCount)
 }
