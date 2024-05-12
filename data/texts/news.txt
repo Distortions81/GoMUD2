@@ -27,5 +27,22 @@ connected and idle time in who. added uptime to who. added telnet
 options command. added say character limit. added help 'commands'.
 added afk kick, different for login menu, character menu and playing.
 
+May 7-11th:
+Started areas/rooms structs, one default system area/room.
+Added player level, pset command. New UUID system added
+(quicker, better), with unit test. Added player.toRoom and fromRoom,
+ commands: dig, asave, new directrions, with colors (nw ne se sw),
+ auto links rooms at boot. Added async password checking. Added
+ players to look command. Commands now have player levels. Added
+ pset <level> command. Added revDir() command for auto reversing
+ directions (used by dig, to create exits to-from rooms). added
+ sendToRoom to send text to players in a specific room (such as
+ say). add nsew quick move aliases. Added player movement notices
+ (name arrives from the west). Started OLC command. Dig and pointer
+ relink added. Added some code to pretect the mud from connection
+ flooding. Output text is now buffered, chapmap translated and has
+ ansi color applied at the end of each round. Some code cleanup.
+ Asave added.
+
 {*For more information, see the Discord!{*
 {_https://discord.gg/8WaUA9STPj{_
