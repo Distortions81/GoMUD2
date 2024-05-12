@@ -14,22 +14,22 @@ func (desc *descData) interp() {
 
 	desc.inputLock.Lock()
 
-	if desc.numLines == 0 {
+	if desc.numInputLines == 0 {
 		//Return if there are no lines
 		desc.inputLock.Unlock()
 		return
 	} else {
 		//Get oldest line
-		input = desc.lineBuffer[0]
+		input = desc.inputLines[0]
 
-		if desc.numLines == 1 {
+		if desc.numInputLines == 1 {
 			//If only one line, reset buffer
-			desc.lineBuffer = []string{}
-			desc.numLines = 0
+			desc.inputLines = []string{}
+			desc.numInputLines = 0
 		} else {
 			//otherwise, delete oldest entry and decrement count
-			desc.lineBuffer = desc.lineBuffer[1:]
-			desc.numLines--
+			desc.inputLines = desc.inputLines[1:]
+			desc.numInputLines--
 		}
 
 		desc.inputLock.Unlock()
