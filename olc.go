@@ -28,8 +28,12 @@ func cmdDig(player *characterData, input string) {
 			if player.room != nil && player.room.pArea != nil {
 				newRoom := makeRoom(player.room.pArea)
 				player.room.pArea.Rooms[newRoom.UUID] = newRoom
-				player.room.Exits = append(player.room.Exits, &exitData{Direction: DIR(i), pRoom: newRoom})
-				newRoom.Exits = append(newRoom.Exits, &exitData{Direction: DIR(i).revDir(), pRoom: player.room})
+				player.room.Exits = append(player.room.Exits,
+					&exitData{Direction: DIR(i), pRoom: newRoom,
+						ToRoom: LocData{AreaUUID: player.room.pArea.UUID, RoomUUID: newRoom.UUID}})
+				newRoom.Exits = append(newRoom.Exits,
+					&exitData{Direction: DIR(i).revDir(), pRoom: player.room,
+						ToRoom: LocData{AreaUUID: player.room.pArea.UUID, RoomUUID: player.room.UUID}})
 				player.send("New room created to the: %v", item)
 				player.room.pArea.dirty = true
 			}

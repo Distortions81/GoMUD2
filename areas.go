@@ -101,6 +101,12 @@ func loadArea(name string) *areaData {
 	//Link area to room
 	for _, room := range area.Rooms {
 		room.pArea = area
+		for _, exit := range room.Exits {
+			exit.pRoom = area.Rooms[exit.ToRoom.RoomUUID]
+			if exit.pRoom == nil {
+				errLog("area %v, room: %v, broken exit: %v", area.Name, room.Name, dirToStr[exit.Direction])
+			}
+		}
 	}
 	return area
 }

@@ -5,8 +5,64 @@
 	"Name": "system",
 	"Description": "",
 	"CreDate": "0001-01-01T00:00:00Z",
-	"ModDate": "2024-05-11T20:36:20.175730624Z",
+	"ModDate": "2024-05-12T01:15:23.370993054Z",
 	"Rooms": {
+		"gm8KHM-Yzhd55XYLRyH1LAkVAVbVmFIX": {
+			"Version": 1,
+			"VNUM": 0,
+			"Name": "A new room",
+			"Description": "Just an empty room",
+			"CreDate": "2024-05-11T19:15:23.370850509-06:00",
+			"ModDate": "2024-05-11T19:15:23.37085435-06:00",
+			"Exits": [
+				{
+					"ExitType": 0,
+					"DoorName": "",
+					"Direction": 4,
+					"DirName": "",
+					"ToRoom": {
+						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
+						"RoomUUID": "iIAyAM6Yzhc3E_lg78LrAwkVAVbVmFIX",
+						"Area": 0,
+						"Room": 0
+					}
+				}
+			]
+		},
+		"iIAyAM6Yzhc3E_lg78LrAwkVAVbVmFIX": {
+			"Version": 1,
+			"VNUM": 0,
+			"Name": "A new room",
+			"Description": "Just an empty room",
+			"CreDate": "2024-05-11T19:15:18.608741236-06:00",
+			"ModDate": "2024-05-11T19:15:18.608744099-06:00",
+			"Exits": [
+				{
+					"ExitType": 0,
+					"DoorName": "",
+					"Direction": 4,
+					"DirName": "",
+					"ToRoom": {
+						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
+						"RoomUUID": "yp_mzoYGzhelKPy8ABuVFg04S4WTHQ4l",
+						"Area": 0,
+						"Room": 0
+					}
+				},
+				{
+					"ExitType": 0,
+					"DoorName": "",
+					"Direction": 0,
+					"DirName": "",
+					"ToRoom": {
+						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
+						"RoomUUID": "gm8KHM-Yzhd55XYLRyH1LAkVAVbVmFIX",
+						"Area": 0,
+						"Room": 0
+					}
+				}
+			]
+		},
 		"yp_mzoYGzhelKPy8ABuVFg04S4WTHQ4l": {
 			"Version": 1,
 			"VNUM": 0,
@@ -14,7 +70,20 @@
 			"Description": "You are floating in a void.",
 			"CreDate": "0001-01-01T00:00:00Z",
 			"ModDate": "0001-01-01T00:00:00Z",
-			"Exits": null
+			"Exits": [
+				{
+					"ExitType": 0,
+					"DoorName": "",
+					"Direction": 0,
+					"DirName": "",
+					"ToRoom": {
+						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
+						"RoomUUID": "iIAyAM6Yzhc3E_lg78LrAwkVAVbVmFIX",
+						"Area": 0,
+						"Room": 0
+					}
+				}
+			]
 		}
 	}
 }
