@@ -77,7 +77,7 @@ type characterData struct {
 	room  *roomData
 	Level int
 
-	Channels FLAG
+	Channels Bitmask
 
 	OLCMode   int
 	OLCInvert bool

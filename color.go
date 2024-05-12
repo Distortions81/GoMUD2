@@ -1,7 +1,5 @@
 package main
 
-type Bitmask uint32
-
 const ANSI_ESC = "\033["
 
 const (
@@ -55,11 +53,6 @@ var colorTable map[byte]*ctData = map[byte]*ctData{
 	'^': {code: "7", disCode: "27", isStyle: true, style: inverse},
 	'~': {code: "9", disCode: "29", isStyle: true, style: strike},
 }
-
-func (f Bitmask) HasFlag(flag Bitmask) bool { return f&flag != 0 }
-func (f *Bitmask) AddFlag(flag Bitmask)     { *f |= flag }
-func (f *Bitmask) ClearFlag(flag Bitmask)   { *f &= ^flag }
-func (f *Bitmask) ToggleFlag(flag Bitmask)  { *f ^= flag }
 
 // Combines multiple color codes, allows styles to be toggled on and off and ignores any code that would set/unset a state that is already set/unset
 func ANSIColor(i []byte) []byte {
