@@ -36,7 +36,7 @@ func cmdGo(player *characterData, input string) {
 			dirStr := dirToStr[exit.Direction]
 			dirName := strings.ToLower(dirStr)
 			if strings.HasPrefix(dirName, input) {
-				player.send("You go %v", exit.DirName)
+				player.send("You go %v{x", dirToTextColor[exit.Direction])
 				player.goExit(exit)
 				cmdLook(player, "")
 				return

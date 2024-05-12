@@ -14,16 +14,23 @@ const MAX_CHAT_LENGTH = 2048
 var shortUnits durafmt.Units
 
 type commandData struct {
-	name    string
-	noShort bool
-	hint    string
-	level   int
-	goDo    func(player *characterData, data string)
-	args    []string
+	name     string
+	noShort  bool
+	hint     string
+	level    int
+	goDo     func(player *characterData, data string)
+	args     []string
+	hide     bool
+	forceArg string
 }
 
 // command names and shorthands must be lower case
 var commandList = map[string]*commandData{
+	"n": {level: LEVEL_ANY, goDo: cmdGo, hide: true, forceArg: "north"},
+	"s": {level: LEVEL_ANY, goDo: cmdGo, hide: true, forceArg: "south"},
+	"e": {level: LEVEL_ANY, goDo: cmdGo, hide: true, forceArg: "east"},
+	"w": {level: LEVEL_ANY, goDo: cmdGo, hide: true, forceArg: "west"},
+
 	"say":    {level: LEVEL_NEWBIE, hint: "sends a message", goDo: cmdSay, args: []string{"message"}},
 	"quit":   {level: LEVEL_ANY, noShort: true, hint: "quit and disconnect", goDo: cmdQuit},
 	"logout": {level: LEVEL_PLAYER, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
@@ -145,6 +152,9 @@ func init() {
 	cmdListStr = []cmdListItem{}
 
 	for iName, cmd := range commandList {
+		if cmd.hide {
+			continue
+		}
 		cmd.name = iName
 		tName := fmt.Sprintf("%15v", iName)
 		var buf string

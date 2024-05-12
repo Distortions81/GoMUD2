@@ -104,7 +104,11 @@ func (player *characterData) handleCommands(input string) {
 
 	if command != nil {
 		if command.checkCommandLevel(player) {
-			command.goDo(player, args)
+			if command.forceArg != "" {
+				command.goDo(player, command.forceArg)
+			} else {
+				command.goDo(player, args)
+			}
 		}
 	} else {
 		//Find best partial match
@@ -145,8 +149,12 @@ func (player *characterData) handleCommands(input string) {
 				return
 			} else {
 				if highScoreCmd.goDo != nil {
-					if command.checkCommandLevel(player) {
-						highScoreCmd.goDo(player, args)
+					if highScoreCmd.checkCommandLevel(player) {
+						if highScoreCmd.forceArg != "" {
+							highScoreCmd.goDo(player, highScoreCmd.forceArg)
+						} else {
+							highScoreCmd.goDo(player, args)
+						}
 					}
 					return
 				}
