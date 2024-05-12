@@ -100,6 +100,10 @@ func (player *characterData) handleCommands(input string) {
 	cmdStr, args, _ := strings.Cut(input, " ")
 
 	cmdStr = strings.ToLower(cmdStr)
+	if player.OLCInvert && player.OLCMode > OLC_NONE {
+		interpOLC(player, input)
+		return
+	}
 	command := commandList[cmdStr]
 
 	if command != nil {

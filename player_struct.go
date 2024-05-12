@@ -57,6 +57,17 @@ type descData struct {
 	valid       bool
 }
 
+const (
+	OLC_NONE = iota
+	OLC_ROOM
+	OLC_OBJECT
+	OLC_MOB
+	OLC_RESET
+	OLC_AREA
+
+	OLC_MAX
+)
+
 type characterData struct {
 	Version int
 	UUID    string
@@ -66,9 +77,11 @@ type characterData struct {
 	room  *roomData
 	Level int
 
-	SaveTime time.Time
-	CreDate  time.Time
-	idleTime time.Time
+	OLCMode   int
+	OLCInvert bool
+	SaveTime  time.Time
+	CreDate   time.Time
+	idleTime  time.Time
 
 	loginTime time.Time
 

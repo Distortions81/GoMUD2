@@ -5,6 +5,37 @@ import (
 	"time"
 )
 
+var olcList = map[string]*commandData{
+	"dig":   {level: LEVEL_BUILDER, hint: "dig out new rooms", goDo: cmdDig, args: []string{"direction"}},
+	"asave": {level: LEVEL_BUILDER, hint: "save all areas", goDo: cmdAsave},
+}
+
+func interpOLC(player *characterData, input string) {
+	input = strings.ToLower(input)
+	args := strings.SplitN(input, " ", 2)
+	numArgs := len(args)
+	if numArgs == 0 {
+		return
+	}
+	olcCmd := olcList[args[0]]
+	if olcCmd != nil {
+		if numArgs > 1 {
+			olcCmd.goDo(player, args[1])
+		} else {
+			olcCmd.goDo(player, "")
+		}
+		return
+	}
+	if input != "" && !strings.EqualFold(input, "help") {
+		player.send("That doesn't seem to be a OLC command.")
+	} else {
+		player.send("OLC commands:")
+	}
+	for i, item := range olcList {
+		player.send("%10v -- %v", i, item.hint)
+	}
+}
+
 func cmdAsave(player *characterData, input string) {
 	if player.Level < LEVEL_BUILDER {
 		return
@@ -36,9 +67,11 @@ func cmdDig(player *characterData, input string) {
 						ToRoom: LocData{AreaUUID: player.room.pArea.UUID, RoomUUID: player.room.UUID}})
 				player.send("New room created to the: %v", item)
 				player.room.pArea.dirty = true
+				return
 			}
 		}
 	}
+	player.send("Dig what direction?")
 }
 
 func (old DIR) revDir() DIR {

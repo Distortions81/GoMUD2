@@ -57,6 +57,10 @@ func cmdHelp(player *characterData, input string) {
 		player.listCommands()
 		return
 	}
+	if player.desc != nil && strings.EqualFold("olc", input) {
+		cmdOLC(player, "help")
+		return
+	}
 	for _, item := range cmdListStr {
 		if strings.EqualFold(strings.TrimSpace(input), item.name) {
 			player.send(item.help)
@@ -99,7 +103,7 @@ func cmdHelp(player *characterData, input string) {
 		player.send("Sorry, I didn't find a help page for that.")
 	}
 	if len(helpKeywords) > 0 {
-		player.send("Help topics: commands, %v", strings.Join(helpKeywords, ", "))
+		player.send("Help topics: commands, OLC, %v", strings.Join(helpKeywords, ", "))
 	} else {
 		player.send("No help topics found?")
 	}

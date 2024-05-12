@@ -5,8 +5,30 @@
 	"Name": "system",
 	"Description": "",
 	"CreDate": "0001-01-01T00:00:00Z",
-	"ModDate": "2024-05-12T01:46:25.58045959Z",
+	"ModDate": "2024-05-12T03:51:31.451434177Z",
 	"Rooms": {
+		"fnRVi1Ghzhe9qA3zOzxAKwkVAVbVmFIX": {
+			"Version": 1,
+			"VNUM": 0,
+			"Name": "A new room",
+			"Description": "Just an empty room",
+			"CreDate": "2024-05-11T21:51:19.676805786-06:00",
+			"ModDate": "2024-05-11T21:51:19.676809627-06:00",
+			"Exits": [
+				{
+					"ExitType": 0,
+					"DoorName": "",
+					"Direction": 2,
+					"DirName": "",
+					"ToRoom": {
+						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
+						"RoomUUID": "yp_mzoYGzhelKPy8ABuVFg04S4WTHQ4l",
+						"Area": 0,
+						"Room": 0
+					}
+				}
+			]
+		},
 		"gm8KHM-Yzhd55XYLRyH1LAkVAVbVmFIX": {
 			"Version": 1,
 			"VNUM": 0,
@@ -79,6 +101,18 @@
 					"ToRoom": {
 						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
 						"RoomUUID": "iIAyAM6Yzhc3E_lg78LrAwkVAVbVmFIX",
+						"Area": 0,
+						"Room": 0
+					}
+				},
+				{
+					"ExitType": 0,
+					"DoorName": "",
+					"Direction": 6,
+					"DirName": "",
+					"ToRoom": {
+						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
+						"RoomUUID": "fnRVi1Ghzhe9qA3zOzxAKwkVAVbVmFIX",
 						"Area": 0,
 						"Room": 0
 					}

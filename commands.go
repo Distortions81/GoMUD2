@@ -40,13 +40,14 @@ var commandList = map[string]*commandData{
 	"go":     {level: LEVEL_ANY, hint: "go", goDo: cmdGo, args: []string{"exit name"}},
 	"telnet": {level: LEVEL_NEWBIE, hint: "telnet options", goDo: cmdTelnet},
 
-	//OLC
-	"dig":   {level: LEVEL_BUILDER, hint: "dig out new rooms", goDo: cmdDig, args: []string{"direction"}},
-	"asave": {level: LEVEL_BUILDER, hint: "save all areas", goDo: cmdAsave},
-
 	//Wiz
 	"cinfo": {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdCinfo},
 	"pset":  {level: LEVEL_IMPLEMENTOR, hint: "set player parameters", goDo: cmdPset},
+	"olc":   {level: LEVEL_BUILDER, goDo: cmdOLC},
+}
+
+func cmdOLC(player *characterData, input string) {
+	interpOLC(player, input)
 }
 
 type cmdListItem struct {
