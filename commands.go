@@ -30,8 +30,10 @@ var commandList = map[string]*commandData{
 	"s": {level: LEVEL_ANY, goDo: cmdGo, hide: true, forceArg: "south"},
 	"e": {level: LEVEL_ANY, goDo: cmdGo, hide: true, forceArg: "east"},
 	"w": {level: LEVEL_ANY, goDo: cmdGo, hide: true, forceArg: "west"},
+	"u": {level: LEVEL_ANY, goDo: cmdGo, hide: true, forceArg: "up"},
+	"d": {level: LEVEL_ANY, goDo: cmdGo, hide: true, forceArg: "down"},
 
-	"say":    {level: LEVEL_NEWBIE, hint: "sends a message", goDo: cmdSay, args: []string{"message"}},
+	"say":    {level: LEVEL_NEWBIE, hint: "speak out loud", goDo: cmdSay, args: []string{"message"}},
 	"quit":   {level: LEVEL_ANY, noShort: true, hint: "quit and disconnect", goDo: cmdQuit},
 	"logout": {level: LEVEL_PLAYER, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
 	"who":    {level: LEVEL_ANY, hint: "show players online", goDo: cmdWho},
