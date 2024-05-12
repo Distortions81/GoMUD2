@@ -27,16 +27,18 @@ func cmdGo(player *characterData, input string) {
 	for _, exit := range player.room.Exits {
 		if exit.Direction == DIR_CUSTOM {
 			if strings.HasPrefix(strings.ToLower(exit.DirName), input) {
-				player.goExit(exit)
 				player.send("You go %v", exit.DirName)
+				player.goExit(exit)
+				cmdLook(player, "")
 				return
 			}
 		} else {
 			dirStr := dirToStr[exit.Direction]
 			dirName := strings.ToLower(dirStr)
 			if strings.HasPrefix(dirName, input) {
+				player.send("You go %v", exit.DirName)
 				player.goExit(exit)
-				player.send("You go %v", dirToTextColor[exit.Direction])
+				cmdLook(player, "")
 				return
 			}
 		}
