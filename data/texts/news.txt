@@ -39,7 +39,7 @@ Added player level, pset command. New UUID system added
  sendToRoom to send text to players in a specific room (such as
  say). add nsew quick move aliases. Added player movement notices
  (name arrives from the west). Started OLC command. Dig and pointer
- relink added. Added some code to pretect the mud from connection
+ relink added. Added some code to protect the mud from connection
  flooding. Output text is now buffered, chapmap translated and has
  ansi color applied at the end of each round. Some code cleanup.
  Asave added.
