@@ -11,27 +11,6 @@ import (
 
 var helpFiles []*helpTopicData
 
-/*
-var helpFiles []*helpTopicData = []*helpTopicData{
-	{
-		Topic:    "basics",
-		Created:  time.Now(),
-		Modified: time.Now(),
-		Helps: []helpData{
-			{
-				Name:        "Color",
-				Created:     time.Now(),
-				Modified:    time.Now(),
-				Authors:     []string{"System"},
-				Keywords:    []string{"ansi", "color", "colour"},
-				Description: "This is a test help file.",
-				Text:        "WIP.",
-			},
-		},
-		dirty: true,
-	},
-}*/
-
 type helpTopicData struct {
 	Topic             string
 	Created, Modified time.Time
@@ -213,4 +192,28 @@ func saveHelp(helpFile *helpTopicData) bool {
 		return false
 	}
 	return true
+}
+
+func makeTestHelp() {
+	helpFiles = append(helpFiles, testHelp...)
+}
+
+var testHelp []*helpTopicData = []*helpTopicData{
+	{
+		Topic:    "test",
+		Created:  time.Now(),
+		Modified: time.Now(),
+		Helps: []helpData{
+			{
+				Name:        "test",
+				Created:     time.Now(),
+				Modified:    time.Now(),
+				Authors:     []string{"System"},
+				Keywords:    []string{"test"},
+				Description: "This is a test help file.",
+				Text:        "This is a test...",
+			},
+		},
+		dirty: true,
+	},
 }

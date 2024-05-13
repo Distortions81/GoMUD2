@@ -13,7 +13,7 @@ const VNUM_SKIP = 100
 var areaList map[string]*areaData = make(map[string]*areaData)
 var sAreaUUID, sRoomUUID string
 
-func makeSystemArea() {
+func makeTestArea() {
 	sAreaUUID, sRoomUUID = makeUUIDString(), makeUUIDString()
 
 	sysRooms := make(map[string]*roomData)

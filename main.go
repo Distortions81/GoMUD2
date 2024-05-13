@@ -24,12 +24,12 @@ var (
 
 	signalHandle chan os.Signal
 
-	port        *int
-	portTLS     *int
-	noTLS       *bool
-	makeSysArea *bool
-	bindIP      *string
-	serverState atomic.Int32
+	port          *int
+	portTLS       *int
+	noTLS         *bool
+	makeTestFiles *bool
+	bindIP        *string
+	serverState   atomic.Int32
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 	portTLS = flag.Int("portTLS", DEFAULT_TLS_PORT, "TLS Port")
 	noTLS = flag.Bool("noSSL", true, "disable TLS listener")
 	bindIP = flag.String("bindIP", "localhost", "Bind to a specific IP.")
-	makeSysArea = flag.Bool("makeSysArea", false, "create and save system_area.are")
+	makeTestFiles = flag.Bool("fileBootstrap", false, "Create simple example area and help files.")
 	flag.Parse()
 
 	//Make sure all directories we need are created
@@ -55,11 +55,17 @@ func main() {
 	startLogs()
 	loadMudID()
 
-	if *makeSysArea {
-		makeSystemArea()
+	if *makeTestFiles {
+		makeTestArea()
 		saveAllAreas(false)
-		critLog("System area created.")
+
+		makeTestHelp()
+		saveHelps()
+
+		critLog("Bootstrap files created.")
+		os.Exit(0)
 	}
+
 	loadAllAreas()
 
 	readTextFiles()
