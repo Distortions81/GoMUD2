@@ -43,9 +43,22 @@ var commandList = map[string]*commandData{
 	"telnet": {level: LEVEL_NEWBIE, hint: "telnet options", goDo: cmdTelnet},
 
 	//Wiz
-	"cinfo": {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdCinfo},
-	"pset":  {level: LEVEL_IMPLEMENTOR, hint: "set player parameters", goDo: cmdPset},
-	"olc":   {level: LEVEL_BUILDER, goDo: cmdOLC},
+	"cinfo":      {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdCinfo},
+	"pset":       {level: LEVEL_IMPLEMENTOR, hint: "set player parameters", goDo: cmdPset},
+	"olc":        {level: LEVEL_BUILDER, goDo: cmdOLC},
+	"linebyline": {level: LEVEL_ANY, goDo: cmdLineByLine},
+}
+
+func cmdLineByLine(player *characterData, input string) {
+	if player.desc != nil {
+		if player.desc.lineByLine {
+			player.desc.lineByLine = false
+			player.send("line-by-line mode disabled.")
+		} else {
+			player.desc.lineByLine = true
+			player.send("line-by-line mode enabled.")
+		}
+	}
 }
 
 func cmdOLC(player *characterData, input string) {

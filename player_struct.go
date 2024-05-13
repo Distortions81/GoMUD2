@@ -53,6 +53,7 @@ type descData struct {
 	account   *accountData
 	character *characterData
 
+	lineByLine  bool
 	connectTime time.Time
 	valid       bool
 }

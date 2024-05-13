@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"time"
 
 	"golang.org/x/exp/rand"
@@ -59,11 +60,24 @@ func sendOutput() {
 				}
 			}
 
-			_, err := desc.conn.Write(desc.outBuf)
-			if err != nil {
-				//errLog("#%v: %v: write failed (connection lost)", desc.id, desc.cAddr)
-				desc.state = CON_DISCONNECTED
-				desc.valid = false
+			if desc.lineByLine {
+				lines := strings.Split(string(desc.outBuf), "\r\n")
+				for _, line := range lines {
+					_, err := desc.conn.Write([]byte(line + "\r\n"))
+					if err != nil {
+						//errLog("#%v: %v: write failed (connection lost)", desc.id, desc.cAddr)
+						desc.state = CON_DISCONNECTED
+						desc.valid = false
+					}
+					time.Sleep(time.Millisecond)
+				}
+			} else {
+				_, err := desc.conn.Write(desc.outBuf)
+				if err != nil {
+					//errLog("#%v: %v: write failed (connection lost)", desc.id, desc.cAddr)
+					desc.state = CON_DISCONNECTED
+					desc.valid = false
+				}
 			}
 			desc.outBuf = []byte{}
 			desc.haveOut = false
