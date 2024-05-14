@@ -8,7 +8,7 @@ func lookRoom(player *characterData) {
 	var exitCount int
 	for _, exit := range player.room.Exits {
 		if exitCount != 0 {
-			exitList = exitList + ", "
+			exitList = exitList + "{x, "
 		}
 		exitList = exitList + dirToTextColor[exit.Direction]
 		exitCount++

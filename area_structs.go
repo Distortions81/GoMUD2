@@ -99,15 +99,15 @@ var dirToText [DIR_MAX]string = [DIR_MAX]string{
 
 var dirToTextColor [DIR_MAX]string = [DIR_MAX]string{
 	DIR_NORTH:      "{RN{rorth",
-	DIR_NORTH_EAST: "{RN{gE",
+	DIR_NORTH_EAST: "{RN{GE",
 	DIR_EAST:       "{GE{gast",
 	DIR_SOUTH_EAST: "{BS{GE",
 	DIR_SOUTH:      "{BS{bouth",
-	DIR_SOUTH_WEST: "{BS{mW",
-	DIR_WEST:       "{MW{mest",
-	DIR_NORTH_WEST: "{RN{mW",
-	DIR_DOWN:       "{CD{cown",
-	DIR_UP:         "{YU{yp",
+	DIR_SOUTH_WEST: "{BS{CW",
+	DIR_WEST:       "{CW{cest",
+	DIR_NORTH_WEST: "{RN{CW",
+	DIR_DOWN:       "{WD{wown",
+	DIR_UP:         "{MU{mp",
 
 	DIR_CUSTOM: "Custom",
 }
