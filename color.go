@@ -1,7 +1,8 @@
 package main
 
-// const ANSI_ESC = "\033["
-const ANSI_ESC = "["
+const ANSI_ESC = "\033["
+const ANSI_RESET = ANSI_ESC + "m"
+const NEWLINE = "\r\n"
 
 const (
 	bold = 1 << iota
@@ -72,7 +73,31 @@ func ANSIColor(i []byte) []byte {
 	var out []byte
 	il := len(i)
 
+	//Do newlines
 	for x := 0; x < il; x++ {
+		if i[x] == '{' {
+			x++
+			if x < il {
+				// escaped {{
+				if i[x] == 'n' {
+					out = append(out, []byte(NEWLINE)...)
+					continue
+				} else {
+					out = append(out, '{')
+					out = append(out, i[x])
+				}
+			}
+		} else {
+			out = append(out, i[x])
+		}
+	}
+	i = out
+	out = []byte{}
+	il = len(i)
+
+	//Do ANSI color/style
+	for x := 0; x < il; x++ {
+
 		//Color code
 		if i[x] == '{' {
 			x++
@@ -82,12 +107,17 @@ func ANSIColor(i []byte) []byte {
 					out = append(out, '{')
 					continue
 				} else if i[x] == 'x' && hasColor {
+					nextStyle = 0
+					curStyle = 0
+
+					nextColor = ""
+					curColor = ""
+
+					curBGColor = ""
+					nextBGColor = ""
 					hasColor = false
-					nextStyle.ClearFlag(bold)
-					out = append(out, []byte("\033[m")...)
-					continue
-				} else if i[x] == 'n' {
-					out = append(out, []byte("\r\n")...)
+
+					out = append(out, []byte(ANSI_RESET)...)
 					continue
 				}
 				val := colorTable[i[x]]
@@ -121,31 +151,39 @@ func ANSIColor(i []byte) []byte {
 			lastVal = nil
 			if nextColor != "" || nextBGColor != "" || nextStyle != curStyle {
 				var cout []byte
-				if nextStyle.HasFlag(bold) && !curStyle.HasFlag(bold) {
+				//If destination style and color is nothing, use [m to save space
+				if (nextStyle == 0) && (nextColor == "") && (nextBGColor == "") {
+					out = append(out, []byte(ANSI_RESET)...)
+					out = append(out, i[x])
+					nextStyle = 0
+					curStyle = 0
+
+					nextColor = ""
+					curColor = ""
+
+					curBGColor = ""
+					nextBGColor = ""
+					hasColor = false
+					continue
+				} else if nextStyle == 0 && curStyle != 0 {
+					cout = append(cout, "0"...)
+				} else if nextStyle.HasFlag(bold) && !curStyle.HasFlag(bold) {
 					cout = append(cout, colorTable['!'].code...)
 				} else if !nextStyle.HasFlag(bold) && curStyle.HasFlag(bold) {
 					cout = append(cout, colorTable['!'].disCode...)
-				}
-
-				if nextStyle.HasFlag(italic) && !curStyle.HasFlag(italic) {
+				} else if nextStyle.HasFlag(italic) && !curStyle.HasFlag(italic) {
 					cout = append(cout, colorTable['*'].code...)
 				} else if !nextStyle.HasFlag(italic) && curStyle.HasFlag(italic) {
 					cout = append(cout, colorTable['*'].disCode...)
-				}
-
-				if nextStyle.HasFlag(underline) && !curStyle.HasFlag(underline) {
+				} else if nextStyle.HasFlag(underline) && !curStyle.HasFlag(underline) {
 					cout = append(cout, colorTable['_'].code...)
 				} else if !nextStyle.HasFlag(underline) && curStyle.HasFlag(underline) {
 					cout = append(cout, colorTable['_'].disCode...)
-				}
-
-				if nextStyle.HasFlag(inverse) && !curStyle.HasFlag(inverse) {
+				} else if nextStyle.HasFlag(inverse) && !curStyle.HasFlag(inverse) {
 					cout = append(cout, colorTable['^'].code...)
 				} else if !nextStyle.HasFlag(inverse) && curStyle.HasFlag(inverse) {
 					cout = append(cout, colorTable['^'].disCode...)
-				}
-
-				if nextStyle.HasFlag(strike) && !curStyle.HasFlag(strike) {
+				} else if nextStyle.HasFlag(strike) && !curStyle.HasFlag(strike) {
 					cout = append(cout, colorTable['~'].code...)
 				} else if !nextStyle.HasFlag(strike) && curStyle.HasFlag(strike) {
 					cout = append(cout, colorTable['~'].disCode...)
@@ -180,6 +218,11 @@ func ANSIColor(i []byte) []byte {
 			}
 		}
 		out = append(out, i[x])
+
 	}
-	return append(out, []byte("\033[0m")...)
+
+	if hasColor {
+		out = append(out, []byte(ANSI_RESET)...)
+	}
+	return out
 }

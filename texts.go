@@ -33,14 +33,14 @@ func readTextFiles() {
 		}
 
 		shortName := strings.TrimSuffix(fname.Name(), textExt)
-		textFiles[shortName] = string(ANSIColor(data))
+		textFiles[shortName] = string(data)
 		errLog("readTextFiles: Read: %v", fname.Name())
 	}
 
 	//Login prompt
 	lItem := loginStateList[CON_LOGIN]
 	promptStr := lItem.prompt
-	greetBuf = LICENSE + textFiles["greet"] + promptStr
+	greetBuf = LICENSE + string(ANSIColor([]byte(textFiles["greet"]))) + promptStr
 	aurevoirBuf = textFiles["aurevoir"]
 	warnBuf = textFiles["warn"]
 }
