@@ -15,6 +15,9 @@ const (
 	MAX_CONNECT        = 15
 )
 
+var HTTPGET = []byte("GET ")
+var HTTPGETLEN = len(HTTPGET) - 1
+
 var attemptMap map[string]int = make(map[string]int)
 
 // Handle incoming connections.
@@ -33,7 +36,7 @@ func handleDesc(conn net.Conn, tls bool) {
 		attemptMap[ipStr]++
 		return
 	}
-	critLog("Connection from: %v", ipStr)
+
 	attemptMap[ipStr]++
 
 	addrList, _ := net.LookupHost(ipStr)
@@ -43,16 +46,6 @@ func handleDesc(conn net.Conn, tls bool) {
 	cAddr := hostStr
 	if hostStr != ipStr {
 		cAddr = fmt.Sprintf("%v : %v", ipStr, hostStr)
-	}
-
-	//Start telnet negotiation
-	sendTelnetCmds(conn)
-
-	//Send greeting
-	_, err := conn.Write([]byte(greetBuf))
-	if err != nil {
-		conn.Close()
-		return
 	}
 
 	//Create descriptor
@@ -72,6 +65,22 @@ func handleDesc(conn net.Conn, tls bool) {
 
 	descLock.Unlock()
 
+	/*
+		conn.SetReadDeadline(time.Now().Add(time.Millisecond * 10))
+		data, err := desc.reader.ReadString('\n')
+		if err == nil && strings.ContainsAny("GET", data) {
+			critLog("Ignoring HTTP connection.")
+			conn.Close()
+			return
+		}
+		conn.SetReadDeadline(time.Time{})
+		if len(data) > 0 {
+			critLog("Got header: '%v'", string(data))
+		} */
+
+	critLog("Connection from: %v", ipStr)
+
+	sendStart(desc.conn)
 	desc.readDescLoop()
 
 	descLock.Lock()
@@ -79,7 +88,20 @@ func handleDesc(conn net.Conn, tls bool) {
 	descLock.Unlock()
 }
 
+func sendStart(conn net.Conn) {
+	//Start telnet negotiation
+	sendTelnetCmds(conn)
+
+	//Send greeting
+	_, err := conn.Write([]byte(greetBuf))
+	if err != nil {
+		conn.Close()
+		return
+	}
+}
+
 func (desc *descData) readDescLoop() {
+
 	//Read loop
 	var lastByte byte
 	for serverState.Load() == SERVER_RUNNING {
