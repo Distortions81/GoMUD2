@@ -21,11 +21,11 @@ func mainLoop() {
 		start := time.Now()
 
 		descLock.Lock()
-		removeDeadChar()
 		removeDeadDesc()
+		removeDeadChar()
 		hashReceiver()
-		interpAllDesc()
 		descShuffle()
+		interpAllDesc()
 		saveAllAreas(true)
 		sendOutput()
 		descLock.Unlock()
