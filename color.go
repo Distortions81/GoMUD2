@@ -65,6 +65,7 @@ func ANSIColor(i []byte) []byte {
 		nextBGColor string
 
 		hasColor bool
+		lastVal  *ctData
 	)
 
 	var out []byte
@@ -89,6 +90,11 @@ func ANSIColor(i []byte) []byte {
 					continue
 				}
 				val := colorTable[i[x]]
+				if lastVal == val {
+					continue
+				}
+				lastVal = val
+
 				if val == nil {
 					continue
 				}
@@ -111,7 +117,7 @@ func ANSIColor(i []byte) []byte {
 				break
 			}
 		} else {
-
+			lastVal = nil
 			if nextColor != "" || nextBGColor != "" || nextStyle != curStyle {
 				var cout []byte
 				if nextStyle.HasFlag(bold) && !curStyle.HasFlag(bold) {
@@ -143,7 +149,7 @@ func ANSIColor(i []byte) []byte {
 				} else if !nextStyle.HasFlag(strike) && curStyle.HasFlag(strike) {
 					cout = append(cout, colorTable['~'].disCode...)
 				}
-				if nextBGColor != "" {
+				if nextBGColor != curBGColor {
 					if len(cout) > 0 {
 						cout = append(cout, ';')
 					}
@@ -151,8 +157,8 @@ func ANSIColor(i []byte) []byte {
 					hasColor = true
 					nextBGColor = ""
 				}
-				if nextColor != "" {
-					if nextColor != "" {
+				if nextColor != curColor {
+					if len(cout) > 0 {
 						cout = append(cout, ';')
 					}
 					cout = append(cout, []byte(nextColor)...)
