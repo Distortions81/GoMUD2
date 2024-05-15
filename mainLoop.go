@@ -1,8 +1,11 @@
 package main
 
 import (
+	"runtime"
 	"time"
 
+	"github.com/remeh/sizedwaitgroup"
+	"github.com/tklauser/numcpus"
 	"golang.org/x/exp/rand"
 )
 
@@ -16,6 +19,11 @@ func mainLoop() {
 
 	roundTime := time.Duration(ROUND_LENGTH_uS * time.Microsecond)
 
+	numThreads, err := numcpus.GetOnline()
+	if err != nil {
+		numThreads = runtime.NumCPU()
+	}
+
 	for serverState.Load() == SERVER_RUNNING {
 		tickNum++
 		start := time.Now()
@@ -27,7 +35,7 @@ func mainLoop() {
 		descShuffle()
 		interpAllDesc()
 		saveAllAreas(true)
-		sendOutput()
+		sendOutput(numThreads)
 		descLock.Unlock()
 
 		//Sleep for remaining round time
@@ -40,36 +48,44 @@ func mainLoop() {
 	}
 }
 
-func sendOutput() {
+func sendOutput(numThreads int) {
+	//multi-thread output processing
+	wg := sizedwaitgroup.New(numThreads)
+
 	for _, desc := range descList {
 		if desc.haveOut {
+			wg.Add()
+			go func(tdesc *descData) {
 
-			//Character map translation
-			if !desc.telnet.options.UTF {
-				desc.outBuf = encodeFromUTF(desc.telnet.charMap, desc.outBuf)
-			}
-
-			//Color
-			desc.outBuf = ANSIColor(desc.outBuf)
-
-			//Add telnet go-ahead if enabled, and there is no newline
-			if desc.telnet.options != nil && !desc.telnet.options.SUPGA {
-				if desc.outBuf[len(desc.outBuf)-1] != '\n' {
-					desc.outBuf = append(desc.outBuf, []byte{TermCmd_IAC, TermCmd_GOAHEAD}...)
+				//Character map translation
+				if !tdesc.telnet.options.UTF {
+					tdesc.outBuf = encodeFromUTF(tdesc.telnet.charMap, tdesc.outBuf)
 				}
-			}
 
-			_, err := desc.conn.Write(desc.outBuf)
-			if err != nil {
-				//errLog("#%v: %v: write failed (connection lost)", desc.id, desc.cAddr)
-				desc.state = CON_DISCONNECTED
-				desc.valid = false
-			}
+				//Color
+				tdesc.outBuf = ANSIColor(tdesc.outBuf)
 
-			desc.outBuf = []byte{}
-			desc.haveOut = false
+				//Add telnet go-ahead if enabled, and there is no newline
+				if tdesc.telnet.options != nil && !tdesc.telnet.options.SUPGA {
+					if tdesc.outBuf[len(tdesc.outBuf)-1] != '\n' {
+						tdesc.outBuf = append(tdesc.outBuf, []byte{TermCmd_IAC, TermCmd_GOAHEAD}...)
+					}
+				}
+
+				_, err := tdesc.conn.Write(tdesc.outBuf)
+				if err != nil {
+					errLog("#%v: %v: write failed (connection lost)", tdesc.id, tdesc.cAddr)
+					tdesc.state = CON_DISCONNECTED
+					tdesc.valid = false
+				}
+
+				tdesc.outBuf = []byte{}
+				tdesc.haveOut = false
+				wg.Done()
+			}(desc)
 		}
 	}
+	wg.Wait()
 }
 
 func descShuffle() {
@@ -96,7 +112,7 @@ func removeDeadChar() {
 			target.sendToPlaying("%v slowly fades away.", target.Name)
 			errLog("Removed character %v from charList.", target.Name)
 			target.saveCharacter()
-			target.fromRoom()
+			target.leaveRoom()
 			continue
 		} else if time.Since(target.idleTime) > CHARACTER_IDLE {
 			target.send("Idle too long, quitting...")
@@ -116,8 +132,8 @@ func removeDeadDesc() {
 			newDescList = append(newDescList, desc)
 			continue
 
-		} else if desc.state == CON_LOGIN &&
-			time.Since(desc.idleTime) > LOGIN_AFK {
+		} else if desc.state <= CON_CHECK_PASS &&
+			time.Since(desc.idleTime) > LOGIN_IDLE {
 			desc.sendln("\r\nIdle too long, disconnecting.")
 			desc.killDesc()
 			continue
@@ -128,15 +144,16 @@ func removeDeadDesc() {
 			continue
 
 		} else if desc.state != CON_PLAYING &&
-			time.Since(desc.idleTime) > AFK_DESC {
+			time.Since(desc.idleTime) > MENU_IDLE {
 			if desc.character != nil && desc.character.Level < 0 {
 				continue
 			}
 			desc.sendln("\r\nIdle too long, disconnecting.")
 			desc.killDesc()
 			continue
+		} else {
+			newDescList = append(newDescList, desc)
 		}
-		newDescList = append(newDescList, desc)
 	}
 	descList = newDescList
 }

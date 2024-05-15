@@ -1,6 +1,7 @@
 package main
 
-const ANSI_ESC = "\033["
+// const ANSI_ESC = "\033["
+const ANSI_ESC = "["
 
 const (
 	bold = 1 << iota
@@ -83,7 +84,7 @@ func ANSIColor(i []byte) []byte {
 				} else if i[x] == 'x' && hasColor {
 					hasColor = false
 					nextStyle.ClearFlag(bold)
-					out = append(out, []byte("\033[0m")...)
+					out = append(out, []byte("\033[m")...)
 					continue
 				} else if i[x] == 'n' {
 					out = append(out, []byte("\r\n")...)

@@ -55,7 +55,7 @@ func (player *characterData) goExit(exit *exitData) {
 			dirStr = dirToTextColor[exit.Direction]
 		}
 		player.sendToRoom("%v leaves %v{x", player.Name, dirStr)
-		player.fromRoom()
+		player.leaveRoom()
 		player.room = exit.pRoom
 		player.room.players = append(player.room.players, player)
 

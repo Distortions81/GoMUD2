@@ -5,9 +5,9 @@ import (
 	"time"
 )
 
-const LOGIN_AFK = time.Second * 30
-const AFK_DESC = time.Minute * 5
-const CHARACTER_IDLE = time.Minute * 15
+const LOGIN_IDLE = time.Second * 30
+const MENU_IDLE = time.Minute * 5
+const CHARACTER_IDLE = time.Minute * 30
 
 func (desc *descData) interp() {
 	var input string

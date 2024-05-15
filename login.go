@@ -39,6 +39,10 @@ const (
 	CON_LOGIN
 	CON_PASS
 	CON_CHECK_PASS
+	//CON_CHECK_PASS or below
+	//have shorter LOGIN_IDLE
+	//idle disconnect timer
+
 	CON_NEWS
 
 	//New users

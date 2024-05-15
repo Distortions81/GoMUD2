@@ -26,7 +26,7 @@ func (player *characterData) goTo(loc LocData) {
 }
 
 // returns true if removed
-func (player *characterData) fromRoom() bool {
+func (player *characterData) leaveRoom() bool {
 	if player != nil && player.room != nil {
 		numPlayers := len(player.room.players)
 		if numPlayers == 1 {
@@ -132,7 +132,7 @@ func (player *characterData) quit(doClose bool) {
 		player.desc.numInputLines = 0
 		player.valid = false
 		player.desc.inputLock.Unlock()
-		player.fromRoom()
+		player.leaveRoom()
 
 		go func(target *characterData) {
 			descLock.Lock()
