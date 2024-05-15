@@ -150,6 +150,7 @@ func passCheckComplete(item *toHashData) {
 		gCharList(item.desc)
 	} else {
 		item.desc.send("Invalid passphrase.")
+		critLog("#%v tried an invalid password.", item.id)
 		item.desc.state = CON_DISCONNECTED
 		item.desc.valid = false
 	}

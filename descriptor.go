@@ -33,6 +33,7 @@ func handleDesc(conn net.Conn, tls bool) {
 		attemptMap[ipStr]++
 		return
 	}
+	critLog("Connection from: %v", ipStr)
 	attemptMap[ipStr]++
 
 	addrList, _ := net.LookupHost(ipStr)
@@ -99,7 +100,7 @@ func (desc *descData) readDescLoop() {
 				return
 			}
 
-			//Sub-negotation sequence END
+			//Sub-negotiation sequence END
 			if command == TermCmd_SE {
 
 				if desc.telnet.subType == TermOpt_TERMINAL_TYPE {
@@ -234,7 +235,7 @@ func (desc *descData) ingestLine() {
 }
 
 func (desc *descData) handleTelCmd(command, option byte) {
-	//Sub-negotation sequence START
+	//Sub-negotiation sequence START
 	if command == TermCmd_SB {
 
 		desc.telnet.subData = []byte{}
