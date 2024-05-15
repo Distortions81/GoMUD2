@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+const CONNECT_WARN = 3
+
 // Returns true if available
 func isAccNameAvail(name string) bool {
 	return accountIndex[name] == nil
@@ -17,6 +19,9 @@ func isAccNameAvail(name string) bool {
 
 func gCharList(desc *descData) {
 	//They logged in, reset the count.
+	if attemptMap[desc.addr] > CONNECT_WARN {
+		critLog("*** Warning ***: account '%v' had %v connection attempts before successfully logging in.", desc.account.Login, attemptMap[desc.addr])
+	}
 	attemptMap[desc.addr] = 0
 
 	var buf string = "\r\n"
