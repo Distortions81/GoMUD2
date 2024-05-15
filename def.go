@@ -5,7 +5,7 @@ import "strings"
 type Bitmask uint64
 
 const (
-	VERSION  = "v0.0.7a-05112024-1101p"
+	VERSION  = "v0.0.8a-05152024-0307p"
 	CODENAME = "Nebulon"
 
 	LICENSE = "goMUD2: " + VERSION + "-" + CODENAME + "\n" +
