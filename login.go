@@ -169,7 +169,7 @@ func gLogin(desc *descData, input string) {
 		}
 	} else {
 		desc.sendln("Login name not found.")
-		critLog("#%v: %v tried a login that does not exist!", desc.id, desc.cAddr)
+		critLog("#%v: %v tried a login that does not exist: '%v'", desc.id, desc.cAddr, input)
 		desc.close()
 		return
 	}
