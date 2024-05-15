@@ -70,10 +70,9 @@ func ANSIColor(i []byte) []byte {
 		lastVal  *ctData
 	)
 
+	//Do newlines first
 	var out []byte
 	il := len(i)
-
-	//Do newlines
 	for x := 0; x < il; x++ {
 		if i[x] == '{' {
 			x++
@@ -92,10 +91,10 @@ func ANSIColor(i []byte) []byte {
 		}
 	}
 	i = out
-	out = []byte{}
-	il = len(i)
 
 	//Do ANSI color/style
+	out = []byte{}
+	il = len(i)
 	for x := 0; x < il; x++ {
 
 		//Color code
