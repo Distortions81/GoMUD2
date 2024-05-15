@@ -26,12 +26,16 @@ type commandData struct {
 
 // command names and shorthands must be lower case
 var commandList = map[string]*commandData{
-	"n": {level: LEVEL_ANY, goDo: cmdGo, hide: true, forceArg: "north"},
-	"s": {level: LEVEL_ANY, goDo: cmdGo, hide: true, forceArg: "south"},
-	"e": {level: LEVEL_ANY, goDo: cmdGo, hide: true, forceArg: "east"},
-	"w": {level: LEVEL_ANY, goDo: cmdGo, hide: true, forceArg: "west"},
-	"u": {level: LEVEL_ANY, goDo: cmdGo, hide: true, forceArg: "up"},
-	"d": {level: LEVEL_ANY, goDo: cmdGo, hide: true, forceArg: "down"},
+	"ne": {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "northeast"},
+	"nw": {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "northwest"},
+	"se": {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "southeast"},
+	"sw": {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "southwest"},
+	"n":  {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "north"},
+	"s":  {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "south"},
+	"e":  {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "east"},
+	"w":  {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "west"},
+	"u":  {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "up"},
+	"d":  {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "down"},
 
 	"say":    {level: LEVEL_NEWBIE, hint: "speak out loud", goDo: cmdSay, args: []string{"message"}},
 	"quit":   {level: LEVEL_ANY, noShort: true, hint: "quit and disconnect", goDo: cmdQuit},

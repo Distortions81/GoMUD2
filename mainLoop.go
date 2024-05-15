@@ -1,11 +1,9 @@
 package main
 
 import (
-	"runtime"
 	"time"
 
 	"github.com/remeh/sizedwaitgroup"
-	"github.com/tklauser/numcpus"
 	"golang.org/x/exp/rand"
 )
 
@@ -19,11 +17,6 @@ func mainLoop() {
 
 	roundTime := time.Duration(ROUND_LENGTH_uS * time.Microsecond)
 
-	numThreads, err := numcpus.GetOnline()
-	if err != nil {
-		numThreads = runtime.NumCPU()
-	}
-
 	for serverState.Load() == SERVER_RUNNING {
 		tickNum++
 		start := time.Now()
@@ -35,7 +28,7 @@ func mainLoop() {
 		descShuffle()
 		interpAllDesc()
 		saveAllAreas(true)
-		sendOutput(numThreads)
+		sendOutput()
 		descLock.Unlock()
 
 		//Sleep for remaining round time
@@ -48,7 +41,7 @@ func mainLoop() {
 	}
 }
 
-func sendOutput(numThreads int) {
+func sendOutput() {
 	//multi-thread output processing
 	wg := sizedwaitgroup.New(numThreads)
 

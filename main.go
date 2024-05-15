@@ -5,9 +5,12 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"runtime"
 	"sync/atomic"
 	"syscall"
 	"time"
+
+	"github.com/tklauser/numcpus"
 )
 
 const (
@@ -30,6 +33,7 @@ var (
 	makeTestFiles *bool
 	bindIP        *string
 	serverState   atomic.Int32
+	numThreads    int
 )
 
 func main() {
@@ -50,6 +54,12 @@ func main() {
 			log.Printf("Unable to create directory: %v: %v", newDir, err)
 			os.Exit(1)
 		}
+	}
+
+	var err error
+	numThreads, err = numcpus.GetOnline()
+	if err != nil {
+		numThreads = runtime.NumCPU()
 	}
 
 	startLogs()
