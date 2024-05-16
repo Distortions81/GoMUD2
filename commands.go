@@ -182,13 +182,10 @@ func init() {
 		cmd.name = iName
 		tName := fmt.Sprintf("%10v", iName)
 		var buf string
-		buf = fmt.Sprintf("%v -- %v : ", tName, cmd.hint)
+		buf = fmt.Sprintf("%v -- %v :", tName, cmd.hint)
 		if cmd.args != nil {
-			for a, aName := range cmd.args {
-				if a > 0 {
-					buf = buf + " "
-				}
-				buf = buf + fmt.Sprintf("<%v>", aName)
+			for _, aName := range cmd.args {
+				buf = buf + fmt.Sprintf(" <%v>", aName)
 			}
 		}
 		buf = buf + fmt.Sprintf(" (%v)", levelName[cmd.level])
