@@ -150,7 +150,7 @@ func cmdWho(player *characterData, input string) {
 	for _, target := range tmpCharList {
 		var idleTime, unlink string
 		if time.Since(target.idleTime) >= (time.Minute * 3) {
-			idleStr := durafmt.Parse(time.Since(target.idleTime).Round(time.Minute)).LimitFirstN(2).Format(shortUnits)
+			idleStr := durafmt.Parse(time.Since(target.idleTime).Truncate(time.Minute)).LimitFirstN(2).Format(shortUnits)
 			idleStr = strings.ReplaceAll(idleStr, " ", "")
 			idleTime = fmt.Sprintf(" (idle %v)", idleStr)
 		}
@@ -159,12 +159,12 @@ func cmdWho(player *characterData, input string) {
 		}
 		onlineTime := ""
 		if time.Since(target.loginTime) > (time.Minute * 5) {
-			onlineTime = durafmt.Parse(time.Since(target.loginTime).Round(time.Minute)).LimitFirstN(2).Format(shortUnits)
+			onlineTime = durafmt.Parse(time.Since(target.loginTime).Truncate(time.Minute)).LimitFirstN(2).Format(shortUnits)
 			onlineTime = strings.ReplaceAll(onlineTime, " ", "")
 		}
 		buf = buf + fmt.Sprintf("%31v - %v%v%v\r\n", target.Name, onlineTime, idleTime, unlink)
 	}
-	uptime := durafmt.Parse(time.Since(bootTime).Round(time.Second)).LimitFirstN(2).Format(shortUnits)
+	uptime := durafmt.Parse(time.Since(bootTime).Truncate(time.Second)).LimitFirstN(2).Format(shortUnits)
 	uptime = strings.ReplaceAll(uptime, " ", "")
 	buf = buf + fmt.Sprintf("\r\n%v players online. Uptime: %v", numPlayers, uptime)
 	player.send(buf)

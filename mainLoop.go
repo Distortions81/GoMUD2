@@ -34,7 +34,7 @@ func mainLoop() {
 		//Sleep for remaining round time
 		timeLeft := roundTime - time.Since(start)
 		if timeLeft <= 0 {
-			critLog("Round went over: %v", time.Duration(timeLeft).Round(time.Microsecond).Abs().String())
+			critLog("Round went over: %v", time.Duration(timeLeft).Truncate(time.Microsecond).Abs().String())
 		} else {
 			time.Sleep(timeLeft)
 		}
