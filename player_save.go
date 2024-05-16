@@ -32,13 +32,20 @@ func (player *characterData) saveCharacter() bool {
 	enc := json.NewEncoder(outbuf)
 	enc.SetIndent("", "\t")
 
-	if player == nil {
+	if player.desc == nil {
+		critLog("savePlayer: Nil desc: %v", player.Name)
+		return false
+	} else if player.desc.account == nil {
+		critLog("savePlayer: Nil account: %v", player.Name)
+		return false
+	} else if player == nil {
 		critLog("savePlayer: Nil player.")
 		return false
 	} else if player.UUID == "" {
 		critLog("savePlayer: Player '%v' doesn't have a UUID.", player.Name)
 		return false
 	}
+
 	player.Version = CHARACTER_VERSION
 	player.SaveTime = time.Now().UTC()
 	fileName := DATA_DIR + ACCOUNT_DIR + player.desc.account.UUID + "/" + player.UUID + ".json"

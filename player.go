@@ -117,6 +117,7 @@ func (player *characterData) quit(doClose bool) {
 	player.desc.sendln(aurevoirBuf)
 	if player.saveCharacter() {
 		player.send("Character saved.")
+		critLog("Saved %v", player.Name)
 	} else {
 		player.send("Saving character failed.")
 		return

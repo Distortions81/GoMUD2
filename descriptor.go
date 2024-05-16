@@ -27,7 +27,7 @@ func handleDesc(conn net.Conn, tls bool) {
 	addr := conn.RemoteAddr().String()
 	ipStr, _, _ := net.SplitHostPort(addr)
 
-	if attemptMap[ipStr] > MAX_CONNECT {
+	if attemptMap[ipStr] > MAX_CONNECT || attemptMap[ipStr] == -1 {
 		conn.Close()
 		return
 	} else if attemptMap[ipStr] == MAX_CONNECT {
@@ -65,18 +65,19 @@ func handleDesc(conn net.Conn, tls bool) {
 
 	descLock.Unlock()
 
-	/*
-		conn.SetReadDeadline(time.Now().Add(time.Millisecond * 10))
-		data, err := desc.reader.ReadString('\n')
-		if err == nil && strings.ContainsAny("GET", data) {
-			critLog("Ignoring HTTP connection.")
-			conn.Close()
-			return
-		}
-		conn.SetReadDeadline(time.Time{})
-		if len(data) > 0 {
-			critLog("Got header: '%v'", string(data))
-		} */
+	conn.SetReadDeadline(time.Now().Add(time.Millisecond * 10))
+	data, err := desc.reader.ReadString('\n')
+	if err == nil && strings.ContainsAny("GET", data) {
+		critLog("HTTP request from %v. Adding to ignore list.", ipStr)
+		attemptMap[ipStr] = -1
+		conn.Write([]byte("HTTP"))
+		conn.Close()
+		return
+	}
+	conn.SetReadDeadline(time.Time{})
+	if len(data) > 0 {
+		critLog("Got header: '%v'", string(data))
+	}
 
 	critLog("Connection from: %v", ipStr)
 
