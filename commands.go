@@ -26,6 +26,7 @@ type commandData struct {
 
 // command names and shorthands must be lower case
 var commandList = map[string]*commandData{
+	//Shorthand
 	"ne": {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "northeast"},
 	"nw": {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "northwest"},
 	"se": {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "southeast"},
@@ -37,19 +38,35 @@ var commandList = map[string]*commandData{
 	"u":  {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "up"},
 	"d":  {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "down"},
 
-	"say":    {level: LEVEL_NEWBIE, hint: "speak out loud", goDo: cmdSay, args: []string{"message"}},
-	"quit":   {level: LEVEL_ANY, noShort: true, hint: "quit and disconnect", goDo: cmdQuit},
-	"logout": {level: LEVEL_PLAYER, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
-	"who":    {level: LEVEL_ANY, hint: "show players online", goDo: cmdWho},
-	"help":   {level: LEVEL_ANY, hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}},
-	"look":   {level: LEVEL_ANY, hint: "look around the room", goDo: cmdLook},
-	"go":     {level: LEVEL_ANY, hint: "go", goDo: cmdGo, args: []string{"exit name"}},
-	"telnet": {level: LEVEL_NEWBIE, hint: "telnet options", goDo: cmdTelnet},
+	//Anyone
+	"go":   {level: LEVEL_ANY, hint: "go", goDo: cmdGo, args: []string{"exit name"}},
+	"help": {level: LEVEL_ANY, hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}},
+	"look": {level: LEVEL_ANY, hint: "look around the room", goDo: cmdLook},
+	"quit": {level: LEVEL_ANY, noShort: true, hint: "quit and disconnect", goDo: cmdQuit},
+	"who":  {level: LEVEL_ANY, hint: "show players online", goDo: cmdWho},
 
-	//Wiz
+	//Newbie
+	"say":    {level: LEVEL_NEWBIE, hint: "speak out loud", goDo: cmdSay, args: []string{"message"}},
+	"telnet": {level: LEVEL_NEWBIE, hint: "telnet options", goDo: cmdTelnet},
+	//Player
+	"logout": {level: LEVEL_PLAYER, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
+
+	//Builder
+	"olc": {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC},
+	//Mod
 	"cinfo": {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdCinfo},
-	"pset":  {level: LEVEL_IMPLEMENTOR, hint: "set player parameters", goDo: cmdPset},
-	"olc":   {level: LEVEL_BUILDER, goDo: cmdOLC},
+	//Imp
+	"pset": {level: LEVEL_IMPLEMENTOR, hint: "set player parameters", goDo: cmdPset},
+}
+
+var levelName map[int]string = map[int]string{
+	LEVEL_ANY:         "Anyone",
+	LEVEL_NEWBIE:      "Newbie",
+	LEVEL_PLAYER:      "Player",
+	LEVEL_BUILDER:     "Builder",
+	LEVEL_MODERATOR:   "Moderator",
+	LEVEL_ADMIN:       "Admin",
+	LEVEL_IMPLEMENTOR: "Implementor",
 }
 
 func cmdOLC(player *characterData, input string) {
@@ -163,12 +180,10 @@ func init() {
 			continue
 		}
 		cmd.name = iName
-		tName := fmt.Sprintf("%15v", iName)
+		tName := fmt.Sprintf("%10v", iName)
 		var buf string
-		if cmd.args == nil {
-			buf = tName + " -- " + cmd.hint
-		} else {
-			buf = tName + " -- " + cmd.hint + " : " + iName + " "
+		buf = fmt.Sprintf("%v -- %v : ", tName, cmd.hint)
+		if cmd.args != nil {
 			for a, aName := range cmd.args {
 				if a > 0 {
 					buf = buf + " "
@@ -176,10 +191,15 @@ func init() {
 				buf = buf + fmt.Sprintf("<%v>", aName)
 			}
 		}
+		buf = buf + fmt.Sprintf(" (%v)", levelName[cmd.level])
 		cmdListStr = append(cmdListStr, cmdListItem{name: iName, help: buf, cmd: cmd})
 	}
 
 	sort.Slice(cmdListStr, func(i, j int) bool {
-		return cmdListStr[i].name < cmdListStr[j].name
+		if cmdListStr[i].cmd.level == cmdListStr[j].cmd.level {
+			return cmdListStr[i].name < cmdListStr[j].name
+		} else {
+			return cmdListStr[i].cmd.level < cmdListStr[j].cmd.level
+		}
 	})
 }
