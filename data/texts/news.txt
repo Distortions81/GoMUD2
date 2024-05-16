@@ -52,7 +52,7 @@ Started work on chat channels and world objects. Improved the
 "go" command, and added aliases to walk nw ne sw se. up and down.
 Commands are now sorted by level and name. Warn on login with many
 failed attempts. Automatically detect HTTP requests, and send a
-redirect. Fixed a bug with quit. Adjusted idle times at different
+redirect. Fixed a bug with quit. Adjusted idle times for different
 states. 
 
 {*For more information, see the Discord!{*
