@@ -197,6 +197,8 @@ func gNews(desc *descData, input string) {
 		defer descLock.Unlock()
 		desc.character.sendToPlaying("%v fades into view.", desc.character.Name)
 		desc.character.listCommands()
+		cmdWho(desc.character, "")
+		cmdLook(desc.character, "")
 	}(desc)
 	desc.state = CON_PLAYING
 }
