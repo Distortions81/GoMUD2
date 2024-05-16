@@ -41,8 +41,8 @@ func (desc *descData) interp() {
 	if desc.state == CON_PLAYING {
 		if desc.character != nil {
 			//Run command
-			desc.character.handleCommands(input)
 			desc.character.idleTime = time.Now()
+			desc.character.handleCommands(input)
 			mudLog("%v: %v", desc.character.Name, input)
 		}
 		return
