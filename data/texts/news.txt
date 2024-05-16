@@ -1,4 +1,5 @@
-April 25th - May 2nd 2024 Changelog (129 commits):
+April 25th - May 2nd 2024:
+Development started.
 Threaded networking, ANSI color with styles,
 telnet commands, mud client detection, unicode support,
 character map negotiation, character map translation, accounts,
@@ -9,7 +10,7 @@ accounts/character names/passphrases support unicode, high security
 passphrase hashing, support for TLS/SSL secure connections,
 account/character unique fingerprint IDs, basic say/who/quit commands.
 
-May 2th - 4th (35 commits):
+May 2th - 4th:
 Added login menu idle kick and in-game idle kick. Rewrote ANSI color
 system. Added basic help file system (see help ansi). Fixed some
 relog/reconnect bugs. Added (no link) to who command to show player
@@ -19,7 +20,7 @@ passphrase hashing (encrypt) was rewritten to be asynchronous
 This prevents a small lag hitch for the rest of the mud when
 a new account is created.
 
-May 5th - 6th (30 commits):
+May 5th - 6th:
 added connection order shuffling . added better partial command
 matching. added basic help. added basic look command. added basic
 go <exit> command. Changed time units to short form. 1h23m3s. Show
@@ -43,6 +44,16 @@ Added player level, pset command. New UUID system added
  flooding. Output text is now buffered, chapmap translated and has
  ansi color applied at the end of each round. Some code cleanup.
  Asave added.
+
+May 12-15th:
+Fixed multiple bugs in ANSI color/style and improved end size.
+Charmap and ANSI color translation are now multi-threaded.
+Started work on chat channels and world objects. Improved the
+"go" command, and added aliases to walk nw ne sw se. up and down.
+Commands are now sorted by level and name. Warn on login with many
+failed attempts. Automatically detect HTTP requests, and send a
+redirect. Fixed a bug with quit. Adjusted idle times at different
+states. 
 
 {*For more information, see the Discord!{*
 {_https://discord.gg/8WaUA9STPj{_
