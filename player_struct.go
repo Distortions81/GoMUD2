@@ -22,6 +22,16 @@ const (
 	LEVEL_IMPLEMENTOR = 1000
 )
 
+var levelName map[int]string = map[int]string{
+	LEVEL_ANY:         "Anyone",
+	LEVEL_NEWBIE:      "Newbie",
+	LEVEL_PLAYER:      "Player",
+	LEVEL_BUILDER:     "Builder",
+	LEVEL_MODERATOR:   "Moderator",
+	LEVEL_ADMIN:       "Admin",
+	LEVEL_IMPLEMENTOR: "Implementor",
+}
+
 var (
 	topID    uint64
 	descList []*descData

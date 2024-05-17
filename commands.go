@@ -59,16 +59,6 @@ var commandList = map[string]*commandData{
 	"pset": {level: LEVEL_IMPLEMENTOR, hint: "set player parameters", goDo: cmdPset},
 }
 
-var levelName map[int]string = map[int]string{
-	LEVEL_ANY:         "Anyone",
-	LEVEL_NEWBIE:      "Newbie",
-	LEVEL_PLAYER:      "Player",
-	LEVEL_BUILDER:     "Builder",
-	LEVEL_MODERATOR:   "Moderator",
-	LEVEL_ADMIN:       "Admin",
-	LEVEL_IMPLEMENTOR: "Implementor",
-}
-
 func cmdOLC(player *characterData, input string) {
 	interpOLC(player, input)
 }
