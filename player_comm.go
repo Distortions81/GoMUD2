@@ -89,3 +89,15 @@ func cmdChat(player *characterData, input string) {
 	}
 	player.send("That doesn't seem to be a valid channel.")
 }
+
+func cmdChannels(player *characterData, input string) {
+	if input == "" {
+		player.send("channel command: (on/off) channel name")
+		for _, ch := range channels {
+			player.send("%v: (%3v) %v", ch.cmd)
+		}
+		player.send("\r\n<channel command> <on/off>")
+		return
+	}
+
+}
