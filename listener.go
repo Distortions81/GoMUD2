@@ -10,7 +10,7 @@ import (
 
 const (
 	KEYFILE  = "privkey.pem"
-	CERTFILE = "cert.pem"
+	CERTFILE = "fullchain.pem"
 )
 
 var (
