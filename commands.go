@@ -50,6 +50,7 @@ var commandList = map[string]*commandData{
 	"telnet": {level: LEVEL_NEWBIE, hint: "telnet options", goDo: cmdTelnet},
 	//Player
 	"logout": {level: LEVEL_PLAYER, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
+	"ooc":    {level: LEVEL_NEWBIE, hint: "ooc chat", goDo: cmdOOC},
 
 	//Builder
 	"olc": {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC},
