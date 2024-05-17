@@ -27,6 +27,7 @@ func setupListenerTLS() {
 
 	cert, err := tls.LoadX509KeyPair(DATA_DIR+CERTFILE, DATA_DIR+KEYFILE)
 	if err != nil {
+		errLog("Error: %v", err.Error())
 		errLog("Error loading TLS certificates: %v & %v in %v directory... TLS port not opened.", KEYFILE, CERTFILE, DATA_DIR)
 		errLog("Use makeTestCert.sh, or letsencrypt if you have a domain name.")
 		return
