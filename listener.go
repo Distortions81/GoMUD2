@@ -22,8 +22,6 @@ func setupListenerTLS() {
 	if *noTLS {
 		return
 	}
-	//openssl ecparam -genkey -name prime256v1 -out server.key
-	//openssl req -new -x509 -key server.key -out server.pem -days 3650
 
 	cert, err := tls.LoadX509KeyPair(DATA_DIR+CERTFILE, DATA_DIR+KEYFILE)
 	if err != nil {
