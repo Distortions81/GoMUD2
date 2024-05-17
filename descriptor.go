@@ -65,18 +65,20 @@ func handleDesc(conn net.Conn, tls bool) {
 
 	descLock.Unlock()
 
-	conn.SetReadDeadline(time.Now().Add(time.Millisecond))
-	data, err := desc.reader.ReadString('\n')
-	if err == nil && strings.ContainsAny("GET", data) {
-		critLog("HTTP request from %v. Adding to ignore list.", ipStr)
-		attemptMap[ipStr] = -1
-		conn.Write([]byte(`HTTP/1.1 301 Moved Permanently\r\nLocation: http://www.example.org/`))
-		conn.Close()
-		return
-	}
-	conn.SetReadDeadline(time.Time{})
-	if len(data) > 0 {
-		critLog("Got header: '%v'", string(data))
+	if !tls {
+		conn.SetReadDeadline(time.Now().Add(time.Millisecond))
+		data, err := desc.reader.ReadString('\n')
+		if err == nil && strings.ContainsAny("GET", data) {
+			critLog("HTTP request from %v. Adding to ignore list.", ipStr)
+			attemptMap[ipStr] = -1
+			conn.Write([]byte(`HTTP/1.1 301 Moved Permanently\r\nLocation: http://www.example.org/`))
+			conn.Close()
+			return
+		}
+		conn.SetReadDeadline(time.Time{})
+		if len(data) > 0 {
+			critLog("Got header: '%v'", string(data))
+		}
 	}
 
 	critLog("Connection from: %v", ipStr)
