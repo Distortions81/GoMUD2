@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	SSL_PEM = "fullchain.pem"
-	SSL_KEY = "privkey.pem"
+	KEYFILE  = "key.pem"
+	CERTFILE = "cert.pem"
 )
 
 var (
@@ -25,9 +25,9 @@ func setupListenerTLS() {
 	//openssl ecparam -genkey -name prime256v1 -out server.key
 	//openssl req -new -x509 -key server.key -out server.pem -days 3650
 
-	cert, err := tls.LoadX509KeyPair(DATA_DIR+SSL_PEM, DATA_DIR+SSL_KEY)
+	cert, err := tls.LoadX509KeyPair(DATA_DIR+CERTFILE, DATA_DIR+KEYFILE)
 	if err != nil {
-		errLog("Error loading TLS certificates: %v & %v in %v directory... TLS port not opened.", SSL_PEM, SSL_KEY, DATA_DIR)
+		errLog("Error loading TLS certificates: %v & %v in %v directory... TLS port not opened.", KEYFILE, CERTFILE, DATA_DIR)
 		errLog("Use makeTestCert.sh, or letsencrypt if you have a domain name.")
 		return
 	}
@@ -70,7 +70,7 @@ func setupListener() {
 
 func waitNewConnectionSSL() {
 
-	if !*noTLS && portTLS != nil && listenerTLS != nil {
+	if !*noTLS && listenerTLS != nil {
 
 		for serverState.Load() == SERVER_RUNNING {
 
