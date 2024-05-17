@@ -20,6 +20,7 @@ func (player *characterData) goTo(loc LocData) {
 		return
 	}
 	player.room = room
+	player.Loc = &LocData{AreaUUID: loc.AreaUUID, RoomUUID: loc.RoomUUID, Area: loc.Area, Room: loc.Room}
 	room.players = append(room.players, player)
 	errLog("Player %v added to area/room %v / %v", player.Name, area.Name, room.Name)
 
@@ -80,8 +81,10 @@ func (desc *descData) enterWorld(player *characterData) {
 	desc.character.desc = desc
 	desc.character.loginTime = time.Now()
 	desc.character.idleTime = time.Now()
-	if player.room == nil {
+	if player.Loc == nil {
 		player.goTo(LocData{AreaUUID: sAreaUUID, RoomUUID: sRoomUUID})
+	} else {
+		player.goTo(*player.Loc)
 	}
 	charList = append(charList, player)
 
