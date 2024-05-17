@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	KEYFILE  = "key.pem"
+	KEYFILE  = "privkey.pem"
 	CERTFILE = "cert.pem"
 )
 
