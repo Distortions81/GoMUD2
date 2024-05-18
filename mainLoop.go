@@ -10,6 +10,7 @@ import (
 const (
 	ROUND_LENGTH_uS  = 250000 //0.25s
 	CONNECT_THROTTLE = time.Microsecond * 200
+	SAVE_INTERVAL    = 4 * 5
 )
 
 func mainLoop() {
@@ -29,7 +30,9 @@ func mainLoop() {
 		interpAllDesc()
 		saveAllAreas(true)
 		sendOutput()
-		saveCharacters()
+		if tickNum%SAVE_INTERVAL == 0 {
+			saveCharacters()
+		}
 		descLock.Unlock()
 
 		//Sleep for remaining round time
