@@ -84,7 +84,6 @@ func (desc *descData) enterWorld(player *characterData) {
 	desc.character.idleTime = time.Now()
 	charList = append(charList, player)
 	player.goTo(player.Loc)
-
 	desc.state = CON_NEWS
 }
 

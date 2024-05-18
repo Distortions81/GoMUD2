@@ -71,8 +71,10 @@ func gCharSelect(desc *descData, input string) {
 		}
 		desc.sendln("No matches found for %v.", input)
 		return
-	} else { //Find by number
+	} else if len(desc.account.Characters) > num-1 { //Find by number
 		loadchar(desc, desc.account.Characters[num-1].Login, desc.account.Characters[num-1].UUID)
+	} else {
+		desc.sendln("That isn't a valid choice.")
 	}
 }
 
@@ -108,6 +110,7 @@ func gReconnectConfirm(desc *descData, input string) {
 		newPlayer.send("Reconnected!")
 		cmdWho(newPlayer, "")
 		cmdLook(newPlayer, "")
+		desc.character.checkTells()
 	} else {
 		desc.state = CON_CHAR_LIST
 	}

@@ -1,6 +1,13 @@
 package main
 
-import "strings"
+import (
+	"strings"
+	"time"
+)
+
+const MAX_TELLS = 50
+const MAX_TELL_LENGTH = 250
+const MAX_TELLS_PER_SENDER = 5
 
 type chanData struct {
 	flag   Bitmask
@@ -122,6 +129,33 @@ func cmdChannels(player *characterData, input string) {
 
 }
 
+func (player *characterData) checkTells() {
+	numTells := len(player.Tells)
+	if numTells > 0 {
+		player.send("{rYou have {R%v {rtells waiting.", numTells-1)
+	}
+}
+
+func cmdTells(player *characterData, input string) {
+	numTells := len(player.Tells)
+	if numTells > 0 {
+		tell := player.Tells[0]
+		player.send("At %v\r\n%v told you: %v", tell.Sent.String(), tell.SenderName, tell.Message)
+		if numTells > 1 {
+			player.Tells = player.Tells[1:numTells]
+		} else {
+			player.Tells = []tellData{}
+		}
+		player.dirty = true
+	} else {
+		player.send("You don't have any tells waiting.")
+		return
+	}
+	if numTells-1 > 0 {
+		player.send("You have %v more tells waiting.", numTells-1)
+	}
+}
+
 func cmdTell(player *characterData, input string) {
 	parts := strings.SplitN(input, " ", 2)
 	partsLen := len(parts)
@@ -136,14 +170,45 @@ func cmdTell(player *characterData, input string) {
 	}
 
 	if target := checkPlaying(parts[0]); target != nil {
+		if target == player {
+			target.send("Talking to yourself?")
+			return
+		}
 		target.send("%v tells you: %v", player.Name, parts[1])
 		player.send("You tell %v: %v", target.Name, parts[1])
 		return
 	} else if target := checkPlayingMatch(parts[0]); target != nil && len(parts[0]) > 2 {
+		if target == player {
+			target.send("Talking to yourself?")
+			return
+		}
 		target.send("%v tells you: %v", player.Name, parts[1])
 		player.send("You tell %v: %v", target.Name, parts[1])
 		return
 	}
 
+	if len(parts[1]) > MAX_TELL_LENGTH {
+		player.send("That is too long of a message for a tell. Maybe send them some mail.")
+	}
+	tDesc := descData{}
+	target := tDesc.pLoad(parts[0])
+	if target != nil {
+		if len(target.Tells) < MAX_TELLS {
+			var ours int
+			for _, tell := range target.Tells {
+				if tell.SenderUUID == player.UUID && tell.SenderName == player.Name {
+					ours++
+				}
+			}
+			if ours >= MAX_TELLS_PER_SENDER {
+				player.send("I think that is enough tells for now.")
+				return
+			}
+			target.Tells = append(target.Tells, tellData{SenderName: player.Name, SenderUUID: player.UUID, Message: parts[1], Sent: time.Now().UTC()})
+			target.saveCharacter()
+			player.send("They are offline at the moment, but you tell was saved.")
+			return
+		}
+	}
 	player.send("They don't appear to be online.")
 }
