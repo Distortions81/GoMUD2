@@ -128,3 +128,29 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 		return player
 	}
 }
+
+func (desc *descData) pLoad(plrStr string) *characterData {
+
+	for _, acc := range accountIndex {
+		desc := descData{}
+		desc.loadAccount(acc.UUID)
+		for _, char := range desc.account.Characters {
+			if strings.EqualFold(char.Login, plrStr) {
+				data, err := readFile(DATA_DIR + ACCOUNT_DIR + acc.UUID + "/" + char.UUID + ".json")
+				if err != nil {
+					return nil
+				}
+
+				target := &characterData{}
+				err = json.Unmarshal(data, target)
+				if err != nil {
+					errLog("loadPlayer: Unable to unmarshal the data.")
+					return nil
+				}
+				target.desc = &desc
+				return target
+			}
+		}
+	}
+	return nil
+}

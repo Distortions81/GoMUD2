@@ -97,10 +97,19 @@ type characterData struct {
 	CreDate  time.Time
 	idleTime time.Time
 
+	Tells []tellData `json:",omitempty"`
+
 	loginTime time.Time
 
 	dirty bool
 	valid bool
+}
+
+type tellData struct {
+	SenderName string
+	SenderUUID string
+	Message    string
+	Sent       time.Time
 }
 
 type telnetData struct {
