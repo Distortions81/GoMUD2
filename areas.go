@@ -98,8 +98,9 @@ func loadArea(name string) *areaData {
 		}
 	}
 
-	for _, room := range area.Rooms {
+	for r, room := range area.Rooms {
 		room.pArea = area
+		room.UUID = r
 	}
 	return area
 }

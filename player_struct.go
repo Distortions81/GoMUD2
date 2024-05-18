@@ -86,12 +86,12 @@ type characterData struct {
 	Name  string
 	room  *roomData
 	Loc   LocData
-	Level int
+	Level int `json:",omitempty"`
 
 	Channels Bitmask
 
-	OLCMode   int
-	OLCInvert bool
+	OLCMode   int  `json:",omitempty"`
+	OLCInvert bool `json:",omitempty"`
 
 	SaveTime time.Time
 	CreDate  time.Time

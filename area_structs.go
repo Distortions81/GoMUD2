@@ -38,28 +38,28 @@ type areaData struct {
 	Version     int
 	UUID        string
 	VNUM        int
-	Name        string
-	Description string
+	Name        string `json:",omitempty"`
+	Description string `json:",omitempty"`
 
 	CreDate time.Time
 	ModDate time.Time
 
-	Rooms map[string]*roomData
+	Rooms map[string]*roomData `json:",omitempty"`
 	dirty bool
 }
 
 type roomData struct {
 	Version     int
 	UUID        string `json:"-"`
-	VNUM        int
-	Name        string
-	Description string
+	VNUM        int    `json:",omitempty"`
+	Name        string `json:",omitempty"`
+	Description string `json:",omitempty"`
 
 	CreDate time.Time
 	ModDate time.Time
 
 	players []*characterData
-	Exits   []*exitData
+	Exits   []*exitData `json:",omitempty"`
 
 	pArea *areaData
 }
@@ -68,16 +68,16 @@ type LocData struct {
 	AreaUUID string
 	RoomUUID string
 
-	Area, Room int
+	Area, Room int `json:",omitempty"`
 }
 
 type exitData struct {
-	ExitType int
-	DoorName string
+	ExitType int    `json:",omitempty"`
+	DoorName string `json:",omitempty"`
 
 	Direction DIR
-	DirName   string
-	ToRoom    LocData
+	DirName   string  `json:",omitempty"`
+	ToRoom    LocData `json:",omitempty"`
 
 	pRoom *roomData
 }
