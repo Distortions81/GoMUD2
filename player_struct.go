@@ -85,7 +85,7 @@ type characterData struct {
 
 	Name  string
 	room  *roomData
-	Loc   *LocData
+	Loc   LocData
 	Level int
 
 	Channels Bitmask
