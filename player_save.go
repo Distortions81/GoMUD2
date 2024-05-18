@@ -35,13 +35,13 @@ func characterNameAvailable(name string) bool {
 	return true
 }
 
-var saveLock sync.Mutex
+var charSaveLock sync.Mutex
 
 // Returns true on save
 func (player *characterData) saveCharacter() bool {
 
-	saveLock.Lock()
-	defer saveLock.Unlock()
+	charSaveLock.Lock()
+	defer charSaveLock.Unlock()
 
 	if player.desc == nil {
 		critLog("savePlayer: Nil desc: %v", player.Name)

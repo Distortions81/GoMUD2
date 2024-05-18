@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -36,34 +37,46 @@ func saveAllAreas(dirty bool) {
 }
 
 // Returns true on save
+var areaSaveLock sync.Mutex
+
 func (area *areaData) saveArea() bool {
-	outbuf := new(bytes.Buffer)
-	enc := json.NewEncoder(outbuf)
-	enc.SetIndent("", "\t")
 
 	if area == nil {
 		critLog("saveArea: Nil area data.")
 		return false
-	} else if area.UUID == "" {
-		critLog("saveArea: Area '%v' doesn't have a UUID.", fileSafeName(area.Name))
-		return false
-	}
-	area.Version = AREA_VERSION
-	area.ModDate = time.Now().UTC()
-	fileName := DATA_DIR + AREA_DIR + fileSafeName(area.Name) + ".json"
-
-	err := enc.Encode(&area)
-	if err != nil {
-		critLog("saveArea: enc.Encode: %v", err.Error())
-		return false
 	}
 
-	err = saveFile(fileName, outbuf.Bytes())
-	if err != nil {
-		critLog("saveArea: saveFile failed %v", err.Error())
-		return false
-	}
-	area.dirty = false
+	areaSaveLock.Lock()
+	defer areaSaveLock.Unlock()
+	target := *area
+
+	go func(target areaData) {
+		outbuf := new(bytes.Buffer)
+		enc := json.NewEncoder(outbuf)
+		enc.SetIndent("", "\t")
+
+		if area.UUID == "" {
+			critLog("saveArea: Area '%v' doesn't have a UUID.", fileSafeName(area.Name))
+			return
+		}
+		area.Version = AREA_VERSION
+		area.ModDate = time.Now().UTC()
+		fileName := DATA_DIR + AREA_DIR + fileSafeName(area.Name) + ".json"
+
+		err := enc.Encode(&area)
+		if err != nil {
+			critLog("saveArea: enc.Encode: %v", err.Error())
+			return
+		}
+
+		err = saveFile(fileName, outbuf.Bytes())
+		if err != nil {
+			critLog("saveArea: saveFile failed %v", err.Error())
+			return
+		}
+		area.dirty = false
+	}(target)
+
 	return true
 }
 
