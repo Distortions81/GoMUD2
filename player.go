@@ -89,6 +89,10 @@ func (desc *descData) enterWorld(player *characterData) {
 	desc.character.idleTime = time.Now()
 	charList = append(charList, player)
 	player.goTo(player.Loc)
+	if player.Loc.AreaUUID == "" || player.Loc.RoomUUID == "" {
+		critLog("Fixed %v was in nil area or room.", player.Name)
+		player.goTo(LocData{AreaUUID: sysAreaUUID, RoomUUID: sysRoomUUID})
+	}
 	desc.state = CON_NEWS
 }
 

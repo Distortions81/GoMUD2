@@ -64,3 +64,26 @@ func cmdPset(player *characterData, input string) {
 	}
 
 }
+
+func cmdTransport(player *characterData, input string) {
+	cmd := strings.SplitN(input, " ", 2)
+	cmdLen := len(cmd)
+
+	if input == "" {
+		player.send("Send who where?")
+		return
+	}
+	if cmdLen == 1 {
+		player.send("Send them where?")
+	}
+	if cmdLen == 2 {
+		if target := checkPlayingPMatch(cmd[0]); target != nil {
+			target.leaveRoom()
+			target.send("You have been forced to recall.")
+			target.goTo(LocData{AreaUUID: sysAreaUUID, RoomUUID: sysRoomUUID})
+			player.send("Sent %v to %v.")
+			return
+		}
+		player.send("I don't see anyone by that name.")
+	}
+}
