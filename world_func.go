@@ -32,7 +32,7 @@ func lookRoom(player *characterData) {
 		exitList = "None"
 	}
 	buf = buf + fmt.Sprintf(
-		"\r\n%v:\r\n%v\r\n%vExits: %v",
+		"\r\n%v:\r\n%v\r\n%vExits: %v{x",
 		player.room.Name, player.room.Description,
 		playersList, exitList)
 

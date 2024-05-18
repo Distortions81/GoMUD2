@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 	"time"
 )
@@ -130,6 +129,33 @@ func cmdChannels(player *characterData, input string) {
 
 }
 
+func (player *characterData) checkTells() {
+	numTells := len(player.Tells)
+	if numTells > 0 {
+		player.send("{rYou have {R%v {rtells waiting.", numTells-1)
+	}
+}
+
+func cmdTells(player *characterData, input string) {
+	numTells := len(player.Tells)
+	if numTells > 0 {
+		tell := player.Tells[0]
+		player.send("At %v\r\n%v told you: %v", tell.Sent.String(), tell.SenderName, tell.Message)
+		if numTells > 1 {
+			player.Tells = player.Tells[1:numTells]
+		} else {
+			player.Tells = []tellData{}
+		}
+		player.dirty = true
+	} else {
+		player.send("You don't have any tells waiting.")
+		return
+	}
+	if numTells-1 > 0 {
+		player.send("You have %v more tells waiting.", numTells-1)
+	}
+}
+
 func cmdTell(player *characterData, input string) {
 	parts := strings.SplitN(input, " ", 2)
 	partsLen := len(parts)
@@ -178,8 +204,7 @@ func cmdTell(player *characterData, input string) {
 				player.send("I think that is enough tells for now.")
 				return
 			}
-			buf := fmt.Sprintf("%v told you: %v", player.Name, parts[1])
-			target.Tells = append(target.Tells, tellData{SenderName: player.Name, SenderUUID: player.UUID, Message: buf, Sent: time.Now().UTC()})
+			target.Tells = append(target.Tells, tellData{SenderName: player.Name, SenderUUID: player.UUID, Message: parts[1], Sent: time.Now().UTC()})
 			target.saveCharacter()
 			player.send("They are offline at the moment, but you tell was saved.")
 			return

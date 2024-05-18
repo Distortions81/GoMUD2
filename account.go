@@ -110,6 +110,7 @@ func gReconnectConfirm(desc *descData, input string) {
 		newPlayer.send("Reconnected!")
 		cmdWho(newPlayer, "")
 		cmdLook(newPlayer, "")
+		desc.character.checkTells()
 	} else {
 		desc.state = CON_CHAR_LIST
 	}

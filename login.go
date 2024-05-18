@@ -199,6 +199,7 @@ func gNews(desc *descData, input string) {
 		desc.character.listCommands()
 		cmdWho(desc.character, "")
 		cmdLook(desc.character, "")
+		desc.character.checkTells()
 	}(desc)
 	desc.state = CON_PLAYING
 }
