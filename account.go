@@ -155,6 +155,7 @@ func gCharConfirmName(desc *descData, input string) {
 			desc:      desc,
 			valid:     true,
 			loginTime: time.Now(),
+			Loc:       &LocData{AreaUUID: sAreaUUID, RoomUUID: sRoomUUID},
 		}
 		desc.account.Characters = append(desc.account.Characters,
 			accountIndexData{Login: desc.account.tempString, UUID: desc.character.UUID, Added: time.Now().UTC()})
