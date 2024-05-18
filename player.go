@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Send player to a room, if they are not in one
 func (player *characterData) goTo(loc LocData) {
 
 	area := areaList[loc.AreaUUID]
@@ -27,7 +28,7 @@ func (player *characterData) goTo(loc LocData) {
 
 }
 
-// returns true if removed
+// Leave a room, returns false if not found.
 func (player *characterData) leaveRoom() bool {
 	if player != nil && player.room != nil {
 		numPlayers := len(player.room.players)
@@ -55,6 +56,7 @@ func (player *characterData) send(format string, args ...any) {
 	player.desc.sendln(format, args...)
 }
 
+// Send to all players
 func (player *characterData) sendToPlaying(format string, args ...any) {
 	for _, target := range charList {
 		if target == player {
@@ -64,6 +66,7 @@ func (player *characterData) sendToPlaying(format string, args ...any) {
 	}
 }
 
+// Send message to others in a room
 func (player *characterData) sendToRoom(format string, args ...any) {
 	if player.room == nil {
 		return
@@ -76,6 +79,8 @@ func (player *characterData) sendToRoom(format string, args ...any) {
 	}
 }
 
+// Init player, attach descriptor to character, put in saved room.
+// Starts CON_NEWS
 func (desc *descData) enterWorld(player *characterData) {
 	player.valid = true
 	desc.character = player
@@ -111,7 +116,7 @@ func checkPlaying(name string) *characterData {
 	return nil
 }
 
-func checkPlayingMatch(name string) *characterData {
+func checkPlayingPMatch(name string) *characterData {
 	name = strings.ToLower(name)
 	for _, item := range charList {
 		if !item.valid {

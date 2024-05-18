@@ -8,9 +8,10 @@ import (
 	"time"
 )
 
-func saveCharacters() {
+// Autosave all players
+func saveCharacters(force bool) {
 	for _, target := range charList {
-		if target.dirty {
+		if target.dirty || force {
 			target.saveCharacter()
 		}
 	}
@@ -84,6 +85,7 @@ func (player *characterData) saveCharacter() bool {
 	return true
 }
 
+// Load character into game world.
 func (desc *descData) loadCharacter(plrStr string) *characterData {
 	if desc == nil || desc.account == nil {
 		return nil
@@ -129,6 +131,7 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 	}
 }
 
+// Load a player, but do not load into game world.
 func (desc *descData) pLoad(plrStr string) *characterData {
 
 	for _, acc := range accountIndex {

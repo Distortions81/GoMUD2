@@ -57,7 +57,7 @@ var commandList = map[string]*commandData{
 	//Builder
 	"olc": {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC},
 	//Mod
-	"cinfo": {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdCinfo},
+	"coninfo": {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdConInfo},
 	//Imp
 	"pset": {level: LEVEL_IMPLEMENTOR, hint: "set player parameters", goDo: cmdPset},
 }

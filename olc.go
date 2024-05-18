@@ -7,7 +7,7 @@ import (
 
 var olcList = map[string]*commandData{
 	"dig":   {level: LEVEL_BUILDER, hint: "dig out new rooms", goDo: cmdDig, args: []string{"direction"}},
-	"asave": {level: LEVEL_BUILDER, hint: "save all areas", goDo: cmdAsave},
+	"asave": {level: LEVEL_BUILDER, hint: "force save all areas", goDo: cmdAsaveAll},
 	"room":  {level: LEVEL_BUILDER, hint: "room edit mode", goDo: cmdRoom},
 }
 
@@ -45,11 +45,11 @@ func interpOLC(player *characterData, input string) {
 	}
 }
 
-func cmdAsave(player *characterData, input string) {
+func cmdAsaveAll(player *characterData, input string) {
 	if player.Level < LEVEL_BUILDER {
 		return
 	}
-	saveAllAreas(false)
+	saveAllAreas(true)
 	player.send("all areas saved.")
 }
 

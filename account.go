@@ -118,8 +118,8 @@ func gReconnectConfirm(desc *descData, input string) {
 }
 
 func gCharNewName(desc *descData, input string) {
-	input = nameReduce(input)
-	if nameReserved(input) {
+	input = titleCaseAlphaOnly(input)
+	if isNameReserved(input) {
 		desc.sendln("The name you've chosen for your character is not allowed or is reserved.\r\nPlease try a different name.")
 		return
 	}
@@ -140,7 +140,7 @@ func gCharNewName(desc *descData, input string) {
 }
 
 func gCharConfirmName(desc *descData, input string) {
-	input = nameReduce(input)
+	input = titleCaseAlphaOnly(input)
 	if input == "" || strings.EqualFold(input, "back") {
 		desc.sendln("Okay, we can try a different name.")
 		desc.state = CON_CHAR_CREATE

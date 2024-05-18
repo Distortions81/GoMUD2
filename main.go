@@ -67,7 +67,7 @@ func main() {
 
 	if *makeTestFiles {
 		makeTestArea()
-		saveAllAreas(false)
+		saveAllAreas(true)
 
 		makeTestHelp()
 		saveHelps()
@@ -101,6 +101,8 @@ func main() {
 	signal.Notify(signalHandle, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-signalHandle
 
+	saveCharacters(true)
+	saveAllAreas(true)
 	serverState.Store(SERVER_SHUTDOWN)
 	time.Sleep(time.Second)
 

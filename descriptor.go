@@ -186,7 +186,7 @@ func (desc *descData) readDescLoop() {
 }
 
 func (desc *descData) getTermType() {
-	desc.telnet.termType = filterTelnetResponse(string(desc.telnet.subSeqData))
+	desc.telnet.termType = txtTo7bitUpper(string(desc.telnet.subSeqData))
 	match := termTypeMap[desc.telnet.termType]
 
 	//errLog("#%v: GOT %v: %s", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.subData)
@@ -215,7 +215,7 @@ func (desc *descData) getTermType() {
 }
 
 func (desc *descData) getCharset() {
-	desc.telnet.charset = filterTelnetResponse(string(desc.telnet.subSeqData))
+	desc.telnet.charset = txtTo7bitUpper(string(desc.telnet.subSeqData))
 	desc.setCharset()
 	//errLog("#%v: GOT %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.charset)
 

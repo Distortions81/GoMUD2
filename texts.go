@@ -37,10 +37,8 @@ func readTextFiles() {
 		errLog("readTextFiles: Read: %v", fname.Name())
 	}
 
-	//Login prompt
-	lItem := loginStateList[CON_LOGIN]
-	promptStr := lItem.prompt
-	greetBuf = LICENSE + string(ANSIColor([]byte(textFiles["greet"]))) + promptStr
+	//Save greet, aurevoir and warning
+	greetBuf = LICENSE + string(ANSIColor([]byte(textFiles["greet"]))) + loginStateList[CON_LOGIN].prompt
 	aurevoirBuf = textFiles["aurevoir"]
 	warnBuf = textFiles["warn"]
 }

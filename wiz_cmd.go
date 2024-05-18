@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func cmdCinfo(player *characterData, input string) {
+func cmdConInfo(player *characterData, input string) {
 	player.send("Characters:")
 	for _, item := range charList {
 		if item.desc != nil {

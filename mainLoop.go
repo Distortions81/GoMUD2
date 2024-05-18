@@ -28,10 +28,10 @@ func mainLoop() {
 		hashReceiver()
 		descShuffle()
 		interpAllDesc()
-		saveAllAreas(true)
 		sendOutput()
+		saveAllAreas(false)
 		if tickNum%SAVE_INTERVAL == 0 {
-			saveCharacters()
+			saveCharacters(false)
 		}
 		descLock.Unlock()
 
@@ -62,7 +62,7 @@ func sendOutput() {
 				//Color
 				tdesc.outBuf = ANSIColor(tdesc.outBuf)
 
-				//Add telnet go-ahead if enabled, and there is no newline
+				//Add telnet go-ahead if enabled, and there is no newline ending
 				if tdesc.telnet.options != nil && !tdesc.telnet.options.SuppressGoAhead {
 					if tdesc.outBuf[len(tdesc.outBuf)-1] != '\n' {
 						tdesc.outBuf = append(tdesc.outBuf, []byte{TermCmd_IAC, TermCmd_GOAHEAD}...)
@@ -97,6 +97,9 @@ func descShuffle() {
 func interpAllDesc() {
 	//Interpret all
 	for _, desc := range descList {
+		if !desc.valid {
+			continue
+		}
 		desc.interp()
 	}
 }

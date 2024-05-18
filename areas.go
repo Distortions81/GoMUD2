@@ -24,9 +24,9 @@ func makeTestArea() {
 		Version: 1, UUID: sysAreaUUID, VNUM: 0, Name: "system", Rooms: sysRooms}
 }
 
-func saveAllAreas(dirty bool) {
+func saveAllAreas(force bool) {
 	for _, item := range areaList {
-		if dirty && !item.dirty {
+		if !force && !item.dirty {
 			continue
 		}
 		if !item.saveArea() {

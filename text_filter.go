@@ -16,14 +16,15 @@ func txtTo7bit(data string) string {
 	return tmp
 }
 
-func filterTelnetResponse(data string) string {
+// 7-bit uppercase
+func txtTo7bitUpper(data string) string {
 	ttype := txtTo7bit(data)
 	ttype = strings.ToUpper(ttype)
 	return ttype
 }
 
 // Returns true if reserved
-func nameReserved(name string) bool {
+func isNameReserved(name string) bool {
 	for _, item := range reservedNames {
 		if item == name {
 			return true
@@ -33,7 +34,8 @@ func nameReserved(name string) bool {
 	return false
 }
 
-func nameReduce(name string) string {
+// a-z lowercase only
+func titleCaseAlphaOnly(name string) string {
 	name = strings.ToLower(name)
 	var newName string
 	for _, l := range name {
@@ -44,6 +46,7 @@ func nameReduce(name string) string {
 	return toTitle(newName)
 }
 
+// Capitalize first letter
 func toTitle(s string) string {
 	if len(s) > 0 {
 		return strings.ToUpper(s[:1]) + strings.ToLower(s[1:])

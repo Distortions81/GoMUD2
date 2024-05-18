@@ -37,6 +37,7 @@ func sendToChannel(player *characterData, input string, channel int) {
 	chd := channels[channel]
 	if chd == nil {
 		critLog("sendToChannel: Player %v tried to use an invalid chat channel: %v", player.Name, channel)
+		player.send("Sorry, that isn't a valid chat channel.")
 		return
 	}
 	if player.Channels.HasFlag(1 << channel) {
@@ -58,14 +59,9 @@ func cmdChat(player *characterData, input string) {
 	cmd := strings.SplitN(input, " ", 2)
 	numCmd := len(cmd)
 
+	//No arguments, show channel list
 	if numCmd == 0 || input == "" {
-		player.send("Syntax: <channel> <message>\r\n\r\nChannel name: command")
-		for _, ch := range channels {
-			if ch.level > player.Level {
-				continue
-			}
-			player.send("%v: %v", ch.name, ch.cmd)
-		}
+		cmdChannels(player, "")
 		return
 	}
 
@@ -73,7 +69,7 @@ func cmdChat(player *characterData, input string) {
 		player.send("But what do you want to say?")
 		return
 	}
-
+	//Check for full match
 	for c, ch := range channels {
 		if strings.EqualFold(ch.cmd, cmd[0]) {
 			if ch.level > player.Level {
@@ -84,6 +80,7 @@ func cmdChat(player *characterData, input string) {
 			return
 		}
 	}
+	//Otherwise, check for partial match
 	for c, ch := range channels {
 		if strings.HasPrefix(ch.cmd, cmd[0]) {
 			if ch.level > player.Level {
@@ -125,7 +122,7 @@ func cmdChannels(player *characterData, input string) {
 			player.dirty = true
 		}
 	}
-	player.send("What channel did you want to toggle?")
+	player.send("I can't find a channel by that name.")
 
 }
 
@@ -177,7 +174,7 @@ func cmdTell(player *characterData, input string) {
 		target.send("%v tells you: %v", player.Name, parts[1])
 		player.send("You tell %v: %v", target.Name, parts[1])
 		return
-	} else if target := checkPlayingMatch(parts[0]); target != nil && len(parts[0]) > 2 {
+	} else if target := checkPlayingPMatch(parts[0]); target != nil && len(parts[0]) > 2 {
 		if target == player {
 			target.send("Talking to yourself?")
 			return
@@ -188,7 +185,7 @@ func cmdTell(player *characterData, input string) {
 	}
 
 	if len(parts[1]) > MAX_TELL_LENGTH {
-		player.send("That is too long of a message for a tell. Maybe send them some mail.")
+		player.send("That is too long of a message for a tell. Maybe mail them a letter?")
 	}
 	tDesc := descData{}
 	target := tDesc.pLoad(parts[0])
@@ -201,14 +198,16 @@ func cmdTell(player *characterData, input string) {
 				}
 			}
 			if ours >= MAX_TELLS_PER_SENDER {
-				player.send("I think that is enough tells for now.")
+				player.send("You've reached the maximum number of offline tells to one person.")
 				return
 			}
 			target.Tells = append(target.Tells, tellData{SenderName: player.Name, SenderUUID: player.UUID, Message: parts[1], Sent: time.Now().UTC()})
 			target.saveCharacter()
-			player.send("They are offline at the moment, but you tell was saved.")
+			player.send("They aren't available right now, but your message has been saved.")
 			return
+		} else {
+			player.send("They aren't available right now and they have reached the maxiumum number of stored tells.")
 		}
 	}
-	player.send("They don't appear to be online.")
+	player.send("I don't see anyone by that name.")
 }

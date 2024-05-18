@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"sync"
+	"time"
 )
 
 var saveFileLock sync.Mutex
@@ -12,11 +14,15 @@ func saveFile(filePath string, data []byte) error {
 	saveFileLock.Lock()
 	defer saveFileLock.Unlock()
 
-	tmpName := filePath + ".tmp"
+	//Save as unique temp file
+	tBuf := fmt.Sprintf("%v", time.Now().UTC().UnixNano())
+	tmpName := filePath + "-" + tBuf + ".tmp"
 	err := os.WriteFile(tmpName, data, 0755)
 	if err != nil {
 		critLog("saveFile: ERROR: failed to write file: %v", err.Error())
 	}
+
+	//Rename to requested filename
 	err = os.Rename(tmpName, filePath)
 	if err != nil {
 		critLog("saveFile: ERROR: failed to rename file: %v", err.Error())

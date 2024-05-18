@@ -32,22 +32,27 @@ type helpData struct {
 }
 
 func cmdHelp(player *characterData, input string) {
+	//Redirect command list
 	if player.desc != nil && strings.EqualFold("commands", input) {
 		player.listCommands()
 		return
 	}
+	//Redirect to OLC command
 	if player.desc != nil && strings.EqualFold("olc", input) {
 		cmdOLC(player, "help")
 		return
 	}
+	//List command help, if search term is a command
 	for _, item := range cmdListStr {
 		if strings.EqualFold(strings.TrimSpace(input), item.name) {
 			player.send(item.help)
 			return
 		}
 	}
+
 	count := 0
 	buf := ""
+	//Search help topics
 	for _, topic := range helpFiles {
 		if topic.Topic == input {
 			for _, help := range topic.Helps {
@@ -63,6 +68,7 @@ func cmdHelp(player *characterData, input string) {
 			}
 		}
 	}
+	//Search individual help entries
 	for _, topic := range helpFiles {
 		for _, help := range topic.Helps {
 			if strings.EqualFold(input, help.Name) {
