@@ -18,7 +18,7 @@ func isAccNameAvail(name string) bool {
 }
 
 func gCharList(desc *descData) {
-	//They logged in, reset the count.
+	//They logged in, reset the attempt count.
 	if attemptMap[desc.addr] > CONNECT_WARN {
 		critLog("*** Warning ***: account '%v' had %v connection attempts before successfully logging in.", desc.account.Login, attemptMap[desc.addr])
 	}
@@ -97,10 +97,10 @@ func loadchar(desc *descData, login, uuid string) {
 }
 
 func gReconnectConfirm(desc *descData, input string) {
-	filtered := strings.TrimSpace(input)
-	filtered = strings.ToLower(filtered)
+	input = strings.TrimSpace(input)
+	input = strings.ToLower(input)
 
-	if strings.HasPrefix(filtered, "y") {
+	if strings.HasPrefix(input, "y") {
 		var newPlayer *characterData
 		if newPlayer = desc.loadCharacter(desc.account.tempString); newPlayer == nil {
 			desc.send("Loading the character failed.")
@@ -118,7 +118,6 @@ func gReconnectConfirm(desc *descData, input string) {
 }
 
 func gCharNewName(desc *descData, input string) {
-
 	input = nameReduce(input)
 	if nameReserved(input) {
 		desc.sendln("The name you've chosen for your character is not allowed or is reserved.\r\nPlease try a different name.")
@@ -158,7 +157,7 @@ func gCharConfirmName(desc *descData, input string) {
 			desc:      desc,
 			valid:     true,
 			loginTime: time.Now(),
-			Loc:       LocData{AreaUUID: sAreaUUID, RoomUUID: sRoomUUID},
+			Loc:       LocData{AreaUUID: sysAreaUUID, RoomUUID: sysRoomUUID},
 		}
 		desc.account.Characters = append(desc.account.Characters,
 			accountIndexData{Login: desc.account.tempString, UUID: desc.character.UUID, Added: time.Now().UTC()})

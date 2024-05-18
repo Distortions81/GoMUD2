@@ -12,16 +12,16 @@ import (
 const VNUM_SKIP = 100
 
 var areaList map[string]*areaData = make(map[string]*areaData)
-var sAreaUUID, sRoomUUID string
+var sysAreaUUID, sysRoomUUID string
 
 func makeTestArea() {
-	sAreaUUID, sRoomUUID = makeUUIDString(), makeUUIDString()
+	sysAreaUUID, sysRoomUUID = makeUUIDString(), makeUUIDString()
 
 	sysRooms := make(map[string]*roomData)
-	sysRooms[sRoomUUID] = &roomData{
-		Version: 1, UUID: sRoomUUID, VNUM: 0, Name: "The void", Description: "You are floating in a void."}
-	areaList[sAreaUUID] = &areaData{
-		Version: 1, UUID: sAreaUUID, VNUM: 0, Name: "system", Rooms: sysRooms}
+	sysRooms[sysRoomUUID] = &roomData{
+		Version: 1, UUID: sysRoomUUID, VNUM: 0, Name: "The void", Description: "You are floating in a void."}
+	areaList[sysAreaUUID] = &areaData{
+		Version: 1, UUID: sysAreaUUID, VNUM: 0, Name: "system", Rooms: sysRooms}
 }
 
 func saveAllAreas(dirty bool) {
@@ -99,12 +99,12 @@ func loadArea(name string) *areaData {
 	}
 
 	//Link default system area
-	if sAreaUUID == "" || sRoomUUID == "" {
+	if sysAreaUUID == "" || sysRoomUUID == "" {
 		if area.VNUM == 0 {
-			sAreaUUID = area.UUID
+			sysAreaUUID = area.UUID
 			for _, room := range area.Rooms {
 				if room.VNUM == 0 {
-					sRoomUUID = room.UUID
+					sysRoomUUID = room.UUID
 					break
 				}
 			}

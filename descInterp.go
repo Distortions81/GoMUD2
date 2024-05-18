@@ -115,64 +115,74 @@ func (player *characterData) handleCommands(input string) {
 			}
 		}
 	} else {
-		//Find best partial match
-		var scores map[*commandData]int = make(map[*commandData]int)
-		cmdStrLen := len(cmdStr)
-		var highScoreCmd *commandData
-		var highScore = 0
-		for x := 0; x < 2; x++ {
-			for c, cmd := range commandList {
-				if x == 0 && cmd.noShort {
-					continue
-				}
-				cLen := len(c) - 1
-
-				if cLen < cmdStrLen {
-					continue
-				}
-				for x := 0; x < cmdStrLen; x++ {
-
-					if c[x] == cmdStr[x] {
-						scores[cmd]++
-						continue
-					} else {
-						scores[cmd] = 0
-						break
-					}
-
-				}
-				if scores[cmd] > highScore {
-					highScore = scores[cmd]
-					highScoreCmd = cmd
-				}
-			}
-		}
-		if highScore > 0 && highScoreCmd != nil {
-			if highScoreCmd.noShort {
-				player.send("Did you mean %v? You must type that command in full.", highScoreCmd.name)
-				return
-			} else {
-				if highScoreCmd.goDo != nil {
-					if highScoreCmd.checkCommandLevel(player) {
-						if highScoreCmd.forceArg != "" {
-							highScoreCmd.goDo(player, highScoreCmd.forceArg)
-						} else {
-							highScoreCmd.goDo(player, args)
-						}
-					}
-					return
-				}
-			}
-		}
-		player.send("That isn't an available command.")
-		player.listCommands()
+		findCommandMatch(player, cmdStr, args)
 	}
+}
+
+func findCommandMatch(player *characterData, cmdStr string, args string) {
+	//Find best partial match
+	var scores map[*commandData]int = make(map[*commandData]int)
+	cmdStrLen := len(cmdStr)
+	var highScoreCmd *commandData
+	var highScore = 0
+	for x := 0; x < 2; x++ {
+		for c, cmd := range commandList {
+			//Dont match against specific crititcal commands
+			if x == 0 && cmd.noShort {
+				continue
+			}
+			cLen := len(c) - 1
+			//If command name is shorter, skip
+			if cLen < cmdStrLen {
+				continue
+			}
+			//Check if all characters match
+			for x := 0; x < cmdStrLen; x++ {
+
+				if c[x] == cmdStr[x] {
+					scores[cmd]++
+					continue
+				} else {
+					scores[cmd] = 0
+					break
+				}
+
+			}
+			//Save highest scores
+			if scores[cmd] > highScore {
+				highScore = scores[cmd]
+				highScoreCmd = cmd
+			}
+		}
+	}
+	//If we found a match, process
+	if highScore > 0 && highScoreCmd != nil {
+		if highScoreCmd.noShort {
+			//Let player know this command cannot be a partial match
+			player.send("Did you mean %v? You must type that command in full.", highScoreCmd.name)
+			return
+		} else {
+			//Run the command
+			if highScoreCmd.goDo != nil {
+				if highScoreCmd.checkCommandLevel(player) {
+					if highScoreCmd.forceArg != "" {
+						highScoreCmd.goDo(player, highScoreCmd.forceArg)
+					} else {
+						highScoreCmd.goDo(player, args)
+					}
+				}
+				return
+			}
+		}
+	}
+	player.send("That isn't an available command.")
+	player.listCommands()
 }
 
 // Returns true if allowed
 func (command *commandData) checkCommandLevel(player *characterData) bool {
 	if command != nil && command.level > player.Level {
-		player.send("Sorry, you aren't high enough level to use this command.")
+		player.send("Sorry, you aren't high enough level to use the '%v' command.", command.name)
 		return false
 	}
 	return true

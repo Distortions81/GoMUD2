@@ -185,6 +185,7 @@ func init() {
 		cmdListStr = append(cmdListStr, cmdListItem{name: iName, help: buf, cmd: cmd})
 	}
 
+	//Sort by level and name
 	sort.Slice(cmdListStr, func(i, j int) bool {
 		if cmdListStr[i].cmd.level == cmdListStr[j].cmd.level {
 			return cmdListStr[i].name < cmdListStr[j].name
