@@ -121,3 +121,29 @@ func cmdChannels(player *characterData, input string) {
 	player.send("What channel did you want to toggle?")
 
 }
+
+func cmdTell(player *characterData, input string) {
+	parts := strings.SplitN(input, " ", 2)
+	partsLen := len(parts)
+
+	if input == "" {
+		player.send("Tell whom what?")
+		return
+	}
+	if partsLen == 1 {
+		player.send("Tell them what?")
+		return
+	}
+
+	if target := checkPlaying(parts[0]); target != nil {
+		target.send("%v tells you: %v", player.Name, parts[1])
+		player.send("You tell %v: %v", target.Name, parts[1])
+		return
+	} else if target := checkPlayingMatch(parts[0]); target != nil && len(parts[0]) > 2 {
+		target.send("%v tells you: %v", player.Name, parts[1])
+		player.send("You tell %v: %v", target.Name, parts[1])
+		return
+	}
+
+	player.send("They don't appear to be online.")
+}

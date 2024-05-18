@@ -7,6 +7,15 @@ import (
 	"time"
 )
 
+func saveCharacters() {
+	for _, target := range charList {
+		if target.dirty {
+			target.dirty = false
+			target.saveCharacter()
+		}
+	}
+}
+
 func characterNameAvailable(name string) bool {
 	var accs, chars int
 	//defer func() { errLog("characterNameAvailable: searched %v accounts and %v characters.", accs, chars) }()

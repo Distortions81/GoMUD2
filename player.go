@@ -111,6 +111,27 @@ func checkPlaying(name string) *characterData {
 	return nil
 }
 
+func checkPlayingMatch(name string) *characterData {
+	name = strings.ToLower(name)
+	for _, item := range charList {
+		if !item.valid {
+			continue
+		}
+		if strings.EqualFold(item.Name, name) {
+			return item
+		}
+	}
+	for _, item := range charList {
+		if !item.valid {
+			continue
+		}
+		if strings.HasPrefix(strings.ToLower(item.Name), name) {
+			return item
+		}
+	}
+	return nil
+}
+
 func (player *characterData) quit(doClose bool) {
 
 	player.desc.sendln(aurevoirBuf)

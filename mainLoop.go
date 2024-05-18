@@ -29,6 +29,7 @@ func mainLoop() {
 		interpAllDesc()
 		saveAllAreas(true)
 		sendOutput()
+		saveCharacters()
 		descLock.Unlock()
 
 		//Sleep for remaining round time

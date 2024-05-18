@@ -57,7 +57,8 @@ func cmdPset(player *characterData, input string) {
 				return
 			}
 			target.Level = level
-			player.send("%v's level is now %v.", player.Name, player.Level)
+			player.send("%v's level is now %v.", target.Name, target.Level)
+			target.dirty = true
 			return
 		}
 	}
