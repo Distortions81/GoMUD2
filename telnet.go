@@ -17,7 +17,7 @@ func sendCmd(conn net.Conn, command, option byte) error {
 	return nil
 }
 
-func (desc *descData) sendSub(data string, args ...byte) error {
+func (desc *descData) sendSubSeq(data string, args ...byte) error {
 	buf := []byte{TermCmd_IAC, TermCmd_SB}
 	buf = append(buf, args...)
 	if data != "" {

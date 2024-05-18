@@ -63,7 +63,7 @@ func sendOutput() {
 				tdesc.outBuf = ANSIColor(tdesc.outBuf)
 
 				//Add telnet go-ahead if enabled, and there is no newline
-				if tdesc.telnet.options != nil && !tdesc.telnet.options.SUPGA {
+				if tdesc.telnet.options != nil && !tdesc.telnet.options.SuppressGoAhead {
 					if tdesc.outBuf[len(tdesc.outBuf)-1] != '\n' {
 						tdesc.outBuf = append(tdesc.outBuf, []byte{TermCmd_IAC, TermCmd_GOAHEAD}...)
 					}

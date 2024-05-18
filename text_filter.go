@@ -16,7 +16,7 @@ func txtTo7bit(data string) string {
 	return tmp
 }
 
-func telSnFilter(data string) string {
+func filterTelnetResponse(data string) string {
 	ttype := txtTo7bit(data)
 	ttype = strings.ToUpper(ttype)
 	return ttype

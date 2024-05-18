@@ -118,10 +118,10 @@ type telnetData struct {
 	charMap *charmap.Charmap
 	options *termSettings
 
-	subType   byte
-	subMode   bool
-	subData   []byte
-	subLength int
+	subSeqType byte
+	subSeqMode bool
+	subSeqData []byte
+	subLength  int
 
 	hideEcho bool
 }

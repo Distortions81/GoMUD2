@@ -92,7 +92,7 @@ func cmdTelnet(player *characterData, input string) {
 	if telnet.options.UTF {
 		buf = buf + "Supports UTF8\r\n"
 	}
-	if telnet.options.SUPGA {
+	if telnet.options.SuppressGoAhead {
 		buf = buf + "Supressing GoAhead\r\n"
 	}
 	if telnet.options.ANSI256 {

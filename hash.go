@@ -1,12 +1,10 @@
 package main
 
 import (
-	"runtime"
 	"sync"
 	"time"
 
 	"github.com/remeh/sizedwaitgroup"
-	"github.com/tklauser/numcpus"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -19,7 +17,7 @@ const (
 
 var HashDepth int
 
-type toHashData struct {
+type hashData struct {
 	isTest bool
 	id     uint64
 	desc   *descData
@@ -36,7 +34,7 @@ type toHashData struct {
 	workStarted time.Time
 }
 
-var hashList []*toHashData
+var hashList []*hashData
 var hashLock sync.Mutex
 
 func hashReceiver() {
@@ -44,7 +42,7 @@ func hashReceiver() {
 	hashLock.Lock()
 	defer hashLock.Unlock()
 
-	var newList []*toHashData
+	var newList []*hashData
 	var newCount int
 	for _, item := range hashList {
 		if item.complete && !item.failed {
@@ -72,11 +70,8 @@ func hashReceiver() {
 	HashDepth = newCount
 }
 
+// Threaded async hash
 func hasherDaemon() {
-	numThreads, err := numcpus.GetOnline()
-	if err != nil {
-		numThreads = runtime.NumCPU()
-	}
 	wg := sizedwaitgroup.New(numThreads)
 
 	for serverState.Load() == SERVER_RUNNING {
@@ -84,18 +79,24 @@ func hasherDaemon() {
 
 		hashLock.Lock()
 		hashDepth := len(hashList)
+
+		//Empty, just exit
 		if hashDepth == 0 {
 			hashLock.Unlock()
 			continue
 		}
 
+		//Limit worksize to workload and threads
 		workSize := numThreads
 		if workSize > hashDepth {
 			workSize = hashDepth
 		}
+
+		//Copy pointer list, so we can work async
 		workList := hashList
 		hashLock.Unlock()
 
+		//Process worklist
 		for x := 0; x < workSize; x++ {
 			item := workList[(hashDepth-1)-x]
 			if item.desc != nil {
@@ -104,10 +105,11 @@ func hasherDaemon() {
 			}
 		}
 		wg.Wait()
+		//Wait until all threads return
 	}
 }
 
-func processHash(item *toHashData, wg *sizedwaitgroup.SizedWaitGroup) {
+func processHash(item *hashData, wg *sizedwaitgroup.SizedWaitGroup) {
 	var err error
 
 	defer wg.Done()
@@ -136,7 +138,7 @@ func processHash(item *toHashData, wg *sizedwaitgroup.SizedWaitGroup) {
 	item.complete = true
 }
 
-func passCheckComplete(item *toHashData) {
+func passCheckComplete(item *hashData) {
 	if item.isTest {
 		return
 	}
@@ -156,7 +158,7 @@ func passCheckComplete(item *toHashData) {
 	}
 }
 
-func hashGenComplete(item *toHashData) {
+func hashGenComplete(item *hashData) {
 	if item.isTest {
 		return
 	}
@@ -214,7 +216,7 @@ func hashGenComplete(item *toHashData) {
 	gCharList(item.desc)
 }
 
-func hashGenFail(item *toHashData) {
+func hashGenFail(item *hashData) {
 	item.desc.send("Somthing went wrong processing your passphrase. Sorry!")
 	errLog("#%v passphrase hash failed!", item.id)
 }

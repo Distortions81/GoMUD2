@@ -186,7 +186,7 @@ func gPass(desc *descData, input string) {
 	} else {
 		desc.send("Checking your passphrase, please wait.")
 		HashDepth++
-		hashList = append(hashList, &toHashData{id: desc.id, desc: desc, hash: desc.account.PassHash, pass: []byte(input), failed: false, doEncrypt: false, started: time.Now()})
+		hashList = append(hashList, &hashData{id: desc.id, desc: desc, hash: desc.account.PassHash, pass: []byte(input), failed: false, doEncrypt: false, started: time.Now()})
 		desc.state = CON_CHECK_PASS
 	}
 }
@@ -307,7 +307,7 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 			return
 		}
 		HashDepth++
-		hashList = append(hashList, &toHashData{id: desc.id, desc: desc, pass: []byte(desc.account.tempString), hash: []byte{}, failed: false, doEncrypt: true, started: time.Now()})
+		hashList = append(hashList, &hashData{id: desc.id, desc: desc, pass: []byte(desc.account.tempString), hash: []byte{}, failed: false, doEncrypt: true, started: time.Now()})
 
 		hashLock.Unlock()
 		desc.account.tempString = ""

@@ -7,8 +7,8 @@ import (
 )
 
 type termSettings struct {
-	ANSI256, ANSI24, UTF, SUPGA bool
-	CharMap                     *charmap.Charmap
+	ANSI256, ANSI24, UTF, SuppressGoAhead bool
+	CharMap                               *charmap.Charmap
 }
 
 var termTypeMap map[string]*termSettings = map[string]*termSettings{
@@ -42,7 +42,7 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	"MUSHCLIENT": {ANSI256: true, UTF: false},
 
 	//potato Works fine if you never send GA
-	"POTATO": {ANSI256: true, UTF: true, SUPGA: true},
+	"POTATO": {ANSI256: true, UTF: true, SuppressGoAhead: true},
 
 	//POWWOW WINDOWS, uses DOS/OEM/CP437
 	"CYGWIN": {ANSI256: true, CharMap: charmap.CodePage437},
