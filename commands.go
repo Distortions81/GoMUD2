@@ -39,21 +39,24 @@ var commandList = map[string]*commandData{
 	"d":  {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "down"},
 
 	//Anyone
-	"go":   {level: LEVEL_ANY, hint: "go", goDo: cmdGo, args: []string{"exit name"}},
-	"help": {level: LEVEL_ANY, hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}},
-	"look": {level: LEVEL_ANY, hint: "look around the room", goDo: cmdLook},
-	"quit": {level: LEVEL_ANY, noShort: true, hint: "quit and disconnect", goDo: cmdQuit},
-	"who":  {level: LEVEL_ANY, hint: "show players online", goDo: cmdWho},
+	"go":    {level: LEVEL_ANY, hint: "go", goDo: cmdGo, args: []string{"exit name"}},
+	"help":  {level: LEVEL_ANY, hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}},
+	"look":  {level: LEVEL_ANY, hint: "look around the room", goDo: cmdLook},
+	"quit":  {level: LEVEL_ANY, noShort: true, hint: "quit and disconnect", goDo: cmdQuit},
+	"who":   {level: LEVEL_ANY, hint: "show players online", goDo: cmdWho},
+	"tells": {level: LEVEL_ANY, hint: "read pending tells", goDo: cmdTells},
 
 	//Newbie
-	"say":    {level: LEVEL_NEWBIE, hint: "speak out loud", goDo: cmdSay, args: []string{"message"}},
-	"telnet": {level: LEVEL_NEWBIE, hint: "telnet options", goDo: cmdTelnet},
-	//Player
-	"logout":   {level: LEVEL_PLAYER, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
-	"tell":     {level: LEVEL_PLAYER, hint: "send a private message", args: []string{"target", "message"}, goDo: cmdTell},
-	"tells":    {level: LEVEL_PLAYER, hint: "read pending tells", goDo: cmdTells},
+	"say":      {level: LEVEL_NEWBIE, hint: "speak out loud", goDo: cmdSay, args: []string{"message"}},
+	"telnet":   {level: LEVEL_NEWBIE, hint: "telnet options", goDo: cmdTelnet},
 	"chat":     {level: LEVEL_NEWBIE, hint: "chat on a channel", goDo: cmdChat},
 	"channels": {level: LEVEL_NEWBIE, hint: "turn chat channels on or off", goDo: cmdChannels, args: []string{"channel command"}},
+
+	//Player
+	"logout": {level: LEVEL_PLAYER, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
+	"tell":   {level: LEVEL_PLAYER, hint: "send a private message", args: []string{"target", "message"}, goDo: cmdTell},
+	"config": {level: LEVEL_PLAYER, hint: "configure your prefrences.", goDo: cmdConfig},
+
 	//Builder
 	"olc": {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC},
 	//Mod
@@ -65,14 +68,6 @@ var commandList = map[string]*commandData{
 func cmdOLC(player *characterData, input string) {
 	interpOLC(player, input)
 }
-
-type cmdListItem struct {
-	cmd  *commandData
-	name string
-	help string
-}
-
-var cmdListStr []cmdListItem
 
 func cmdTelnet(player *characterData, input string) {
 	if player.desc == nil {
@@ -162,6 +157,14 @@ func cmdWho(player *characterData, input string) {
 	buf = buf + fmt.Sprintf("\r\n%v players online. Uptime: %v", numPlayers, uptime)
 	player.send(buf)
 }
+
+type cmdListItem struct {
+	cmd  *commandData
+	name string
+	help string
+}
+
+var cmdListStr []cmdListItem
 
 func init() {
 	shortUnits, _ = durafmt.DefaultUnitsCoder.Decode("y:yrs,wk:wks,d:d,h:h,m:m,s:s,ms:ms,us:us")

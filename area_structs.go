@@ -4,6 +4,7 @@ import "time"
 
 type DIR int
 
+// DO NOT CHANGE ORDER
 const (
 	DIR_NORTH = iota
 	DIR_NORTH_EAST
@@ -21,6 +22,7 @@ const (
 	DIR_MAX
 )
 
+// DO NOT CHANGE ORDER
 const (
 	EXIT_NORMAL = 1 << iota
 	EXIT_DOOR
@@ -108,6 +110,21 @@ var dirToTextColor [DIR_MAX]string = [DIR_MAX]string{
 	DIR_NORTH_WEST: "{RN{CW",
 	DIR_DOWN:       "{WD{wown",
 	DIR_UP:         "{MU{mp",
+
+	DIR_CUSTOM: "Custom",
+}
+
+var dirToShortColor [DIR_MAX]string = [DIR_MAX]string{
+	DIR_NORTH:      "{RN",
+	DIR_NORTH_EAST: "{RN{GE",
+	DIR_EAST:       "{GE",
+	DIR_SOUTH_EAST: "{BS{GE",
+	DIR_SOUTH:      "{BS",
+	DIR_SOUTH_WEST: "{BS{CW",
+	DIR_WEST:       "{CW",
+	DIR_NORTH_WEST: "{RN{CW",
+	DIR_DOWN:       "{WD",
+	DIR_UP:         "{MU",
 
 	DIR_CUSTOM: "Custom",
 }

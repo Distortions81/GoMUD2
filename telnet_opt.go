@@ -116,6 +116,7 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	//Someone said MUDRammer supports UTF-8, check?
 }
 
+// DO NOT CHANGE ORDER
 const (
 	TermCmd_SE = iota + 240
 	TermCmd_NOP
@@ -156,6 +157,7 @@ var TermCmd2Txt map[int]string = map[int]string{
 	TermCmd_IAC:           "IAC",
 }
 
+// DO NOT CHANGE ORDER
 const (
 	TermOpt_BINARY = iota
 	TermOpt_ECHO
@@ -278,10 +280,13 @@ var TermOpt2TXT map[int]string = map[int]string{
 	TermOpt_EXTENDED_OPTIONS_LIST: "EXTENDED_OPTIONS_LIST",
 }
 
+// DO NOT CHANGE ORDER
 const (
 	SB_IS   = 0
 	SB_SEND = 1
 )
+
+// DO NOT CHANGE ORDER
 const (
 	SB_REQ = iota + 1
 	SB_ACCEPTED

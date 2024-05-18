@@ -89,6 +89,7 @@ type characterData struct {
 	Level int
 
 	Channels Bitmask
+	Config   Bitmask
 
 	OLCMode   int  `json:",omitempty"`
 	OLCInvert bool `json:",omitempty"`
