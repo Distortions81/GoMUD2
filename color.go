@@ -4,22 +4,6 @@ const ANSI_ESC = "\033["
 const ANSI_RESET = ANSI_ESC + "m"
 const NEWLINE = "\r\n"
 
-const (
-	bold = 1 << iota
-	italic
-	underline
-	inverse
-	strike
-)
-
-type ctData struct {
-	code, disCode string
-	style         Bitmask
-
-	isBG, isFG, removeBold,
-	isStyle bool
-}
-
 var colorTable map[byte]*ctData = map[byte]*ctData{
 	//bg colors
 	'0': {code: "40", isBG: true}, //black
@@ -57,171 +41,223 @@ var colorTable map[byte]*ctData = map[byte]*ctData{
 }
 
 // Combines multiple color codes, allows styles to be toggled on and off and ignores any code that would set/unset a state that is already set/unset
-func ANSIColor(i []byte) []byte {
-	var (
-		curStyle, nextStyle Bitmask
-		curColor,
-		curBGColor,
+func ANSIColor(in []byte) []byte {
+	var s ansiState
 
-		nextColor,
-		nextBGColor string
-
-		hasColor bool
-		lastVal  *ctData
-	)
-
-	//Do newlines first
+	//Process {n newlines first
 	var out []byte
-	il := len(i)
-	for x := 0; x < il; x++ {
-		if i[x] == '{' {
+	inLen := len(in)
+	for x := 0; x < inLen; x++ {
+		if in[x] == '{' {
 			x++
-			if x < il {
+			if x < inLen {
 				// escaped {{
-				if i[x] == 'n' {
+				if in[x] == 'n' {
 					out = append(out, []byte(NEWLINE)...)
 					continue
 				} else {
 					out = append(out, '{')
-					out = append(out, i[x])
+					out = append(out, in[x])
 				}
 			}
 		} else {
-			out = append(out, i[x])
+			out = append(out, in[x])
 		}
 	}
-	i = out
+	in = out
 
-	//Do ANSI color/style
+	//Process ANSI color/style
 	out = []byte{}
-	il = len(i)
-	for x := 0; x < il; x++ {
+	inLen = len(in)
+	for x := 0; x < inLen; x++ {
 
-		//Color code
-		if i[x] == '{' {
+		//Escape code
+		if in[x] == '{' {
 			x++
-			if x < il {
-				// escaped {{
-				if i[x] == '{' {
+			if x < inLen {
+				//Escaped {
+				if in[x] == '{' {
 					out = append(out, '{')
 					continue
-				} else if i[x] == 'x' && hasColor {
-					nextStyle = 0
-					curStyle = 0
-
-					nextColor = ""
-					curColor = ""
-
-					curBGColor = ""
-					nextBGColor = ""
-					hasColor = false
+					//Color reset
+				} else if in[x] == 'x' && s.hasColor {
+					s.resetState()
 
 					out = append(out, []byte(ANSI_RESET)...)
 					continue
 				}
-				val := colorTable[i[x]]
-				if lastVal == val {
-					continue
-				}
-				lastVal = val
 
-				if val == nil {
+				//Look up color/style
+				cVal := colorTable[in[x]]
+
+				//If redundant, skip
+				if s.lastVal == cVal {
 					continue
 				}
-				if val.isFG && curColor != val.code {
-					nextColor = val.code
+				s.lastVal = cVal
+
+				//Not a valid code, skips
+				if cVal == nil {
+					continue
 				}
-				if val.isBG && curBGColor != val.code {
-					nextBGColor = val.code
+
+				//If new FG color, set it.
+				if cVal.isFG && s.curColor != cVal.code {
+					s.nextColor = cVal.code
 				}
-				if !val.isFG {
-					nextStyle.ToggleFlag(val.style)
+				//If new BH color, set it.
+				if cVal.isBG && s.curBGColor != cVal.code {
+					s.nextBGColor = cVal.code
+				}
+
+				//Toggle styles such as italic
+				if !cVal.isFG {
+					s.nextStyle.ToggleFlag(cVal.style)
 				} else {
-					nextStyle.AddFlag(val.style)
+					//Otherwise, if bold FG color, add add flag only.
+					s.nextStyle.AddFlag(cVal.style)
 				}
-				if val.removeBold {
-					nextStyle.ClearFlag(bold)
+				//If we are switching from bold FG color
+				//to non-bold FG color, remove bold (do not toggle)
+				if cVal.removeBold {
+					s.nextStyle.ClearFlag(bold)
 				}
 				continue
 			} else {
 				break
 			}
 		} else {
-			lastVal = nil
-			if nextColor != "" || nextBGColor != "" || nextStyle != curStyle {
-				var cout []byte
-				//If destination style and color is nothing, use [m to save space
-				if (nextStyle == 0) && (nextColor == "") && (nextBGColor == "") {
+			s.lastVal = nil
+
+			//If we have a new character and the color or style has changed...
+			if s.nextColor != "" || s.nextBGColor != "" || s.nextStyle != s.curStyle {
+				var cOut []byte
+
+				//If destination style AND color is default/empty, use [m to save space
+				if (s.nextStyle == 0) && (s.nextColor == "") && (s.nextBGColor == "") {
 					out = append(out, []byte(ANSI_RESET)...)
-					out = append(out, i[x])
-					nextStyle = 0
-					curStyle = 0
-
-					nextColor = ""
-					curColor = ""
-
-					curBGColor = ""
-					nextBGColor = ""
-					hasColor = false
+					out = append(out, in[x])
+					s.resetState()
 					continue
-				} else if nextStyle == 0 && curStyle != 0 {
-					cout = append(cout, "0"...)
-				} else if nextStyle.HasFlag(bold) && !curStyle.HasFlag(bold) {
-					cout = append(cout, colorTable['!'].code...)
-				} else if !nextStyle.HasFlag(bold) && curStyle.HasFlag(bold) {
-					cout = append(cout, colorTable['!'].disCode...)
-				} else if nextStyle.HasFlag(italic) && !curStyle.HasFlag(italic) {
-					cout = append(cout, colorTable['*'].code...)
-				} else if !nextStyle.HasFlag(italic) && curStyle.HasFlag(italic) {
-					cout = append(cout, colorTable['*'].disCode...)
-				} else if nextStyle.HasFlag(underline) && !curStyle.HasFlag(underline) {
-					cout = append(cout, colorTable['_'].code...)
-				} else if !nextStyle.HasFlag(underline) && curStyle.HasFlag(underline) {
-					cout = append(cout, colorTable['_'].disCode...)
-				} else if nextStyle.HasFlag(inverse) && !curStyle.HasFlag(inverse) {
-					cout = append(cout, colorTable['^'].code...)
-				} else if !nextStyle.HasFlag(inverse) && curStyle.HasFlag(inverse) {
-					cout = append(cout, colorTable['^'].disCode...)
-				} else if nextStyle.HasFlag(strike) && !curStyle.HasFlag(strike) {
-					cout = append(cout, colorTable['~'].code...)
-				} else if !nextStyle.HasFlag(strike) && curStyle.HasFlag(strike) {
-					cout = append(cout, colorTable['~'].disCode...)
+				} else if s.nextStyle == 0 && s.curStyle != 0 {
+					//If we had a style, but now we do not set style to 0
+					cOut = append(cOut, "0"...)
+				} else if s.nextStyle.HasFlag(bold) && !s.curStyle.HasFlag(bold) {
+					//Add bold style
+					cOut = append(cOut, colorTable['!'].code...)
+				} else if !s.nextStyle.HasFlag(bold) && s.curStyle.HasFlag(bold) {
+					//Remove bold style
+					cOut = append(cOut, colorTable['!'].disCode...)
+				} else if s.nextStyle.HasFlag(italic) && !s.curStyle.HasFlag(italic) {
+					//Add italic style
+					cOut = append(cOut, colorTable['*'].code...)
+				} else if !s.nextStyle.HasFlag(italic) && s.curStyle.HasFlag(italic) {
+					//Remove italic style
+					cOut = append(cOut, colorTable['*'].disCode...)
+				} else if s.nextStyle.HasFlag(underline) && !s.curStyle.HasFlag(underline) {
+					//Add underline style
+					cOut = append(cOut, colorTable['_'].code...)
+				} else if !s.nextStyle.HasFlag(underline) && s.curStyle.HasFlag(underline) {
+					//Remove underline style
+					cOut = append(cOut, colorTable['_'].disCode...)
+				} else if s.nextStyle.HasFlag(inverse) && !s.curStyle.HasFlag(inverse) {
+					//Add inverse style
+					cOut = append(cOut, colorTable['^'].code...)
+				} else if !s.nextStyle.HasFlag(inverse) && s.curStyle.HasFlag(inverse) {
+					//Remove inverse style
+					cOut = append(cOut, colorTable['^'].disCode...)
+				} else if s.nextStyle.HasFlag(strike) && !s.curStyle.HasFlag(strike) {
+					//Add strike style
+					cOut = append(cOut, colorTable['~'].code...)
+				} else if !s.nextStyle.HasFlag(strike) && s.curStyle.HasFlag(strike) {
+					//Remove strike style
+					cOut = append(cOut, colorTable['~'].disCode...)
 				}
-				if nextBGColor != curBGColor {
-					if len(cout) > 0 {
-						cout = append(cout, ';')
+				//Add BG color if state changed
+				if s.nextBGColor != s.curBGColor {
+					if len(cOut) > 0 {
+						cOut = append(cOut, ';')
 					}
-					cout = append(cout, []byte(nextBGColor)...)
-					hasColor = true
-					nextBGColor = ""
+					cOut = append(cOut, []byte(s.nextBGColor)...)
+					s.hasColor = true
+					s.nextBGColor = ""
 				}
-				if nextColor != curColor {
-					if len(cout) > 0 {
-						cout = append(cout, ';')
+				//Add FG color if state changed
+				if s.nextColor != s.curColor {
+					if len(cOut) > 0 {
+						cOut = append(cOut, ';')
 					}
-					cout = append(cout, []byte(nextColor)...)
-					hasColor = true
-					nextColor = ""
+					cOut = append(cOut, []byte(s.nextColor)...)
+					s.hasColor = true
+					s.nextColor = ""
 				}
-				if len(cout) > 0 {
-					cout = append(cout, 'm')
+				//If we have a color code, end ANSI sequence
+				if len(cOut) > 0 {
+					cOut = append(cOut, 'm')
 
-					curStyle = nextStyle
-					curColor = nextColor
-					curBGColor = nextBGColor
+					//Set current state from new state
+					s.curStyle = s.nextStyle
+					s.curColor = s.nextColor
+					s.curBGColor = s.nextBGColor
 
-					hasColor = true
+					s.hasColor = true
+					//escape code
 					out = append(out, []byte(ANSI_ESC)...)
-					out = append(out, cout...)
+					//ansi code
+					out = append(out, cOut...)
 				}
 			}
 		}
-		out = append(out, i[x])
+		//Append text
+		out = append(out, in[x])
 
 	}
 
-	if hasColor {
+	if s.hasColor {
+		//If our state has a non-default color or style, reset it at the end
 		out = append(out, []byte(ANSI_RESET)...)
 	}
 	return out
+}
+
+type ansiState struct {
+	curStyle, nextStyle Bitmask
+
+	curColor,
+	curBGColor,
+
+	nextColor,
+	nextBGColor string
+
+	hasColor bool
+	lastVal  *ctData
+}
+
+func (state *ansiState) resetState() {
+	state.curStyle = 0
+	state.nextStyle = 0
+
+	state.curColor = ""
+	state.nextColor = ""
+
+	state.curBGColor = ""
+	state.nextBGColor = ""
+
+	state.hasColor = false
+}
+
+const (
+	bold = 1 << iota
+	italic
+	underline
+	inverse
+	strike
+)
+
+type ctData struct {
+	code, disCode string
+	style         Bitmask
+
+	isBG, isFG, removeBold,
+	isStyle bool
 }
