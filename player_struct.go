@@ -86,7 +86,7 @@ type characterData struct {
 	Name  string
 	room  *roomData
 	Loc   LocData
-	Level int `json:",omitempty"`
+	Level int
 
 	Channels Bitmask
 
