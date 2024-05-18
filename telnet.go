@@ -26,13 +26,13 @@ func (desc *descData) sendSubSeq(data string, args ...byte) error {
 	buf = append(buf, []byte{TermCmd_IAC, TermCmd_SE}...)
 	dlen, err := desc.conn.Write(buf)
 	if err != nil || dlen != len(buf) {
-		//errLog("#%v: %v: sub send failed (connection lost)", desc.id, desc.cAddr)
+		//mudLog("#%v: %v: sub send failed (connection lost)", desc.id, desc.cAddr)
 		return err
 	}
 
 	/*
 		if len(args) > 1 {
-			errLog("#%v: Sent sub: %v %v %d", desc.id, data, TermOpt2TXT[int(args[0])], args[1])
+			mudLog("#%v: Sent sub: %v %v %d", desc.id, data, TermOpt2TXT[int(args[0])], args[1])
 		}
 	*/
 
@@ -51,7 +51,7 @@ func (desc *descData) inputFull() {
 func (desc *descData) readByte() (byte, error) {
 	data, err := desc.reader.ReadByte()
 	if err != nil {
-		//errLog("#%v: %v: Connection closed by server.", desc.id, desc.cAddr)
+		//mudLog("#%v: %v: Connection closed by server.", desc.id, desc.cAddr)
 		descLock.Lock()
 		desc.valid = false
 		desc.state = CON_DISCONNECTED

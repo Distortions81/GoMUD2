@@ -36,7 +36,7 @@ func readFile(filePath string) ([]byte, error) {
 
 	data, err := os.ReadFile(filePath)
 	if err != nil {
-		errLog("readFile Unable to load file: %v", filePath)
+		critLog("readFile Unable to load file: %v", filePath)
 		return nil, err
 	}
 	return data, nil

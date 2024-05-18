@@ -232,14 +232,14 @@ func (acc *accountData) saveAccount() bool {
 func (desc *descData) loadAccount(uuid string) error {
 	data, err := readFile(DATA_DIR + ACCOUNT_DIR + uuid + "/" + ACCOUNT_FILE)
 	if err != nil {
-		errLog("loadAccount: Unable to load account file: %v", err)
+		critLog("loadAccount: Unable to load account file: %v", err)
 		return err
 	}
 
 	accData := &accountData{}
 	err = json.Unmarshal(data, accData)
 	if err != nil {
-		errLog("loadAccount: Unable to unmarshal the data: %v", err)
+		critLog("loadAccount: Unable to unmarshal the data: %v", err)
 		return err
 	}
 
@@ -257,7 +257,7 @@ func loadAccountIndex() error {
 	newIndex := make(map[string]*accountIndexData)
 	err = json.Unmarshal(data, &newIndex)
 	if err != nil {
-		errLog("loadAccountIndex: Unable to unmarshal the data.")
+		critLog("loadAccountIndex: Unable to unmarshal the data.")
 		return err
 	}
 
@@ -282,7 +282,7 @@ func saveAccountIndex() error {
 		critLog("saveAccountIndex: saveFile failed %v", err.Error())
 		return err
 	}
-	errLog("Account index saved.")
+	mudLog("Account index saved.")
 
 	return nil
 }

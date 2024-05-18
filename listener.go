@@ -25,9 +25,9 @@ func setupListenerTLS() {
 
 	cert, err := tls.LoadX509KeyPair(DATA_DIR+CERTFILE, DATA_DIR+KEYFILE)
 	if err != nil {
-		errLog("Error: %v", err.Error())
-		errLog("Error loading TLS certificates: %v & %v in %v directory... TLS port not opened.", KEYFILE, CERTFILE, DATA_DIR)
-		errLog("Use makeTestCert.sh, or letsencrypt if you have a domain name.")
+		critLog("Error: %v", err.Error())
+		critLog("Error loading TLS certificates: %v & %v in %v directory... TLS port not opened.", KEYFILE, CERTFILE, DATA_DIR)
+		critLog("Use makeTestCert.sh, or letsencrypt if you have a domain name.")
 		return
 	}
 
@@ -35,36 +35,36 @@ func setupListenerTLS() {
 
 	addr, err := net.ResolveTCPAddr("tcp4", *bindIP+":"+strconv.Itoa(*portTLS))
 	if err != nil {
-		errLog("Unable to resolve %v:%v: Error: %v", *bindIP, *portTLS, err)
+		critLog("Unable to resolve %v:%v: Error: %v", *bindIP, *portTLS, err)
 		os.Exit(1)
 	}
 
 	listenerTLS, err = tls.Listen("tcp4", addr.String(), tlsCfg)
 	if err != nil {
-		errLog("Unable to listen at %v:%v. Error: %v", *bindIP, *portTLS, err)
+		critLog("Unable to listen at %v:%v. Error: %v", *bindIP, *portTLS, err)
 		os.Exit(1)
 	}
 
-	errLog("TLS listener online at: %s", addr.String())
+	mudLog("TLS listener online at: %s", addr.String())
 }
 
 func setupListener() {
 	//Find network
 	addr, err := net.ResolveTCPAddr("tcp4", *bindIP+":"+strconv.Itoa(*port))
 	if err != nil {
-		errLog("Unable to resolve %v:%v: Error: %v", *bindIP, *port, err)
+		critLog("Unable to resolve %v:%v: Error: %v", *bindIP, *port, err)
 		os.Exit(1)
 	}
 
 	//Open listener
 	listener, err = net.ListenTCP("tcp4", addr)
 	if err != nil {
-		errLog("Unable to listen on port %v:%v. Error: %v", *bindIP, *port, err)
+		critLog("Unable to listen on port %v:%v. Error: %v", *bindIP, *port, err)
 		os.Exit(1)
 	}
 
 	//Print listener
-	errLog("TCP listener online at: %s", addr.String())
+	mudLog("TCP listener online at: %s", addr.String())
 }
 
 func waitNewConnectionSSL() {
@@ -75,7 +75,7 @@ func waitNewConnectionSSL() {
 
 			conn, err := listenerTLS.Accept()
 			if err != nil {
-				errLog("Listener error: %v -- exiting loop", err)
+				critLog("Listener error: %v -- exiting loop", err)
 				break
 			}
 
@@ -93,7 +93,7 @@ func waitNewConnection() {
 
 		conn, err := listener.Accept()
 		if err != nil {
-			errLog("Listener error: %v -- exiting loop", err)
+			critLog("Listener error: %v -- exiting loop", err)
 			break
 		}
 

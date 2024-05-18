@@ -57,12 +57,12 @@ func loadMudID() {
 			return
 		}
 		if MudID == 0 {
-			errLog("Read mud id was 0, generating new one.")
+			critLog("Read mud id was 0, generating new one.")
 			os.Remove(MudIDFile)
 			writeMudID()
 			return
 		}
-		errLog("%v loaded: %v", MudIDFile, MudID)
+		//mudLog("%v loaded: %v", MudIDFile, MudID)
 	}
 }
 

@@ -71,7 +71,7 @@ func sendOutput() {
 
 				_, err := tdesc.conn.Write(tdesc.outBuf)
 				if err != nil {
-					errLog("#%v: %v: write failed (connection lost)", tdesc.id, tdesc.cAddr)
+					mudLog("#%v: %v: write failed (connection lost)", tdesc.id, tdesc.cAddr)
 					tdesc.state = CON_DISCONNECTED
 					tdesc.valid = false
 				}
@@ -110,7 +110,7 @@ func removeDeadChar() {
 	for _, target := range charList {
 		if !target.valid {
 			target.sendToPlaying("%v slowly fades away.", target.Name)
-			errLog("Removed character %v from charList.", target.Name)
+			//mudLog("Removed character %v from charList.", target.Name)
 			if target.desc != nil {
 				target.saveCharacter()
 			}
@@ -161,7 +161,7 @@ func removeDeadDesc() {
 }
 
 func (desc *descData) killDesc() {
-	//errLog("Removed #%v", desc.id)
+	//mudLog("Removed #%v", desc.id)
 	desc.valid = false
 	desc.conn.Close()
 	if desc.character != nil {

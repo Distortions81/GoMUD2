@@ -89,7 +89,7 @@ func loadArea(name string) *areaData {
 	area := &areaData{}
 	err = json.Unmarshal(data, area)
 	if err != nil {
-		errLog("loadPlayer: Unable to unmarshal the data.")
+		critLog("loadPlayer: Unable to unmarshal the data.")
 		return nil
 	}
 
@@ -131,7 +131,7 @@ func loadAllAreas() {
 		} else if strings.HasSuffix(item.Name(), ".json") {
 			newArea := loadArea(item.Name())
 			areaList[newArea.UUID] = newArea
-			errLog("loaded area: %v", item.Name())
+			//mudLog("loaded area: %v", item.Name())
 		}
 	}
 
@@ -152,5 +152,5 @@ func relinkAreaPointers() {
 			}
 		}
 	}
-	errLog("Loaded %v area, %v rooms and %v exits..", areaCount, roomCount, exitCount)
+	mudLog("Loaded %v area, %v rooms and %v exits..", areaCount, roomCount, exitCount)
 }

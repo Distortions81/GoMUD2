@@ -70,13 +70,13 @@ func (desc *descData) interp() {
 	if loginStateList[desc.state].hideInfo {
 		if !desc.telnet.hideEcho {
 			desc.telnet.hideEcho = true
-			//errLog("#%v Suppressing echo for login/pass", desc.id)
+			//mudLog("#%v Suppressing echo for login/pass", desc.id)
 			sendCmd(desc.conn, TermCmd_WILL, TermOpt_ECHO)
 		}
 	} else {
 		if desc.telnet.hideEcho {
 			desc.telnet.hideEcho = false
-			//errLog("#%v No longer suppressing echo for login/pass", desc.id)
+			//mudLog("#%v No longer suppressing echo for login/pass", desc.id)
 			sendCmd(desc.conn, TermCmd_WONT, TermOpt_ECHO)
 		}
 	}

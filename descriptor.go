@@ -79,11 +79,11 @@ func handleDesc(conn net.Conn, tls bool) {
 		}
 		conn.SetReadDeadline(time.Time{})
 		if len(data) > 0 {
-			critLog("Got header: '%v'", string(data))
+			errLog("Got header: '%v'", string(data))
 		}
 	}
 
-	critLog("Connection from: %v", ipStr)
+	mudLog("Connection from: %v", ipStr)
 
 	//Send telnet sequences
 	sendStart(desc.conn)
@@ -139,7 +139,7 @@ func (desc *descData) readDescLoop() {
 				} else if desc.telnet.subSeqType == TermOpt_CHARSET {
 					desc.getCharset()
 				} else {
-					errLog("#%v: GOT unknown sub data: %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subSeqType)], string(desc.telnet.subSeqData))
+					critLog("#%v: GOT unknown sub data: %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subSeqType)], string(desc.telnet.subSeqData))
 				}
 
 				desc.telnet.subSeqMode = false
@@ -195,17 +195,17 @@ func (desc *descData) getTermType() {
 		if match.CharMap != nil {
 			desc.telnet.charMap = match.CharMap
 		}
-		errLog("Found client match: %v", desc.telnet.termType)
+		mudLog("Found client match: %v", desc.telnet.termType)
 	}
 	for n, item := range termTypeMap {
 		if strings.HasPrefix(desc.telnet.termType, n) {
-			errLog("Found client prefix match: %v", desc.telnet.termType)
+			mudLog("Found client prefix match: %v", desc.telnet.termType)
 			desc.telnet.options = item
 			if item.CharMap != nil {
 				desc.telnet.charMap = item.CharMap
 			}
 		} else if strings.HasSuffix(desc.telnet.termType, n) {
-			errLog("Found client suffix match: %v", desc.telnet.termType)
+			mudLog("Found client suffix match: %v", desc.telnet.termType)
 			desc.telnet.options = item
 			if item.CharMap != nil {
 				desc.telnet.charMap = item.CharMap

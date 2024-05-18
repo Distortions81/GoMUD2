@@ -59,7 +59,7 @@ func hashReceiver() {
 
 		} else if !item.workStarted.IsZero() && time.Since(item.workStarted) > HASH_TIMEOUT {
 			item.desc.send("The passphrase processing timed out. Sorry!")
-			errLog("#%v: passphrase hashing timed out...", item.id)
+			critLog("#%v: passphrase hashing timed out...", item.id)
 			continue
 		}
 
@@ -122,7 +122,7 @@ func processHash(item *hashData, wg *sizedwaitgroup.SizedWaitGroup) {
 			passGood = true
 		} else {
 			item.desc.sendln("Incorrect passphrase.")
-			//critLog("#%v: tried a invalid passphrase!", item.id)
+			critLog("#%v: tried a invalid passphrase!", item.id)
 		}
 	}
 
@@ -183,7 +183,7 @@ func hashGenComplete(item *hashData) {
 	if err != nil {
 		item.desc.send(warnBuf)
 		item.desc.sendln("Unable to create account!")
-		errLog("#%v unable to create account!", item.id)
+		critLog("#%v unable to create account!", item.id)
 		item.desc.close()
 		return
 	}
@@ -193,7 +193,7 @@ func hashGenComplete(item *hashData) {
 		//Save failure
 		item.desc.send(warnBuf)
 		item.desc.sendln("Unable to save account!")
-		errLog("#%v unable to save account!", item.id)
+		critLog("#%v unable to save account!", item.id)
 		item.desc.close()
 		return
 	}
@@ -218,5 +218,5 @@ func hashGenComplete(item *hashData) {
 
 func hashGenFail(item *hashData) {
 	item.desc.send("Somthing went wrong processing your passphrase. Sorry!")
-	errLog("#%v passphrase hash failed!", item.id)
+	critLog("#%v passphrase hash failed!", item.id)
 }

@@ -19,7 +19,7 @@ func saveCharacters(force bool) {
 
 func characterNameAvailable(name string) bool {
 	var accs, chars int
-	//defer func() { errLog("characterNameAvailable: searched %v accounts and %v characters.", accs, chars) }()
+	//defer func() { mudLog("characterNameAvailable: searched %v accounts and %v characters.", accs, chars) }()
 
 	for _, item := range accountIndex {
 		accs++
@@ -99,7 +99,7 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 		}
 	}
 	if uuid == "" {
-		errLog("loadPlayer: Player not found in account.")
+		critLog("loadPlayer: Player not found in account.")
 		return nil
 	}
 
@@ -124,7 +124,7 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 		player := &characterData{}
 		err = json.Unmarshal(data, player)
 		if err != nil {
-			errLog("loadPlayer: Unable to unmarshal the data.")
+			critLog("loadPlayer: Unable to unmarshal the data.")
 			return nil
 		}
 		return player
@@ -147,7 +147,7 @@ func (desc *descData) pLoad(plrStr string) *characterData {
 				target := &characterData{}
 				err = json.Unmarshal(data, target)
 				if err != nil {
-					errLog("loadPlayer: Unable to unmarshal the data.")
+					critLog("loadPlayer: Unable to unmarshal the data.")
 					return nil
 				}
 				target.desc = &desc

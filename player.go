@@ -23,7 +23,7 @@ func (player *characterData) goTo(loc LocData) {
 	player.room = room
 	player.Loc = LocData{AreaUUID: loc.AreaUUID, RoomUUID: loc.RoomUUID}
 	room.players = append(room.players, player)
-	errLog("Player %v added to area/room %v / %v", player.Name, area.Name, room.Name)
+	//mudLog("Player %v added to area/room %v / %v", player.Name, area.Name, room.Name)
 	player.dirty = true
 
 }

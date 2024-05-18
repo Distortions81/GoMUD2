@@ -15,7 +15,7 @@ func readTextFiles() {
 
 	dir, err := os.ReadDir(DATA_DIR + TEXTS_DIR)
 	if err != nil {
-		errLog("readTextFiles: Unable to read texts dir.")
+		critLog("readTextFiles: Unable to read texts dir.")
 		os.Exit(1)
 	}
 
@@ -28,13 +28,13 @@ func readTextFiles() {
 		}
 		data, err := os.ReadFile(DATA_DIR + TEXTS_DIR + fname.Name())
 		if err != nil {
-			errLog("readTextFiles: Unable to read file: %v. Error: %v", fname, err.Error())
+			critLog("readTextFiles: Unable to read file: %v. Error: %v", fname, err.Error())
 			os.Exit(1)
 		}
 
 		shortName := strings.TrimSuffix(fname.Name(), textExt)
 		textFiles[shortName] = string(data)
-		errLog("readTextFiles: Read: %v", fname.Name())
+		//mudLog("readTextFiles: Read: %v", fname.Name())
 	}
 
 	//Save greet, aurevoir and warning

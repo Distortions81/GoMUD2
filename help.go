@@ -107,7 +107,7 @@ func loadHelps() {
 
 	dir, err := os.ReadDir(DATA_DIR + HELPS_DIR)
 	if err != nil {
-		errLog("loadHelps: Unable to read helps dir:  %v", err)
+		critLog("loadHelps: Unable to read helps dir:  %v", err)
 		return
 	}
 	for _, item := range dir {
@@ -115,7 +115,7 @@ func loadHelps() {
 			if strings.HasSuffix(item.Name(), ".json") {
 				help := loadHelp(item.Name())
 				if help != nil {
-					errLog("Loaded help: %v", item.Name())
+					//mudLog("Loaded help: %v", item.Name())
 					helpFiles = append(helpFiles, help)
 					helpKeywords = append(helpKeywords, help.Topic)
 				}
@@ -132,14 +132,14 @@ func loadHelp(file string) *helpTopicData {
 	data, err := readFile(DATA_DIR + HELPS_DIR + file)
 
 	if err != nil {
-		errLog("loadHelp: Unable to read file: %v", err)
+		critLog("loadHelp: Unable to read file: %v", err)
 		return nil
 	}
 
 	newHelpTopic := &helpTopicData{}
 	err = json.Unmarshal(data, newHelpTopic)
 	if err != nil {
-		errLog("loadHelp: Unable to unmarshal the data: %v", err)
+		critLog("loadHelp: Unable to unmarshal the data: %v", err)
 		return nil
 	}
 
