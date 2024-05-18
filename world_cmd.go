@@ -67,6 +67,7 @@ func (player *characterData) goExit(exit *exitData) {
 			dirStr = dirToTextColor[newDir]
 		}
 		player.sendToRoom("%v arrives from the %v{x", player.Name, dirStr)
+		player.dirty = true
 	}
 }
 

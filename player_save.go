@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"strings"
+	"sync"
 	"time"
 )
 
 func saveCharacters() {
 	for _, target := range charList {
 		if target.dirty {
-			target.dirty = false
 			target.saveCharacter()
 		}
 	}
@@ -35,11 +35,13 @@ func characterNameAvailable(name string) bool {
 	return true
 }
 
+var saveLock sync.Mutex
+
 // Returns true on save
 func (player *characterData) saveCharacter() bool {
-	outbuf := new(bytes.Buffer)
-	enc := json.NewEncoder(outbuf)
-	enc.SetIndent("", "\t")
+
+	saveLock.Lock()
+	defer saveLock.Unlock()
 
 	if player.desc == nil {
 		critLog("savePlayer: Nil desc: %v", player.Name)
@@ -57,20 +59,28 @@ func (player *characterData) saveCharacter() bool {
 
 	player.Version = CHARACTER_VERSION
 	player.SaveTime = time.Now().UTC()
-	fileName := DATA_DIR + ACCOUNT_DIR + player.desc.account.UUID + "/" + player.UUID + ".json"
-
-	err := enc.Encode(&player)
-	if err != nil {
-		critLog("savePlayer: enc.Encode: %v", err.Error())
-		return false
-	}
-
-	err = saveFile(fileName, outbuf.Bytes())
-	if err != nil {
-		critLog("savePlayer: saveFile failed %v", err.Error())
-		return false
-	}
+	target := *player
 	player.dirty = false
+
+	go func(target characterData) {
+		fileName := DATA_DIR + ACCOUNT_DIR + target.desc.account.UUID + "/" + target.UUID + ".json"
+		outbuf := new(bytes.Buffer)
+		enc := json.NewEncoder(outbuf)
+		enc.SetIndent("", "\t")
+
+		err := enc.Encode(&target)
+		if err != nil {
+			critLog("savePlayer: enc.Encode: %v", err.Error())
+			return
+		}
+
+		err = saveFile(fileName, outbuf.Bytes())
+		if err != nil {
+			critLog("savePlayer: saveFile failed %v", err.Error())
+			return
+		}
+	}(target)
+
 	return true
 }
 
