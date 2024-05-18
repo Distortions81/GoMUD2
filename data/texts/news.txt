@@ -59,7 +59,8 @@ May 17th:
 Added chat channels. Added who and look to reconnect. Player
 location is now saved/restored on save/quit. Fixed TLS/SSL.
 Added channel command, toggle channels on/off. Added tell command.
-Added autosave. Made player save fully async. Made asave fully async.
+Added character autosave. Made player save fully async.
+Made asave fully async.
 
 {*For more information, see the Discord!{*
 {_https://discord.gg/8WaUA9STPj{_
