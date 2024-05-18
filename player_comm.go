@@ -93,11 +93,31 @@ func cmdChat(player *characterData, input string) {
 func cmdChannels(player *characterData, input string) {
 	if input == "" {
 		player.send("channel command: (on/off) channel name")
-		for _, ch := range channels {
-			player.send("%v: (%3v) %v", ch.cmd)
+		for c, ch := range channels {
+			var status string
+			if player.Channels.HasFlag(1 << c) {
+				status = "OFF"
+			} else {
+				status = "ON"
+			}
+			player.send("%10v: (%3v) %v", ch.cmd, status, ch.name)
 		}
-		player.send("\r\n<channel command> <on/off>")
+		player.send("\r\n<channel command> (toggles on/off)")
 		return
 	}
+
+	for c, ch := range channels {
+		if ch.cmd == strings.ToLower(input) {
+			if player.Channels.HasFlag(1 << c) {
+				player.Channels.ClearFlag(1 << c)
+				player.send("%v channel is now on.", ch.name)
+			} else {
+				player.Channels.AddFlag(1 << c)
+				player.send("%v channel is now off.", ch.name)
+			}
+			player.dirty = true
+		}
+	}
+	player.send("What channel did you want to toggle?")
 
 }

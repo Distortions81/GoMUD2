@@ -51,7 +51,7 @@ var commandList = map[string]*commandData{
 	//Player
 	"logout":   {level: LEVEL_PLAYER, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
 	"chat":     {level: LEVEL_NEWBIE, hint: "chat on a channel", goDo: cmdChat},
-	"channels": {level: LEVEL_NEWBIE, hint: "turn chat channels on or off", goDo: cmdChannels, args: []string{"<channel command>", "<on/off>"}},
+	"channels": {level: LEVEL_NEWBIE, hint: "turn chat channels on or off", goDo: cmdChannels, args: []string{"channel command"}},
 	//Builder
 	"olc": {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC},
 	//Mod
