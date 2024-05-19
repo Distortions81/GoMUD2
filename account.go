@@ -243,6 +243,10 @@ func (desc *descData) loadAccount(uuid string) error {
 		return err
 	}
 
+	if accData.TelnetSettings != nil {
+		desc.telnet = *accData.TelnetSettings
+	}
+
 	desc.account = accData
 	return nil
 }

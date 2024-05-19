@@ -95,30 +95,114 @@ func cmdTelnet(player *characterData, input string) {
 	if player.desc == nil {
 		return
 	}
-	telnet := player.desc.telnet
-	buf := "Telnet options:\r\n"
-	termType := "Not detected."
-	if telnet.termType != "" {
-		termType = telnet.termType
-	}
-	buf = buf + fmt.Sprintf("Mud client: %v\r\nCharset: %v\r\n", termType, telnet.charset)
 
-	if telnet.options == nil {
+	telnet := player.desc.telnet
+	if input == "" {
+		buf := "Telnet options:\r\n"
+		termType := "Not detected."
+		if telnet.termType != "" {
+			termType = telnet.termType
+		}
+		buf = buf + fmt.Sprintf("Selected character map: %v\r\n\r\n", telnet.charset)
+		buf = buf + fmt.Sprintf("Mud client: %v\r\n", termType)
+
+		if telnet.options == nil {
+			return
+		}
+		if telnet.options.SuppressGoAhead {
+			buf = buf + "Supressing Go-Ahead Signal (SUPGA)\r\n"
+		}
+		if telnet.options.ColorDisable {
+			buf = buf + "Color disabled.\r\n"
+		}
+		if telnet.options.ANSI256 {
+			buf = buf + "Supports 256 color mode\r\n"
+		}
+		if telnet.options.ANSI24 {
+			buf = buf + "Supports 24-bit true-color\r\n"
+		}
+
+		player.send(buf)
+		player.send("Options: telnet SAVE, UTF, SUPGA, COLOR or the name of a charmap.")
+		player.send("To see a list of available character maps, type 'telnet charmaps'")
+		player.send("telnet SAVE will, save these settings to your account.")
 		return
 	}
-	if telnet.options.UTF {
-		buf = buf + "Supports UTF8\r\n"
+	if strings.EqualFold("COLOR", input) {
+		if player.desc == nil {
+			return
+		}
+		if telnet.options.ColorDisable {
+			telnet.options.ColorDisable = false
+			player.send("ANSI color is now enabled.")
+		} else {
+			telnet.options.ColorDisable = true
+			player.send("ANSI color is now disabled.")
+		}
+		return
 	}
-	if telnet.options.SuppressGoAhead {
-		buf = buf + "Supressing GoAhead\r\n"
+	if strings.EqualFold("SAVE", input) {
+		if player.desc == nil {
+			return
+		}
+		player.desc.account.TelnetSettings = &player.desc.telnet
+		player.desc.account.saveAccount()
+		player.send("Your telnet settings have been saved to your account.")
+		return
 	}
-	if telnet.options.ANSI256 {
-		buf = buf + "Supports 256 color mode\r\n"
+	if strings.EqualFold("UTF", input) {
+		if telnet.options.UTF {
+			telnet.options.UTF = false
+			player.send("UTF mode disabled.")
+		} else {
+			telnet.options.UTF = true
+			player.send("UTF mode enabled.")
+		}
+		player.send("Character map test:")
+		player.sendTestString()
+		return
 	}
-	if telnet.options.ANSI24 {
-		buf = buf + "Supports 24-bit true-color\r\n"
+	if strings.EqualFold("supga", input) {
+		if telnet.options.SuppressGoAhead {
+			telnet.options.SuppressGoAhead = false
+			player.send("SUPGA mode disabled.")
+		} else {
+			telnet.options.SuppressGoAhead = true
+			player.send("SUPGA mode enabled.")
+		}
+		return
 	}
-	player.send(buf)
+	if strings.EqualFold("charmaps", input) {
+		player.send("Character map list:")
+		var buf string
+		var count int
+		for cname, _ := range charsetList {
+			count++
+			buf = buf + fmt.Sprintf("%18v", cname)
+			if count%4 == 0 {
+				buf = buf + "\r\n"
+			}
+		}
+		player.send(buf)
+		player.send("To enable UTF, type 'telnet utf'")
+		return
+	}
+	for cname, cset := range charsetList {
+		if strings.EqualFold(input, cname) {
+			telnet.charset = cname
+			telnet.charMap = cset
+			telnet.options.UTF = false
+			player.send("Your character map has been changed to: %v", cname)
+			player.send("Character set test:")
+			player.sendTestString()
+			return
+		}
+	}
+	player.send("That isn't a valid character map.")
+}
+
+func (player *characterData) sendTestString() {
+	player.send("Falsches Üben von Xylophonmusik quält jeden größeren Zwerg")
 }
 
 func cmdSay(player *characterData, input string) {

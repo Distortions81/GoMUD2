@@ -60,7 +60,11 @@ func sendOutput() {
 				}
 
 				//Color
-				tdesc.outBuf = ANSIColor(tdesc.outBuf)
+				if !tdesc.telnet.options.ColorDisable {
+					tdesc.outBuf = ANSIColor(tdesc.outBuf)
+				} else {
+					tdesc.outBuf = ColorRemove(tdesc.outBuf)
+				}
 
 				//Add telnet go-ahead if enabled, and there is no newline ending
 				if tdesc.telnet.options != nil && !tdesc.telnet.options.SuppressGoAhead {

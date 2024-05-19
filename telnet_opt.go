@@ -7,8 +7,8 @@ import (
 )
 
 type termSettings struct {
-	ANSI256, ANSI24, UTF, SuppressGoAhead bool
-	CharMap                               *charmap.Charmap
+	ColorDisable, ANSI256, ANSI24, UTF, SuppressGoAhead bool
+	CharMap                                             *charmap.Charmap
 }
 
 var termTypeMap map[string]*termSettings = map[string]*termSettings{

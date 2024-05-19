@@ -40,6 +40,29 @@ var colorTable map[byte]*ctData = map[byte]*ctData{
 	'~': {code: "9", disCode: "29", isStyle: true, style: strike},
 }
 
+func ColorRemove(in []byte) []byte {
+
+	//Process {n newlines first
+	var out []byte
+	inLen := len(in)
+	for x := 0; x < inLen; x++ {
+		if in[x] == '{' {
+			x++
+			if x < inLen {
+				if in[x] == 'n' {
+					out = append(out, []byte("\r\n")...)
+				} else if in[x] == '{' {
+					out = append(out, '{')
+				}
+				continue
+			}
+		} else {
+			out = append(out, in[x])
+		}
+	}
+	return out
+}
+
 // Combines multiple color codes, allows styles to be toggled on and off and ignores any code that would set/unset a state that is already set/unset
 func ANSIColor(in []byte) []byte {
 	var s ansiState
