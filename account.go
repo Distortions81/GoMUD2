@@ -247,6 +247,10 @@ func (desc *descData) loadAccount(uuid string) error {
 		desc.telnet = *accData.TelnetSettings
 	}
 
+	if desc.telnet.options == nil {
+		desc.telnet.options = &termSettings{}
+	}
+
 	desc.account = accData
 	return nil
 }

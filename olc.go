@@ -5,6 +5,12 @@ import (
 	"time"
 )
 
+func init() {
+	for i, item := range olcList {
+		item.name = i
+	}
+}
+
 var olcList = map[string]*commandData{
 	"dig":   {level: LEVEL_BUILDER, hint: "dig out new rooms", goDo: cmdDig, args: []string{"direction"}},
 	"asave": {level: LEVEL_BUILDER, hint: "force save all areas", goDo: cmdAsaveAll},
@@ -12,10 +18,13 @@ var olcList = map[string]*commandData{
 }
 
 func cmdRoom(player *characterData, input string) {
-	player.OLCMode = OLC_ROOM
+	if player.OLCEditor.OLCMode != OLC_ROOM {
+		player.send("OLC now in room edit mode.")
+		player.OLCEditor.OLCMode = OLC_ROOM
+	}
 
 	if strings.EqualFold(input, "exit") {
-		player.OLCMode = OLC_NONE
+		player.OLCEditor.OLCMode = OLC_NONE
 	}
 }
 
@@ -39,9 +48,9 @@ func interpOLC(player *characterData, input string) {
 		player.send("That doesn't seem to be a OLC command.")
 	} else {
 		player.send("OLC commands:")
-	}
-	for i, item := range olcList {
-		player.send("%10v -- %v", i, item.hint)
+		for _, item := range olcList {
+			player.send("%10v -- %v", item.name, item.hint)
+		}
 	}
 }
 

@@ -70,10 +70,10 @@ type descData struct {
 const (
 	OLC_NONE = iota
 	OLC_ROOM
-	OLC_OBJECT
-	OLC_MOB
-	OLC_RESET
 	OLC_AREA
+	OLC_RESET
+	OLC_OBJ
+	OLC_MOB
 
 	OLC_MAX
 )
@@ -91,8 +91,7 @@ type characterData struct {
 	Channels Bitmask
 	Config   Bitmask
 
-	OLCMode   int  `json:",omitempty"`
-	OLCInvert bool `json:",omitempty"`
+	OLCEditor OLCEditorData
 
 	SaveTime time.Time
 	CreDate  time.Time
@@ -104,6 +103,23 @@ type characterData struct {
 
 	dirty bool
 	valid bool
+}
+
+type OLCEditorData struct {
+	OLCMode   int  `json:",omitempty"`
+	OLCInvert bool `json:",omitempty"`
+
+	RoomEditor,
+	AreaEditor,
+	ResetEditor,
+	ObjectEditor,
+	MobEditor EditorData
+
+	EditText []string
+}
+
+type EditorData struct {
+	TargetUUID, AreaUUID string
 }
 
 type tellData struct {
