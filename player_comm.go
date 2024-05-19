@@ -10,17 +10,17 @@ const MAX_TELL_LENGTH = 250
 const MAX_TELLS_PER_SENDER = 5
 
 type chanData struct {
-	flag   Bitmask
-	name   string
-	cmd    string
-	desc   string
-	format string
-	level  int
-
-	listeners []*characterData
+	name     string
+	cmd      string
+	desc     string
+	format   string
+	level    int
+	disabled bool
 }
 
-// Do not change channel IDs, max 63
+// Do not change channel IDs (MAX 63)
+// use 'disabled: true' to disable vs deleting.
+// Otherwise a 'new' channel using the old ID will be 'off' if old channel was off for a player.
 var channels []*chanData = []*chanData{
 	0: {name: "Implementor", cmd: "imp", desc: "Implementor chat", format: "[IMP] %v: %v", level: LEVEL_IMPLEMENTOR},
 	1: {name: "Administrator", cmd: "admin", desc: "Administrator chat", format: "[ADMIN] %v: %v", level: LEVEL_ADMIN},
@@ -33,16 +33,25 @@ var channels []*chanData = []*chanData{
 	8: {name: "OOC", cmd: "ooc", desc: "out-of-character chat", format: "[OOC] %v: %v", level: LEVEL_NEWBIE},
 }
 
-func sendToChannel(player *characterData, input string, channel int) {
+func sendToChannel(player *characterData, input string, channel int) bool {
 	chd := channels[channel]
 	if chd == nil {
 		critLog("sendToChannel: Player %v tried to use an invalid chat channel: %v", player.Name, channel)
 		player.send("Sorry, that isn't a valid chat channel.")
-		return
+		return false
+	}
+	if chd.disabled {
+		player.send("That channel is disabled.")
+		critLog("%v tried to use a disabled comm channel!", player.Name)
+		return false
+	}
+	if chd.level > player.Level {
+		player.send("Your level isn't high enough to use that channel.")
+		return false
 	}
 	if player.Channels.HasFlag(1 << channel) {
-		player.send("You currently have the %v channel turned off.", chd.name)
-		return
+		player.send("You currently have the '%v' (%v) channel turned off.", chd.cmd, chd.name)
+		return false
 	}
 	for _, target := range charList {
 		if !target.Channels.HasFlag(1 << channel) {
@@ -51,8 +60,10 @@ func sendToChannel(player *characterData, input string, channel int) {
 			} else {
 				target.send(chd.format, player.Name, input)
 			}
+			return true
 		}
 	}
+	return false
 }
 
 func cmdChat(player *characterData, input string) {
@@ -71,26 +82,32 @@ func cmdChat(player *characterData, input string) {
 	}
 	//Check for full match
 	for c, ch := range channels {
+		if ch.disabled {
+			continue
+		}
+		if ch.level > player.Level {
+			continue
+		}
 		if strings.EqualFold(ch.cmd, cmd[0]) {
-			if ch.level > player.Level {
-				player.send("You aren't high enough level to use that chat channel.")
+			if sendToChannel(player, cmd[1], c) {
 				return
 			}
-			sendToChannel(player, cmd[1], c)
-			return
 		}
 	}
 	//Otherwise, check for partial match
 	for c, ch := range channels {
+		if ch.disabled {
+			continue
+		}
+		if ch.level > player.Level {
+			continue
+		}
 		if strings.HasPrefix(ch.cmd, cmd[0]) {
-			if ch.level > player.Level {
-				player.send("You aren't high enough level to use that chat channel.")
-				return
-			}
 			sendToChannel(player, cmd[1], c)
 			return
 		}
 	}
+	cmdChannels(player, "")
 	player.send("That doesn't seem to be a valid channel.")
 }
 
@@ -98,6 +115,9 @@ func cmdChannels(player *characterData, input string) {
 	if input == "" {
 		player.send("channel command: (on/off) channel name")
 		for c, ch := range channels {
+			if ch.disabled {
+				continue
+			}
 			var status string
 			if player.Channels.HasFlag(1 << c) {
 				status = "OFF"
@@ -111,6 +131,12 @@ func cmdChannels(player *characterData, input string) {
 	}
 
 	for c, ch := range channels {
+		if ch.disabled {
+			continue
+		}
+		if ch.level > player.Level {
+			continue
+		}
 		if ch.cmd == strings.ToLower(input) {
 			if player.Channels.HasFlag(1 << c) {
 				player.Channels.ClearFlag(1 << c)

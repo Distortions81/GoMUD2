@@ -107,6 +107,10 @@ func (player *characterData) handleCommands(input string) {
 	command := commandList[cmdStr]
 
 	if command != nil {
+		if command.disable {
+			player.send("That command is disabled.")
+			return
+		}
 		if command.checkCommandLevel(player) {
 			if command.forceArg != "" {
 				command.goDo(player, command.forceArg)
@@ -127,6 +131,9 @@ func findCommandMatch(player *characterData, cmdStr string, args string) {
 	var highScore = 0
 	for x := 0; x < 2; x++ {
 		for c, cmd := range commandList {
+			if cmd.disable {
+				continue
+			}
 			//Dont match against specific crititcal commands
 			if x == 0 && cmd.noShort {
 				continue

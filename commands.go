@@ -22,9 +22,11 @@ type commandData struct {
 	args     []string
 	hide     bool
 	forceArg string
+	disable  bool
 }
 
 // command names and shorthands must be lower case
+// use 'disable: true' to disable a command.
 var commandList = map[string]*commandData{
 	//Shorthand
 	"ne": {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "northeast"},
@@ -53,16 +55,36 @@ var commandList = map[string]*commandData{
 	"channels": {level: LEVEL_NEWBIE, hint: "turn chat channels on or off", goDo: cmdChannels, args: []string{"channel command"}},
 
 	//Player
-	"logout": {level: LEVEL_PLAYER, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
-	"tell":   {level: LEVEL_PLAYER, hint: "send a private message", args: []string{"target", "message"}, goDo: cmdTell},
-	"config": {level: LEVEL_PLAYER, hint: "configure your prefrences.", goDo: cmdConfig},
+	"logout":   {level: LEVEL_PLAYER, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
+	"tell":     {level: LEVEL_PLAYER, hint: "send a private message", args: []string{"target", "message"}, goDo: cmdTell},
+	"config":   {level: LEVEL_PLAYER, hint: "configure your prefrences.", goDo: cmdConfig},
+	"charList": {level: LEVEL_PLAYER, hint: "see your list of characters", goDo: cmdCharList},
 
-	//Builder
-	"olc": {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC},
-	//Mod
+	//Builder/mod/imm
+	"olc":     {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC},
 	"coninfo": {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdConInfo},
-	//Imp
-	"pset": {level: LEVEL_IMPLEMENTOR, hint: "set player parameters", goDo: cmdPset},
+	"pset":    {level: LEVEL_IMPLEMENTOR, hint: "set player parameters", goDo: cmdPset},
+}
+
+func cmdCharList(player *characterData, input string) {
+	if player.desc == nil {
+		return
+	}
+
+	var buf string = "Characters:\r\n"
+	for i, item := range player.desc.account.Characters {
+		var playing string
+		if target := checkPlayingUUID(item.Login, item.UUID); target != nil {
+			if target == player {
+				playing = " (THIS IS YOU)"
+			} else {
+				playing = " (ALSO PLAYING)"
+			}
+		}
+		buf = buf + fmt.Sprintf("#%v: %v%v\r\n", i+1, item.Login, playing)
+	}
+	player.send(buf)
+
 }
 
 func cmdOLC(player *characterData, input string) {
