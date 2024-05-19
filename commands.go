@@ -103,22 +103,22 @@ func cmdTelnet(player *characterData, input string) {
 		if telnet.termType != "" {
 			termType = telnet.termType
 		}
-		buf = buf + fmt.Sprintf("Selected character map: %v\r\n\r\n", telnet.charset)
+		buf = buf + fmt.Sprintf("Selected character map: %v\r\n\r\n", telnet.Charset)
 		buf = buf + fmt.Sprintf("Mud client: %v\r\n", termType)
 
-		if telnet.options == nil {
+		if telnet.Options == nil {
 			return
 		}
-		if telnet.options.SuppressGoAhead {
+		if telnet.Options.suppressGoAhead {
 			buf = buf + "Supressing Go-Ahead Signal (SUPGA)\r\n"
 		}
-		if telnet.options.ColorDisable {
+		if telnet.Options.ColorDisable {
 			buf = buf + "Color disabled.\r\n"
 		}
-		if telnet.options.ANSI256 {
+		if telnet.Options.ansi256 {
 			buf = buf + "Supports 256 color mode\r\n"
 		}
-		if telnet.options.ANSI24 {
+		if telnet.Options.ansi24 {
 			buf = buf + "Supports 24-bit true-color\r\n"
 		}
 
@@ -132,11 +132,11 @@ func cmdTelnet(player *characterData, input string) {
 		if player.desc == nil {
 			return
 		}
-		if telnet.options.ColorDisable {
-			telnet.options.ColorDisable = false
+		if telnet.Options.ColorDisable {
+			telnet.Options.ColorDisable = false
 			player.send("ANSI color is now enabled.")
 		} else {
-			telnet.options.ColorDisable = true
+			telnet.Options.ColorDisable = true
 			player.send("ANSI color is now disabled.")
 		}
 		return
@@ -151,11 +151,11 @@ func cmdTelnet(player *characterData, input string) {
 		return
 	}
 	if strings.EqualFold("UTF", input) {
-		if telnet.options.UTF {
-			telnet.options.UTF = false
+		if telnet.Options.UTF {
+			telnet.Options.UTF = false
 			player.send("UTF mode disabled.")
 		} else {
-			telnet.options.UTF = true
+			telnet.Options.UTF = true
 			player.send("UTF mode enabled.")
 		}
 		player.send("Character map test:")
@@ -163,11 +163,11 @@ func cmdTelnet(player *characterData, input string) {
 		return
 	}
 	if strings.EqualFold("supga", input) {
-		if telnet.options.SuppressGoAhead {
-			telnet.options.SuppressGoAhead = false
+		if telnet.Options.suppressGoAhead {
+			telnet.Options.suppressGoAhead = false
 			player.send("SUPGA mode disabled.")
 		} else {
-			telnet.options.SuppressGoAhead = true
+			telnet.Options.suppressGoAhead = true
 			player.send("SUPGA mode enabled.")
 		}
 		return
@@ -189,9 +189,9 @@ func cmdTelnet(player *characterData, input string) {
 	}
 	for cname, cset := range charsetList {
 		if strings.EqualFold(input, cname) {
-			telnet.charset = cname
+			telnet.Charset = cname
 			telnet.charMap = cset
-			telnet.options.UTF = false
+			telnet.Options.UTF = false
 			player.send("Your character map has been changed to: %v", cname)
 			player.send("Character set test:")
 			player.sendTestString()

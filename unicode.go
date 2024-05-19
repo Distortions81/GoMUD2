@@ -89,18 +89,18 @@ func encodeToUTF(cmap *charmap.Charmap, input []byte) string {
 }
 
 func (desc *descData) setCharset() {
-	if strings.EqualFold(desc.telnet.charset, "UTF8") {
-		desc.telnet.options.UTF = true
+	if strings.EqualFold(desc.telnet.Charset, "UTF8") {
+		desc.telnet.Options.UTF = true
 	} else {
 
 		//Check if we have the charset
-		charSetSearch := charsetList[desc.telnet.charset]
+		charSetSearch := charsetList[desc.telnet.Charset]
 		if charSetSearch != nil {
 			desc.telnet.charMap = charSetSearch
 		} else {
 			//Otherwise look for partial match
 			for str, cmap := range charsetList {
-				if strings.HasSuffix(desc.telnet.charset, str) {
+				if strings.HasSuffix(desc.telnet.Charset, str) {
 					desc.telnet.charMap = cmap
 					break
 				}

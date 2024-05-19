@@ -244,7 +244,14 @@ func (desc *descData) loadAccount(uuid string) error {
 	}
 
 	if accData.TelnetSettings != nil {
-		desc.telnet = *accData.TelnetSettings
+		if desc.telnet.termType == "" {
+			if !accData.TelnetSettings.Options.UTF {
+				if accData.TelnetSettings.Charset != "" {
+					desc.telnet.charMap = charsetList[accData.TelnetSettings.Charset]
+				}
+			}
+			desc.telnet = *accData.TelnetSettings
+		}
 	}
 
 	desc.account = accData
