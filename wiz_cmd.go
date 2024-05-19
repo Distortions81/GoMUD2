@@ -5,6 +5,37 @@ import (
 	"strings"
 )
 
+func cmdDisable(player *characterData, input string) {
+	parts := strings.SplitAfterN(input, " ", 2)
+	numParts := len(parts)
+
+	if input == "" {
+		player.send("Disable a command or a channel?")
+		return
+	}
+	if numParts == 1 {
+		player.send("disable which item?")
+		return
+	}
+	if numParts == 2 {
+		if strings.EqualFold(parts[0], "command") {
+			for _, cmd := range commandList {
+				if strings.EqualFold(cmd.name, parts[1]) {
+					cmd.disable = true
+					//write disabled status here
+				}
+			}
+		} else if strings.EqualFold(parts[0], "channel") {
+			for _, ch := range channels {
+				if strings.EqualFold(ch.cmd, parts[1]) {
+					ch.disabled = true
+					//write disabled status here
+				}
+			}
+		}
+	}
+}
+
 func cmdConInfo(player *characterData, input string) {
 	player.send("Characters:")
 	for _, item := range charList {
