@@ -130,10 +130,10 @@ type tellData struct {
 }
 
 type telnetData struct {
-	charset, termType string
+	Charset, termType string
 
 	charMap *charmap.Charmap
-	options *termSettings
+	Options *termSettings
 
 	subSeqType byte
 	subSeqMode bool

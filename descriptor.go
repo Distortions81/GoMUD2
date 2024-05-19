@@ -55,8 +55,8 @@ func handleDesc(conn net.Conn, tls bool) {
 	//Incrememnt desc ID, create new descriptor
 	topID++
 	tnd := telnetData{
-		charset: DEFAULT_CHARSET, charMap: DEFAULT_CHARMAP,
-		options: &termSettings{},
+		Charset: DEFAULT_CHARSET, charMap: DEFAULT_CHARMAP,
+		Options: &termSettings{},
 	}
 	desc := &descData{
 		conn: conn, id: topID, connectTime: time.Now(),
@@ -191,35 +191,35 @@ func (desc *descData) getTermType() {
 
 	//errLog("#%v: GOT %v: %s", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.subData)
 	if match != nil {
-		desc.telnet.options = match
-		if match.CharMap != nil {
-			desc.telnet.charMap = match.CharMap
+		desc.telnet.Options = match
+		if match.charMap != nil {
+			desc.telnet.charMap = match.charMap
 		}
 		mudLog("Found client match: %v", desc.telnet.termType)
 	}
 	for n, item := range termTypeMap {
 		if strings.HasPrefix(desc.telnet.termType, n) {
 			mudLog("Found client prefix match: %v", desc.telnet.termType)
-			desc.telnet.options = item
-			if item.CharMap != nil {
-				desc.telnet.charMap = item.CharMap
+			desc.telnet.Options = item
+			if item.charMap != nil {
+				desc.telnet.charMap = item.charMap
 			}
 		} else if strings.HasSuffix(desc.telnet.termType, n) {
 			mudLog("Found client suffix match: %v", desc.telnet.termType)
-			desc.telnet.options = item
-			if item.CharMap != nil {
-				desc.telnet.charMap = item.CharMap
+			desc.telnet.Options = item
+			if item.charMap != nil {
+				desc.telnet.charMap = item.charMap
 			}
 		}
 	}
 }
 
 func (desc *descData) getCharset() {
-	desc.telnet.charset = txtTo7bitUpper(string(desc.telnet.subSeqData))
+	desc.telnet.Charset = txtTo7bitUpper(string(desc.telnet.subSeqData))
 	desc.setCharset()
 	//errLog("#%v: GOT %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.charset)
 
-	desc.sendSubSeq(desc.telnet.charset, TermOpt_CHARSET, SB_ACCEPTED)
+	desc.sendSubSeq(desc.telnet.Charset, TermOpt_CHARSET, SB_ACCEPTED)
 }
 
 func (desc *descData) getSubSeqData(data byte) {
@@ -250,7 +250,7 @@ func (desc *descData) ingestLine() {
 
 	//Charmap translation, if needed
 	var buf string
-	if !desc.telnet.options.UTF {
+	if !desc.telnet.Options.UTF {
 		buf = encodeToUTF(desc.telnet.charMap, desc.inBuf)
 	} else {
 		buf = string(desc.inBuf)
@@ -278,7 +278,7 @@ func (desc *descData) handleTelnetCmd(command, option byte) {
 		if option == TermOpt_TERMINAL_TYPE {
 			desc.sendSubSeq("", TermOpt_TERMINAL_TYPE, SB_SEND)
 		} else if option == TermOpt_SUP_GOAHEAD {
-			desc.telnet.options.SuppressGoAhead = true
+			desc.telnet.Options.suppressGoAhead = true
 		}
 
 	} else if command == TermCmd_DO {
@@ -286,19 +286,19 @@ func (desc *descData) handleTelnetCmd(command, option byte) {
 		if option == TermOpt_CHARSET {
 			desc.sendSubSeq(charsetSend, TermOpt_CHARSET, SB_REQ)
 		} else if option == TermOpt_SUP_GOAHEAD {
-			desc.telnet.options.SuppressGoAhead = true
+			desc.telnet.Options.suppressGoAhead = true
 		}
 
 	} else if command == TermCmd_DONT {
 
 		if option == TermOpt_SUP_GOAHEAD {
-			desc.telnet.options.SuppressGoAhead = false
+			desc.telnet.Options.suppressGoAhead = false
 		}
 
 	} else if command == TermCmd_WONT {
 
 		if option == TermCmd_GOAHEAD {
-			desc.telnet.options.SuppressGoAhead = false
+			desc.telnet.Options.suppressGoAhead = false
 		}
 	}
 }

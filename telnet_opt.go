@@ -7,45 +7,45 @@ import (
 )
 
 type termSettings struct {
-	ColorDisable, ANSI256, ANSI24, UTF, SuppressGoAhead bool
-	CharMap                                             *charmap.Charmap
+	ColorDisable, ansi256, ansi24, UTF, suppressGoAhead bool
+	charMap                                             *charmap.Charmap
 }
 
 var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	//amudclient Java, didnt try it
-	"AMUDCLIENT": {ANSI256: true, ANSI24: true, UTF: true},
+	"AMUDCLIENT": {ansi256: true, ansi24: true, UTF: true},
 
 	//atlantis Macintosh / OS X, didn't test
-	"ATLANTIS": {ANSI256: true, UTF: true},
+	"ATLANTIS": {ansi256: true, UTF: true},
 
 	//beip Worked fine
-	"BEIP": {ANSI256: true, UTF: true},
+	"BEIP": {ansi256: true, UTF: true},
 
 	//ggmud normalizes accents away, always sends UTF-8, but auto-detects recieved?
 	//terminal_type bug (reconnects as "hardcopy", "unknown"?),
-	"GGMUD":    {ANSI256: false, UTF: true},
-	"HARDCOPY": {ANSI256: false, UTF: true},
-	"UNKNOWN":  {ANSI256: false, UTF: true},
+	"GGMUD":    {ansi256: false, UTF: true},
+	"HARDCOPY": {ansi256: false, UTF: true},
+	"UNKNOWN":  {ansi256: false, UTF: true},
 	//ggmud
 
 	//kbtin Didn't find any binaries, just source, did not test
-	"KBTIN": {ANSI256: true, UTF: true},
+	"KBTIN": {ansi256: true, UTF: true},
 
 	//mudlet Works fine
-	"MUDLET": {ANSI256: true, UTF: true},
+	"MUDLET": {ansi256: true, UTF: true},
 
 	//mudmagic will accept but does not send UTF-8, does not accept latin1
 	//eats whole lines with accents, crashed more than once, no termtype
 	//"MUDMAGIC": {ANSI256: false, UTF: true},
 
 	//mushclient Works fine
-	"MUSHCLIENT": {ANSI256: true, UTF: false},
+	"MUSHCLIENT": {ansi256: true, UTF: false},
 
 	//potato Works fine if you never send GA
-	"POTATO": {ANSI256: true, UTF: true, SuppressGoAhead: true},
+	"POTATO": {ansi256: true, UTF: true, suppressGoAhead: true},
 
 	//POWWOW WINDOWS, uses DOS/OEM/CP437
-	"CYGWIN": {ANSI256: true, CharMap: charmap.CodePage437},
+	"CYGWIN": {ansi256: true, charMap: charmap.CodePage437},
 
 	//tintin Newline issues on linux?
 	//"TINTIN": {ANSI256: true, ANSI24: true, UTF: true},
@@ -57,10 +57,10 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	//"BIOMUD": {ANSI256: true},
 
 	//blowtorch Didn't test, no android devices
-	"BLOWTORCH": {ANSI256: true},
+	"BLOWTORCH": {ansi256: true},
 
 	//Works, but eats whole lines with accent characters?
-	"CMUD": {ANSI256: true},
+	"CMUD": {ansi256: true},
 
 	//Works, but normalizes text, no termtype
 	//"GMUD":       {ANSI256: false},
@@ -72,7 +72,7 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	//"JAMOCHAMUD": {ANSI256: false},
 
 	//kild works fine
-	"KILDCLIENT": {ANSI256: true},
+	"KILDCLIENT": {ansi256: true},
 
 	//Didn't run
 	//"LYNTIN": {ANSI256: true},
@@ -90,7 +90,7 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	//"PORTAL": {ANSI256: false},
 
 	//Works fine but normalizes text
-	"PUEBLO": {ANSI256: false},
+	"PUEBLO": {ansi256: false},
 
 	//Works fine, but termtype is just 'ansi'
 	//"SIMPLEMU": {ANSI256: false},
@@ -108,10 +108,10 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	//"WINTINNET": {ANSI256: true},
 
 	//Worked fine
-	"ZMUD": {ANSI256: false},
+	"ZMUD": {ansi256: false},
 
 	//Generic terminal
-	"XTERM256COLOR": {ANSI256: true, UTF: true},
+	"XTERM256COLOR": {ansi256: true, UTF: true},
 
 	//Someone said MUDRammer supports UTF-8, check?
 }

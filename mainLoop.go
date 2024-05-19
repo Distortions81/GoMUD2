@@ -55,19 +55,19 @@ func sendOutput() {
 			go func(tdesc *descData) {
 
 				//Character map translation
-				if !tdesc.telnet.options.UTF {
+				if !tdesc.telnet.Options.UTF {
 					tdesc.outBuf = encodeFromUTF(tdesc.telnet.charMap, tdesc.outBuf)
 				}
 
 				//Color
-				if !tdesc.telnet.options.ColorDisable {
+				if !tdesc.telnet.Options.ColorDisable {
 					tdesc.outBuf = ANSIColor(tdesc.outBuf)
 				} else {
 					tdesc.outBuf = ColorRemove(tdesc.outBuf)
 				}
 
 				//Add telnet go-ahead if enabled, and there is no newline ending
-				if tdesc.telnet.options != nil && !tdesc.telnet.options.SuppressGoAhead {
+				if tdesc.telnet.Options != nil && !tdesc.telnet.Options.suppressGoAhead {
 					if tdesc.outBuf[len(tdesc.outBuf)-1] != '\n' {
 						tdesc.outBuf = append(tdesc.outBuf, []byte{TermCmd_IAC, TermCmd_GOAHEAD}...)
 					}
