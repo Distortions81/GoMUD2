@@ -14,7 +14,7 @@ Voidstorm
 Thundercore
 --Stellarax
 Lunacore
-Ignitionex
+--Ignitionex
 Meteorix
 Blacknova
 Radiantix

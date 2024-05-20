@@ -5,8 +5,8 @@ import "strings"
 type Bitmask uint64
 
 const (
-	VERSION  = "v0.0.10a-05182024-0145p"
-	CODENAME = "Warpfire"
+	VERSION  = "v0.0.11a-05192024-1107p"
+	CODENAME = "Ignitionex"
 
 	LICENSE = "goMUD2: " + VERSION + "-" + CODENAME + "\n" +
 		"Copyright 2024 Carl Frank Otto III (carlotto81@gmail.com). All rights reserved.\n"
