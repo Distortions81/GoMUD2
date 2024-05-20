@@ -1,39 +1,108 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
 
+const disCol = 4
+
 func cmdDisable(player *characterData, input string) {
-	parts := strings.SplitAfterN(input, " ", 2)
+	parts := strings.SplitN(input, " ", 2)
 	numParts := len(parts)
 
 	if input == "" {
-		player.send("Disable a command or a channel?")
-		return
-	}
-	if numParts == 1 {
-		player.send("disable which item?")
+		player.send("Commands:")
+		var buf string
+		var count int
+		var c int
+		for _, cmd := range cmdList {
+			if cmd.hide {
+				continue
+			}
+
+			if c%disCol == 0 {
+				buf = buf + "\r\n"
+				count = 0
+			}
+			if count > 0 {
+				buf = buf + ", "
+			}
+			if cmd.Disabled {
+				buf = buf + "(X) "
+			} else {
+				buf = buf + "( ) "
+			}
+			buf = buf + fmt.Sprintf("%10v", cmd.name)
+			count++
+			c++
+		}
+		player.send(buf)
+
+		player.send("\r\nChannels:")
+		buf = ""
+		count = 0
+		c = 0
+		for _, cmd := range channels {
+			if c%disCol == 0 {
+				buf = buf + "\r\n"
+				count = 0
+			}
+			if count > 0 {
+				buf = buf + ", "
+			}
+			if cmd.disabled {
+				buf = buf + "(X) "
+			} else {
+				buf = buf + "( ) "
+			}
+			buf = buf + fmt.Sprintf("%10v", cmd.cmd)
+			count++
+			c++
+		}
+		player.send(buf)
 		return
 	}
 	if numParts == 2 {
 		if strings.EqualFold(parts[0], "command") {
-			for _, cmd := range cmdMap {
+			if strings.EqualFold(parts[1], "disable") {
+				player.send("You can't disable the disable command.")
+				return
+			}
+			for _, cmd := range cmdList {
 				if strings.EqualFold(cmd.name, parts[1]) {
-					cmd.disable = true
-					//write disabled status here
+					if !cmd.Disabled {
+						cmd.Disabled = true
+						player.send("The %v command is now disabled.", cmd.name)
+					} else {
+						cmd.Disabled = false
+						player.send("The %v command is now enabled.", cmd.name)
+					}
+					return
 				}
 			}
+			player.send("I don't see a command called that.")
+			return
 		} else if strings.EqualFold(parts[0], "channel") {
 			for _, ch := range channels {
 				if strings.EqualFold(ch.cmd, parts[1]) {
 					ch.disabled = true
-					//write disabled status here
+					if !ch.disabled {
+						ch.disabled = true
+						player.send("The %v channel is now disabled.", ch.name)
+					} else {
+						ch.disabled = false
+						player.send("The %v channel is now enabled.", ch.name)
+					}
+					return
 				}
 			}
+			player.send("I don't see a channel called that.")
+			return
 		}
 	}
+	player.send("Disable a command or a channel?")
 }
 
 func cmdConInfo(player *characterData, input string) {

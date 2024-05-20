@@ -23,10 +23,12 @@ const (
 	//Files
 	ACCOUNT_FILE   = "acc.json"
 	ACC_INDEX_FILE = "accountIndex.json"
+	DISABLES_FILE  = "disabled.json"
 
 	ACCOUNT_VERSION   = 1
 	CHARACTER_VERSION = 1
 	AREA_VERSION      = 1
+	DISABLES_VERSION  = 1
 	ROOM_VERSION      = 1
 
 	DEFAULT_CHARSET = "LATIN1"
