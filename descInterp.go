@@ -84,9 +84,13 @@ func (desc *descData) interp() {
 
 func (player *characterData) listCommands() {
 	buf := "\r\nCommands:\r\n"
+	var lastLevel int
 	for i, item := range cmdListStr {
 		if item.cmd.level > player.Level {
 			continue
+		}
+		if item.cmd.level != lastLevel {
+
 		}
 		if i > 0 {
 			buf = buf + "\r\n"

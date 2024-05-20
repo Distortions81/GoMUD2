@@ -58,12 +58,12 @@ var commandList = map[string]*commandData{
 	"logout":   {level: LEVEL_PLAYER, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
 	"tell":     {level: LEVEL_PLAYER, hint: "send a private message", args: []string{"target", "message"}, goDo: cmdTell},
 	"config":   {level: LEVEL_PLAYER, hint: "configure your prefrences.", goDo: cmdConfig},
-	"charList": {level: LEVEL_PLAYER, hint: "see your list of characters", goDo: cmdCharList},
+	"charlist": {level: LEVEL_PLAYER, hint: "see your list of characters", goDo: cmdCharList},
 
 	//Builder/mod/imm
-	"olc":     {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC},
+	"olc":     {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC, args: []string{"room", "asave", "dig"}},
 	"coninfo": {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdConInfo},
-	"pset":    {level: LEVEL_IMPLEMENTOR, hint: "set player parameters", goDo: cmdPset},
+	"pset":    {level: LEVEL_IMPLEMENTOR, hint: "set player parameters", goDo: cmdPset, args: []string{"player-name", "level", "level-number"}},
 }
 
 func cmdCharList(player *characterData, input string) {
@@ -123,9 +123,11 @@ func cmdTelnet(player *characterData, input string) {
 		}
 
 		player.send(buf)
-		player.send("Options: telnet SAVE, UTF, SUPGA, COLOR or the name of a charmap.")
-		player.send("To see a list of available character maps, type 'telnet charmaps'")
-		player.send("telnet SAVE will, save these settings to your account.")
+		if termType == "" {
+			player.send("Options: telnet SAVE, UTF, SUPGA, COLOR or the name of a charmap.")
+			player.send("To see a list of available character maps, type 'telnet charmaps'")
+			player.send("telnet SAVE will, save these settings to your account.")
+		}
 		return
 	}
 	if strings.EqualFold("COLOR", input) {
