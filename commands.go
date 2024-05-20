@@ -22,7 +22,7 @@ type commandData struct {
 	args     []string
 	hide     bool
 	forceArg string
-	Disabled bool
+	disabled bool
 }
 
 var cmdList []*commandData

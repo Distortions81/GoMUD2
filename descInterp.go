@@ -125,7 +125,7 @@ func (player *characterData) handleCommands(input string) {
 	command := cmdMap[cmdStr]
 
 	if command != nil {
-		if command.Disabled {
+		if command.disabled {
 			player.send("That command is disabled.")
 			return
 		}
@@ -149,7 +149,7 @@ func findCommandMatch(player *characterData, cmdStr string, args string) {
 	var highScore = 0
 	for x := 0; x < 2; x++ {
 		for c, cmd := range cmdMap {
-			if cmd.Disabled {
+			if cmd.disabled {
 				continue
 			}
 			//Dont match against specific crititcal commands

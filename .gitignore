@@ -6,3 +6,4 @@ data/*.pem
 data/*.key
 out/
 data/mud-id.txt
+data/disabled.json

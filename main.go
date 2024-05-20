@@ -77,11 +77,11 @@ func main() {
 	}
 
 	loadAllAreas()
-
 	readTextFiles()
 
 	loadHelps()
 	saveHelps()
+	readDisables()
 
 	setupListener()
 	setupListenerTLS()
