@@ -246,6 +246,7 @@ func cmdWho(player *characterData, input string) {
 			return tmpCharList[i].desc.id < tmpCharList[j].desc.id
 		})
 	}
+	buf = buf + fmt.Sprintf("%31v - %v %v %v %v\r\n", "Player name", "level", "time-online", "(idle time)", "(no link)")
 	for _, target := range tmpCharList {
 		var idleTime, unlink string
 		if time.Since(target.idleTime) >= (time.Minute * 3) {
@@ -261,7 +262,7 @@ func cmdWho(player *characterData, input string) {
 			onlineTime = durafmt.Parse(time.Since(target.loginTime).Truncate(time.Minute)).LimitFirstN(2).Format(shortUnits)
 			onlineTime = strings.ReplaceAll(onlineTime, " ", "")
 		}
-		buf = buf + fmt.Sprintf("%31v - %v%v%v\r\n", target.Name, onlineTime, idleTime, unlink)
+		buf = buf + fmt.Sprintf("%31v - %v %v%v%v\r\n", target.Name, levelName[target.Level], onlineTime, idleTime, unlink)
 	}
 	uptime := durafmt.Parse(time.Since(bootTime).Truncate(time.Second)).LimitFirstN(2).Format(shortUnits)
 	uptime = strings.ReplaceAll(uptime, " ", "")
