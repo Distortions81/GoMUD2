@@ -91,7 +91,7 @@ type characterData struct {
 	Channels Bitmask
 	Config   Bitmask
 
-	OLCEditor OLCEditorData
+	OLCEditor OLCEditorData `json:",omitempty"`
 
 	SaveTime time.Time
 	CreDate  time.Time
@@ -109,17 +109,18 @@ type OLCEditorData struct {
 	OLCMode   int  `json:",omitempty"`
 	OLCInvert bool `json:",omitempty"`
 
-	RoomEditor,
-	AreaEditor,
-	ResetEditor,
-	ObjectEditor,
-	MobEditor EditorData
+	RoomEditor   EditorData `json:",omitempty"`
+	AreaEditor   EditorData `json:",omitempty"`
+	ResetEditor  EditorData `json:",omitempty"`
+	ObjectEditor EditorData `json:",omitempty"`
+	MobEditor    EditorData `json:",omitempty"`
 
-	EditText []string
+	EditText []string `json:",omitempty"`
 }
 
 type EditorData struct {
-	TargetUUID, AreaUUID string
+	TargetUUID string `json:",omitempty"`
+	AreaUUID   string `json:",omitempty"`
 }
 
 type tellData struct {
