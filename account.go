@@ -108,7 +108,6 @@ func gReconnectConfirm(desc *descData, input string) {
 			return
 		}
 		newPlayer.send("Reconnected!")
-		cmdWho(newPlayer, "")
 		cmdLook(newPlayer, "")
 		desc.character.checkTells()
 	} else {
@@ -173,6 +172,7 @@ func gCharConfirmName(desc *descData, input string) {
 		}
 
 		desc.character.sendToPlaying("--> {GW{gelcome{x %v to the lands! <--", desc.account.tempString)
+		desc.sendln("To see a list of commands type: HELP COMMANDS")
 	} else {
 		desc.sendln("Names did not match. Try again, or type 'back' to choose a new name.")
 	}

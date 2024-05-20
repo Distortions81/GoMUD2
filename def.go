@@ -43,7 +43,7 @@ var makeDirs = []string{
 
 // Add commands to reserved names
 func init() {
-	for i := range commandList {
+	for i := range cmdMap {
 		reservedNames = append(reservedNames, strings.ToLower(i))
 	}
 }

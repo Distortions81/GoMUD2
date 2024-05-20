@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 	"time"
 )
@@ -83,21 +84,34 @@ func (desc *descData) interp() {
 }
 
 func (player *characterData) listCommands() {
-	buf := "\r\nCommands:\r\n"
+	player.send("\r\nCommands:\r\n")
 	var lastLevel int
-	for i, item := range cmdListStr {
-		if item.cmd.level > player.Level {
+	for _, item := range cmdList {
+		if item.hide {
 			continue
 		}
-		if item.cmd.level != lastLevel {
+		if item.level > player.Level {
+			continue
+		}
 
+		if lastLevel != item.level {
+			player.send("\r\nLevel: %v", levelName[item.level])
+			lastLevel = item.level
 		}
-		if i > 0 {
-			buf = buf + "\r\n"
+
+		var parts string
+		if item.args != nil {
+			parts += " -- "
 		}
-		buf = buf + item.help
+		for i, arg := range item.args {
+			if i > 0 {
+				parts += ", "
+			}
+			parts += fmt.Sprintf("<%v>", arg)
+		}
+		player.send("%10v -- %v%v", item.name, item.hint, parts)
 	}
-	player.send(buf)
+	player.send("")
 }
 
 func (player *characterData) handleCommands(input string) {
@@ -108,7 +122,7 @@ func (player *characterData) handleCommands(input string) {
 		interpOLC(player, input)
 		return
 	}
-	command := commandList[cmdStr]
+	command := cmdMap[cmdStr]
 
 	if command != nil {
 		if command.disable {
@@ -134,7 +148,7 @@ func findCommandMatch(player *characterData, cmdStr string, args string) {
 	var highScoreCmd *commandData
 	var highScore = 0
 	for x := 0; x < 2; x++ {
-		for c, cmd := range commandList {
+		for c, cmd := range cmdMap {
 			if cmd.disable {
 				continue
 			}

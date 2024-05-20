@@ -25,9 +25,11 @@ type commandData struct {
 	disable  bool
 }
 
+var cmdList []*commandData
+
 // command names and shorthands must be lower case
 // use 'disable: true' to disable a command.
-var commandList = map[string]*commandData{
+var cmdMap = map[string]*commandData{
 	//Shorthand
 	"ne": {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "northeast"},
 	"nw": {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "northwest"},
@@ -64,6 +66,7 @@ var commandList = map[string]*commandData{
 	"olc":     {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC, args: []string{"room", "asave", "dig"}},
 	"coninfo": {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdConInfo},
 	"pset":    {level: LEVEL_IMPLEMENTOR, hint: "set player parameters", goDo: cmdPset, args: []string{"player-name", "level", "level-number"}},
+	//"disable": {level: LEVEL_ADMIN, hint: "disable a command or channel.", goDo: cmdDisable, args: []string{"command or channel", "command or channel name"}},
 }
 
 func cmdCharList(player *characterData, input string) {
@@ -272,36 +275,20 @@ type cmdListItem struct {
 	help string
 }
 
-var cmdListStr []cmdListItem
-
 func init() {
 	shortUnits, _ = durafmt.DefaultUnitsCoder.Decode("y:yrs,wk:wks,d:d,h:h,m:m,s:s,ms:ms,us:us")
 
-	cmdListStr = []cmdListItem{}
-
-	for iName, cmd := range commandList {
-		if cmd.hide {
-			continue
-		}
-		cmd.name = iName
-		tName := fmt.Sprintf("%10v", iName)
-		var buf string
-		buf = fmt.Sprintf("%v -- %v :", tName, cmd.hint)
-		if cmd.args != nil {
-			for _, aName := range cmd.args {
-				buf = buf + fmt.Sprintf(" <%v>", aName)
-			}
-		}
-		buf = buf + fmt.Sprintf(" (%v)", levelName[cmd.level])
-		cmdListStr = append(cmdListStr, cmdListItem{name: iName, help: buf, cmd: cmd})
+	for name, item := range cmdMap {
+		item.name = name
+		cmdList = append(cmdList, item)
 	}
 
 	//Sort by level and name
-	sort.Slice(cmdListStr, func(i, j int) bool {
-		if cmdListStr[i].cmd.level == cmdListStr[j].cmd.level {
-			return cmdListStr[i].name < cmdListStr[j].name
+	sort.Slice(cmdList, func(i, j int) bool {
+		if cmdList[i].level == cmdList[j].level {
+			return cmdList[i].name < cmdList[j].name
 		} else {
-			return cmdListStr[i].cmd.level < cmdListStr[j].cmd.level
+			return cmdList[i].level < cmdList[j].level
 		}
 	})
 }

@@ -19,7 +19,7 @@ func cmdDisable(player *characterData, input string) {
 	}
 	if numParts == 2 {
 		if strings.EqualFold(parts[0], "command") {
-			for _, cmd := range commandList {
+			for _, cmd := range cmdMap {
 				if strings.EqualFold(cmd.name, parts[1]) {
 					cmd.disable = true
 					//write disabled status here

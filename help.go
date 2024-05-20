@@ -42,13 +42,6 @@ func cmdHelp(player *characterData, input string) {
 		cmdOLC(player, "help")
 		return
 	}
-	//List command help, if search term is a command
-	for _, item := range cmdListStr {
-		if strings.EqualFold(strings.TrimSpace(input), item.name) {
-			player.send(item.help)
-			return
-		}
-	}
 
 	count := 0
 	buf := ""
