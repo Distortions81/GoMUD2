@@ -83,12 +83,21 @@ func (player *characterData) sendToRoom(format string, args ...any) {
 
 // Init player, attach descriptor to character, put in saved room.
 // Starts CON_NEWS
+const ANNOUNCE_LOGIN_REST = time.Minute * 30
+
 func (desc *descData) enterWorld(player *characterData) {
+
+	if time.Since(player.SaveTime) > ANNOUNCE_LOGIN_REST {
+		player.sendToPlaying("--> %v has returned. <--", player.Name)
+	}
+
 	player.valid = true
+	player.dirty = true
 	desc.character = player
 	desc.character.desc = desc
 	desc.character.loginTime = time.Now()
 	desc.character.idleTime = time.Now()
+
 	charList = append(charList, player)
 	player.goTo(player.Loc)
 	if player.Loc.AreaUUID == "" || player.Loc.RoomUUID == "" {
