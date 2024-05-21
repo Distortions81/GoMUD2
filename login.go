@@ -74,7 +74,7 @@ var accountIndex = make(map[string]*accountIndexData)
 
 type accountIndexData struct {
 	Login string
-	UUID  string
+	UUID  UUIDData
 	Added time.Time
 }
 
@@ -161,7 +161,7 @@ func gLogin(desc *descData, input string) {
 		if desc.account != nil {
 			desc.state = CON_PASS
 		} else {
-			desc.send(warnBuf)
+			desc.send(warnBuf + "\r\n")
 			desc.sendln("ERROR: Sorry, unable to load that account!")
 			critLog("gLogin: %v: %v: Unable to load account: %v (%v)", desc.id, desc.ip, input, err)
 			desc.close()
@@ -225,7 +225,7 @@ func gNewLogin(desc *descData, input string) {
 
 	desc.account = &accountData{
 		Login:   input,
-		UUID:    makeUUIDString(),
+		UUID:    makeUUID(),
 		CreDate: time.Now().UTC(),
 		ModDate: time.Now().UTC(),
 	}

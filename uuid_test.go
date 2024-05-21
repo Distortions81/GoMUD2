@@ -24,7 +24,7 @@ func Test(t *testing.T) {
 		log.Fatalln("UUID string to id failed.")
 	}
 
-	var lastUUID UUIDIntData = makeUUID()
+	var lastUUID UUIDData = makeUUID()
 	for x := 0; x < 100000000; x++ {
 		id := makeUUID()
 		if lastUUID.T == id.T {

@@ -78,7 +78,7 @@ func gCharSelect(desc *descData, input string) {
 	}
 }
 
-func loadchar(desc *descData, login, uuid string) {
+func loadchar(desc *descData, login string, uuid UUIDData) {
 	if target := checkPlayingUUID(login, uuid); target != nil {
 		alreadyPlayingWarnVictim(target)
 		desc.account.tempString = login
@@ -153,7 +153,7 @@ func gCharConfirmName(desc *descData, input string) {
 		}
 
 		desc.character = &characterData{
-			UUID:      makeUUIDString(),
+			UUID:      makeUUID(),
 			Name:      input,
 			desc:      desc,
 			valid:     true,
@@ -181,12 +181,12 @@ func gCharConfirmName(desc *descData, input string) {
 }
 
 func (acc *accountData) createAccountDir() error {
-	if acc.UUID == "" {
+	if !acc.UUID.hasUUID() {
 		critLog("createAccountDir: account has no UUID: %v", acc.Login)
 		return fmt.Errorf("no UUID")
 	}
 
-	path := DATA_DIR + ACCOUNT_DIR + acc.UUID
+	path := DATA_DIR + ACCOUNT_DIR + acc.UUID.toString()
 	if _, err := os.Stat(path); err == nil {
 		critLog("Account directory already exists, aborting!")
 		return err
@@ -208,13 +208,13 @@ func (acc *accountData) saveAccount() bool {
 
 	if acc == nil {
 		return false
-	} else if acc.UUID == "" {
+	} else if acc.UUID.hasUUID() {
 		critLog("saveAccount: Account '%v' doesn't have a UUID.", acc.Login)
 		return false
 	}
 	acc.Version = ACCOUNT_VERSION
 	acc.ModDate = time.Now().UTC()
-	fileName := DATA_DIR + ACCOUNT_DIR + acc.UUID + "/" + ACCOUNT_FILE
+	fileName := DATA_DIR + ACCOUNT_DIR + acc.UUID.toString() + "/" + ACCOUNT_FILE
 
 	err := enc.Encode(&acc)
 	if err != nil {
@@ -231,8 +231,8 @@ func (acc *accountData) saveAccount() bool {
 	return true
 }
 
-func (desc *descData) loadAccount(uuid string) error {
-	data, err := readFile(DATA_DIR + ACCOUNT_DIR + uuid + "/" + ACCOUNT_FILE)
+func (desc *descData) loadAccount(uuid UUIDData) error {
+	data, err := readFile(DATA_DIR + ACCOUNT_DIR + uuid.toString() + "/" + ACCOUNT_FILE)
 	if err != nil {
 		critLog("loadAccount: Unable to load account file: %v", err)
 		return err

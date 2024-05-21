@@ -9,15 +9,13 @@ import (
 	"time"
 )
 
-const VNUM_SKIP = 100
-
-var areaList map[string]*areaData = make(map[string]*areaData)
-var sysAreaUUID, sysRoomUUID string
+var areaList map[UUIDData]*areaData = make(map[UUIDData]*areaData)
+var sysAreaUUID, sysRoomUUID UUIDData
 
 func makeTestArea() {
-	sysAreaUUID, sysRoomUUID = makeUUIDString(), makeUUIDString()
+	sysAreaUUID, sysRoomUUID = makeUUID(), makeUUID()
 
-	sysRooms := make(map[string]*roomData)
+	sysRooms := make(map[UUIDData]*roomData)
 	sysRooms[sysRoomUUID] = &roomData{
 		Version: 1, UUID: sysRoomUUID, VNUM: 0, Name: "The void", Description: "You are floating in a void."}
 	areaList[sysAreaUUID] = &areaData{
@@ -29,7 +27,7 @@ func saveAllAreas(force bool) {
 		if !force && !item.dirty {
 			continue
 		}
-		if !item.saveArea() {
+		if item.saveArea() {
 			critLog("Saved area: %v", fileSafeName(item.Name))
 			item.dirty = false
 		}
@@ -55,7 +53,7 @@ func (area *areaData) saveArea() bool {
 		enc := json.NewEncoder(outbuf)
 		enc.SetIndent("", "\t")
 
-		if area.UUID == "" {
+		if !area.UUID.hasUUID() {
 			critLog("saveArea: Area '%v' doesn't have a UUID.", fileSafeName(area.Name))
 			return
 		}
@@ -99,7 +97,7 @@ func loadArea(name string) *areaData {
 	}
 
 	//Link default system area
-	if sysAreaUUID == "" || sysRoomUUID == "" {
+	if !sysAreaUUID.hasUUID() || !sysRoomUUID.hasUUID() {
 		if area.VNUM == 0 {
 			sysAreaUUID = area.UUID
 			for _, room := range area.Rooms {

@@ -103,14 +103,14 @@ func (desc *descData) enterWorld(player *characterData) {
 
 	charList = append(charList, player)
 	player.goTo(player.Loc)
-	if player.Loc.AreaUUID == "" || player.Loc.RoomUUID == "" {
+	if !player.Loc.AreaUUID.hasUUID() || !player.Loc.RoomUUID.hasUUID() {
 		critLog("Fixed %v was in nil area or room.", player.Name)
 		player.goTo(LocData{AreaUUID: sysAreaUUID, RoomUUID: sysRoomUUID})
 	}
 	desc.state = CON_NEWS
 }
 
-func checkPlayingUUID(name string, uuid string) *characterData {
+func checkPlayingUUID(name string, uuid UUIDData) *characterData {
 	for _, item := range charList {
 		if !item.valid {
 			continue

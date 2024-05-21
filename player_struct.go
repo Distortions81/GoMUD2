@@ -80,14 +80,14 @@ const (
 
 type IgnoreData struct {
 	Name   string
-	UUID   string
+	UUID   UUIDData
 	Silent bool
 	Added  time.Time
 }
 
 type characterData struct {
 	Version int
-	UUID    string
+	UUID    UUIDData
 	desc    *descData
 
 	Name  string
@@ -134,7 +134,7 @@ type EditorData struct {
 
 type tellData struct {
 	SenderName string
-	SenderUUID string
+	SenderUUID UUIDData
 	Message    string
 	Sent       time.Time
 }
@@ -155,7 +155,7 @@ type telnetData struct {
 
 type accountData struct {
 	Version int
-	UUID    string
+	UUID    UUIDData
 	Level   int
 
 	Login    string
