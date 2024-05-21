@@ -75,7 +75,9 @@ func (player *characterData) sendToRoom(format string, args ...any) {
 		if target == player {
 			continue
 		}
-		target.send(format, args...)
+		if notIgnored(player, target, false) {
+			target.send(format, args...)
+		}
 	}
 }
 

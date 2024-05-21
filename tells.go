@@ -52,7 +52,7 @@ func cmdTell(player *characterData, input string) {
 		}
 
 		player.send("You tell %v: %v", target.Name, parts[1])
-		if notIgnored(player, target) {
+		if notIgnored(player, target, true) {
 			target.send("%v tells you: %v", player.Name, parts[1])
 		}
 		return
@@ -62,7 +62,7 @@ func cmdTell(player *characterData, input string) {
 			return
 		}
 		player.send("You tell %v: %v", target.Name, parts[1])
-		if notIgnored(player, target) {
+		if notIgnored(player, target, true) {
 			target.send("%v tells you: %v", player.Name, parts[1])
 		}
 		return
@@ -87,7 +87,7 @@ func cmdTell(player *characterData, input string) {
 			}
 			player.send("You tell %v: %v", target.Name, parts[1])
 			player.send("They aren't available right now, but your message has been saved.")
-			if notIgnored(player, target) {
+			if notIgnored(player, target, true) {
 				target.Tells = append(target.Tells, tellData{SenderName: player.Name, SenderUUID: player.UUID, Message: parts[1], Sent: time.Now().UTC()})
 				target.saveCharacter()
 			}
@@ -99,11 +99,11 @@ func cmdTell(player *characterData, input string) {
 	player.send("I don't see anyone by that name.")
 }
 
-func notIgnored(player, target *characterData) bool {
+func notIgnored(player, target *characterData, feedback bool) bool {
 	for _, item := range target.Ignores {
 		if item.Name == player.Name && item.UUID == player.UUID {
-			if !item.Silent {
-				player.send("Sorry, they are ignoring you.")
+			if !item.Silent && feedback {
+				player.send("Sorry, %v is ignoring you.", target.Name)
 			}
 			return false
 		}
