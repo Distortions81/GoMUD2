@@ -31,7 +31,7 @@ func reverseDNS(ip string) string {
 	go func() {
 		names, err := net.LookupAddr(ip)
 		if err != nil {
-			errLog("Reverse DNS lookup failed:", err)
+			errLog("Reverse DNS lookup failed: %v", err)
 			ch <- nil
 			return
 		}
@@ -40,10 +40,8 @@ func reverseDNS(ip string) string {
 
 	select {
 	case names := <-ch:
-		if names != nil {
-			for _, name := range names {
-				return name
-			}
+		for _, name := range names {
+			return name
 		}
 	case <-ctx.Done():
 		errLog("Reverse DNS lookup timed out")
@@ -56,8 +54,8 @@ func reverseDNS(ip string) string {
 func handleDesc(conn net.Conn, tls bool) {
 
 	//Parse address
-	addr := conn.RemoteAddr().String()
-	ip, _, _ := net.SplitHostPort(addr)
+	a := conn.RemoteAddr().String()
+	ip, _, _ := net.SplitHostPort(a)
 
 	//Track connection attempts.
 	if attemptMap[ip] > MAX_CONNECT || attemptMap[ip] == -1 {
@@ -87,9 +85,9 @@ func handleDesc(conn net.Conn, tls bool) {
 	descList = append(descList, desc)
 	descLock.Unlock()
 
-	go func(desc *descData, addr string) {
-		desc.dns = reverseDNS(addr)
-	}(desc, addr)
+	go func(desc *descData, ip string) {
+		desc.dns = reverseDNS(ip)
+	}(desc, ip)
 
 	//If not TLS, look for HTTP request (TLS fails)
 	if !tls {
