@@ -90,8 +90,10 @@ func loadchar(desc *descData, login, uuid string) {
 		desc.enterWorld(newPlayer)
 		return
 	} else {
-		desc.sendln("Failed to load character %v.")
+		desc.sendln("Failed to load character %v.", login)
 		critLog("Unable to load characer %v!", login)
+		desc.valid = false
+		desc.state = CON_DISCONNECTED
 		return
 	}
 }
