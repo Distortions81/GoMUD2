@@ -11,9 +11,9 @@ func cmdConInfo(player *characterData, input string) {
 	player.send("Characters:")
 	for _, item := range charList {
 		if item.desc != nil {
-			player.send("valid: %v: name: %v id: %v", item.valid, item.Name, item.desc.id)
+			player.send("valid: %v: name: %v id: %v", item.Name, item.desc.id)
 		} else {
-			player.send("valid: %v: name: %v (no link)", item.valid, item.Name)
+			player.send("valid: %v: name: %v (no link)", item.Name)
 		}
 	}
 	player.send("\r\nDescriptors:")
