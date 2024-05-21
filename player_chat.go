@@ -53,7 +53,7 @@ func sendToChannel(player *characterData, input string, channel int) bool {
 		return false
 	}
 	for _, target := range charList {
-		if !target.Channels.HasFlag(1 << channel) {
+		if !target.Channels.HasFlag(1<<channel) && notIgnored(player, target, false) {
 			if target == player {
 				target.send(chd.format, "You", input)
 			} else {
