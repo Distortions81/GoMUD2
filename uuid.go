@@ -99,3 +99,12 @@ func DecodeUUIDString(input string) UUIDIntData {
 	binary.Read(buf, binary.LittleEndian, &id.M)
 	return id
 }
+
+func (id *UUIDIntData) UnmarshalJSON(data []byte) error {
+	*id = DecodeUUIDString(string(data))
+	return nil
+}
+
+func (id UUIDIntData) MarshalJSON() ([]byte, error) {
+	return []byte(id.toString()), nil
+}
