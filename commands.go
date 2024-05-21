@@ -53,6 +53,7 @@ var cmdMap = map[string]*commandData{
 
 	//Newbie
 	"say":      {level: LEVEL_NEWBIE, hint: "speak out loud", goDo: cmdSay, args: []string{"message"}},
+	"emote":    {level: LEVEL_NEWBIE, hint: "emote", goDo: cmdEmote, args: []string{"message"}},
 	"telnet":   {level: LEVEL_NEWBIE, hint: "telnet options", goDo: cmdTelnet},
 	"chat":     {level: LEVEL_NEWBIE, hint: "chat on a channel", goDo: cmdChat},
 	"channels": {level: LEVEL_NEWBIE, hint: "turn chat channels on or off", goDo: cmdChannels, args: []string{"channel command"}},
@@ -217,10 +218,23 @@ func cmdSay(player *characterData, input string) {
 	if chatLen == 0 {
 		player.send("Say what?")
 	} else if chatLen < MAX_CHAT_LENGTH {
-		player.sendToRoom("%v says: %v", player.desc.character.Name, trimInput)
+		player.sendToRoom("%v says: %v", player.Name, trimInput)
 		player.send("You say: %v", trimInput)
 	} else {
 		player.send("That is a wall of text. Maybe consider mailing it?")
+	}
+}
+
+func cmdEmote(player *characterData, input string) {
+	trimInput := strings.TrimSpace(input)
+	chatLen := len(trimInput)
+	if chatLen == 0 {
+		player.send("Emote what?")
+	} else if chatLen < MAX_CHAT_LENGTH {
+		player.sendToRoom("%v %v", player.Name, trimInput)
+		player.send("%v %v", player.Name, trimInput)
+	} else {
+		player.send("That seems a bit excessive for an emote.")
 	}
 }
 
