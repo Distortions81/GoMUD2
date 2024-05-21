@@ -52,8 +52,16 @@ func sendToChannel(player *characterData, input string, channel int) bool {
 		player.send("You currently have the '%v' (%v) channel turned off.", chd.cmd, chd.name)
 		return false
 	}
+	if player.Config.HasFlag(CONFIG_NOCHANNEL) {
+		player.send("You currently have chat channels disabled.")
+		return false
+	}
 	for _, target := range charList {
+		if target.Config.HasFlag(CONFIG_NOCHANNEL) {
+			continue
+		}
 		if !target.Channels.HasFlag(1<<channel) && notIgnored(player, target, false) {
+
 			if target == player {
 				target.send(chd.format, "You", input)
 			} else {
@@ -66,6 +74,10 @@ func sendToChannel(player *characterData, input string, channel int) bool {
 }
 
 func cmdChat(player *characterData, input string) {
+	if player.Config.HasFlag(CONFIG_NOCHANNEL) {
+		player.send("You currently have channels disabled.")
+		return
+	}
 	cmd := strings.SplitN(input, " ", 2)
 	numCmd := len(cmd)
 
@@ -111,6 +123,10 @@ func cmdChat(player *characterData, input string) {
 }
 
 func cmdChannels(player *characterData, input string) {
+	if player.Config.HasFlag(CONFIG_NOCHANNEL) {
+		player.send("You currently have channels disabled.")
+		return
+	}
 	if input == "" {
 		player.send("channel command: (on/off) channel name")
 		for c, ch := range channels {

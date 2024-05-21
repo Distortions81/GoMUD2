@@ -6,13 +6,20 @@ import (
 )
 
 func (player *characterData) checkTells() {
+
 	numTells := len(player.Tells)
 	if numTells > 0 {
 		player.send("{rYou have {R%v {rtells waiting.", numTells-1)
 	}
+	if player.Config.HasFlag(CONFIG_NOTELL) {
+		player.send("You currently have tells disabled!")
+	}
 }
 
 func cmdTells(player *characterData, input string) {
+	if player.Config.HasFlag(CONFIG_NOTELL) {
+		player.send("Notice: You currently have tells disabled!")
+	}
 	numTells := len(player.Tells)
 	if numTells > 0 {
 		tell := player.Tells[0]
@@ -33,6 +40,10 @@ func cmdTells(player *characterData, input string) {
 }
 
 func cmdTell(player *characterData, input string) {
+	if player.Config.HasFlag(CONFIG_NOTELL) {
+		player.send("You currently have tells disabled.")
+		return
+	}
 	parts := strings.SplitN(input, " ", 2)
 	partsLen := len(parts)
 
@@ -47,10 +58,12 @@ func cmdTell(player *characterData, input string) {
 
 	if target := checkPlaying(parts[0]); target != nil {
 		if target == player {
-			target.send("Talking to yourself?")
+			player.send("You tell yourself: %v", parts[1])
 			return
 		}
-
+		if target.Config.HasFlag(CONFIG_NOTELL) {
+			player.send("Sorry, they have tells disabled.")
+		}
 		player.send("You tell %v: %v", target.Name, parts[1])
 		if notIgnored(player, target, true) {
 			target.send("%v tells you: %v", player.Name, parts[1])
@@ -58,7 +71,7 @@ func cmdTell(player *characterData, input string) {
 		return
 	} else if target := checkPlayingPMatch(parts[0]); target != nil && len(parts[0]) > 2 {
 		if target == player {
-			target.send("Talking to yourself?")
+			player.send("You tell yourself: %v", parts[1])
 			return
 		}
 		player.send("You tell %v: %v", target.Name, parts[1])
@@ -74,6 +87,10 @@ func cmdTell(player *characterData, input string) {
 	tDesc := descData{}
 	target := tDesc.pLoad(parts[0])
 	if target != nil {
+		if target.Config.HasFlag(CONFIG_NOTELL) {
+			player.send("Sorry, they have tells disabled.")
+			return
+		}
 		if len(target.Tells) < MAX_TELLS {
 			var ours int
 			for _, tell := range target.Tells {

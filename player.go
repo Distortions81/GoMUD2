@@ -75,6 +75,9 @@ func (player *characterData) sendToRoom(format string, args ...any) {
 		if target == player {
 			continue
 		}
+		if target.Config.HasFlag(CONFIG_DEAF) {
+			return
+		}
 		if notIgnored(player, target, false) {
 			target.send(format, args...)
 		}
@@ -87,7 +90,7 @@ const ANNOUNCE_LOGIN_REST = time.Minute * 30
 
 func (desc *descData) enterWorld(player *characterData) {
 
-	if time.Since(player.SaveTime) > ANNOUNCE_LOGIN_REST {
+	if !player.Config.HasFlag(CONFIG_HIDDEN) && time.Since(player.SaveTime) > ANNOUNCE_LOGIN_REST {
 		player.sendToPlaying("--> %v has returned. <--", player.Name)
 	}
 

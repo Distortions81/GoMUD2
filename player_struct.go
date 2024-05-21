@@ -97,6 +97,7 @@ type characterData struct {
 
 	Channels Bitmask
 	Config   Bitmask
+	LastHide time.Time
 
 	OLCEditor OLCEditorData `json:",omitempty"`
 	Ignores   []IgnoreData  `json:",omitempty"`

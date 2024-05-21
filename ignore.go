@@ -47,7 +47,7 @@ func addIgnore(player, target *characterData, arg string) {
 		return
 	}
 	if target == player {
-		player.send("You can't ignore yourself. Maybe consider therapy.")
+		player.send("You can't ignore yourself.")
 		return
 	}
 	doSilent := false
@@ -73,6 +73,5 @@ func addIgnore(player, target *characterData, arg string) {
 		return
 	}
 	player.Ignores = append(player.Ignores, IgnoreData{Name: target.Name, UUID: target.UUID, Silent: doSilent, Added: time.Now().UTC()})
-
 	player.send("%v has been added to your ignore list.%v", target.Name, silentStr)
 }

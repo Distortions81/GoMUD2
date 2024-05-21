@@ -49,7 +49,7 @@ var cmdMap = map[string]*commandData{
 	"quit":   {level: LEVEL_ANY, noShort: true, hint: "quit and disconnect", goDo: cmdQuit},
 	"who":    {level: LEVEL_ANY, hint: "show players online", goDo: cmdWho},
 	"tells":  {level: LEVEL_ANY, hint: "read pending tells", goDo: cmdTells},
-	"ignore": {level: LEVEL_ANY, hint: "ignore someone, add 'silent' to silently ignore.", goDo: cmdIgnore, args: []string{"player name", "silent"}},
+	"ignore": {level: LEVEL_ANY, hint: "ignore someone. add 'silent' to silently ignore.", goDo: cmdIgnore, args: []string{"player name", "silent"}},
 
 	//Newbie
 	"say":      {level: LEVEL_NEWBIE, hint: "speak out loud", goDo: cmdSay, args: []string{"message"}},
@@ -61,7 +61,7 @@ var cmdMap = map[string]*commandData{
 	//Player
 	"logout":   {level: LEVEL_PLAYER, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
 	"tell":     {level: LEVEL_PLAYER, hint: "send a private message", args: []string{"target", "message"}, goDo: cmdTell},
-	"config":   {level: LEVEL_PLAYER, hint: "configure your prefrences.", goDo: cmdConfig},
+	"config":   {level: LEVEL_PLAYER, hint: "configure your prefrences.", goDo: cmdConfig, args: []string{"1 or more config options to toggle"}},
 	"charlist": {level: LEVEL_PLAYER, hint: "see your list of characters", goDo: cmdCharList},
 
 	//Builder/mod/imm
@@ -213,6 +213,10 @@ func (player *characterData) sendTestString() {
 }
 
 func cmdSay(player *characterData, input string) {
+	if player.Config.HasFlag(CONFIG_DEAF) {
+		player.send("You are currently deaf.")
+		return
+	}
 	trimInput := strings.TrimSpace(input)
 	chatLen := len(trimInput)
 	if chatLen == 0 {
@@ -226,6 +230,10 @@ func cmdSay(player *characterData, input string) {
 }
 
 func cmdEmote(player *characterData, input string) {
+	if player.Config.HasFlag(CONFIG_DEAF) {
+		player.send("You are currently deaf.")
+		return
+	}
 	trimInput := strings.TrimSpace(input)
 	chatLen := len(trimInput)
 	if chatLen == 0 {
@@ -247,6 +255,10 @@ func cmdLogout(player *characterData, input string) {
 }
 
 func cmdWho(player *characterData, input string) {
+	if player.Config.HasFlag(CONFIG_HIDDEN) {
+		player.send("You are currently hidden.")
+		return
+	}
 	var buf string = "Players online:\r\n"
 	var tmpCharList []*characterData = charList
 
@@ -263,6 +275,9 @@ func cmdWho(player *characterData, input string) {
 	}
 	buf = buf + fmt.Sprintf("%31v - %v %v %v %v\r\n", "Player name", "level", "time-online", "(idle time)", "(no link)")
 	for _, target := range tmpCharList {
+		if target.Config.HasFlag(CONFIG_HIDDEN) {
+			continue
+		}
 		var idleTime, unlink string
 		if time.Since(target.idleTime) >= (time.Minute * 3) {
 			idleStr := durafmt.Parse(time.Since(target.idleTime).Truncate(time.Minute)).LimitFirstN(2).Format(shortUnits)
