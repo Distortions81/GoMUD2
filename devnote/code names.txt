@@ -7,7 +7,7 @@ Quasarax
 Novaflux
 --Warpfire
 Galaxium
-Voidstorm
+--Voidstorm
 --Starshock
 --Nebulon
 --Darkflare
