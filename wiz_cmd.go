@@ -18,7 +18,7 @@ func cmdConInfo(player *characterData, input string) {
 	}
 	player.send("\r\nDescriptors:")
 	for _, item := range descList {
-		player.send("id: %v, addr: %v, state: %v", item.id, item.cAddr, item.state)
+		player.send("id: %v, addr: %v, dns: %v, state: %v", item.id, item.ip, item.dns, item.state)
 	}
 }
 

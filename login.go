@@ -150,7 +150,7 @@ var loginStateList = [CON_MAX]loginStates{
 func gLogin(desc *descData, input string) {
 
 	if strings.EqualFold("new", input) {
-		critLog("#%v: %v is creating a new login.", desc.id, desc.cAddr)
+		critLog("#%v: %v is creating a new login.", desc.id, desc.ip)
 		desc.state = CON_NEW_LOGIN
 
 	} else if inputLen := len(input); inputLen < MIN_LOGIN_LEN || inputLen > MAX_LOGIN_LEN {
@@ -163,13 +163,13 @@ func gLogin(desc *descData, input string) {
 		} else {
 			desc.send(warnBuf)
 			desc.sendln("ERROR: Sorry, unable to load that account!")
-			critLog("gLogin: %v: %v: Unable to load account: %v (%v)", desc.id, desc.cAddr, input, err)
+			critLog("gLogin: %v: %v: Unable to load account: %v (%v)", desc.id, desc.ip, input, err)
 			desc.close()
 			return
 		}
 	} else {
 		desc.sendln("Login name not found.")
-		critLog("#%v: %v tried a login that does not exist: '%v'", desc.id, desc.cAddr, input)
+		critLog("#%v: %v tried a login that does not exist: '%v'", desc.id, desc.ip, input)
 		desc.close()
 		return
 	}

@@ -75,7 +75,7 @@ func sendOutput() {
 
 				_, err := tdesc.conn.Write(tdesc.outBuf)
 				if err != nil {
-					mudLog("#%v: %v: write failed (connection lost)", tdesc.id, tdesc.cAddr)
+					mudLog("#%v: %v: write failed (connection lost)", tdesc.id, tdesc.ip)
 					tdesc.state = CON_DISCONNECTED
 					tdesc.valid = false
 				}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"net"
 	"strings"
@@ -20,34 +21,55 @@ var HTTPGETLEN = len(HTTPGET) - 1
 
 var attemptMap map[string]int = make(map[string]int)
 
+func reverseDNS(ip string) string {
+	timeout := 10 * time.Second // Timeout duration
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	ch := make(chan []string, 1)
+	go func() {
+		names, err := net.LookupAddr(ip)
+		if err != nil {
+			errLog("Reverse DNS lookup failed:", err)
+			ch <- nil
+			return
+		}
+		ch <- names
+	}()
+
+	select {
+	case names := <-ch:
+		if names != nil {
+			for _, name := range names {
+				return name
+			}
+		}
+	case <-ctx.Done():
+		errLog("Reverse DNS lookup timed out")
+	}
+
+	return "unknown"
+}
+
 // Handle incoming connections.
 func handleDesc(conn net.Conn, tls bool) {
 
 	//Parse address
 	addr := conn.RemoteAddr().String()
-	ipStr, _, _ := net.SplitHostPort(addr)
+	ip, _, _ := net.SplitHostPort(addr)
 
 	//Track connection attempts.
-	if attemptMap[ipStr] > MAX_CONNECT || attemptMap[ipStr] == -1 {
+	if attemptMap[ip] > MAX_CONNECT || attemptMap[ip] == -1 {
 		conn.Close()
 		return
-	} else if attemptMap[ipStr] == MAX_CONNECT {
+	} else if attemptMap[ip] == MAX_CONNECT {
 		conn.Close()
-		critLog("Too many connect attempts from %v. Blocking!", ipStr)
-		attemptMap[ipStr]++
+		critLog("Too many connect attempts from %v. Blocking!", ip)
+		attemptMap[ip]++
 		return
 	}
-	attemptMap[ipStr]++
-
-	//Get address of client
-	addrList, _ := net.LookupHost(ipStr)
-	hostStr := strings.Join(addrList, ", ")
-
-	//If reverse DNS found, make combined string
-	cAddr := hostStr
-	if hostStr != ipStr {
-		cAddr = fmt.Sprintf("%v : %v", ipStr, hostStr)
-	}
+	attemptMap[ip]++
 
 	//Create descriptor
 	descLock.Lock()
@@ -60,19 +82,22 @@ func handleDesc(conn net.Conn, tls bool) {
 	}
 	desc := &descData{
 		conn: conn, id: topID, connectTime: time.Now(),
-		reader: bufio.NewReader(conn), tls: tls,
-		host: hostStr, addr: ipStr, cAddr: cAddr,
+		reader: bufio.NewReader(conn), tls: tls, ip: ip,
 		state: CON_LOGIN, telnet: tnd, valid: true, idleTime: time.Now()}
 	descList = append(descList, desc)
 	descLock.Unlock()
+
+	go func(desc *descData, addr string) {
+		desc.dns = reverseDNS(addr)
+	}(desc, addr)
 
 	//If not TLS, look for HTTP request (TLS fails)
 	if !tls {
 		conn.SetReadDeadline(time.Now().Add(time.Millisecond))
 		data, err := desc.reader.ReadString('\n')
 		if err == nil && strings.ContainsAny("GET", data) {
-			critLog("HTTP request from %v. Adding to ignore list.", ipStr)
-			attemptMap[ipStr] = -1
+			critLog("HTTP request from %v. Adding to ignore list.", ip)
+			attemptMap[ip] = -1
 			conn.Write([]byte(`HTTP/1.1 301 Moved Permanently\r\nLocation: http://www.example.org/`))
 			conn.Close()
 			return
@@ -83,7 +108,7 @@ func handleDesc(conn net.Conn, tls bool) {
 		}
 	}
 
-	mudLog("Connection from: %v", ipStr)
+	mudLog("Connection from: %v", ip)
 
 	//Send telnet sequences
 	sendStart(desc.conn)

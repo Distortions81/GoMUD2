@@ -40,12 +40,12 @@ var (
 )
 
 type descData struct {
-	id                uint64
-	conn              net.Conn
-	reader            *bufio.Reader
-	state             int
-	host, addr, cAddr string
-	idleTime          time.Time
+	id       uint64
+	conn     net.Conn
+	reader   *bufio.Reader
+	state    int
+	dns, ip  string
+	idleTime time.Time
 
 	tls bool
 

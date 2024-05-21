@@ -19,10 +19,10 @@ func isAccNameAvail(name string) bool {
 
 func gCharList(desc *descData) {
 	//They logged in, reset the attempt count.
-	if attemptMap[desc.addr] > CONNECT_WARN {
-		critLog("*** Warning ***: account '%v' had %v connection attempts before successfully logging in.", desc.account.Login, attemptMap[desc.addr])
+	if attemptMap[desc.ip] > CONNECT_WARN {
+		critLog("*** Warning ***: account '%v' had %v connection attempts before successfully logging in.", desc.account.Login, attemptMap[desc.ip])
 	}
-	attemptMap[desc.addr] = 0
+	attemptMap[desc.ip] = 0
 
 	var buf string = "\r\n"
 	numChars := len(desc.account.Characters)

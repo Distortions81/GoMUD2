@@ -43,7 +43,7 @@ func (desc *descData) inputFull() {
 	desc.send(warnBuf)
 	buf := "Input buffer full! Stop spamming. Closing connection..."
 	desc.sendln(buf)
-	critLog("#%v: ERROR: %v: %v", desc.id, desc.cAddr, buf)
+	critLog("#%v: ERROR: %v: %v", desc.id, desc.ip, buf)
 	desc.valid = false
 	desc.state = CON_DISCONNECTED
 }
