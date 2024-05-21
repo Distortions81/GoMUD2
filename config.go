@@ -57,6 +57,7 @@ func cmdConfig(player *characterData, input string) {
 					player.send("%v is now ON", item.Name)
 					player.Config.AddFlag(1 << x)
 				}
+				player.dirty = true
 				break
 			}
 		}
