@@ -48,4 +48,13 @@ func Test(t *testing.T) {
 		idA.T != idC.T {
 		log.Fatalln("sameUUID() returned match on non-match.")
 	}
+
+	var test UUIDData
+	if test.hasUUID() {
+		log.Fatalln("hasUUID() false positive")
+	}
+	test = makeUUID()
+	if !test.hasUUID() {
+		log.Fatalln("hasUUID() false negative")
+	}
 }

@@ -78,17 +78,17 @@ func (area *areaData) saveArea() bool {
 	return true
 }
 
-func loadArea(name string) *areaData {
+func loadArea(name string) (*areaData, error) {
 	data, err := readFile(DATA_DIR + AREA_DIR + name)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	area := &areaData{}
 	err = json.Unmarshal(data, area)
 	if err != nil {
 		critLog("loadArea: Unable to unmarshal the data.")
-		return nil
+		return nil, err
 	}
 
 	//Add UUID back, we don't want this in the save twice per room
@@ -113,7 +113,7 @@ func loadArea(name string) *areaData {
 		room.pArea = area
 		room.UUID = r
 	}
-	return area
+	return area, nil
 }
 
 func loadAllAreas() {
@@ -127,7 +127,10 @@ func loadAllAreas() {
 		if item.IsDir() {
 			continue
 		} else if strings.HasSuffix(item.Name(), ".json") {
-			newArea := loadArea(item.Name())
+			newArea, err := loadArea(item.Name())
+			if err != nil {
+				continue
+			}
 			areaList[newArea.UUID] = newArea
 			//mudLog("loaded area: %v", item.Name())
 		}

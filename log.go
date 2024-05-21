@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path"
 	"runtime"
 )
 
@@ -32,17 +33,19 @@ func startLogs() {
 
 // Log errors, sprintf format
 func errLog(format string, args ...any) {
-	_, file, line, _ := runtime.Caller(1)
+	_, filePath, line, _ := runtime.Caller(1)
+	file := path.Base(filePath)
 	data := fmt.Sprintf(format, args...)
-	buf := fmt.Sprintf("%v %v: %v", file, line, data)
+	buf := fmt.Sprintf("%v:%v: %v", file, line, data)
 	doLog(elog, buf)
 }
 
 // Log errors, sprintf format
 func critLog(format string, args ...any) {
-	_, file, line, _ := runtime.Caller(1)
+	_, filePath, line, _ := runtime.Caller(1)
+	file := path.Base(filePath)
 	data := fmt.Sprintf(format, args...)
-	buf := fmt.Sprintf("%v %v: %v", file, line, data)
+	buf := fmt.Sprintf("%v:%v: %v", file, line, data)
 	doLog(elog, buf)
 
 	for _, d := range descList {

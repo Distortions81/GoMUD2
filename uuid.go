@@ -97,8 +97,7 @@ func DecodeUUIDString(input string) UUIDData {
 }
 
 func (b UUIDData) MarshalJSON() ([]byte, error) {
-	return json.Marshal([]byte(b.toString()))
-
+	return json.Marshal(b.toString())
 }
 
 func (b *UUIDData) UnmarshalJSON(data []byte) error {
@@ -106,6 +105,6 @@ func (b *UUIDData) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &decoded); err != nil {
 		return err
 	}
-	*b = DecodeUUIDString(string(decoded))
+	*b = DecodeUUIDString(decoded)
 	return nil
 }
