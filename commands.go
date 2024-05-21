@@ -43,12 +43,13 @@ var cmdMap = map[string]*commandData{
 	"d":  {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "down"},
 
 	//Anyone
-	"go":    {level: LEVEL_ANY, hint: "go", goDo: cmdGo, args: []string{"exit name"}},
-	"help":  {level: LEVEL_ANY, hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}},
-	"look":  {level: LEVEL_ANY, hint: "look around the room", goDo: cmdLook},
-	"quit":  {level: LEVEL_ANY, noShort: true, hint: "quit and disconnect", goDo: cmdQuit},
-	"who":   {level: LEVEL_ANY, hint: "show players online", goDo: cmdWho},
-	"tells": {level: LEVEL_ANY, hint: "read pending tells", goDo: cmdTells},
+	"go":     {level: LEVEL_ANY, hint: "go", goDo: cmdGo, args: []string{"exit name"}},
+	"help":   {level: LEVEL_ANY, hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}},
+	"look":   {level: LEVEL_ANY, hint: "look around the room", goDo: cmdLook},
+	"quit":   {level: LEVEL_ANY, noShort: true, hint: "quit and disconnect", goDo: cmdQuit},
+	"who":    {level: LEVEL_ANY, hint: "show players online", goDo: cmdWho},
+	"tells":  {level: LEVEL_ANY, hint: "read pending tells", goDo: cmdTells},
+	"ignore": {level: LEVEL_ANY, hint: "ignore someone, add 'silent' to silently ignore.", goDo: cmdIgnore, args: []string{"player name", "silent"}},
 
 	//Newbie
 	"say":      {level: LEVEL_NEWBIE, hint: "speak out loud", goDo: cmdSay, args: []string{"message"}},

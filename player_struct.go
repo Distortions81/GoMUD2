@@ -78,6 +78,13 @@ const (
 	OLC_MAX
 )
 
+type IgnoreData struct {
+	Name   string
+	UUID   string
+	Silent bool
+	Added  time.Time
+}
+
 type characterData struct {
 	Version int
 	UUID    string
@@ -92,6 +99,7 @@ type characterData struct {
 	Config   Bitmask
 
 	OLCEditor OLCEditorData `json:",omitempty"`
+	Ignores   []IgnoreData  `json:",omitempty"`
 
 	SaveTime time.Time
 	CreDate  time.Time
