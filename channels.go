@@ -133,6 +133,9 @@ func cmdChannels(player *characterData, input string) {
 			if ch.disabled {
 				continue
 			}
+			if ch.level > player.Level {
+				continue
+			}
 			var status string
 			if player.Channels.HasFlag(1 << c) {
 				status = "OFF"
@@ -152,7 +155,7 @@ func cmdChannels(player *characterData, input string) {
 		if ch.level > player.Level {
 			continue
 		}
-		if ch.cmd == strings.ToLower(input) {
+		if strings.EqualFold(ch.cmd, input) {
 			if player.Channels.HasFlag(1 << c) {
 				player.Channels.ClearFlag(1 << c)
 				player.send("%v channel is now on.", ch.name)
@@ -161,6 +164,7 @@ func cmdChannels(player *characterData, input string) {
 				player.send("%v channel is now off.", ch.name)
 			}
 			player.dirty = true
+			return
 		}
 	}
 	player.send("I can't find a channel by that name.")
