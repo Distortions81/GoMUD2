@@ -87,7 +87,7 @@ func loadArea(name string) *areaData {
 	area := &areaData{}
 	err = json.Unmarshal(data, area)
 	if err != nil {
-		critLog("loadPlayer: Unable to unmarshal the data.")
+		critLog("loadArea: Unable to unmarshal the data.")
 		return nil
 	}
 

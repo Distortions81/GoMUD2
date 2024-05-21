@@ -208,7 +208,7 @@ func (acc *accountData) saveAccount() bool {
 
 	if acc == nil {
 		return false
-	} else if acc.UUID.hasUUID() {
+	} else if !acc.UUID.hasUUID() {
 		critLog("saveAccount: Account '%v' doesn't have a UUID.", acc.Login)
 		return false
 	}

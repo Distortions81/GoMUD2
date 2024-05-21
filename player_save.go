@@ -53,7 +53,7 @@ func (player *characterData) saveCharacter() bool {
 	} else if player == nil {
 		critLog("savePlayer: Nil player.")
 		return false
-	} else if player.UUID.hasUUID() {
+	} else if !player.UUID.hasUUID() {
 		critLog("savePlayer: Player '%v' doesn't have a UUID.", player.Name)
 		return false
 	}
@@ -98,7 +98,7 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 			break
 		}
 	}
-	if uuid.hasUUID() {
+	if !uuid.hasUUID() {
 		critLog("loadPlayer: Player not found in account.")
 		return nil
 	}
