@@ -2,8 +2,6 @@ package main
 
 import "strings"
 
-type Bitmask uint64
-
 const (
 	VERSION  = "v0.0.12a-052-2024-0645p"
 	CODENAME = "Voidstorm"
