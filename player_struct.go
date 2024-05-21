@@ -95,9 +95,9 @@ type characterData struct {
 	Loc   LocData
 	Level int
 
-	Channels Bitmask
-	Config   Bitmask
-	LastHide time.Time
+	Channels Bitmask   `json:",omitempty"`
+	Config   Bitmask   `json:",omitempty"`
+	LastHide time.Time `json:",omitempty"`
 
 	OLCEditor OLCEditorData `json:",omitempty"`
 	Ignores   []IgnoreData  `json:",omitempty"`
