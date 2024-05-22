@@ -55,10 +55,12 @@ failed attempts. Automatically detect HTTP requests, and send a
 redirect. Fixed a bug with quit. Adjusted idle times for different
 states. 
 
-May 19-20th:
-Disable command implemented. Improved WHO command.
-Improved command help. Telnet command settings added.
-Added character list command. Added ignore system.
+May 19-21th:
+Disable command implemented. Improved WHO command. Improved
+command help. Telnet command settings added. Added character
+list command. Added ignore system. Logins announced if haven't
+logged in/out in 30 mins. Added emote command. Added custom
+marshaler for UUID, and the room hash map.
 
 {*For more information, see the Discord!{*
 {_https://discord.gg/8WaUA9STPj{_
