@@ -53,7 +53,7 @@ func (player *characterData) saveCharacter() bool {
 	} else if player == nil {
 		critLog("savePlayer: Nil player.")
 		return false
-	} else if player.UUID == "" {
+	} else if !player.UUID.hasUUID() {
 		critLog("savePlayer: Player '%v' doesn't have a UUID.", player.Name)
 		return false
 	}
@@ -64,7 +64,7 @@ func (player *characterData) saveCharacter() bool {
 	player.dirty = false
 
 	go func(target characterData) {
-		fileName := DATA_DIR + ACCOUNT_DIR + target.desc.account.UUID + "/" + target.UUID + ".json"
+		fileName := DATA_DIR + ACCOUNT_DIR + target.desc.account.UUID.toString() + "/" + target.UUID.toString() + ".json"
 		outbuf := new(bytes.Buffer)
 		enc := json.NewEncoder(outbuf)
 		enc.SetIndent("", "\t")
@@ -91,14 +91,14 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 		return nil
 	}
 
-	uuid := ""
+	uuid := UUIDData{}
 	for _, target := range desc.account.Characters {
 		if target.Login == plrStr {
 			uuid = target.UUID
 			break
 		}
 	}
-	if uuid == "" {
+	if !uuid.hasUUID() {
 		critLog("loadPlayer: Player not found in account.")
 		return nil
 	}
@@ -116,7 +116,7 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 
 		return target
 	} else {
-		data, err := readFile(DATA_DIR + ACCOUNT_DIR + desc.account.UUID + "/" + uuid + ".json")
+		data, err := readFile(DATA_DIR + ACCOUNT_DIR + desc.account.UUID.toString() + "/" + uuid.toString() + ".json")
 		if err != nil {
 			return nil
 		}
@@ -135,24 +135,25 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 func (desc *descData) pLoad(plrStr string) *characterData {
 
 	for _, acc := range accountIndex {
+		if !strings.EqualFold(acc.Login, plrStr) {
+			continue
+		}
 		desc := descData{}
 		desc.loadAccount(acc.UUID)
 		for _, char := range desc.account.Characters {
-			if strings.EqualFold(char.Login, plrStr) {
-				data, err := readFile(DATA_DIR + ACCOUNT_DIR + acc.UUID + "/" + char.UUID + ".json")
-				if err != nil {
-					return nil
-				}
-
-				target := &characterData{}
-				err = json.Unmarshal(data, target)
-				if err != nil {
-					critLog("loadPlayer: Unable to unmarshal the data.")
-					return nil
-				}
-				target.desc = &desc
-				return target
+			data, err := readFile(DATA_DIR + ACCOUNT_DIR + acc.UUID.toString() + "/" + char.UUID.toString() + ".json")
+			if err != nil {
+				return nil
 			}
+
+			target := &characterData{}
+			err = json.Unmarshal(data, target)
+			if err != nil {
+				critLog("loadPlayer: Unable to unmarshal the data.")
+				return nil
+			}
+			target.desc = &desc
+			return target
 		}
 	}
 	return nil

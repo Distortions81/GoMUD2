@@ -24,7 +24,7 @@ func Test(t *testing.T) {
 		log.Fatalln("UUID string to id failed.")
 	}
 
-	var lastUUID UUIDIntData = makeUUID()
+	var lastUUID UUIDData = makeUUID()
 	for x := 0; x < 100000000; x++ {
 		id := makeUUID()
 		if lastUUID.T == id.T {
@@ -47,5 +47,14 @@ func Test(t *testing.T) {
 		idA.R != idC.R &&
 		idA.T != idC.T {
 		log.Fatalln("sameUUID() returned match on non-match.")
+	}
+
+	var test UUIDData
+	if test.hasUUID() {
+		log.Fatalln("hasUUID() false positive")
+	}
+	test = makeUUID()
+	if !test.hasUUID() {
+		log.Fatalln("hasUUID() false negative")
 	}
 }

@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"path"
+	"runtime"
 )
 
 var (
@@ -31,19 +33,27 @@ func startLogs() {
 
 // Log errors, sprintf format
 func errLog(format string, args ...any) {
-	doLog(elog, format, args...)
+	_, filePath, line, _ := runtime.Caller(1)
+	file := path.Base(filePath)
+	data := fmt.Sprintf(format, args...)
+	buf := fmt.Sprintf("%v:%v: %v", file, line, data)
+	doLog(elog, buf)
 }
 
 // Log errors, sprintf format
 func critLog(format string, args ...any) {
-	doLog(elog, format, args...)
+	_, filePath, line, _ := runtime.Caller(1)
+	file := path.Base(filePath)
+	data := fmt.Sprintf(format, args...)
+	buf := fmt.Sprintf("%v:%v: %v", file, line, data)
+	doLog(elog, buf)
 
 	for _, d := range descList {
 		if !d.valid {
 			continue
 		}
 		if d.state == CON_PLAYING {
-			d.sendln(format, args...)
+			d.sendln(buf)
 		}
 	}
 }

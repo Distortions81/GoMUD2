@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/binary"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math/rand"
@@ -17,20 +18,15 @@ const MudIDFile = DATA_DIR + "mud-id.txt"
 
 var MudID int64
 
-type UUIDIntData struct {
+type UUIDData struct {
 	T, R, M int64
 }
 
-func makeUUID() UUIDIntData {
-	return UUIDIntData{T: time.Now().UTC().UnixNano(), R: rand.Int63(), M: MudID}
+func makeUUID() UUIDData {
+	return UUIDData{T: time.Now().UTC().UnixNano(), R: rand.Int63(), M: MudID}
 }
 
-func makeUUIDString() string {
-	id := UUIDIntData{T: time.Now().UTC().UnixNano(), R: rand.Int63(), M: MudID}
-	return id.toString()
-}
-
-func (id UUIDIntData) toString() string {
+func (id UUIDData) toString() string {
 	buf := new(bytes.Buffer)
 	binary.Write(buf, binary.LittleEndian, id.T)
 	binary.Write(buf, binary.LittleEndian, id.R)
@@ -79,32 +75,39 @@ func writeMudID() {
 }
 
 // Used for code testing only
-func (id UUIDIntData) hasUUID() bool {
+func (id UUIDData) hasUUID() bool {
 	return id.T != 0 && id.M != 0 //Don't check .r, random
 }
 
 // Used for code testing only
-func (ida UUIDIntData) sameUUID(idb UUIDIntData) bool {
+func (ida UUIDData) sameUUID(idb UUIDData) bool {
 	return ida.T == idb.T && ida.R == idb.R && ida.M == idb.M
 }
 
 // Used for code testing only
-func DecodeUUIDString(input string) UUIDIntData {
+func DecodeUUIDString(input string) UUIDData {
 	b, _ := base64.RawURLEncoding.DecodeString(input)
 	buf := bytes.NewBuffer(b)
 
-	id := UUIDIntData{}
+	id := UUIDData{}
 	binary.Read(buf, binary.LittleEndian, &id.T)
 	binary.Read(buf, binary.LittleEndian, &id.R)
 	binary.Read(buf, binary.LittleEndian, &id.M)
 	return id
 }
 
-func (id *UUIDIntData) UnmarshalJSON(data []byte) error {
-	*id = DecodeUUIDString(string(data))
-	return nil
+func (b UUIDData) MarshalJSON() ([]byte, error) {
+	if b.hasUUID() {
+		return json.Marshal(b.toString())
+	}
+	return json.Marshal("")
 }
 
-func (id UUIDIntData) MarshalJSON() ([]byte, error) {
-	return []byte(id.toString()), nil
+func (b *UUIDData) UnmarshalJSON(data []byte) error {
+	var decoded string
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+	*b = DecodeUUIDString(decoded)
+	return nil
 }

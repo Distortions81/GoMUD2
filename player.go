@@ -14,7 +14,7 @@ func (player *characterData) goTo(loc LocData) {
 		player.send("That area can't be found: %v", loc.AreaUUID)
 		return
 	}
-	room := area.Rooms[loc.RoomUUID]
+	room := area.Rooms.Data[loc.RoomUUID]
 	if room == nil {
 		critLog("Room not found: %v", loc.RoomUUID)
 		player.send("The room %v can't be found in the area: %v", loc.RoomUUID, area.Name)
@@ -103,14 +103,14 @@ func (desc *descData) enterWorld(player *characterData) {
 
 	charList = append(charList, player)
 	player.goTo(player.Loc)
-	if player.Loc.AreaUUID == "" || player.Loc.RoomUUID == "" {
+	if !player.Loc.AreaUUID.hasUUID() || !player.Loc.RoomUUID.hasUUID() {
 		critLog("Fixed %v was in nil area or room.", player.Name)
 		player.goTo(LocData{AreaUUID: sysAreaUUID, RoomUUID: sysRoomUUID})
 	}
 	desc.state = CON_NEWS
 }
 
-func checkPlayingUUID(name string, uuid string) *characterData {
+func checkPlayingUUID(name string, uuid UUIDData) *characterData {
 	for _, item := range charList {
 		if !item.valid {
 			continue

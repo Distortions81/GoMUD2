@@ -9,19 +9,54 @@ import (
 	"time"
 )
 
-const VNUM_SKIP = 100
+var areaList map[UUIDData]*areaData = make(map[UUIDData]*areaData)
+var sysAreaUUID, sysRoomUUID UUIDData
 
-var areaList map[string]*areaData = make(map[string]*areaData)
-var sysAreaUUID, sysRoomUUID string
+type RoomMap struct {
+	Data map[UUIDData]*roomData
+}
+
+func (room RoomMap) MarshalJSON() ([]byte, error) {
+	var pairs []struct {
+		UUID UUIDData
+		Room *roomData
+	}
+	for k, v := range room.Data {
+		pairs = append(pairs, struct {
+			UUID UUIDData
+			Room *roomData
+		}{k, v})
+	}
+
+	return json.Marshal(pairs)
+}
+
+func (room *RoomMap) UnmarshalJSON(data []byte) error {
+
+	var pairs []struct {
+		UUID UUIDData
+		Room *roomData
+	}
+
+	if err := json.Unmarshal(data, &pairs); err != nil {
+		return err
+	}
+
+	room.Data = make(map[UUIDData]*roomData)
+	for _, pair := range pairs {
+		room.Data[pair.UUID] = pair.Room
+	}
+	return nil
+}
 
 func makeTestArea() {
-	sysAreaUUID, sysRoomUUID = makeUUIDString(), makeUUIDString()
+	sysAreaUUID, sysRoomUUID = makeUUID(), makeUUID()
 
-	sysRooms := make(map[string]*roomData)
+	sysRooms := make(map[UUIDData]*roomData)
 	sysRooms[sysRoomUUID] = &roomData{
 		Version: 1, UUID: sysRoomUUID, VNUM: 0, Name: "The void", Description: "You are floating in a void."}
 	areaList[sysAreaUUID] = &areaData{
-		Version: 1, UUID: sysAreaUUID, VNUM: 0, Name: "system", Rooms: sysRooms}
+		Version: 1, UUID: sysAreaUUID, VNUM: 0, Name: "system", Rooms: RoomMap{Data: sysRooms}}
 }
 
 func saveAllAreas(force bool) {
@@ -29,7 +64,7 @@ func saveAllAreas(force bool) {
 		if !force && !item.dirty {
 			continue
 		}
-		if !item.saveArea() {
+		if item.saveArea() {
 			critLog("Saved area: %v", fileSafeName(item.Name))
 			item.dirty = false
 		}
@@ -55,7 +90,7 @@ func (area *areaData) saveArea() bool {
 		enc := json.NewEncoder(outbuf)
 		enc.SetIndent("", "\t")
 
-		if area.UUID == "" {
+		if !area.UUID.hasUUID() {
 			critLog("saveArea: Area '%v' doesn't have a UUID.", fileSafeName(area.Name))
 			return
 		}
@@ -80,29 +115,29 @@ func (area *areaData) saveArea() bool {
 	return true
 }
 
-func loadArea(name string) *areaData {
+func loadArea(name string) (*areaData, error) {
 	data, err := readFile(DATA_DIR + AREA_DIR + name)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	area := &areaData{}
 	err = json.Unmarshal(data, area)
 	if err != nil {
-		critLog("loadPlayer: Unable to unmarshal the data.")
-		return nil
+		critLog("loadArea: Unable to unmarshal the data.")
+		return nil, err
 	}
 
 	//Add UUID back, we don't want this in the save twice per room
-	for r, room := range area.Rooms {
+	for r, room := range area.Rooms.Data {
 		room.UUID = r
 	}
 
 	//Link default system area
-	if sysAreaUUID == "" || sysRoomUUID == "" {
+	if !sysAreaUUID.hasUUID() || !sysRoomUUID.hasUUID() {
 		if area.VNUM == 0 {
 			sysAreaUUID = area.UUID
-			for _, room := range area.Rooms {
+			for _, room := range area.Rooms.Data {
 				if room.VNUM == 0 {
 					sysRoomUUID = room.UUID
 					break
@@ -111,11 +146,11 @@ func loadArea(name string) *areaData {
 		}
 	}
 
-	for r, room := range area.Rooms {
+	for r, room := range area.Rooms.Data {
 		room.pArea = area
 		room.UUID = r
 	}
-	return area
+	return area, nil
 }
 
 func loadAllAreas() {
@@ -129,7 +164,10 @@ func loadAllAreas() {
 		if item.IsDir() {
 			continue
 		} else if strings.HasSuffix(item.Name(), ".json") {
-			newArea := loadArea(item.Name())
+			newArea, err := loadArea(item.Name())
+			if err != nil {
+				continue
+			}
 			areaList[newArea.UUID] = newArea
 			//mudLog("loaded area: %v", item.Name())
 		}
@@ -142,12 +180,12 @@ func relinkAreaPointers() {
 	var areaCount, roomCount, exitCount int
 	for _, area := range areaList {
 		areaCount++
-		for _, room := range area.Rooms {
+		for _, room := range area.Rooms.Data {
 			room.pArea = area
 			roomCount++
 			for _, exit := range room.Exits {
 				exitCount++
-				exit.pRoom = areaList[exit.ToRoom.AreaUUID].Rooms[exit.ToRoom.RoomUUID]
+				exit.pRoom = areaList[exit.ToRoom.AreaUUID].Rooms.Data[exit.ToRoom.RoomUUID]
 
 			}
 		}
