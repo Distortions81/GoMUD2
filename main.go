@@ -73,7 +73,6 @@ func main() {
 		saveHelps()
 
 		critLog("Bootstrap files created.")
-		return
 	}
 
 	loadAllAreas()

@@ -18,13 +18,13 @@ type RoomMap struct {
 
 func (room RoomMap) MarshalJSON() ([]byte, error) {
 	var pairs []struct {
-		Key   UUIDData
-		Value *roomData
+		UUID UUIDData
+		Room *roomData
 	}
 	for k, v := range room.Data {
 		pairs = append(pairs, struct {
-			Key   UUIDData
-			Value *roomData
+			UUID UUIDData
+			Room *roomData
 		}{k, v})
 	}
 
@@ -34,8 +34,8 @@ func (room RoomMap) MarshalJSON() ([]byte, error) {
 func (room *RoomMap) UnmarshalJSON(data []byte) error {
 
 	var pairs []struct {
-		Key   UUIDData
-		Value *roomData
+		UUID UUIDData
+		Room *roomData
 	}
 
 	if err := json.Unmarshal(data, &pairs); err != nil {
@@ -44,7 +44,7 @@ func (room *RoomMap) UnmarshalJSON(data []byte) error {
 
 	room.Data = make(map[UUIDData]*roomData)
 	for _, pair := range pairs {
-		room.Data[pair.Key] = pair.Value
+		room.Data[pair.UUID] = pair.Room
 	}
 	return nil
 }
