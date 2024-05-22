@@ -1,283 +1,282 @@
 {
 	"Version": 1,
-	"UUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
+	"UUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
 	"VNUM": 0,
 	"Name": "system",
 	"CreDate": "0001-01-01T00:00:00Z",
-	"ModDate": "2024-05-18T05:28:21.693903022Z",
-	"Rooms": {
-		"4hRERjMzzxeo3YpWuu48OwkVAVbVmFIX": {
-			"Version": 1,
-			"VNUM": 1,
-			"Name": "A new room 1",
-			"Description": "Just an empty room",
-			"CreDate": "2024-05-13T18:24:38.366673547-06:00",
-			"ModDate": "2024-05-13T18:24:38.366677389-06:00",
-			"Exits": [
-				{
-					"Direction": 7,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "yp_mzoYGzhelKPy8ABuVFg04S4WTHQ4l"
+	"ModDate": "2024-05-22T02:37:14.475998428Z",
+	"Rooms": [
+		{
+			"Key": "FmkjKQiv0ReKUmEuINWdXQkVAVbVmFIX",
+			"Value": {
+				"Version": 1,
+				"Name": "A new room",
+				"Description": "Just an empty room",
+				"CreDate": "2024-05-21T20:36:22.589661114-06:00",
+				"ModDate": "2024-05-21T20:36:22.589664886-06:00",
+				"Exits": [
+					{
+						"Direction": 2,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "7dpmseiu0RdZZGYh0toMMgkVAVbVmFIX"
+						}
+					},
+					{
+						"Direction": 6,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "nHc--w-v0Re65veNHLbKaAkVAVbVmFIX"
+						}
 					}
-				}
-			]
+				]
+			}
 		},
-		"D7vC3TIzzxecv4B8_R0CewkVAVbVmFIX": {
-			"Version": 1,
-			"VNUM": 2,
-			"Name": "A new room 2",
-			"Description": "Just an empty room",
-			"CreDate": "2024-05-13T18:24:36.613363778-06:00",
-			"ModDate": "2024-05-13T18:24:36.613366224-06:00",
-			"Exits": [
-				{
-					"Direction": 1,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "yp_mzoYGzhelKPy8ABuVFg04S4WTHQ4l"
+		{
+			"Key": "0su2bQuv0RfuyRbhsWJIYgkVAVbVmFIX",
+			"Value": {
+				"Version": 1,
+				"Name": "A new room",
+				"Description": "Just an empty room",
+				"CreDate": "2024-05-21T20:36:36.625073108-06:00",
+				"ModDate": "2024-05-21T20:36:36.625076879-06:00",
+				"Exits": [
+					{
+						"Direction": 8,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "7dpmseiu0RdZZGYh0toMMgkVAVbVmFIX"
+						}
 					}
-				}
-			]
+				]
+			}
 		},
-		"HeRyGzIzzxdeEOHinuIiIgkVAVbVmFIX": {
-			"Version": 1,
-			"VNUM": 3,
-			"Name": "A new room 3",
-			"Description": "Just an empty room",
-			"CreDate": "2024-05-13T18:24:33.353351644-06:00",
-			"ModDate": "2024-05-13T18:24:33.353354439-06:00",
-			"Exits": [
-				{
-					"Direction": 3,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "yp_mzoYGzhelKPy8ABuVFg04S4WTHQ4l"
+		{
+			"Key": "XmqBwQ6v0RdeKljdv_tGaQkVAVbVmFIX",
+			"Value": {
+				"Version": 1,
+				"Name": "A new room",
+				"Description": "Just an empty room",
+				"CreDate": "2024-05-21T20:36:50.915761946-06:00",
+				"ModDate": "2024-05-21T20:36:50.915765857-06:00",
+				"Exits": [
+					{
+						"Direction": 0,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "dqU2Fgqv0RdSjHpLX3QwTAkVAVbVmFIX"
+						}
 					}
-				}
-			]
+				]
+			}
 		},
-		"IxtykiszzxfVyjMWnGjqLAkVAVbVmFIX": {
-			"Version": 1,
-			"VNUM": 4,
-			"Name": "A new room 4",
-			"Description": "Just an empty room",
-			"CreDate": "2024-05-13T18:24:05.285020201-06:00",
-			"ModDate": "2024-05-13T18:24:05.285023625-06:00",
-			"Exits": [
-				{
-					"Direction": 9,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "yp_mzoYGzhelKPy8ABuVFg04S4WTHQ4l"
+		{
+			"Key": "nHc--w-v0Re65veNHLbKaAkVAVbVmFIX",
+			"Value": {
+				"Version": 1,
+				"Name": "A new room",
+				"Description": "Just an empty room",
+				"CreDate": "2024-05-21T20:36:56.179421016-06:00",
+				"ModDate": "2024-05-21T20:36:56.179425277-06:00",
+				"Exits": [
+					{
+						"Direction": 2,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "FmkjKQiv0ReKUmEuINWdXQkVAVbVmFIX"
+						}
 					}
-				}
-			]
+				]
+			}
 		},
-		"bmgQegWizhdCOek0ZlycIgkVAVbVmFIX": {
-			"Version": 1,
-			"VNUM": 5,
-			"Name": "A new room 5",
-			"Description": "Just an empty room",
-			"CreDate": "2024-05-11T22:04:12.481182509-06:00",
-			"ModDate": "2024-05-11T22:04:12.481186281-06:00",
-			"Exits": [
-				{
-					"Direction": 6,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "yp_mzoYGzhelKPy8ABuVFg04S4WTHQ4l"
+		{
+			"Key": "7dpmseiu0RdZZGYh0toMMgkVAVbVmFIX",
+			"Value": {
+				"Version": 1,
+				"Name": "The void",
+				"Description": "You are floating in a void.",
+				"CreDate": "0001-01-01T00:00:00Z",
+				"ModDate": "0001-01-01T00:00:00Z",
+				"Exits": [
+					{
+						"Direction": 0,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "W-7Vhgav0RdxxGPT22foGAkVAVbVmFIX"
+						}
+					},
+					{
+						"Direction": 2,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "rpKTwAev0RfmSWiNIgvHcwkVAVbVmFIX"
+						}
+					},
+					{
+						"Direction": 6,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "FmkjKQiv0ReKUmEuINWdXQkVAVbVmFIX"
+						}
+					},
+					{
+						"Direction": 4,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "dqU2Fgqv0RdSjHpLX3QwTAkVAVbVmFIX"
+						}
+					},
+					{
+						"Direction": 9,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "0su2bQuv0RfuyRbhsWJIYgkVAVbVmFIX"
+						}
+					},
+					{
+						"Direction": 8,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "WYd4xwuv0Rc6QSOqKft_KAkVAVbVmFIX"
+						}
 					}
-				}
-			]
+				]
+			}
 		},
-		"fnRVi1Ghzhe9qA3zOzxAKwkVAVbVmFIX": {
-			"Version": 1,
-			"VNUM": 6,
-			"Name": "A new room 6",
-			"Description": "Just an empty room",
-			"CreDate": "2024-05-11T21:51:19.676805786-06:00",
-			"ModDate": "2024-05-11T21:51:19.676809627-06:00",
-			"Exits": [
-				{
-					"Direction": 2,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "yp_mzoYGzhelKPy8ABuVFg04S4WTHQ4l"
+		{
+			"Key": "rpKTwAev0RfmSWiNIgvHcwkVAVbVmFIX",
+			"Value": {
+				"Version": 1,
+				"Name": "A new room",
+				"Description": "Just an empty room",
+				"CreDate": "2024-05-21T20:36:20.835405093-06:00",
+				"ModDate": "2024-05-21T20:36:20.835409004-06:00",
+				"Exits": [
+					{
+						"Direction": 6,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "7dpmseiu0RdZZGYh0toMMgkVAVbVmFIX"
+						}
+					},
+					{
+						"Direction": 2,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "LIy4jhGv0RdF-S-kfVfUWgkVAVbVmFIX"
+						}
 					}
-				}
-			]
+				]
+			}
 		},
-		"gCPqWCozzxfcftpCFuElTwkVAVbVmFIX": {
-			"Version": 1,
-			"VNUM": 7,
-			"Name": "A new room 7",
-			"Description": "Just an empty room",
-			"CreDate": "2024-05-13T18:24:00.024850271-06:00",
-			"ModDate": "2024-05-13T18:24:00.024853135-06:00",
-			"Exits": [
-				{
-					"Direction": 0,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "yp_mzoYGzhelKPy8ABuVFg04S4WTHQ4l"
+		{
+			"Key": "dqU2Fgqv0RdSjHpLX3QwTAkVAVbVmFIX",
+			"Value": {
+				"Version": 1,
+				"Name": "A new room",
+				"Description": "Just an empty room",
+				"CreDate": "2024-05-21T20:36:30.862089313-06:00",
+				"ModDate": "2024-05-21T20:36:30.862093154-06:00",
+				"Exits": [
+					{
+						"Direction": 0,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "7dpmseiu0RdZZGYh0toMMgkVAVbVmFIX"
+						}
+					},
+					{
+						"Direction": 4,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "XmqBwQ6v0RdeKljdv_tGaQkVAVbVmFIX"
+						}
 					}
-				}
-			]
+				]
+			}
 		},
-		"gm8KHM-Yzhd55XYLRyH1LAkVAVbVmFIX": {
-			"Version": 1,
-			"VNUM": 8,
-			"Name": "A new room 8",
-			"Description": "Just an empty room",
-			"CreDate": "2024-05-11T19:15:23.370850509-06:00",
-			"ModDate": "2024-05-11T19:15:23.37085435-06:00",
-			"Exits": [
-				{
-					"Direction": 4,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "iIAyAM6Yzhc3E_lg78LrAwkVAVbVmFIX"
+		{
+			"Key": "WYd4xwuv0Rc6QSOqKft_KAkVAVbVmFIX",
+			"Value": {
+				"Version": 1,
+				"Name": "A new room",
+				"Description": "Just an empty room",
+				"CreDate": "2024-05-21T20:36:38.130941228-06:00",
+				"ModDate": "2024-05-21T20:36:38.13094507-06:00",
+				"Exits": [
+					{
+						"Direction": 9,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "7dpmseiu0RdZZGYh0toMMgkVAVbVmFIX"
+						}
 					}
-				}
-			]
+				]
+			}
 		},
-		"iEX3ozEzzxf4siKnAKcQJQkVAVbVmFIX": {
-			"Version": 1,
-			"VNUM": 9,
-			"Name": "A new room 9",
-			"Description": "Just an empty room",
-			"CreDate": "2024-05-13T18:24:31.348764209-06:00",
-			"ModDate": "2024-05-13T18:24:31.348767563-06:00",
-			"Exits": [
-				{
-					"Direction": 5,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "yp_mzoYGzhelKPy8ABuVFg04S4WTHQ4l"
+		{
+			"Key": "SX1U8gyv0RdeSPuIIAw_cwkVAVbVmFIX",
+			"Value": {
+				"Version": 1,
+				"Name": "A new room",
+				"Description": "Just an empty room",
+				"CreDate": "2024-05-21T20:36:43.14496701-06:00",
+				"ModDate": "2024-05-21T20:36:43.144970432-06:00",
+				"Exits": [
+					{
+						"Direction": 4,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "W-7Vhgav0RdxxGPT22foGAkVAVbVmFIX"
+						}
 					}
-				}
-			]
+				]
+			}
 		},
-		"iIAyAM6Yzhc3E_lg78LrAwkVAVbVmFIX": {
-			"Version": 1,
-			"VNUM": 10,
-			"Name": "A new room 10",
-			"Description": "Just an empty room",
-			"CreDate": "2024-05-11T19:15:18.608741236-06:00",
-			"ModDate": "2024-05-11T19:15:18.608744099-06:00",
-			"Exits": [
-				{
-					"Direction": 4,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "yp_mzoYGzhelKPy8ABuVFg04S4WTHQ4l"
+		{
+			"Key": "LIy4jhGv0RdF-S-kfVfUWgkVAVbVmFIX",
+			"Value": {
+				"Version": 1,
+				"Name": "A new room",
+				"Description": "Just an empty room",
+				"CreDate": "2024-05-21T20:37:02.948639371-06:00",
+				"ModDate": "2024-05-21T20:37:02.948643073-06:00",
+				"Exits": [
+					{
+						"Direction": 6,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "rpKTwAev0RfmSWiNIgvHcwkVAVbVmFIX"
+						}
 					}
-				},
-				{
-					"Direction": 0,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "gm8KHM-Yzhd55XYLRyH1LAkVAVbVmFIX"
-					}
-				}
-			]
+				]
+			}
 		},
-		"nGrlKSszzxe7P2j88jojIQkVAVbVmFIX": {
-			"Version": 1,
-			"VNUM": 11,
-			"Name": "A new room 11",
-			"Description": "Just an empty room",
-			"CreDate": "2024-05-13T18:24:03.530971673-06:00",
-			"ModDate": "2024-05-13T18:24:03.530975516-06:00",
-			"Exits": [
-				{
-					"Direction": 8,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "yp_mzoYGzhelKPy8ABuVFg04S4WTHQ4l"
+		{
+			"Key": "W-7Vhgav0RdxxGPT22foGAkVAVbVmFIX",
+			"Value": {
+				"Version": 1,
+				"Name": "A new room",
+				"Description": "Just an empty room",
+				"CreDate": "2024-05-21T20:36:15.571707485-06:00",
+				"ModDate": "2024-05-21T20:36:15.571711257-06:00",
+				"Exits": [
+					{
+						"Direction": 4,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "7dpmseiu0RdZZGYh0toMMgkVAVbVmFIX"
+						}
+					},
+					{
+						"Direction": 0,
+						"ToRoom": {
+							"AreaUUID": "6rxmseiu0RfIOJRJhrDbbwkVAVbVmFIX",
+							"RoomUUID": "SX1U8gyv0RdeSPuIIAw_cwkVAVbVmFIX"
+						}
 					}
-				}
-			]
-		},
-		"yp_mzoYGzhelKPy8ABuVFg04S4WTHQ4l": {
-			"Version": 1,
-			"Name": "The void",
-			"Description": "You are floating in a void.",
-			"CreDate": "0001-01-01T00:00:00Z",
-			"ModDate": "0001-01-01T00:00:00Z",
-			"Exits": [
-				{
-					"Direction": 0,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "iIAyAM6Yzhc3E_lg78LrAwkVAVbVmFIX"
-					}
-				},
-				{
-					"Direction": 6,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "fnRVi1Ghzhe9qA3zOzxAKwkVAVbVmFIX"
-					}
-				},
-				{
-					"Direction": 2,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "bmgQegWizhdCOek0ZlycIgkVAVbVmFIX"
-					}
-				},
-				{
-					"Direction": 4,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "gCPqWCozzxfcftpCFuElTwkVAVbVmFIX"
-					}
-				},
-				{
-					"Direction": 9,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "nGrlKSszzxe7P2j88jojIQkVAVbVmFIX"
-					}
-				},
-				{
-					"Direction": 8,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "IxtykiszzxfVyjMWnGjqLAkVAVbVmFIX"
-					}
-				},
-				{
-					"Direction": 1,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "iEX3ozEzzxf4siKnAKcQJQkVAVbVmFIX"
-					}
-				},
-				{
-					"Direction": 7,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "HeRyGzIzzxdeEOHinuIiIgkVAVbVmFIX"
-					}
-				},
-				{
-					"Direction": 5,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "D7vC3TIzzxecv4B8_R0CewkVAVbVmFIX"
-					}
-				},
-				{
-					"Direction": 3,
-					"ToRoom": {
-						"AreaUUID": "gJnmzoYGzhfEL_UDmkQ6Xg04S4WTHQ4l",
-						"RoomUUID": "4hRERjMzzxeo3YpWuu48OwkVAVbVmFIX"
-					}
-				}
-			]
+				]
+			}
 		}
-	}
+	]
 }

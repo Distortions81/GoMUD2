@@ -14,7 +14,7 @@ func (player *characterData) goTo(loc LocData) {
 		player.send("That area can't be found: %v", loc.AreaUUID)
 		return
 	}
-	room := area.Rooms[loc.RoomUUID]
+	room := area.Rooms.Data[loc.RoomUUID]
 	if room == nil {
 		critLog("Room not found: %v", loc.RoomUUID)
 		player.send("The room %v can't be found in the area: %v", loc.RoomUUID, area.Name)

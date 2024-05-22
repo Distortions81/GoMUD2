@@ -12,6 +12,43 @@ import (
 var areaList map[UUIDData]*areaData = make(map[UUIDData]*areaData)
 var sysAreaUUID, sysRoomUUID UUIDData
 
+type RoomMap struct {
+	Data map[UUIDData]*roomData
+}
+
+func (room RoomMap) MarshalJSON() ([]byte, error) {
+	var pairs []struct {
+		Key   UUIDData
+		Value *roomData
+	}
+	for k, v := range room.Data {
+		pairs = append(pairs, struct {
+			Key   UUIDData
+			Value *roomData
+		}{k, v})
+	}
+
+	return json.Marshal(pairs)
+}
+
+func (room *RoomMap) UnmarshalJSON(data []byte) error {
+
+	var pairs []struct {
+		Key   UUIDData
+		Value *roomData
+	}
+
+	if err := json.Unmarshal(data, &pairs); err != nil {
+		return err
+	}
+
+	room.Data = make(map[UUIDData]*roomData)
+	for _, pair := range pairs {
+		room.Data[pair.Key] = pair.Value
+	}
+	return nil
+}
+
 func makeTestArea() {
 	sysAreaUUID, sysRoomUUID = makeUUID(), makeUUID()
 
@@ -19,7 +56,7 @@ func makeTestArea() {
 	sysRooms[sysRoomUUID] = &roomData{
 		Version: 1, UUID: sysRoomUUID, VNUM: 0, Name: "The void", Description: "You are floating in a void."}
 	areaList[sysAreaUUID] = &areaData{
-		Version: 1, UUID: sysAreaUUID, VNUM: 0, Name: "system", Rooms: sysRooms}
+		Version: 1, UUID: sysAreaUUID, VNUM: 0, Name: "system", Rooms: RoomMap{Data: sysRooms}}
 }
 
 func saveAllAreas(force bool) {
@@ -92,7 +129,7 @@ func loadArea(name string) (*areaData, error) {
 	}
 
 	//Add UUID back, we don't want this in the save twice per room
-	for r, room := range area.Rooms {
+	for r, room := range area.Rooms.Data {
 		room.UUID = r
 	}
 
@@ -100,7 +137,7 @@ func loadArea(name string) (*areaData, error) {
 	if !sysAreaUUID.hasUUID() || !sysRoomUUID.hasUUID() {
 		if area.VNUM == 0 {
 			sysAreaUUID = area.UUID
-			for _, room := range area.Rooms {
+			for _, room := range area.Rooms.Data {
 				if room.VNUM == 0 {
 					sysRoomUUID = room.UUID
 					break
@@ -109,7 +146,7 @@ func loadArea(name string) (*areaData, error) {
 		}
 	}
 
-	for r, room := range area.Rooms {
+	for r, room := range area.Rooms.Data {
 		room.pArea = area
 		room.UUID = r
 	}
@@ -143,12 +180,12 @@ func relinkAreaPointers() {
 	var areaCount, roomCount, exitCount int
 	for _, area := range areaList {
 		areaCount++
-		for _, room := range area.Rooms {
+		for _, room := range area.Rooms.Data {
 			room.pArea = area
 			roomCount++
 			for _, exit := range room.Exits {
 				exitCount++
-				exit.pRoom = areaList[exit.ToRoom.AreaUUID].Rooms[exit.ToRoom.RoomUUID]
+				exit.pRoom = areaList[exit.ToRoom.AreaUUID].Rooms.Data[exit.ToRoom.RoomUUID]
 
 			}
 		}

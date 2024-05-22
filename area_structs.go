@@ -46,7 +46,7 @@ type areaData struct {
 	CreDate time.Time
 	ModDate time.Time
 
-	Rooms map[UUIDData]*roomData `json:",omitempty"`
+	Rooms RoomMap
 	dirty bool
 }
 

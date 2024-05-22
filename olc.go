@@ -76,7 +76,7 @@ func cmdDig(player *characterData, input string) {
 		if strings.EqualFold(item, input) {
 			if player.room != nil && player.room.pArea != nil {
 				newRoom := makeRoom(player.room.pArea)
-				player.room.pArea.Rooms[newRoom.UUID] = newRoom
+				player.room.pArea.Rooms.Data[newRoom.UUID] = newRoom
 				player.room.Exits = append(player.room.Exits,
 					&exitData{Direction: DIR(i), pRoom: newRoom,
 						ToRoom: LocData{AreaUUID: player.room.pArea.UUID, RoomUUID: newRoom.UUID}})
