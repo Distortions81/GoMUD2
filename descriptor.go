@@ -109,7 +109,7 @@ func handleDesc(conn net.Conn, tls bool) {
 	mudLog("Connection from: %v", ip)
 
 	//Send telnet sequences
-	sendStart(desc.conn)
+	sendStart(desc.conn, tls)
 
 	//Launch read loop
 	desc.readDescLoop()
@@ -120,12 +120,17 @@ func handleDesc(conn net.Conn, tls bool) {
 	descLock.Unlock()
 }
 
-func sendStart(conn net.Conn) {
+func sendStart(conn net.Conn, tls bool) {
 	//Start telnet negotiation
 	sendTelnetCmds(conn)
 
 	//Send greeting
-	_, err := conn.Write([]byte(greetBuf))
+	var err error
+	if tls {
+		_, err = conn.Write([]byte(greetBuf))
+	} else {
+		_, err = conn.Write([]byte(greetBufNoSSL))
+	}
 	if err != nil {
 		conn.Close()
 		return

@@ -1,12 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 )
 
 var textFiles map[string]string
-var greetBuf, aurevoirBuf, warnBuf string
+var greetBuf, greetBufNoSSL, aurevoirBuf, warnBuf string
 
 const textExt = ".txt"
 
@@ -37,8 +38,11 @@ func readTextFiles() {
 		//mudLog("readTextFiles: Read: %v", fname.Name())
 	}
 
+	sslBuf := fmt.Sprintf("Use port %v for SSL.\r\n", *portTLS)
+
 	//Save greet, aurevoir and warning
 	greetBuf = LICENSE + string(ANSIColor([]byte(textFiles["greet"]))) + loginStateList[CON_LOGIN].prompt
+	greetBufNoSSL = LICENSE + string(ANSIColor([]byte(textFiles["greet"]))) + sslBuf + loginStateList[CON_LOGIN].prompt
 	aurevoirBuf = textFiles["aurevoir"]
 	warnBuf = textFiles["warn"]
 }
