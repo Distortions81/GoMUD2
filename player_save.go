@@ -135,12 +135,13 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 func (desc *descData) pLoad(plrStr string) *characterData {
 
 	for _, acc := range accountIndex {
-		if !strings.EqualFold(acc.Login, plrStr) {
-			continue
-		}
 		desc := descData{}
 		desc.loadAccount(acc.UUID)
 		for _, char := range desc.account.Characters {
+			if !strings.EqualFold(char.Login, plrStr) {
+				continue
+			}
+
 			data, err := readFile(DATA_DIR + ACCOUNT_DIR + acc.UUID.toString() + "/" + char.UUID.toString() + ".json")
 			if err != nil {
 				return nil

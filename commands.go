@@ -183,7 +183,7 @@ func cmdTelnet(player *characterData, input string) {
 		player.send("Character map list:")
 		var buf string
 		var count int
-		for cname, _ := range charsetList {
+		for cname := range charsetList {
 			count++
 			buf = buf + fmt.Sprintf("%18v", cname)
 			if count%4 == 0 {
@@ -298,12 +298,6 @@ func cmdWho(player *characterData, input string) {
 	uptime = strings.ReplaceAll(uptime, " ", "")
 	buf = buf + fmt.Sprintf("\r\n%v players online. Uptime: %v", numPlayers, uptime)
 	player.send(buf)
-}
-
-type cmdListItem struct {
-	cmd  *commandData
-	name string
-	help string
 }
 
 func init() {

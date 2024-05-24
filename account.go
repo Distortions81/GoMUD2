@@ -70,7 +70,6 @@ func gCharSelect(desc *descData, input string) {
 			loadchar(desc, item.Login, item.UUID)
 		}
 		desc.sendln("No matches found for %v.", input)
-		return
 	} else if len(desc.account.Characters) > num-1 { //Find by number
 		loadchar(desc, desc.account.Characters[num-1].Login, desc.account.Characters[num-1].UUID)
 	} else {
@@ -88,7 +87,6 @@ func loadchar(desc *descData, login string, uuid UUIDData) {
 	var newPlayer *characterData
 	if newPlayer = desc.loadCharacter(login); newPlayer != nil {
 		desc.enterWorld(newPlayer)
-		return
 	} else {
 		desc.sendln("Failed to load character %v.", login)
 		critLog("Unable to load characer %v!", login)

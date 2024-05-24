@@ -70,11 +70,3 @@ func (player *characterData) goExit(exit *exitData) {
 		player.dirty = true
 	}
 }
-
-func (player *characterData) printToRoom(buf string) {
-	if player.room != nil && player.room.players != nil {
-		for _, target := range player.room.players {
-			target.send(buf)
-		}
-	}
-}

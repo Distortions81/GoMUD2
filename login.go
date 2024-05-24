@@ -155,7 +155,7 @@ func gLogin(desc *descData, input string) {
 
 	} else if inputLen := len(input); inputLen < MIN_LOGIN_LEN || inputLen > MAX_LOGIN_LEN {
 		desc.close()
-		return
+
 	} else if accountIndex[input] != nil {
 		err := desc.loadAccount(accountIndex[input].UUID)
 		if desc.account != nil {
@@ -165,13 +165,13 @@ func gLogin(desc *descData, input string) {
 			desc.sendln("ERROR: Sorry, unable to load that account!")
 			critLog("gLogin: %v: %v: Unable to load account: %v (%v)", desc.id, desc.ip, input, err)
 			desc.close()
-			return
+
 		}
 	} else {
 		desc.sendln("Login name not found.")
 		critLog("#%v: %v tried a login that does not exist: '%v'", desc.id, desc.ip, input)
 		desc.close()
-		return
+
 	}
 }
 
