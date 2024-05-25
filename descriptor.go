@@ -19,8 +19,6 @@ const (
 var HTTPGET = []byte("GET ")
 var HTTPGETLEN = len(HTTPGET) - 1
 
-var attemptMap map[string]int = make(map[string]int)
-
 func reverseDNS(ip string) string {
 	timeout := 10 * time.Second // Timeout duration
 
@@ -58,16 +56,22 @@ func handleDesc(conn net.Conn, tls bool) {
 	ip, _, _ := net.SplitHostPort(a)
 
 	//Track connection attempts.
-	if attemptMap[ip] > MAX_CONNECT || attemptMap[ip] == -1 {
-		conn.Close()
-		return
-	} else if attemptMap[ip] == MAX_CONNECT {
-		conn.Close()
-		critLog("Too many connect attempts from %v. Blocking!", ip)
-		attemptMap[ip]++
-		return
+	if attemptMap[ip] != nil {
+		attemptMap[ip].Attempts++
+		if attemptMap[ip].Blocked {
+			conn.Close()
+			return
+		} else if attemptMap[ip].Attempts >= MAX_CONNECT {
+			conn.Close()
+			critLog("Too many connect attempts from %v. Blocking!", ip)
+			attemptMap[ip].Blocked = true
+			attemptMap[ip].Modified = time.Now()
+			return
+		}
+
+	} else {
+		attemptMap[ip] = &attemptData{Host: ip, Created: time.Now()}
 	}
-	attemptMap[ip]++
 
 	//Create descriptor
 	descLock.Lock()
@@ -95,7 +99,9 @@ func handleDesc(conn net.Conn, tls bool) {
 		data, err := desc.reader.ReadString('\n')
 		if err == nil && strings.ContainsAny("GET", data) {
 			critLog("HTTP request from %v. Adding to ignore list.", ip)
-			attemptMap[ip] = -1
+			if attemptMap[ip] == nil {
+				attemptMap[ip] = &attemptData{Host: ip, Blocked: true, HTTP: true}
+			}
 			conn.Write([]byte(`HTTP/1.1 301 Moved Permanently\r\nLocation: http://www.example.org/`))
 			conn.Close()
 			return
