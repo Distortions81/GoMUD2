@@ -14,9 +14,9 @@ var blockedDirty bool
 
 type blockedData struct {
 	Host     string
-	Attempts int
-	Blocked  bool
-	HTTP     bool
+	Attempts int  `json:",omitempty"`
+	Blocked  bool `json:",omitempty"`
+	HTTP     bool `json:",omitempty"`
 
 	Created  time.Time
 	Modified time.Time
