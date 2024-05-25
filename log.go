@@ -48,12 +48,9 @@ func critLog(format string, args ...any) {
 	buf := fmt.Sprintf("%v:%v: %v", file, line, data)
 	doLog(elog, buf)
 
-	for _, d := range descList {
-		if !d.valid {
-			continue
-		}
-		if d.state == CON_PLAYING {
-			d.sendln(buf)
+	for _, target := range charList {
+		if target.Level >= LEVEL_IMPLEMENTOR {
+			target.send(buf)
 		}
 	}
 }
