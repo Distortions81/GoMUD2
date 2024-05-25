@@ -77,6 +77,10 @@ func gCharSelect(desc *descData, input string) {
 
 func canMakeCharacter(desc *descData, input string) bool {
 	if len(desc.account.Characters) < MAX_CHAR_SLOTS {
+		if strings.EqualFold(input, "new") {
+			desc.state = CON_CHAR_CREATE
+			return true
+		}
 		gCharNewName(desc, input)
 		return true
 	} else {
