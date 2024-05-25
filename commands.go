@@ -49,7 +49,7 @@ var cmdMap = map[string]*commandData{
 	"quit":   {level: LEVEL_ANY, noShort: true, hint: "quit and disconnect", goDo: cmdQuit},
 	"who":    {level: LEVEL_ANY, hint: "show players online", goDo: cmdWho},
 	"tells":  {level: LEVEL_ANY, hint: "read pending tells", goDo: cmdTells},
-	"ignore": {level: LEVEL_ANY, hint: "ignore someone. add 'silent' to silently ignore.", goDo: cmdIgnore, args: []string{"player name", "silent"}},
+	"ignore": {level: LEVEL_ANY, hint: "ignore someone. add 'silent' to silently ignore", goDo: cmdIgnore, args: []string{"player name", "silent"}},
 
 	//Newbie
 	"say":      {level: LEVEL_NEWBIE, hint: "speak out loud", goDo: cmdSay, args: []string{"message"}},
@@ -68,8 +68,8 @@ var cmdMap = map[string]*commandData{
 	"olc":     {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC, args: []string{"room", "asave", "dig"}},
 	"coninfo": {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdConInfo},
 	"pset":    {level: LEVEL_IMPLEMENTER, hint: "set player parameters", goDo: cmdPset, args: []string{"player-name", "level", "level-number"}},
-	"disable": {level: LEVEL_ADMIN, hint: "disable/enable a command or channel.", goDo: cmdDisable, args: []string{"command/channel", "name of command or channel"}},
-	"blocked": {level: LEVEL_ADMIN, hint: "Shows blocked connections. 'clear' to clear list.", args: []string{"add or delete", "hostname or ip"}, goDo: cmdBlocked},
+	"disable": {level: LEVEL_ADMIN, hint: "disable/enable a command or channel", goDo: cmdDisable, args: []string{"command/channel", "name of command or channel"}},
+	"blocked": {level: LEVEL_ADMIN, hint: "Shows blocked connections", args: []string{"add or delete", "hostname or ip"}, goDo: cmdBlocked},
 }
 
 func cmdCharList(player *characterData, input string) {
