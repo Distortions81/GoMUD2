@@ -15,7 +15,7 @@ const (
 	MAX_PASSPHRASE_LENGTH = 72
 	MIN_PASSPHRASE_LENGTH = 8
 
-	MIN_PASS_ENTROPY_BITS = 52
+	MIN_PASS_ENTROPY_BITS = 46
 
 	MAX_CHAR_SLOTS = 15
 	//Number of number-suffixed login names
@@ -253,9 +253,9 @@ func gNewLoginConfirm(desc *descData, input string) {
 func gNewPassphrase(desc *descData, input string) {
 	//min/max passphrase len
 	passLen := len([]byte(input))
-	if passLen < MIN_PASSPHRASE_LENGTH &&
+	if passLen < MIN_PASSPHRASE_LENGTH ||
 		passLen > MAX_PASSPHRASE_LENGTH {
-		desc.sendln("Sorry, that passphrase is TOO LONG! Try again!")
+		desc.sendln("Sorry, that passphrase is either over %v or under %v characters. Please try again.", MAX_PASSPHRASE_LENGTH, MIN_PASSPHRASE_LENGTH)
 		return
 	}
 
