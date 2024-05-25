@@ -67,7 +67,7 @@ var cmdMap = map[string]*commandData{
 	//Builder/mod/imm
 	"olc":     {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC, args: []string{"room", "asave", "dig"}},
 	"coninfo": {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdConInfo},
-	"pset":    {level: LEVEL_IMPLEMENTOR, hint: "set player parameters", goDo: cmdPset, args: []string{"player-name", "level", "level-number"}},
+	"pset":    {level: LEVEL_IMPLEMENTER, hint: "set player parameters", goDo: cmdPset, args: []string{"player-name", "level", "level-number"}},
 	"disable": {level: LEVEL_ADMIN, hint: "disable/enable a command or channel.", goDo: cmdDisable, args: []string{"command/channel", "name of command or channel"}},
 	"blocked": {level: LEVEL_ADMIN, hint: "Shows blocked connections. 'clear' to clear list.", args: []string{"add or delete", "hostname or ip"}, goDo: cmdBlocked},
 }

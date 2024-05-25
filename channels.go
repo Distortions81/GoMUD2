@@ -21,7 +21,7 @@ type chanData struct {
 // use 'disabled: true' to disable vs deleting.
 // Otherwise a 'new' channel using the old ID will be 'off' if old channel was off for a player.
 var channels []*chanData = []*chanData{
-	0: {name: "Implementor", cmd: "imp", desc: "Implementor chat", format: "[IMP] %v: %v", level: LEVEL_IMPLEMENTOR},
+	0: {name: "Implementer", cmd: "imp", desc: "Implementer chat", format: "[IMP] %v: %v", level: LEVEL_IMPLEMENTER},
 	1: {name: "Administrator", cmd: "admin", desc: "Administrator chat", format: "[ADMIN] %v: %v", level: LEVEL_ADMIN},
 	2: {name: "Builder", cmd: "build", desc: "Builder chat", format: "[BUILDER] %v: %v", level: LEVEL_BUILDER},
 	3: {name: "Staff", cmd: "staff", desc: "Chat for all staff", format: "[STAFF] %v: %v", level: LEVEL_MODERATOR},

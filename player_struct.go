@@ -16,10 +16,10 @@ const (
 	LEVEL_NEWBIE = 0
 	LEVEL_PLAYER = 1
 
-	LEVEL_BUILDER     = LEVEL_IMPLEMENTOR - 30
-	LEVEL_MODERATOR   = LEVEL_IMPLEMENTOR - 20
-	LEVEL_ADMIN       = LEVEL_IMPLEMENTOR - 10
-	LEVEL_IMPLEMENTOR = 1000
+	LEVEL_BUILDER     = LEVEL_IMPLEMENTER - 30
+	LEVEL_MODERATOR   = LEVEL_IMPLEMENTER - 20
+	LEVEL_ADMIN       = LEVEL_IMPLEMENTER - 10
+	LEVEL_IMPLEMENTER = 1000
 )
 
 var levelName map[int]string = map[int]string{
@@ -29,7 +29,7 @@ var levelName map[int]string = map[int]string{
 	LEVEL_BUILDER:     "Builder",
 	LEVEL_MODERATOR:   "Moderator",
 	LEVEL_ADMIN:       "Admin",
-	LEVEL_IMPLEMENTOR: "Implementor",
+	LEVEL_IMPLEMENTER: "Implementer",
 }
 
 var (

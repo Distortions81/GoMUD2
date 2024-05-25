@@ -49,7 +49,7 @@ func critLog(format string, args ...any) {
 	doLog(elog, buf)
 
 	for _, target := range charList {
-		if target.Level >= LEVEL_IMPLEMENTOR {
+		if target.Level >= LEVEL_IMPLEMENTER {
 			target.send(buf)
 		}
 	}
