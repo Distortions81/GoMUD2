@@ -136,6 +136,7 @@ func cmdChanges(player *characterData, input string) {
 		} else if strings.EqualFold(args[0], "done") {
 			player.send("Change closed and saved.")
 			player.curChange.Modified = time.Now().UTC()
+			changeList.Modified = time.Now().UTC()
 			player.curChange = nil
 			changeList.dirty = true
 		} else {
