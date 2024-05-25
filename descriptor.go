@@ -197,7 +197,8 @@ func (desc *descData) readDescLoop() {
 
 				//Detect line end, ingest line
 				if (lastByte == '\r' && data == '\n') ||
-					(lastByte != '\r' && data == '\n') {
+					(lastByte == '\n' && data == '\r') ||
+					((lastByte != '\r' && lastByte != '\n') && data == '\r') {
 					desc.ingestLine()
 					continue
 				}
