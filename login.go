@@ -272,7 +272,7 @@ func gNewPassphrase(desc *descData, input string) {
 	} else if entropy >= 62 {
 		desc.sendln("Reasonable passphrase. %v bits of entropy.", entropy)
 	} else if entropy >= MIN_PASS_ENTROPY_BITS {
-		desc.sendln("Somewhat simple passphrase. %v bits of entropy.", entropy)
+		desc.sendln("Simple password. %v bits of entropy.", entropy)
 	} else {
 		desc.sendln("Please try again with a more complex passphrase.\r\n")
 		return

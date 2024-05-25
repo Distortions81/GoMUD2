@@ -195,6 +195,17 @@ func (desc *descData) readDescLoop() {
 					return
 				}
 
+				if desc.inBufLen > 0 {
+					if data == '\b' {
+						desc.inBufLen--
+						desc.inBuf = desc.inBuf[:desc.inBufLen-1]
+					}
+				} else {
+					if data == '\b' {
+						continue
+					}
+				}
+
 				//Detect line end, ingest line
 				if (lastByte == '\r' && data == '\n') ||
 					(lastByte == '\n' && data == '\r') ||

@@ -120,9 +120,6 @@ func processHash(item *hashData, wg *sizedwaitgroup.SizedWaitGroup) {
 	} else {
 		if bcrypt.CompareHashAndPassword(item.hash, []byte(item.pass)) == nil {
 			passGood = true
-		} else {
-			item.desc.sendln("Incorrect passphrase.")
-			critLog("#%v: tried a invalid passphrase!", item.id)
 		}
 	}
 
@@ -151,8 +148,8 @@ func passCheckComplete(item *hashData) {
 		item.desc.state = CON_CHAR_LIST
 		gCharList(item.desc)
 	} else {
-		item.desc.send("Invalid passphrase.")
-		critLog("#%v tried an invalid passphrase.", item.id)
+		item.desc.send("Incorrect passphrase.")
+		critLog("#%v tried an incorrect passphrase.", item.id)
 		item.desc.state = CON_DISCONNECTED
 		item.desc.valid = false
 	}
