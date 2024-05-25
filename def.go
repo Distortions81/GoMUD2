@@ -3,7 +3,7 @@ package main
 import "strings"
 
 const (
-	VERSION  = "v0.0.14a-05-24-2024-0511p"
+	VERSION  = "v0.0.15a-05-25-2024-0146p"
 	CODENAME = "Voidstorm"
 
 	LICENSE = "goMUD2: " + VERSION + "-" + CODENAME + "\n" +
@@ -59,6 +59,7 @@ var reservedNames = []string{
 	"noone",
 	"nobody",
 	"imm",
+	"imp",
 	"immortal",
 	"back",
 }
