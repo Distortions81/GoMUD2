@@ -51,7 +51,7 @@ var cmdMap = map[string]*commandData{
 	"tells":   {level: LEVEL_ANY, hint: "read pending tells", goDo: cmdTells},
 	"ignore":  {level: LEVEL_ANY, hint: "ignore someone. add 'silent' to silently ignore", goDo: cmdIgnore, args: []string{"player name", "silent"}},
 	"changes": {level: LEVEL_ANY, hint: "See list of changes made to the MUD.", goDo: cmdChanges, args: []string{"list, next"}},
-	"license": {level: LEVEL_ANY, hint: "See MUD's version number and license information.", goDo: cmdLicense},
+	"license": {level: LEVEL_ANY, noShort: true, hint: "See MUD's version number and license information.", goDo: cmdLicense},
 
 	//Newbie
 	"say":      {level: LEVEL_NEWBIE, hint: "speak out loud", goDo: cmdSay, args: []string{"message"}},

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 	"time"
 )
@@ -40,4 +41,58 @@ func readFile(filePath string) ([]byte, error) {
 		return nil, err
 	}
 	return data, nil
+}
+func (player *characterData) sendWW(format string, args ...any) {
+	//Format string if args supplied
+	var data string
+	if args != nil {
+		data = fmt.Sprintf(format, args...)
+	} else {
+		data = format
+	}
+
+	if player.Config.HasFlag(CONFIG_NOWRAP) {
+		player.send(format, args)
+		return
+	} else if player.Columns != 0 {
+		player.send(wordWrap(data, player.Columns))
+		return
+
+	} else if player.desc != nil {
+		if player.desc.telnet.Options != nil {
+			if player.desc.telnet.Options.Columns != 0 {
+				player.send(wordWrap(data, player.desc.telnet.Options.Columns))
+				return
+			}
+		}
+	}
+
+	player.send(wordWrap(data, 80))
+
+}
+
+func wordWrap(input string, cols int) string {
+	words := strings.Split(input, " ")
+
+	buf := ""
+	lineLen := 0
+	for i, item := range words {
+		if strings.ContainsAny(item, "\n") ||
+			strings.ContainsAny(item, "\r") {
+			lineLen = 0
+		}
+		itemLen := len(string(ColorRemove([]byte(item))))
+		if lineLen+itemLen > cols {
+			buf = buf + "\r\n"
+			lineLen = 0
+		}
+		if i > 0 {
+			buf = buf + " " + item
+			lineLen++
+		} else {
+			buf = buf + item
+		}
+		lineLen += itemLen
+	}
+	return buf
 }

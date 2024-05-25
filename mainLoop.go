@@ -29,6 +29,8 @@ func mainLoop() {
 		descShuffle()
 		interpAllDesc()
 		sendOutput()
+		expireBlocks()
+		saveChanges()
 		writeBlocked(false)
 		saveAllAreas(false)
 		if tickNum%SAVE_INTERVAL == 0 {

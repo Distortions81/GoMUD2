@@ -8,6 +8,7 @@ import (
 
 type termSettings struct {
 	ColorDisable, ansi256, ansi24, UTF, suppressGoAhead bool
+	Columns                                             int
 	charMap                                             *charmap.Charmap
 }
 

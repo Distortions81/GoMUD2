@@ -1,0 +1,12 @@
+{
+	"Version": 0,
+	"Changes": [
+		{
+			"DateText": "April 25th - May 2nd 2024",
+			"Text": "Development started. Threaded networking, ANSI color with styles, telnet commands, mud client detection, unicode support, character map negotiation, character map translation, accounts, characters, fast-relog (logout), reconnect to 'already playing' characters, passphrase generation, passphrase scoring, threaded input buffering with flooding-kick, basic new character name checks, accounts/character names/passphrases support unicode, high security passphrase hashing, support for TLS/SSL secure connections, account/character unique fingerprint IDs, basic say/who/quit commands.",
+			"AddedBy": "Distortions",
+			"Modified": "2024-05-25T23:01:06.756664987Z"
+		}
+	],
+	"Modified": "0001-01-01T00:00:00Z"
+}

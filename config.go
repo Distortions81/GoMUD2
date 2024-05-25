@@ -8,6 +8,7 @@ const (
 	CONFIG_NOTELL
 	CONFIG_NOCHANNEL
 	CONFIG_DEAF
+	CONFIG_NOWRAP
 
 	//Keep at end, do not use or delete
 	CONFIG_MAX
@@ -22,6 +23,7 @@ var configNames map[int]configString = map[int]configString{
 	CONFIG_NOTELL:    {Name: "NoTell", Description: "Reject tells"},
 	CONFIG_NOCHANNEL: {Name: "NoChannel", Description: "Mute all channels"},
 	CONFIG_DEAF:      {Name: "Deaf", Description: "Mute say/emote/yell"},
+	CONFIG_NOWRAP:    {Name: "NoWrap", Description: "Do not word-wrap"},
 }
 
 func cmdConfig(player *characterData, input string) {
