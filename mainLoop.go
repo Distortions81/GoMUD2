@@ -29,6 +29,7 @@ func mainLoop() {
 		descShuffle()
 		interpAllDesc()
 		sendOutput()
+		writeBlocked(false)
 		saveAllAreas(false)
 		if tickNum%SAVE_INTERVAL == 0 {
 			saveCharacters(false)

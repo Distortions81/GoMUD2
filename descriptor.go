@@ -58,6 +58,7 @@ func handleDesc(conn net.Conn, tls bool) {
 	//Track connection attempts.
 	if blockedMap[ip] != nil {
 		blockedMap[ip].Attempts++
+		blockedDirty = true
 		if blockedMap[ip].Blocked {
 			conn.Close()
 			return
@@ -66,11 +67,13 @@ func handleDesc(conn net.Conn, tls bool) {
 			critLog("Too many connect attempts from %v. Blocking!", ip)
 			blockedMap[ip].Blocked = true
 			blockedMap[ip].Modified = time.Now()
+			blockedDirty = true
 			return
 		}
 
 	} else {
 		blockedMap[ip] = &blockedData{Host: ip, Created: time.Now()}
+		blockedDirty = true
 	}
 
 	//Create descriptor
@@ -101,6 +104,7 @@ func handleDesc(conn net.Conn, tls bool) {
 			critLog("HTTP request from %v. Adding to ignore list.", ip)
 			if blockedMap[ip] == nil {
 				blockedMap[ip] = &blockedData{Host: ip, Blocked: true, HTTP: true}
+				blockedDirty = true
 			}
 			conn.Write([]byte(`HTTP/1.1 301 Moved Permanently\r\nLocation: http://www.example.org/`))
 			conn.Close()

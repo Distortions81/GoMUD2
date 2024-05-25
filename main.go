@@ -102,7 +102,7 @@ func main() {
 	<-signalHandle
 
 	saveCharacters(true)
-	writeBlocked()
+	writeBlocked(true)
 	//saveAllAreas(true)
 	serverState.Store(SERVER_SHUTDOWN)
 	time.Sleep(time.Second)

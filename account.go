@@ -23,6 +23,7 @@ func gCharList(desc *descData) {
 		critLog("*** Warning ***: account '%v' had %v connection attempts before successfully logging in.", desc.account.Login, blockedMap[desc.ip])
 	}
 	delete(blockedMap, desc.ip)
+	blockedDirty = true
 
 	var buf string = "\r\n"
 	numChars := len(desc.account.Characters)

@@ -10,6 +10,7 @@ import (
 )
 
 var blockedMap map[string]*blockedData = make(map[string]*blockedData)
+var blockedDirty bool
 
 type blockedData struct {
 	Host     string
@@ -21,7 +22,12 @@ type blockedData struct {
 	Modified time.Time
 }
 
-func writeBlocked() {
+func writeBlocked(force bool) {
+
+	if !force && !blockedDirty {
+		return
+	}
+
 	var atd []blockedData
 	for _, item := range blockedMap {
 		atd = append(atd, *item)
@@ -49,6 +55,7 @@ func writeBlocked() {
 			return
 		}
 	}(atd)
+	blockedDirty = false
 }
 
 func readBlocked() error {
@@ -84,7 +91,7 @@ func cmdBlocked(player *characterData, input string) {
 		if len(blockedMap) > 0 {
 			blockedMap = make(map[string]*blockedData)
 			player.send("The block list has been cleared.")
-			writeBlocked()
+			blockedDirty = true
 		} else {
 			player.send("The list is already empty.")
 		}
@@ -97,7 +104,7 @@ func cmdBlocked(player *characterData, input string) {
 				if blockedMap[target] != nil {
 					player.send("The host '%v' has been deleted from the list.", target)
 					delete(blockedMap, target)
-					writeBlocked()
+					blockedDirty = true
 				} else {
 					player.send("The host '%v' was not found in the list.", target)
 				}
@@ -106,17 +113,18 @@ func cmdBlocked(player *characterData, input string) {
 				if blockedMap[target] == nil {
 					blockedMap[target] = &blockedData{Host: target, Blocked: true, Created: time.Now()}
 					player.send("Host '%v' added to the list.", target)
-					writeBlocked()
+					blockedDirty = true
 				} else {
 					if blockedMap[target].Blocked {
 						player.send("Host '%v' was already blocked.", target)
 					} else {
 						blockedMap[target].Blocked = true
 						player.send("The host '%v' was already in the list. Blocking it.", target)
-						writeBlocked()
+						blockedDirty = true
 					}
 				}
 				blockedMap[target].Modified = time.Now()
+				blockedDirty = true
 			} else if args[0] == "" {
 				player.send("Delete, or add item?")
 			}
