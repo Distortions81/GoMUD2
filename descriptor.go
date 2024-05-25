@@ -13,7 +13,6 @@ const (
 	maxInputLineLength = 1024
 	maxLines           = 50
 	maxSubLen          = 128
-	MAX_CONNECT        = 15
 )
 
 var HTTPGET = []byte("GET ")
@@ -62,7 +61,7 @@ func handleDesc(conn net.Conn, tls bool) {
 		if blockedMap[ip].Blocked {
 			conn.Close()
 			return
-		} else if blockedMap[ip].Attempts >= MAX_CONNECT {
+		} else if blockedMap[ip].Attempts >= BLOCKED_THRESH {
 			conn.Close()
 			critLog("Too many connect attempts from %v. Blocking!", ip)
 			blockedMap[ip].Blocked = true

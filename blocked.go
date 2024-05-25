@@ -9,8 +9,16 @@ import (
 	"time"
 )
 
+const (
+	BLOCKED_SAVE_INTERVAL = time.Minute
+	BLOCKED_THRESH        = 6
+	BLOCKED_FORGIVE       = 15
+	BLOCKED_COOLDOWN      = time.Hour
+)
+
 var blockedMap map[string]*blockedData = make(map[string]*blockedData)
 var blockedDirty bool
+var lastBlockedSave time.Time
 
 type blockedData struct {
 	Host     string
@@ -22,11 +30,35 @@ type blockedData struct {
 	Modified time.Time
 }
 
+func expireBlocks() {
+	for i, item := range blockedMap {
+		if item.HTTP {
+			continue
+		}
+		if !item.Blocked {
+			continue
+		}
+		if item.Attempts > BLOCKED_FORGIVE {
+			continue
+		}
+		if time.Since(item.Modified) < BLOCKED_COOLDOWN {
+			continue
+		}
+		errLog("Removing block on '%v' because of cooldown.", i)
+		delete(blockedMap, i)
+		break
+	}
+}
+
 func writeBlocked(force bool) {
 
 	if !force && !blockedDirty {
 		return
 	}
+	if time.Since(lastBlockedSave) < SAVE_INTERVAL {
+		return
+	}
+	lastBlockedSave = time.Now()
 
 	var atd []blockedData
 	for _, item := range blockedMap {
@@ -59,6 +91,8 @@ func writeBlocked(force bool) {
 }
 
 func readBlocked() error {
+	lastBlockedSave = time.Now()
+
 	fileName := DATA_DIR + BLOCKED_FILE
 	data, err := readFile(fileName)
 	if err != nil {
