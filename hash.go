@@ -11,7 +11,7 @@ import (
 const (
 	HASH_SLEEP           = time.Millisecond * 10
 	HASH_TIMEOUT         = time.Second * 60
-	PASSPHRASE_HASH_COST = 12
+	PASSPHRASE_HASH_COST = 15
 	HASH_DEPTH_MAX       = 100
 )
 
