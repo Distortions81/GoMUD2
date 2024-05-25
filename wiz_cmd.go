@@ -1,6 +1,7 @@
 package main
 
 import (
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -20,6 +21,81 @@ func cmdConInfo(player *characterData, input string) {
 	for _, item := range descList {
 		player.send("id: %04v addr: %16v state: %v\r\ndns: %v ", item.id, item.ip, item.state, item.dns)
 	}
+}
+
+type attemptData struct {
+	Attempts int
+	Host     string
+}
+
+func cmdBlocked(player *characterData, input string) {
+	args := strings.Split(input, " ")
+	numArgs := len(args)
+	var target string
+
+	if strings.EqualFold(input, "clear") {
+		if len(attemptMap) > 0 {
+			attemptMap = make(map[string]int)
+			player.send("The block list has been cleared.")
+		} else {
+			player.send("The list is already empty.")
+		}
+		return
+	}
+	if numArgs > 1 {
+		target = args[1]
+		if target != "" {
+			if strings.EqualFold(args[0], "delete") {
+				if attemptMap[target] != 0 {
+					player.send("%v has been deleted from the list.", target)
+					delete(attemptMap, target)
+				}
+			} else if strings.EqualFold(args[0], "add") {
+				if attemptMap[target] == 0 {
+					player.send("%v added to the list.", target)
+					attemptMap[target] = -1
+				}
+			} else if args[0] == "" {
+				player.send("Delete, or add item?")
+			}
+		} else {
+			player.send("But what host?")
+		}
+		return
+	} else if input != "" {
+		player.send("But what host?")
+		return
+	}
+
+	var atd []attemptData
+	for i, item := range attemptMap {
+		atd = append(atd, attemptData{Attempts: item, Host: i})
+	}
+
+	sort.Slice(atd, func(i, j int) bool {
+		return atd[i].Attempts < atd[j].Attempts
+	})
+
+	player.send("Blocked connections: host: attempts or blocked")
+
+	count := 0
+	for _, item := range atd {
+		if item.Attempts == 0 {
+			continue
+		}
+		count++
+		if item.Attempts == -1 {
+			player.send("%70v : %v", item.Host, "Blocked")
+		} else {
+			player.send("%70v : %v", item.Host, item.Attempts)
+		}
+	}
+	if count == 0 {
+		player.send("There are no blocked connections.")
+	} else {
+		player.send("Type 'blocked clear' to clear the list... or <add or delete> <host>")
+	}
+
 }
 
 func cmdPset(player *characterData, input string) {
