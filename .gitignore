@@ -7,3 +7,4 @@ data/*.key
 out/
 data/mud-id.txt
 data/disabled.json
+data/blocked.json
