@@ -19,7 +19,7 @@ func isAccNameAvail(name string) bool {
 
 func gCharList(desc *descData) {
 	//They logged in, reset the attempt count.
-	if blockedMap[desc.ip].Attempts > CONNECT_WARN {
+	if blockedMap[desc.ip] != nil && blockedMap[desc.ip].Attempts > CONNECT_WARN {
 		critLog("*** Warning ***: account '%v' had %v connection attempts before successfully logging in.", desc.account.Login, blockedMap[desc.ip])
 	}
 	delete(blockedMap, desc.ip)

@@ -3,10 +3,10 @@ package main
 import "strings"
 
 const (
-	VERSION  = "v0.0.15a-05-25-2024-0146p"
-	CODENAME = "Voidstorm"
+	VERSION  = "v0.0.16a-05-25-2024-0407p"
+	CODENAME = "Blitzstar"
 
-	LICENSE = "goMUD2: " + VERSION + "-" + CODENAME + "\n" +
+	LICENSE = "GOMUD2: " + VERSION + "-" + CODENAME + "\n" +
 		"Copyright 2024 Carl Frank Otto III (carlotto81@gmail.com). All rights reserved.\n"
 
 		//Directories
@@ -23,12 +23,14 @@ const (
 	ACC_INDEX_FILE = "accountIndex.json"
 	DISABLES_FILE  = "disabled.json"
 	BLOCKED_FILE   = "blocked.json"
+	CHANGES_FILE   = "changes.json"
 
 	ACCOUNT_VERSION   = 1
 	CHARACTER_VERSION = 1
 	AREA_VERSION      = 1
 	DISABLES_VERSION  = 1
 	ROOM_VERSION      = 1
+	CHANGES_VERSION   = 1
 
 	DEFAULT_CHARSET = "LATIN1"
 )

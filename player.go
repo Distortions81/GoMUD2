@@ -85,7 +85,6 @@ func (player *characterData) sendToRoom(format string, args ...any) {
 }
 
 // Init player, attach descriptor to character, put in saved room.
-// Starts CON_NEWS
 const ANNOUNCE_LOGIN_REST = time.Minute * 30
 
 func (desc *descData) enterWorld(player *characterData) {
@@ -104,10 +103,16 @@ func (desc *descData) enterWorld(player *characterData) {
 	charList = append(charList, player)
 	player.goTo(player.Loc)
 	if !player.Loc.AreaUUID.hasUUID() || !player.Loc.RoomUUID.hasUUID() {
-		critLog("Fixed %v was in nil area or room.", player.Name)
-		player.goTo(LocData{AreaUUID: sysAreaUUID, RoomUUID: sysRoomUUID})
+		if sysAreaUUID.hasUUID() && sysRoomUUID.hasUUID() {
+			critLog("Fixed %v was in nil area or room.", player.Name)
+			player.goTo(LocData{AreaUUID: sysAreaUUID, RoomUUID: sysRoomUUID})
+		}
 	}
-	desc.state = CON_NEWS
+
+	desc.state = CON_PLAYING
+	cmdLook(desc.character, "")
+	cmdChanges(desc.character, "check")
+	desc.character.checkTells()
 }
 
 func checkPlayingUUID(name string, uuid UUIDData) *characterData {

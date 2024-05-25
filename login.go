@@ -43,8 +43,6 @@ const (
 	//have shorter LOGIN_IDLE
 	//idle disconnect timer
 
-	CON_NEWS
-
 	//New users
 	CON_NEW_LOGIN
 	CON_NEW_LOGIN_CONFIRM
@@ -97,11 +95,6 @@ var loginStateList = [CON_MAX]loginStates{
 		prompt:   "Passphrase: ",
 		goDo:     gPass,
 		hideInfo: true,
-	},
-	CON_NEWS: {
-		goPrompt: gShowNews,
-		goDo:     gNews,
-		anyKey:   true,
 	},
 
 	//New login
@@ -188,21 +181,6 @@ func gPass(desc *descData, input string) {
 		hashList = append(hashList, &hashData{id: desc.id, desc: desc, hash: desc.account.PassHash, pass: []byte(input), failed: false, doEncrypt: false, started: time.Now()})
 		desc.state = CON_CHECK_PASS
 	}
-}
-
-func gNews(desc *descData, input string) {
-	go func(desc *descData) {
-		descLock.Lock()
-		defer descLock.Unlock()
-		desc.character.sendToPlaying("%v fades into view.", desc.character.Name)
-		cmdLook(desc.character, "")
-		desc.character.checkTells()
-	}(desc)
-	desc.state = CON_PLAYING
-}
-
-func gShowNews(desc *descData) {
-	desc.sendln("\r\n{1{K---NEWS---{x\r\n" + textFiles["news"] + "\r\n[Press enter to proceed]")
 }
 
 // New login

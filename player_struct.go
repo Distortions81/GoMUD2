@@ -99,8 +99,10 @@ type characterData struct {
 	Config   Bitmask   `json:",omitempty"`
 	LastHide time.Time `json:",omitempty"`
 
-	OLCEditor OLCEditorData `json:",omitempty"`
-	Ignores   []IgnoreData  `json:",omitempty"`
+	OLCEditor  OLCEditorData `json:",omitempty"`
+	Ignores    []IgnoreData  `json:",omitempty"`
+	LastChange time.Time     `json:",omitempty"`
+	curChange  *changeData
 
 	SaveTime time.Time
 	CreDate  time.Time

@@ -43,13 +43,15 @@ var cmdMap = map[string]*commandData{
 	"d":  {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "down"},
 
 	//Anyone
-	"go":     {level: LEVEL_ANY, hint: "go", goDo: cmdGo, args: []string{"exit name"}},
-	"help":   {level: LEVEL_ANY, hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}},
-	"look":   {level: LEVEL_ANY, hint: "look around the room", goDo: cmdLook},
-	"quit":   {level: LEVEL_ANY, noShort: true, hint: "quit and disconnect", goDo: cmdQuit},
-	"who":    {level: LEVEL_ANY, hint: "show players online", goDo: cmdWho},
-	"tells":  {level: LEVEL_ANY, hint: "read pending tells", goDo: cmdTells},
-	"ignore": {level: LEVEL_ANY, hint: "ignore someone. add 'silent' to silently ignore", goDo: cmdIgnore, args: []string{"player name", "silent"}},
+	"go":      {level: LEVEL_ANY, hint: "go", goDo: cmdGo, args: []string{"exit name"}},
+	"help":    {level: LEVEL_ANY, hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}},
+	"look":    {level: LEVEL_ANY, hint: "look around the room", goDo: cmdLook},
+	"quit":    {level: LEVEL_ANY, noShort: true, hint: "quit and disconnect", goDo: cmdQuit},
+	"who":     {level: LEVEL_ANY, hint: "show players online", goDo: cmdWho},
+	"tells":   {level: LEVEL_ANY, hint: "read pending tells", goDo: cmdTells},
+	"ignore":  {level: LEVEL_ANY, hint: "ignore someone. add 'silent' to silently ignore", goDo: cmdIgnore, args: []string{"player name", "silent"}},
+	"changes": {level: LEVEL_ANY, hint: "See list of changes made to the MUD.", goDo: cmdChanges, args: []string{"list, next"}},
+	"license": {level: LEVEL_ANY, hint: "See MUD's version number and license information.", goDo: cmdLicense},
 
 	//Newbie
 	"say":      {level: LEVEL_NEWBIE, hint: "speak out loud", goDo: cmdSay, args: []string{"message"}},
@@ -70,6 +72,10 @@ var cmdMap = map[string]*commandData{
 	"pset":    {level: LEVEL_IMPLEMENTER, hint: "set player parameters", goDo: cmdPset, args: []string{"player-name", "level", "level-number"}},
 	"disable": {level: LEVEL_ADMIN, hint: "disable/enable a command or channel", goDo: cmdDisable, args: []string{"command/channel", "name of command or channel"}},
 	"blocked": {level: LEVEL_ADMIN, hint: "Shows blocked connections", args: []string{"add or delete", "hostname or ip"}, goDo: cmdBlocked},
+}
+
+func cmdLicense(player *characterData, input string) {
+	player.send(LICENSE)
 }
 
 func cmdCharList(player *characterData, input string) {

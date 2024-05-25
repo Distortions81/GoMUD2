@@ -62,5 +62,13 @@ list command. Added ignore system. Logins announced if haven't
 logged in/out in 30 mins. Added emote command. Added custom
 marshaler for UUID, and the room hash map.
 
+
+May 24th - 25th:
+Added blocked host list and command to add, delete or clear the list.
+Made critlog only send to imps. Increased password hash complexity,
+decreased password requirements. Allow account and character creation
+without typing 'new'. Support telnet '\r' line ending. Show SSL port
+in greeting. 
+
 {*For more information, see the Discord!{*
 {_https://discord.gg/8WaUA9STPj{_
