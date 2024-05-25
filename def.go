@@ -22,6 +22,7 @@ const (
 	ACCOUNT_FILE   = "acc.json"
 	ACC_INDEX_FILE = "accountIndex.json"
 	DISABLES_FILE  = "disabled.json"
+	BLOCKED_FILE   = "blocked.json"
 
 	ACCOUNT_VERSION   = 1
 	CHARACTER_VERSION = 1

@@ -80,6 +80,7 @@ func main() {
 
 	loadHelps()
 	saveHelps()
+	readBlocked()
 	readDisables()
 
 	setupListener()
@@ -101,6 +102,7 @@ func main() {
 	<-signalHandle
 
 	saveCharacters(true)
+	writeBlocked()
 	//saveAllAreas(true)
 	serverState.Store(SERVER_SHUTDOWN)
 	time.Sleep(time.Second)

@@ -1,15 +1,17 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"sort"
 	"strings"
 	"time"
 )
 
-var attemptMap map[string]*attemptData = make(map[string]*attemptData)
+var blockedMap map[string]*blockedData = make(map[string]*blockedData)
 
-type attemptData struct {
+type blockedData struct {
 	Host     string
 	Attempts int
 	Blocked  bool
@@ -19,15 +21,70 @@ type attemptData struct {
 	Modified time.Time
 }
 
+func writeBlocked() {
+	var atd []blockedData
+	for _, item := range blockedMap {
+		atd = append(atd, *item)
+	}
+
+	sort.Slice(atd, func(i, j int) bool {
+		return atd[i].Attempts < atd[j].Attempts || atd[i].Host < atd[j].Host
+	})
+
+	go func(atd []blockedData) {
+		fileName := DATA_DIR + BLOCKED_FILE
+		outbuf := new(bytes.Buffer)
+		enc := json.NewEncoder(outbuf)
+		enc.SetIndent("", "\t")
+
+		err := enc.Encode(&atd)
+		if err != nil {
+			critLog("writeBlocked: enc.Encode: %v", err.Error())
+			return
+		}
+
+		err = saveFile(fileName, outbuf.Bytes())
+		if err != nil {
+			critLog("writeBlocked: saveFile failed %v", err.Error())
+			return
+		}
+	}(atd)
+}
+
+func readBlocked() error {
+	fileName := DATA_DIR + BLOCKED_FILE
+	data, err := readFile(fileName)
+	if err != nil {
+		return err
+	}
+
+	var blocked []blockedData
+	err = json.Unmarshal(data, &blocked)
+	if err != nil {
+		critLog("readBlocked: Unable to unmarshal the data.")
+		return err
+	}
+
+	blockedMap = make(map[string]*blockedData)
+	for _, item := range blocked {
+		blockedMap[item.Host] = &blockedData{
+			Host: item.Host, Attempts: item.Attempts,
+			Blocked: item.Blocked, HTTP: item.HTTP,
+			Created: item.Created, Modified: item.Modified}
+	}
+	return nil
+}
+
 func cmdBlocked(player *characterData, input string) {
 	args := strings.Split(input, " ")
 	numArgs := len(args)
 	var target string
 
 	if strings.EqualFold(input, "clear") {
-		if len(attemptMap) > 0 {
-			attemptMap = make(map[string]*attemptData)
+		if len(blockedMap) > 0 {
+			blockedMap = make(map[string]*blockedData)
 			player.send("The block list has been cleared.")
+			writeBlocked()
 		} else {
 			player.send("The list is already empty.")
 		}
@@ -37,26 +94,29 @@ func cmdBlocked(player *characterData, input string) {
 		target = args[1]
 		if target != "" {
 			if strings.EqualFold(args[0], "delete") {
-				if attemptMap[target] != nil {
+				if blockedMap[target] != nil {
 					player.send("The host '%v' has been deleted from the list.", target)
-					delete(attemptMap, target)
+					delete(blockedMap, target)
+					writeBlocked()
 				} else {
 					player.send("The host '%v' was not found in the list.", target)
 				}
 			} else if strings.EqualFold(args[0], "add") {
 
-				if attemptMap[target] == nil {
-					attemptMap[target] = &attemptData{Host: target, Blocked: true, Created: time.Now()}
+				if blockedMap[target] == nil {
+					blockedMap[target] = &blockedData{Host: target, Blocked: true, Created: time.Now()}
 					player.send("Host '%v' added to the list.", target)
+					writeBlocked()
 				} else {
-					if attemptMap[target].Blocked {
+					if blockedMap[target].Blocked {
 						player.send("Host '%v' was already blocked.", target)
 					} else {
-						attemptMap[target].Blocked = true
+						blockedMap[target].Blocked = true
 						player.send("The host '%v' was already in the list. Blocking it.", target)
+						writeBlocked()
 					}
 				}
-				attemptMap[target].Modified = time.Now()
+				blockedMap[target].Modified = time.Now()
 			} else if args[0] == "" {
 				player.send("Delete, or add item?")
 			}
@@ -69,8 +129,8 @@ func cmdBlocked(player *characterData, input string) {
 		return
 	}
 
-	var atd []*attemptData
-	for i, item := range attemptMap {
+	var atd []*blockedData
+	for i, item := range blockedMap {
 		item.Host = i
 		atd = append(atd, item)
 	}

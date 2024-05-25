@@ -56,21 +56,21 @@ func handleDesc(conn net.Conn, tls bool) {
 	ip, _, _ := net.SplitHostPort(a)
 
 	//Track connection attempts.
-	if attemptMap[ip] != nil {
-		attemptMap[ip].Attempts++
-		if attemptMap[ip].Blocked {
+	if blockedMap[ip] != nil {
+		blockedMap[ip].Attempts++
+		if blockedMap[ip].Blocked {
 			conn.Close()
 			return
-		} else if attemptMap[ip].Attempts >= MAX_CONNECT {
+		} else if blockedMap[ip].Attempts >= MAX_CONNECT {
 			conn.Close()
 			critLog("Too many connect attempts from %v. Blocking!", ip)
-			attemptMap[ip].Blocked = true
-			attemptMap[ip].Modified = time.Now()
+			blockedMap[ip].Blocked = true
+			blockedMap[ip].Modified = time.Now()
 			return
 		}
 
 	} else {
-		attemptMap[ip] = &attemptData{Host: ip, Created: time.Now()}
+		blockedMap[ip] = &blockedData{Host: ip, Created: time.Now()}
 	}
 
 	//Create descriptor
@@ -99,8 +99,8 @@ func handleDesc(conn net.Conn, tls bool) {
 		data, err := desc.reader.ReadString('\n')
 		if err == nil && strings.ContainsAny("GET", data) {
 			critLog("HTTP request from %v. Adding to ignore list.", ip)
-			if attemptMap[ip] == nil {
-				attemptMap[ip] = &attemptData{Host: ip, Blocked: true, HTTP: true}
+			if blockedMap[ip] == nil {
+				blockedMap[ip] = &blockedData{Host: ip, Blocked: true, HTTP: true}
 			}
 			conn.Write([]byte(`HTTP/1.1 301 Moved Permanently\r\nLocation: http://www.example.org/`))
 			conn.Close()
