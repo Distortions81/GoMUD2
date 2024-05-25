@@ -41,7 +41,7 @@ func gCharList(desc *descData) {
 		buf = buf + "\r\n"
 	}
 	if numChars < MAX_CHAR_SLOTS {
-		buf = buf + "Type 'NEW' to create a new character.\r\n"
+		buf = buf + "Type 'NEW' or desired name to create a new character.\r\n"
 	}
 	if numChars > 0 {
 		buf = buf + "Select a character by #number or name: "
@@ -53,11 +53,7 @@ func gCharSelect(desc *descData, input string) {
 
 	input = strings.TrimSpace(input)
 	if strings.EqualFold(input, "new") {
-		if len(desc.account.Characters) < MAX_CHAR_SLOTS {
-			desc.state = CON_CHAR_CREATE
-		} else {
-			desc.sendln("Character creation limit (%v) reached.\r\nNo new characters can be added.", MAX_CHAR_SLOTS)
-		}
+		canMakeCharacter(desc, input)
 		return
 	}
 	nStr, _ := strings.CutPrefix(input, "#")
@@ -69,11 +65,23 @@ func gCharSelect(desc *descData, input string) {
 			}
 			loadchar(desc, item.Login, item.UUID)
 		}
-		desc.sendln("No matches found for %v.", input)
+		if !canMakeCharacter(desc, input) {
+			desc.sendln("I don't see a character by that name.")
+		}
 	} else if len(desc.account.Characters) > num-1 { //Find by number
 		loadchar(desc, desc.account.Characters[num-1].Login, desc.account.Characters[num-1].UUID)
 	} else {
 		desc.sendln("That isn't a valid choice.")
+	}
+}
+
+func canMakeCharacter(desc *descData, input string) bool {
+	if len(desc.account.Characters) < MAX_CHAR_SLOTS {
+		gCharNewName(desc, input)
+		return true
+	} else {
+		desc.sendln("Character creation limit (%v) reached.\r\nNo new characters can be added.", MAX_CHAR_SLOTS)
+		return false
 	}
 }
 

@@ -110,7 +110,7 @@ var loginStateList = [CON_MAX]loginStates{
 		goDo:   gNewLogin,
 	},
 	CON_NEW_LOGIN_CONFIRM: {
-		prompt: "(type 'back' to go back)\r\nConfirm account name: ",
+		prompt: "(type 'back' to go back)\r\nConfirm new login: ",
 		goDo:   gNewLoginConfirm,
 		anyKey: true,
 	},
@@ -168,10 +168,9 @@ func gLogin(desc *descData, input string) {
 
 		}
 	} else {
-		desc.sendln("Login name not found.")
-		critLog("#%v: %v tried a login that does not exist: '%v'", desc.id, desc.ip, input)
-		desc.close()
-
+		//desc.sendln("Login name not found, creating new account.")
+		gNewLogin(desc, input)
+		desc.state = CON_NEW_LOGIN_CONFIRM
 	}
 }
 
