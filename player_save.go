@@ -45,7 +45,7 @@ func (player *characterData) saveCharacter() bool {
 	defer charSaveLock.Unlock()
 
 	if player.desc == nil {
-		critLog("savePlayer: Nil desc: %v", player.Name)
+		//critLog("savePlayer: Nil desc: %v", player.Name)
 		return false
 	} else if player.desc.account == nil {
 		critLog("savePlayer: Nil account: %v", player.Name)
