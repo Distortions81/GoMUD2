@@ -50,7 +50,7 @@ func cmdHelp(player *characterData, input string) {
 		var buf string
 		var c int
 		for _, item := range symbols {
-			if len(item) >= 18 {
+			if len(item) >= 17 {
 				continue
 			}
 			if strings.ContainsAny(item, "_") || strings.ContainsAny(item, "-") {
@@ -60,10 +60,10 @@ func cmdHelp(player *characterData, input string) {
 			if len(data) > 5 {
 				continue
 			}
-			c++
 			if c%4 == 0 {
 				buf = buf + "\r\n"
 			}
+			c++
 			buf = buf + fmt.Sprintf(":%v: %-18v ", item, item)
 		}
 		player.send(buf)
