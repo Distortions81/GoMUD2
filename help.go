@@ -60,6 +60,9 @@ func cmdHelp(player *characterData, input string) {
 			if len(data) > 5 {
 				continue
 			}
+			if item == "copyright" {
+				continue
+			}
 			if c%4 == 0 {
 				buf = buf + "\r\n"
 			}
@@ -67,6 +70,8 @@ func cmdHelp(player *characterData, input string) {
 			buf = buf + fmt.Sprintf(":%v: %-18v ", item, item)
 		}
 		player.send(buf)
+		player.send("Simply chat :emoji name:")
+		player.send("These will show up as text to players using mud clients that do not support UTF.")
 		return
 	}
 
@@ -108,7 +113,7 @@ func cmdHelp(player *characterData, input string) {
 		player.send("Sorry, I didn't find a help page for that.")
 	}
 	if len(helpKeywords) > 0 {
-		player.send("Help topics: commands, OLC, %v", strings.Join(helpKeywords, ", "))
+		player.send("Help topics: commands, OLC, emoji, %v", strings.Join(helpKeywords, ", "))
 	} else {
 		player.send("No help topics found?")
 	}
