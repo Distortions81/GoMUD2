@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/martinhoefling/goxkcdpwgen/xkcdpwgen"
-	passwordvalidator "github.com/wagslane/go-password-validator"
 	"golang.org/x/exp/rand"
 )
 
@@ -14,8 +13,6 @@ const (
 	//Max bcrypt length
 	MAX_PASSPHRASE_LENGTH = 72
 	MIN_PASSPHRASE_LENGTH = 8
-
-	MIN_PASS_ENTROPY_BITS = 46
 
 	MAX_CHAR_SLOTS = 15
 	//Number of number-suffixed login names
@@ -234,25 +231,6 @@ func gNewPassphrase(desc *descData, input string) {
 	if passLen < MIN_PASSPHRASE_LENGTH ||
 		passLen > MAX_PASSPHRASE_LENGTH {
 		desc.sendln("Sorry, that passphrase is either over %v or under %v characters. Please try again.", MAX_PASSPHRASE_LENGTH, MIN_PASSPHRASE_LENGTH)
-		return
-	}
-
-	//Check if passphrase is decent
-	ef := passwordvalidator.GetEntropy(input)
-	entropy := int(ef)
-
-	if entropy >= 78 {
-		desc.sendln("Extremely secure passphrase! %v bits of entropy!", entropy)
-	} else if entropy >= 72 {
-		desc.sendln("Amazing passphrase! %v bits of entropy!", entropy)
-	} else if entropy >= 68 {
-		desc.sendln("Great passphrase! %v bits of entropy!", entropy)
-	} else if entropy >= 62 {
-		desc.sendln("Reasonable passphrase. %v bits of entropy.", entropy)
-	} else if entropy >= MIN_PASS_ENTROPY_BITS {
-		desc.sendln("Simple password. %v bits of entropy.", entropy)
-	} else {
-		desc.sendln("Please try again with a more complex passphrase.\r\n")
 		return
 	}
 
