@@ -54,9 +54,6 @@ func cmdHelp(player *characterData, input string) {
 			if len(data) <= 5 {
 				continue
 			}
-			if item == "copyright" {
-				continue
-			}
 			if c%2 == 0 {
 				buf = buf + "\r\n"
 			}
