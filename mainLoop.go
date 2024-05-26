@@ -3,7 +3,6 @@ package main
 import (
 	"time"
 
-	"github.com/enescakir/emoji"
 	"github.com/remeh/sizedwaitgroup"
 	"golang.org/x/exp/rand"
 )
@@ -68,10 +67,7 @@ func sendOutput() {
 				//Character map translation
 				if !tdesc.telnet.Options.UTF {
 					tdesc.outBuf = encodeFromUTF(tdesc.telnet.charMap, tdesc.outBuf)
-				} else {
-					tdesc.outBuf = []byte(emoji.Parse(string(tdesc.outBuf)))
 				}
-
 				//Add telnet go-ahead if enabled, and there is no newline ending
 				if tdesc.telnet.Options != nil && !tdesc.telnet.Options.suppressGoAhead {
 					outLen := len(tdesc.outBuf) - 1

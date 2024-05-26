@@ -7,6 +7,8 @@ import (
 	"net"
 	"strings"
 	"time"
+
+	"github.com/enescakir/emoji"
 )
 
 const (
@@ -363,6 +365,10 @@ func (desc *descData) send(format string, args ...any) error {
 		data = fmt.Sprintf(format, args...)
 	} else {
 		data = format
+	}
+
+	if desc.telnet.Options != nil && desc.telnet.Options.UTF {
+		data = emoji.Parse(data)
 	}
 
 	desc.outBuf = append(desc.outBuf, data...)

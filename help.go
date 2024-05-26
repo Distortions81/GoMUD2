@@ -7,6 +7,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/enescakir/emoji"
 )
 
 var helpFiles []*helpTopicData
@@ -44,21 +46,25 @@ func cmdHelp(player *characterData, input string) {
 	}
 
 	if player.desc != nil && strings.EqualFold("emoji", input) {
-		emoji := strings.Split(textFiles["emoji"], "\n")
+		symbols := strings.Split(textFiles["emoji"], "\n")
 		var buf string
 		var c int
-		for _, item := range emoji {
-			if len(item) > 17 {
+		for _, item := range symbols {
+			if len(item) > 19 {
 				continue
 			}
-			if strings.Contains(item, "_") {
+			if strings.ContainsAny(item, "_") || strings.ContainsAny(item, "-") {
+				continue
+			}
+			data := emoji.Parse(":" + item + ":")
+			if len(data) > 5 {
 				continue
 			}
 			c++
-			if c%4 == 0 {
+			if c%3 == 0 {
 				buf = buf + "\r\n"
 			}
-			buf = buf + fmt.Sprintf(":%v: %-17v ", item, item)
+			buf = buf + fmt.Sprintf(":%v: %-20v ", item, item)
 		}
 		player.send(buf)
 		return
