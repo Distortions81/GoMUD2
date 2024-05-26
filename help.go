@@ -45,6 +45,36 @@ func cmdHelp(player *characterData, input string) {
 		return
 	}
 
+	if player.desc != nil && strings.EqualFold("more-emoji", input) {
+		symbols := strings.Split(textFiles["emoji"], "\n")
+		var buf string
+		var c int
+		for _, item := range symbols {
+			if len(item) >= MAX_EMOJI_NAME {
+				continue
+			}
+			if strings.ContainsAny(item, "_") || strings.ContainsAny(item, "-") {
+				continue
+			}
+			data := emoji.Parse(":" + item + ":")
+			if len(data) <= 5 {
+				continue
+			}
+			if item == "copyright" {
+				continue
+			}
+			if c%4 == 0 {
+				buf = buf + "\r\n"
+			}
+			c++
+			buf = buf + fmt.Sprintf(":%v: %-18v ", item, item)
+		}
+		player.send(buf)
+		player.send("Simply chat :emoji name:")
+		player.send("These will show up as text to players using mud clients that do not support UTF.")
+		return
+	}
+
 	if player.desc != nil && strings.EqualFold("emoji", input) {
 		symbols := strings.Split(textFiles["emoji"], "\n")
 		var buf string
