@@ -33,6 +33,8 @@ var noteTypes []NoteListData
 var noteTypeMap map[string]*NoteListData
 
 func readNotes() {
+	noteTypeMap = make(map[string]*NoteListData)
+
 	contents, err := os.ReadDir(DATA_DIR + NOTES_DIR)
 	if err != nil {
 		critLog("Unable to read notes directory.")
@@ -49,13 +51,23 @@ func readNotes() {
 	}
 }
 
-func readNote(filePath string) {
+func readNote(fileName string) {
+	filePath := DATA_DIR + NOTES_DIR + fileName
 	data, err := readFile(filePath)
 	if err != nil {
 		critLog("Unable to read file: %v (%v)", filePath, err.Error())
 		return
 	}
 
+	new := NoteListData{File: filePath}
+	err = json.Unmarshal(data, &new)
+	if err != nil {
+		critLog("readNote: Unable to unmarshal note file: %v", filePath)
+	}
+	noteTypes = append(noteTypes, new)
+	numTypes := len(noteTypes) - 1
+	noteTypeMap[new.File] = &noteTypes[numTypes]
+	errLog("Loaded notes %v", new.Name)
 }
 
 func saveNotes(force bool) {
