@@ -3,7 +3,7 @@ package main
 import "strings"
 
 const (
-	VERSION  = "v0.0.17a-05-25-2024-1059p"
+	VERSION  = "v0.0.18a-05-26-2024-1046"
 	CODENAME = "Blitzstar"
 
 	LICENSE = "GOMUD2: " + VERSION + "-" + CODENAME + "\n" +
