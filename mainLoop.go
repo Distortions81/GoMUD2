@@ -36,19 +36,36 @@ func mainLoop() {
 		if tickNum%SAVE_INTERVAL == 0 {
 			saveCharacters(false)
 		}
+		interpAllDesc()
+		sendOutput()
 
-		timeLeft := roundTime - time.Since(start)
-		for timeLeft > INTERP_LOOP_MARGIN {
-			time.Sleep(INTERP_LOOP_REST)
-			timeLeft = roundTime - time.Since(start)
-			interpAllDesc()
-			sendOutput()
-		}
 		resetProcessed()
+		for {
+			for _, desc := range descList {
+				if desc.processed {
+					continue
+				}
+				if desc.interp() {
+					desc.processed = true
+					if desc.haveOut {
+						desc.doOutput()
+					}
+				}
+				timeLeft := roundTime - time.Since(start)
+				if timeLeft < INTERP_LOOP_MARGIN {
+					break
+				}
+			}
+			timeLeft := roundTime - time.Since(start)
+			if timeLeft < INTERP_LOOP_MARGIN {
+				break
+			}
+			time.Sleep(INTERP_LOOP_REST)
+		}
 		descLock.Unlock()
 
 		//Sleep for remaining round time
-		timeLeft = roundTime - time.Since(start)
+		timeLeft := roundTime - time.Since(start)
 		if timeLeft <= 0 {
 			critLog("Round went over: %v", time.Duration(timeLeft).Truncate(time.Microsecond).Abs().String())
 		} else {
@@ -74,42 +91,45 @@ func sendOutput() {
 		if desc.haveOut {
 			wg.Add()
 			go func(tdesc *descData) {
-
-				//Color
-				if !tdesc.telnet.Options.ColorDisable {
-					tdesc.outBuf = ANSIColor(tdesc.outBuf)
-				} else {
-					tdesc.outBuf = ColorRemove(tdesc.outBuf)
-				}
-
-				//Character map translation
-				if !tdesc.telnet.Options.UTF {
-					tdesc.outBuf = encodeFromUTF(tdesc.telnet.charMap, tdesc.outBuf)
-				}
-				//Add telnet go-ahead if enabled, and there is no newline ending
-				if tdesc.telnet.Options != nil && !tdesc.telnet.Options.suppressGoAhead {
-					outLen := len(tdesc.outBuf) - 1
-					if outLen > 0 {
-						if tdesc.outBuf[outLen-1] != '\n' {
-							tdesc.outBuf = append(tdesc.outBuf, []byte{TermCmd_IAC, TermCmd_GOAHEAD}...)
-						}
-					}
-				}
-
-				_, err := tdesc.conn.Write(tdesc.outBuf)
-				if err != nil {
-					mudLog("#%v: %v: write failed (connection lost)", tdesc.id, tdesc.ip)
-					tdesc.state = CON_DISCONNECTED
-					tdesc.valid = false
-				}
-
-				tdesc.outBuf = []byte{}
-				tdesc.haveOut = false
+				desc.doOutput()
 				wg.Done()
 			}(desc)
 		}
 	}
 	wg.Wait()
+}
+
+func (tdesc *descData) doOutput() {
+	//Color
+	if !tdesc.telnet.Options.ColorDisable {
+		tdesc.outBuf = ANSIColor(tdesc.outBuf)
+	} else {
+		tdesc.outBuf = ColorRemove(tdesc.outBuf)
+	}
+
+	//Character map translation
+	if !tdesc.telnet.Options.UTF {
+		tdesc.outBuf = encodeFromUTF(tdesc.telnet.charMap, tdesc.outBuf)
+	}
+	//Add telnet go-ahead if enabled, and there is no newline ending
+	if tdesc.telnet.Options != nil && !tdesc.telnet.Options.suppressGoAhead {
+		outLen := len(tdesc.outBuf) - 1
+		if outLen > 0 {
+			if tdesc.outBuf[outLen-1] != '\n' {
+				tdesc.outBuf = append(tdesc.outBuf, []byte{TermCmd_IAC, TermCmd_GOAHEAD}...)
+			}
+		}
+	}
+
+	_, err := tdesc.conn.Write(tdesc.outBuf)
+	if err != nil {
+		mudLog("#%v: %v: write failed (connection lost)", tdesc.id, tdesc.ip)
+		tdesc.state = CON_DISCONNECTED
+		tdesc.valid = false
+	}
+
+	tdesc.outBuf = []byte{}
+	tdesc.haveOut = false
 }
 
 func descShuffle() {
@@ -127,12 +147,7 @@ func interpAllDesc() {
 		if !desc.valid {
 			continue
 		}
-		if desc.processed {
-			continue
-		}
-		if desc.interp() {
-			desc.processed = true
-		}
+		desc.interp()
 	}
 }
 
