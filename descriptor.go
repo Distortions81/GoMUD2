@@ -240,7 +240,9 @@ func (desc *descData) getTermType() {
 
 	//errLog("#%v: GOT %v: %s", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.subData)
 	if match != nil {
-		desc.telnet.Options = match
+		desc.telnet.Options = &termSettings{
+			ansi256: match.ansi256, ansi24: match.ansi24,
+			UTF: match.UTF, suppressGoAhead: match.suppressGoAhead}
 		if match.charMap != nil {
 			desc.telnet.charMap = match.charMap
 		}
@@ -249,13 +251,17 @@ func (desc *descData) getTermType() {
 	for n, item := range termTypeMap {
 		if strings.HasPrefix(desc.telnet.termType, n) {
 			mudLog("Found client prefix match: %v", desc.telnet.termType)
-			desc.telnet.Options = item
+			desc.telnet.Options = &termSettings{
+				ansi256: item.ansi256, ansi24: item.ansi24,
+				UTF: item.UTF, suppressGoAhead: item.suppressGoAhead}
 			if item.charMap != nil {
 				desc.telnet.charMap = item.charMap
 			}
 		} else if strings.HasSuffix(desc.telnet.termType, n) {
 			mudLog("Found client suffix match: %v", desc.telnet.termType)
-			desc.telnet.Options = item
+			desc.telnet.Options = &termSettings{
+				ansi256: item.ansi256, ansi24: item.ansi24,
+				UTF: item.UTF, suppressGoAhead: item.suppressGoAhead}
 			if item.charMap != nil {
 				desc.telnet.charMap = item.charMap
 			}
