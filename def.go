@@ -15,6 +15,7 @@ const (
 	AREA_DIR    = "areas/"
 	HELPS_DIR   = "helps/"
 	TEXTS_DIR   = "texts/"
+	NOTES_DIR   = "notes/"
 
 	LOGS_DIR = "log/"
 
@@ -23,14 +24,13 @@ const (
 	ACC_INDEX_FILE = "accountIndex.json"
 	DISABLES_FILE  = "disabled.json"
 	BLOCKED_FILE   = "blocked.json"
-	CHANGES_FILE   = "changes.json"
 
 	ACCOUNT_VERSION   = 1
 	CHARACTER_VERSION = 1
 	AREA_VERSION      = 1
 	DISABLES_VERSION  = 1
 	ROOM_VERSION      = 1
-	CHANGES_VERSION   = 1
+	NOTES_VERSION     = 1
 
 	DEFAULT_CHARSET = "LATIN1"
 )
@@ -42,6 +42,7 @@ var makeDirs = []string{
 	DATA_DIR + ACCOUNT_DIR,
 	DATA_DIR + AREA_DIR,
 	DATA_DIR + TEXTS_DIR,
+	DATA_DIR + NOTES_DIR,
 	LOGS_DIR}
 
 // Add commands to reserved names

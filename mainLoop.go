@@ -30,7 +30,7 @@ func mainLoop() {
 		interpAllDesc()
 		sendOutput()
 		expireBlocks()
-		saveChanges()
+		saveNotes(false)
 		writeBlocked(false)
 		saveAllAreas(false)
 		if tickNum%SAVE_INTERVAL == 0 {

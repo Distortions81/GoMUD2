@@ -103,7 +103,7 @@ type characterData struct {
 	OLCEditor  OLCEditorData `json:",omitempty"`
 	Ignores    []IgnoreData  `json:",omitempty"`
 	LastChange time.Time     `json:",omitempty"`
-	curChange  *changeData
+	curChange  *noteData
 
 	SaveTime time.Time
 	CreDate  time.Time

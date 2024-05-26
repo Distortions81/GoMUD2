@@ -71,6 +71,7 @@ func main() {
 
 		makeTestHelp()
 		saveHelps()
+		saveNotes(true)
 
 		critLog("Bootstrap files created.")
 	}
@@ -82,6 +83,8 @@ func main() {
 	saveHelps()
 	readBlocked()
 	readDisables()
+	//readNotes()
+	saveNotes(true)
 
 	setupListener()
 	setupListenerTLS()

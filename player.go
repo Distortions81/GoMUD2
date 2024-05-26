@@ -111,7 +111,6 @@ func (desc *descData) enterWorld(player *characterData) {
 
 	desc.state = CON_PLAYING
 	cmdLook(desc.character, "")
-	cmdChanges(desc.character, "check")
 	desc.character.checkTells()
 }
 
