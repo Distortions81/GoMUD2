@@ -50,7 +50,7 @@ func cmdHelp(player *characterData, input string) {
 		var buf string
 		var c int
 		for _, item := range symbols {
-			if len(item) >= 17 {
+			if len(item) >= MAX_EMOJI_NAME {
 				continue
 			}
 			if strings.ContainsAny(item, "_") || strings.ContainsAny(item, "-") {
