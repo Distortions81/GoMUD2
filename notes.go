@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -33,6 +34,9 @@ var noteTypes []NoteListData
 var noteTypeMap map[string]*NoteListData
 
 func readNotes() {
+	noteLock.Lock()
+	defer noteLock.Unlock()
+
 	noteTypeMap = make(map[string]*NoteListData)
 
 	contents, err := os.ReadDir(DATA_DIR + NOTES_DIR)
@@ -55,7 +59,6 @@ func readNote(fileName string) {
 	filePath := DATA_DIR + NOTES_DIR + fileName
 	data, err := readFile(filePath)
 	if err != nil {
-		critLog("Unable to read file: %v (%v)", filePath, err.Error())
 		return
 	}
 
@@ -70,7 +73,11 @@ func readNote(fileName string) {
 	errLog("Loaded notes %v", new.Name)
 }
 
+var noteLock sync.Mutex
+
 func saveNotes(force bool) {
+	noteLock.Lock()
+	defer noteLock.Unlock()
 
 	for _, item := range noteTypes {
 		if !item.dirty && !force {
@@ -90,13 +97,13 @@ func saveNotes(force bool) {
 
 			err := enc.Encode(&tempList)
 			if err != nil {
-				critLog("saveChanges: enc.Encode: %v", err.Error())
+				critLog("saveNotes: enc.Encode: %v", err.Error())
 				return
 			}
 
 			err = saveFile(filePath, outbuf.Bytes())
 			if err != nil {
-				critLog("saveChanges: saveFile failed %v", err.Error())
+				critLog("saveNotes: saveFile failed %v", err.Error())
 				return
 			}
 		}(tempList)
@@ -119,11 +126,31 @@ func unreadNotes(player *characterData) int {
 	return count
 }
 
-func cmdChanges(player *characterData, input string) {
-	changes := noteTypeMap["changes"]
-	if changes == nil {
-		player.send("Change notes are currently unavailable.")
+func listNoteTypes(player *characterData) {
+	player.send("What note type?")
+	for _, item := range noteTypes {
+		player.send("%v", item.Name)
+	}
+}
+
+func cmdNotes(player *characterData, input string) {
+	parts := strings.SplitN(input, " ", 2)
+	var noteType *NoteListData
+	if input == "" {
+		listNoteTypes(player)
 		return
+	} else {
+		for _, item := range noteTypes {
+			if strings.EqualFold(item.Name, parts[0]) {
+				noteType = &item
+				break
+			}
+		}
+		if noteType == nil {
+			player.send("That isn't a valid note type.")
+			listNoteTypes(player)
+			return
+		}
 	}
 
 	if input == "" || strings.EqualFold(input, "next") {
@@ -134,7 +161,7 @@ func cmdChanges(player *characterData, input string) {
 				return
 			}
 		}
-		for _, item := range changes.Notes {
+		for _, item := range noteType.Notes {
 			if item.Modified.IsZero() {
 				continue
 			}
@@ -156,7 +183,7 @@ func cmdChanges(player *characterData, input string) {
 	numArgs := len(args)
 
 	if strings.EqualFold(input, "list") {
-		for i, item := range changes.Notes {
+		for i, item := range noteType.Notes {
 			if item.Modified.IsZero() {
 				continue
 			}
@@ -173,7 +200,7 @@ func cmdChanges(player *characterData, input string) {
 	} else if player.Level >= LEVEL_IMPLEMENTER {
 		if strings.EqualFold(args[0], "add") {
 			newChange := &noteData{From: player.Name}
-			changes.Notes = append(changes.Notes, newChange)
+			noteType.Notes = append(noteType.Notes, newChange)
 			player.send("New change created, changes date <text> to set date text.")
 			player.curChange = newChange
 		} else if strings.EqualFold(args[0], "date") {
@@ -193,9 +220,9 @@ func cmdChanges(player *characterData, input string) {
 		} else if strings.EqualFold(args[0], "done") {
 			player.send("Change closed and saved.")
 			player.curChange.Modified = time.Now().UTC()
-			changes.Modified = time.Now().UTC()
+			noteType.Modified = time.Now().UTC()
 			player.curChange = nil
-			changes.dirty = true
+			noteType.dirty = true
 		} else {
 			player.send("That isn't a valid option.")
 		}
