@@ -50,12 +50,6 @@ func cmdHelp(player *characterData, input string) {
 		var buf string
 		var c int
 		for _, item := range symbols {
-			if len(item) >= MAX_EMOJI_NAME {
-				continue
-			}
-			if strings.ContainsAny(item, "_") || strings.ContainsAny(item, "-") {
-				continue
-			}
 			data := emoji.Parse(":" + item + ":")
 			if len(data) <= 5 {
 				continue
@@ -63,11 +57,11 @@ func cmdHelp(player *characterData, input string) {
 			if item == "copyright" {
 				continue
 			}
-			if c%4 == 0 {
+			if c%2 == 0 {
 				buf = buf + "\r\n"
 			}
 			c++
-			buf = buf + fmt.Sprintf(":%v: %-18v ", item, item)
+			buf = buf + fmt.Sprintf(":%v: %-37v ", item, item)
 		}
 		player.send(buf)
 		player.send("Simply chat :emoji name:")
