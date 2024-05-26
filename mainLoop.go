@@ -3,6 +3,7 @@ package main
 import (
 	"time"
 
+	"github.com/enescakir/emoji"
 	"github.com/remeh/sizedwaitgroup"
 	"golang.org/x/exp/rand"
 )
@@ -57,11 +58,6 @@ func sendOutput() {
 			wg.Add()
 			go func(tdesc *descData) {
 
-				//Character map translation
-				if !tdesc.telnet.Options.UTF {
-					tdesc.outBuf = encodeFromUTF(tdesc.telnet.charMap, tdesc.outBuf)
-				}
-
 				//Color
 				if !tdesc.telnet.Options.ColorDisable {
 					tdesc.outBuf = ANSIColor(tdesc.outBuf)
@@ -69,10 +65,20 @@ func sendOutput() {
 					tdesc.outBuf = ColorRemove(tdesc.outBuf)
 				}
 
+				//Character map translation
+				if !tdesc.telnet.Options.UTF {
+					tdesc.outBuf = encodeFromUTF(tdesc.telnet.charMap, tdesc.outBuf)
+				} else {
+					tdesc.outBuf = []byte(emoji.Parse(string(tdesc.outBuf)))
+				}
+
 				//Add telnet go-ahead if enabled, and there is no newline ending
 				if tdesc.telnet.Options != nil && !tdesc.telnet.Options.suppressGoAhead {
-					if tdesc.outBuf[len(tdesc.outBuf)-1] != '\n' {
-						tdesc.outBuf = append(tdesc.outBuf, []byte{TermCmd_IAC, TermCmd_GOAHEAD}...)
+					outLen := len(tdesc.outBuf) - 1
+					if outLen > 0 {
+						if tdesc.outBuf[outLen-1] != '\n' {
+							tdesc.outBuf = append(tdesc.outBuf, []byte{TermCmd_IAC, TermCmd_GOAHEAD}...)
+						}
 					}
 				}
 

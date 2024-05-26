@@ -43,6 +43,27 @@ func cmdHelp(player *characterData, input string) {
 		return
 	}
 
+	if player.desc != nil && strings.EqualFold("emoji", input) {
+		emoji := strings.Split(textFiles["emoji"], "\n")
+		var buf string
+		var c int
+		for _, item := range emoji {
+			if len(item) > 17 {
+				continue
+			}
+			if strings.Contains(item, "_") {
+				continue
+			}
+			c++
+			if c%4 == 0 {
+				buf = buf + "\r\n"
+			}
+			buf = buf + fmt.Sprintf(":%v: %-17v ", item, item)
+		}
+		player.send(buf)
+		return
+	}
+
 	count := 0
 	buf := ""
 	//Search help topics
