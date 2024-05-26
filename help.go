@@ -143,7 +143,7 @@ func cmdHelp(player *characterData, input string) {
 		player.send("Sorry, I didn't find a help page for that.")
 	}
 	if len(helpKeywords) > 0 {
-		player.send("Help topics: commands, OLC, emoji, %v", strings.Join(helpKeywords, ", "))
+		player.send("Help topics: commands, OLC, emoji, more-emoji %v", strings.Join(helpKeywords, ", "))
 	} else {
 		player.send("No help topics found?")
 	}
