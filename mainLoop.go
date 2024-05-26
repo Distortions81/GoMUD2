@@ -39,6 +39,7 @@ func mainLoop() {
 		interpAllDesc()
 		sendOutput()
 
+		/* Instant command response */
 		resetProcessed()
 		for {
 			for _, desc := range descList {
