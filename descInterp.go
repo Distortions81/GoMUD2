@@ -10,7 +10,7 @@ const LOGIN_IDLE = time.Second * 30
 const MENU_IDLE = time.Minute * 5
 const CHARACTER_IDLE = time.Minute * 30
 
-func (desc *descData) interp() {
+func (desc *descData) interp() bool {
 	var input string
 
 	desc.inputLock.Lock()
@@ -18,7 +18,7 @@ func (desc *descData) interp() {
 	if desc.numInputLines == 0 {
 		//Return if there are no lines
 		desc.inputLock.Unlock()
-		return
+		return false
 	} else {
 		//Get oldest line
 		input = desc.inputLines[0]
@@ -46,13 +46,13 @@ func (desc *descData) interp() {
 			desc.character.handleCommands(input)
 			mudLog("%v: %v", desc.character.Name, input)
 		}
-		return
+		return true
 	}
 
 	//Block empty lines, unless login state is set otherwise
 	if input == "" && !loginStateList[desc.state].anyKey {
 		//Ignore blank lines, unless set
-		return
+		return true
 	}
 
 	//Run login state function
@@ -81,6 +81,7 @@ func (desc *descData) interp() {
 			sendCmd(desc.conn, TermCmd_WONT, TermOpt_ECHO)
 		}
 	}
+	return true
 }
 
 func (player *characterData) listCommands() {

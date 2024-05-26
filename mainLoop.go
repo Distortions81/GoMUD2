@@ -8,9 +8,11 @@ import (
 )
 
 const (
-	ROUND_LENGTH_uS  = 250000 //0.25s
-	CONNECT_THROTTLE = time.Microsecond * 200
-	SAVE_INTERVAL    = 4 * 5
+	ROUND_LENGTH_uS    = 250000 //0.25s
+	CONNECT_THROTTLE   = time.Microsecond * 200
+	SAVE_INTERVAL      = 4 * 5
+	INTERP_LOOP_MARGIN = time.Millisecond * 2
+	INTERP_LOOP_REST   = time.Microsecond * 10
 )
 
 func mainLoop() {
@@ -27,8 +29,6 @@ func mainLoop() {
 		removeDeadChar()
 		hashReceiver()
 		descShuffle()
-		interpAllDesc()
-		sendOutput()
 		expireBlocks()
 		saveNotes(false)
 		writeBlocked(false)
@@ -36,14 +36,32 @@ func mainLoop() {
 		if tickNum%SAVE_INTERVAL == 0 {
 			saveCharacters(false)
 		}
+
+		timeLeft := roundTime - time.Since(start)
+		for timeLeft > INTERP_LOOP_MARGIN {
+			time.Sleep(INTERP_LOOP_REST)
+			timeLeft = roundTime - time.Since(start)
+			interpAllDesc()
+			sendOutput()
+		}
+		resetProcessed()
 		descLock.Unlock()
 
 		//Sleep for remaining round time
-		timeLeft := roundTime - time.Since(start)
+		timeLeft = roundTime - time.Since(start)
 		if timeLeft <= 0 {
 			critLog("Round went over: %v", time.Duration(timeLeft).Truncate(time.Microsecond).Abs().String())
 		} else {
+			//critLog("Round left: %v", time.Duration(timeLeft).Truncate(time.Microsecond).Abs().String())
 			time.Sleep(timeLeft)
+		}
+	}
+}
+
+func resetProcessed() {
+	for _, desc := range descList {
+		if desc.processed {
+			desc.processed = false
 		}
 	}
 }
@@ -109,7 +127,12 @@ func interpAllDesc() {
 		if !desc.valid {
 			continue
 		}
-		desc.interp()
+		if desc.processed {
+			continue
+		}
+		if desc.interp() {
+			desc.processed = true
+		}
 	}
 }
 
