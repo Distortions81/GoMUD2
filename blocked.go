@@ -18,7 +18,6 @@ const (
 
 var blockedMap map[string]*blockedData = make(map[string]*blockedData)
 var blockedDirty bool
-var lastBlockedSave time.Time
 
 type blockedData struct {
 	Host     string
@@ -55,10 +54,6 @@ func writeBlocked(force bool) {
 	if !force && !blockedDirty {
 		return
 	}
-	if time.Since(lastBlockedSave) < SAVE_INTERVAL {
-		return
-	}
-	lastBlockedSave = time.Now()
 
 	var atd []blockedData
 	for _, item := range blockedMap {
@@ -91,7 +86,6 @@ func writeBlocked(force bool) {
 }
 
 func readBlocked() error {
-	lastBlockedSave = time.Now()
 
 	fileName := DATA_DIR + BLOCKED_FILE
 	data, err := readFile(fileName)
