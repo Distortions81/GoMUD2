@@ -11,40 +11,69 @@ func init() {
 	}
 }
 
-var olcList = map[string]*commandData{
-	"dig":   {level: LEVEL_BUILDER, hint: "dig out new rooms", goDo: cmdDig, args: []string{"direction"}},
-	"asave": {level: LEVEL_BUILDER, hint: "force save all areas", goDo: cmdAsaveAll},
-	"room":  {level: LEVEL_BUILDER, hint: "room edit mode", goDo: cmdRoom},
+const (
+	OLC_NONE = iota
+	OLC_ROOM
+	OLC_AREA
+	OLC_RESET
+	OLC_OBJECT
+	OLC_MOBILE
+
+	OLC_MAX
+)
+
+type olcModeType struct {
+	name string
+	goDo func(player *characterData, input string)
 }
 
-func cmdRoom(player *characterData, input string) {
+var olcModes [OLC_MAX]olcModeType = [OLC_MAX]olcModeType{
+	OLC_NONE:   {name: "NONE", goDo: olcRoom},
+	OLC_ROOM:   {name: "ROOM", goDo: olcRoom},
+	OLC_AREA:   {name: "AREA", goDo: olcArea},
+	OLC_RESET:  {name: "RESET", goDo: olcReset},
+	OLC_OBJECT: {name: "OBJECT", goDo: olcObject},
+	OLC_MOBILE: {name: "MOBILE", goDo: olcMobile},
+}
+
+var olcList = map[string]*commandData{
+	"dig":   {level: LEVEL_BUILDER, hint: "dig out new rooms", goDo: olcDig, args: []string{"direction"}},
+	"asave": {level: LEVEL_BUILDER, hint: "force save all areas", goDo: olcAsaveAll},
+	"room":  {olcMode: OLC_ROOM, level: LEVEL_BUILDER, hint: "room edit mode", goDo: olcRoom},
+}
+
+func olcRoom(player *characterData, input string) {
 	if player.OLCEditor.OLCMode != OLC_ROOM {
 		player.send("OLC now in room edit mode.")
 		player.OLCEditor.OLCMode = OLC_ROOM
 	}
+}
 
-	if strings.EqualFold(input, "exit") {
-		player.OLCEditor.OLCMode = OLC_NONE
-	}
+func olcArea(player *characterData, input string) {
+}
+func olcReset(player *characterData, input string) {
+}
+func olcObject(player *characterData, input string) {
+}
+func olcMobile(player *characterData, input string) {
 }
 
 func interpOLC(player *characterData, input string) {
-	input = strings.ToLower(input)
-	args := strings.SplitN(input, " ", 2)
-	numArgs := len(args)
-	if numArgs == 0 {
-		return
-	}
-	olcCmd := olcList[args[0]]
-	if olcCmd != nil {
-		if numArgs > 1 {
-			olcCmd.goDo(player, args[1])
-		} else {
-			olcCmd.goDo(player, "")
+	if player.OLCEditor.OLCMode != OLC_NONE {
+		if strings.EqualFold("exit", input) {
+			player.OLCEditor.OLCMode = OLC_NONE
+			player.send("Exited OLC.")
+			return
 		}
-		return
+		for _, item := range olcList {
+			if item.olcMode == player.OLCEditor.OLCMode {
+				item.goDo(player, input)
+				return
+			}
+		}
 	}
-	if input != "" && !strings.EqualFold(input, "help") {
+
+	if input == "" && !strings.EqualFold(input, "help") {
 		player.send("That doesn't seem to be a OLC command.")
 	} else {
 		player.send("OLC commands:")
@@ -54,7 +83,7 @@ func interpOLC(player *characterData, input string) {
 	}
 }
 
-func cmdAsaveAll(player *characterData, input string) {
+func olcAsaveAll(player *characterData, input string) {
 	if player.Level < LEVEL_BUILDER {
 		return
 	}
@@ -68,7 +97,7 @@ func makeRoom(area *areaData) *roomData {
 
 // TO DO: currently works from player position, should use different value
 // with option of copying player position
-func cmdDig(player *characterData, input string) {
+func olcDig(player *characterData, input string) {
 	for i, item := range dirToText {
 		if i == DIR_MAX {
 			continue

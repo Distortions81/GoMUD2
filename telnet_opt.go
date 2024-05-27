@@ -137,9 +137,9 @@ const (
 	TermCmd_IAC
 )
 
-var TXT2TermCmd map[string]int
+var txt2TermCmd map[string]int
 
-var TermCmd2Txt map[int]string = map[int]string{
+var termCmd2Txt map[int]string = map[int]string{
 	TermCmd_SE:            "SE",
 	TermCmd_NOP:           "NOP",
 	TermCmd_DATA_MARK:     "DATA_MARK",
@@ -299,9 +299,9 @@ const (
 )
 
 func init() {
-	TXT2TermCmd = make(map[string]int)
-	for i, item := range TermCmd2Txt {
-		TXT2TermCmd[item] = i
+	txt2TermCmd = make(map[string]int)
+	for i, item := range termCmd2Txt {
+		txt2TermCmd[item] = i
 	}
 
 	for x := 0; x < 255; x++ {

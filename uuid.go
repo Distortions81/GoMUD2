@@ -18,15 +18,15 @@ const MudIDFile = DATA_DIR + "mud-id.txt"
 
 var MudID int64
 
-type UUIDData struct {
+type uuidData struct {
 	T, R, M int64
 }
 
-func makeUUID() UUIDData {
-	return UUIDData{T: time.Now().UTC().UnixNano(), R: rand.Int63(), M: MudID}
+func makeUUID() uuidData {
+	return uuidData{T: time.Now().UTC().UnixNano(), R: rand.Int63(), M: MudID}
 }
 
-func (id UUIDData) toString() string {
+func (id uuidData) toString() string {
 	buf := new(bytes.Buffer)
 	binary.Write(buf, binary.LittleEndian, id.T)
 	binary.Write(buf, binary.LittleEndian, id.R)
@@ -75,35 +75,35 @@ func writeMudID() {
 }
 
 // Used for code testing only
-func (id UUIDData) hasUUID() bool {
+func (id uuidData) hasUUID() bool {
 	return id.T != 0 && id.M != 0 //Don't check .r, random
 }
 
 // Used for code testing only
-func (ida UUIDData) sameUUID(idb UUIDData) bool {
+func (ida uuidData) sameUUID(idb uuidData) bool {
 	return ida.T == idb.T && ida.R == idb.R && ida.M == idb.M
 }
 
 // Used for code testing only
-func DecodeUUIDString(input string) UUIDData {
+func DecodeUUIDString(input string) uuidData {
 	b, _ := base64.RawURLEncoding.DecodeString(input)
 	buf := bytes.NewBuffer(b)
 
-	id := UUIDData{}
+	id := uuidData{}
 	binary.Read(buf, binary.LittleEndian, &id.T)
 	binary.Read(buf, binary.LittleEndian, &id.R)
 	binary.Read(buf, binary.LittleEndian, &id.M)
 	return id
 }
 
-func (b UUIDData) MarshalJSON() ([]byte, error) {
+func (b uuidData) MarshalJSON() ([]byte, error) {
 	if b.hasUUID() {
 		return json.Marshal(b.toString())
 	}
 	return json.Marshal("")
 }
 
-func (b *UUIDData) UnmarshalJSON(data []byte) error {
+func (b *uuidData) UnmarshalJSON(data []byte) error {
 	var decoded string
 	if err := json.Unmarshal(data, &decoded); err != nil {
 		return err

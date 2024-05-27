@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/remeh/sizedwaitgroup"
@@ -140,6 +141,19 @@ func (tdesc *descData) doOutput() {
 		}
 	}
 
+	if tdesc.state == CON_PLAYING {
+		if target := tdesc.character; target != nil {
+			if target.OLCEditor.OLCMode != OLC_NONE {
+				buf := fmt.Sprintf("OLC %v: (Quit: EXIT)\r\n", olcModes[target.OLCEditor.OLCMode].name)
+				tdesc.outBuf = append(tdesc.outBuf, []byte(buf)...)
+			}
+			if target.Prompt != "" {
+				buf := fmt.Sprintf("%v:\r\n", target.Prompt)
+				tdesc.outBuf = append(tdesc.outBuf, []byte(buf)...)
+			}
+		}
+	}
+
 	_, err := tdesc.conn.Write(tdesc.outBuf)
 	if err != nil {
 		mudLog("#%v: %v: write failed (connection lost)", tdesc.id, tdesc.ip)
@@ -187,6 +201,12 @@ func removeDeadChar() {
 			}
 			target.leaveRoom()
 			continue
+		} else if target.Level >= LEVEL_BUILDER &&
+			time.Since(target.idleTime) > BUILDER_IDLE {
+			target.send("Idle too long, quitting...")
+			target.quit(true)
+			continue
+
 		} else if time.Since(target.idleTime) > CHARACTER_IDLE {
 			target.send("Idle too long, quitting...")
 			target.quit(true)

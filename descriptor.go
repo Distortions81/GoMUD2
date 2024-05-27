@@ -15,8 +15,8 @@ const (
 	maxSubLen          = 128
 )
 
-var HTTPGET = []byte("GET ")
-var HTTPGETLEN = len(HTTPGET) - 1
+var httpGet = []byte("GET ")
+var httpGetLen = len(httpGet) - 1
 
 func reverseDNS(ip string) string {
 	timeout := 10 * time.Second // Timeout duration

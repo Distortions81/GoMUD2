@@ -135,15 +135,15 @@ func ANSIColor(in []byte) []byte {
 
 				//Toggle styles such as italic
 				if !cVal.isFG {
-					s.nextStyle.ToggleFlag(cVal.style)
+					s.nextStyle.toggleFlag(cVal.style)
 				} else {
 					//Otherwise, if bold FG color, add add flag only.
-					s.nextStyle.AddFlag(cVal.style)
+					s.nextStyle.addFlag(cVal.style)
 				}
 				//If we are switching from bold FG color
 				//to non-bold FG color, remove bold (do not toggle)
 				if cVal.removeBold {
-					s.nextStyle.ClearFlag(bold)
+					s.nextStyle.clearFlag(bold)
 				}
 				continue
 			} else {
@@ -165,34 +165,34 @@ func ANSIColor(in []byte) []byte {
 				} else if s.nextStyle == 0 && s.curStyle != 0 {
 					//If we had a style, but now we do not set style to 0
 					cOut = append(cOut, "0"...)
-				} else if s.nextStyle.HasFlag(bold) && !s.curStyle.HasFlag(bold) {
+				} else if s.nextStyle.hasFlag(bold) && !s.curStyle.hasFlag(bold) {
 					//Add bold style
 					cOut = append(cOut, colorTable['!'].code...)
-				} else if !s.nextStyle.HasFlag(bold) && s.curStyle.HasFlag(bold) {
+				} else if !s.nextStyle.hasFlag(bold) && s.curStyle.hasFlag(bold) {
 					//Remove bold style
 					cOut = append(cOut, colorTable['!'].disCode...)
-				} else if s.nextStyle.HasFlag(italic) && !s.curStyle.HasFlag(italic) {
+				} else if s.nextStyle.hasFlag(italic) && !s.curStyle.hasFlag(italic) {
 					//Add italic style
 					cOut = append(cOut, colorTable['*'].code...)
-				} else if !s.nextStyle.HasFlag(italic) && s.curStyle.HasFlag(italic) {
+				} else if !s.nextStyle.hasFlag(italic) && s.curStyle.hasFlag(italic) {
 					//Remove italic style
 					cOut = append(cOut, colorTable['*'].disCode...)
-				} else if s.nextStyle.HasFlag(underline) && !s.curStyle.HasFlag(underline) {
+				} else if s.nextStyle.hasFlag(underline) && !s.curStyle.hasFlag(underline) {
 					//Add underline style
 					cOut = append(cOut, colorTable['_'].code...)
-				} else if !s.nextStyle.HasFlag(underline) && s.curStyle.HasFlag(underline) {
+				} else if !s.nextStyle.hasFlag(underline) && s.curStyle.hasFlag(underline) {
 					//Remove underline style
 					cOut = append(cOut, colorTable['_'].disCode...)
-				} else if s.nextStyle.HasFlag(inverse) && !s.curStyle.HasFlag(inverse) {
+				} else if s.nextStyle.hasFlag(inverse) && !s.curStyle.hasFlag(inverse) {
 					//Add inverse style
 					cOut = append(cOut, colorTable['^'].code...)
-				} else if !s.nextStyle.HasFlag(inverse) && s.curStyle.HasFlag(inverse) {
+				} else if !s.nextStyle.hasFlag(inverse) && s.curStyle.hasFlag(inverse) {
 					//Remove inverse style
 					cOut = append(cOut, colorTable['^'].disCode...)
-				} else if s.nextStyle.HasFlag(strike) && !s.curStyle.HasFlag(strike) {
+				} else if s.nextStyle.hasFlag(strike) && !s.curStyle.hasFlag(strike) {
 					//Add strike style
 					cOut = append(cOut, colorTable['~'].code...)
-				} else if !s.nextStyle.HasFlag(strike) && s.curStyle.HasFlag(strike) {
+				} else if !s.nextStyle.hasFlag(strike) && s.curStyle.hasFlag(strike) {
 					//Remove strike style
 					cOut = append(cOut, colorTable['~'].disCode...)
 				}

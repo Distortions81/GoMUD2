@@ -38,7 +38,7 @@ const (
 
 type areaData struct {
 	Version     int
-	UUID        UUIDData
+	UUID        uuidData
 	VNUM        int
 	Name        string `json:",omitempty"`
 	Description string `json:",omitempty"`
@@ -46,13 +46,13 @@ type areaData struct {
 	CreDate time.Time
 	ModDate time.Time
 
-	Rooms RoomMap
+	Rooms roomMap
 	dirty bool
 }
 
 type roomData struct {
 	Version     int
-	UUID        UUIDData `json:"-"`
+	UUID        uuidData `json:"-"`
 	VNUM        int      `json:",omitempty"`
 	Name        string   `json:",omitempty"`
 	Description string   `json:",omitempty"`
@@ -67,8 +67,8 @@ type roomData struct {
 }
 
 type LocData struct {
-	AreaUUID UUIDData
-	RoomUUID UUIDData
+	AreaUUID uuidData
+	RoomUUID uuidData
 
 	Area, Room int `json:",omitempty"`
 }

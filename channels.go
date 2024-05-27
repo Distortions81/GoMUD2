@@ -48,19 +48,19 @@ func sendToChannel(player *characterData, input string, channel int) bool {
 		player.send("Your level isn't high enough to use that channel.")
 		return false
 	}
-	if player.Channels.HasFlag(1 << channel) {
+	if player.Channels.hasFlag(1 << channel) {
 		player.send("You currently have the '%v' (%v) channel turned off.", chd.cmd, chd.name)
 		return false
 	}
-	if player.Config.HasFlag(CONFIG_NOCHANNEL) {
+	if player.Config.hasFlag(CONFIG_NOCHANNEL) {
 		player.send("You currently have chat channels disabled.")
 		return false
 	}
 	for _, target := range charList {
-		if target.Config.HasFlag(CONFIG_NOCHANNEL) {
+		if target.Config.hasFlag(CONFIG_NOCHANNEL) {
 			continue
 		}
-		if !target.Channels.HasFlag(1<<channel) && notIgnored(player, target, false) {
+		if !target.Channels.hasFlag(1<<channel) && notIgnored(player, target, false) {
 
 			if target == player {
 				target.send(chd.format, "You", input)
@@ -74,7 +74,7 @@ func sendToChannel(player *characterData, input string, channel int) bool {
 }
 
 func cmdChat(player *characterData, input string) {
-	if player.Config.HasFlag(CONFIG_NOCHANNEL) {
+	if player.Config.hasFlag(CONFIG_NOCHANNEL) {
 		player.send("You currently have channels disabled.")
 		return
 	}
@@ -123,7 +123,7 @@ func cmdChat(player *characterData, input string) {
 }
 
 func cmdChannels(player *characterData, input string) {
-	if player.Config.HasFlag(CONFIG_NOCHANNEL) {
+	if player.Config.hasFlag(CONFIG_NOCHANNEL) {
 		player.send("You currently have channels disabled.")
 		return
 	}
@@ -137,7 +137,7 @@ func cmdChannels(player *characterData, input string) {
 				continue
 			}
 			var status string
-			if player.Channels.HasFlag(1 << c) {
+			if player.Channels.hasFlag(1 << c) {
 				status = "OFF"
 			} else {
 				status = "ON"
@@ -156,11 +156,11 @@ func cmdChannels(player *characterData, input string) {
 			continue
 		}
 		if strings.EqualFold(ch.cmd, input) {
-			if player.Channels.HasFlag(1 << c) {
-				player.Channels.ClearFlag(1 << c)
+			if player.Channels.hasFlag(1 << c) {
+				player.Channels.clearFlag(1 << c)
 				player.send("%v channel is now on.", ch.name)
 			} else {
-				player.Channels.AddFlag(1 << c)
+				player.Channels.addFlag(1 << c)
 				player.send("%v channel is now off.", ch.name)
 			}
 			player.dirty = true

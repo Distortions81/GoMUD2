@@ -93,7 +93,7 @@ func canMakeCharacter(desc *descData, input string) bool {
 	}
 }
 
-func loadchar(desc *descData, login string, uuid UUIDData) {
+func loadchar(desc *descData, login string, uuid uuidData) {
 	if target := checkPlayingUUID(login, uuid); target != nil {
 		alreadyPlayingWarnVictim(target)
 		desc.account.tempString = login
@@ -245,7 +245,7 @@ func (acc *accountData) saveAccount() bool {
 	return true
 }
 
-func (desc *descData) loadAccount(uuid UUIDData) error {
+func (desc *descData) loadAccount(uuid uuidData) error {
 	data, err := readFile(DATA_DIR + ACCOUNT_DIR + uuid.toString() + "/" + ACCOUNT_FILE)
 	if err != nil {
 		critLog("loadAccount: Unable to load account file: %v", err)

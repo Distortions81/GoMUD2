@@ -75,7 +75,7 @@ func (player *characterData) sendToRoom(format string, args ...any) {
 		if target == player {
 			continue
 		}
-		if target.Config.HasFlag(CONFIG_DEAF) {
+		if target.Config.hasFlag(CONFIG_DEAF) {
 			return
 		}
 		if notIgnored(player, target, false) {
@@ -89,7 +89,7 @@ const ANNOUNCE_LOGIN_REST = time.Minute * 30
 
 func (desc *descData) enterWorld(player *characterData) {
 
-	if !player.Config.HasFlag(CONFIG_HIDDEN) && time.Since(player.SaveTime) > ANNOUNCE_LOGIN_REST {
+	if !player.Config.hasFlag(CONFIG_HIDDEN) && time.Since(player.SaveTime) > ANNOUNCE_LOGIN_REST {
 		player.sendToPlaying("--> %v has returned. <--", player.Name)
 	}
 
@@ -114,7 +114,7 @@ func (desc *descData) enterWorld(player *characterData) {
 	desc.character.checkTells()
 }
 
-func checkPlayingUUID(name string, uuid UUIDData) *characterData {
+func checkPlayingUUID(name string, uuid uuidData) *characterData {
 	for _, item := range charList {
 		if !item.valid {
 			continue

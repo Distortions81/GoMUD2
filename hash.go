@@ -15,7 +15,7 @@ const (
 	HASH_DEPTH_MAX       = 100
 )
 
-var HashDepth int
+var hashDepth int
 
 type hashData struct {
 	isTest bool
@@ -67,7 +67,7 @@ func hashReceiver() {
 		newCount++
 	}
 	hashList = newList
-	HashDepth = newCount
+	hashDepth = newCount
 }
 
 // Threaded async hash

@@ -51,7 +51,7 @@ func (player *characterData) sendWW(format string, args ...any) {
 		data = format
 	}
 
-	if player.Config.HasFlag(CONFIG_NOWRAP) {
+	if player.Config.hasFlag(CONFIG_NOWRAP) {
 		player.send(format, args)
 		return
 	} else if player.Columns != 0 {

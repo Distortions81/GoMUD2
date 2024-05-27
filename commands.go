@@ -23,6 +23,7 @@ type commandData struct {
 	hide     bool
 	forceArg string
 	disabled bool
+	olcMode  int
 }
 
 var cmdList []*commandData
@@ -220,7 +221,7 @@ func (player *characterData) sendTestString() {
 }
 
 func cmdSay(player *characterData, input string) {
-	if player.Config.HasFlag(CONFIG_DEAF) {
+	if player.Config.hasFlag(CONFIG_DEAF) {
 		player.send("You are currently deaf.")
 		return
 	}
@@ -237,7 +238,7 @@ func cmdSay(player *characterData, input string) {
 }
 
 func cmdEmote(player *characterData, input string) {
-	if player.Config.HasFlag(CONFIG_DEAF) {
+	if player.Config.hasFlag(CONFIG_DEAF) {
 		player.send("You are currently deaf.")
 		return
 	}
@@ -262,7 +263,7 @@ func cmdLogout(player *characterData, input string) {
 }
 
 func cmdWho(player *characterData, input string) {
-	if player.Config.HasFlag(CONFIG_HIDDEN) {
+	if player.Config.hasFlag(CONFIG_HIDDEN) {
 		player.send("You are currently hidden.")
 		return
 	}
@@ -282,7 +283,7 @@ func cmdWho(player *characterData, input string) {
 	}
 	buf = buf + fmt.Sprintf("%31v - %v %v %v %v\r\n", "Player name", "level", "time-online", "(idle time)", "(no link)")
 	for _, target := range tmpCharList {
-		if target.Config.HasFlag(CONFIG_HIDDEN) {
+		if target.Config.hasFlag(CONFIG_HIDDEN) {
 			continue
 		}
 		var idleTime, unlink string

@@ -9,8 +9,6 @@ import (
 	"golang.org/x/text/encoding/charmap"
 )
 
-type LEVEL int
-
 const (
 	LEVEL_ANY    = -1000
 	LEVEL_NEWBIE = 0
@@ -68,27 +66,16 @@ type descData struct {
 	valid       bool
 }
 
-const (
-	OLC_NONE = iota
-	OLC_ROOM
-	OLC_AREA
-	OLC_RESET
-	OLC_OBJ
-	OLC_MOB
-
-	OLC_MAX
-)
-
 type IgnoreData struct {
 	Name   string
-	UUID   UUIDData
+	UUID   uuidData
 	Silent bool
 	Added  time.Time
 }
 
 type characterData struct {
 	Version int
-	UUID    UUIDData
+	UUID    uuidData
 	desc    *descData
 
 	Name  string
@@ -96,12 +83,14 @@ type characterData struct {
 	Loc   LocData
 	Level int
 
+	Prompt string `json:",omitempty"`
+
 	Channels Bitmask `json:",omitempty"`
 	Config   Bitmask `json:",omitempty"`
 	Columns  int
 	LastHide time.Time `json:",omitempty"`
 
-	OLCEditor  OLCEditorData `json:",omitempty"`
+	OLCEditor  olcEditorData `json:",omitempty"`
 	Ignores    []IgnoreData  `json:",omitempty"`
 	LastChange time.Time     `json:",omitempty"`
 	curChange  *noteData
@@ -118,27 +107,26 @@ type characterData struct {
 	valid bool
 }
 
-type OLCEditorData struct {
-	OLCMode   int  `json:",omitempty"`
-	OLCInvert bool `json:",omitempty"`
+type olcEditorData struct {
+	OLCMode int `json:",omitempty"`
 
-	RoomEditor   EditorData `json:",omitempty"`
-	AreaEditor   EditorData `json:",omitempty"`
-	ResetEditor  EditorData `json:",omitempty"`
-	ObjectEditor EditorData `json:",omitempty"`
-	MobEditor    EditorData `json:",omitempty"`
+	RoomEditor   editorData `json:",omitempty"`
+	AreaEditor   editorData `json:",omitempty"`
+	ResetEditor  editorData `json:",omitempty"`
+	ObjectEditor editorData `json:",omitempty"`
+	MobEditor    editorData `json:",omitempty"`
 
 	EditText []string `json:",omitempty"`
 }
 
-type EditorData struct {
+type editorData struct {
 	TargetUUID string `json:",omitempty"`
 	AreaUUID   string `json:",omitempty"`
 }
 
 type tellData struct {
 	SenderName string
-	SenderUUID UUIDData
+	SenderUUID uuidData
 	Message    string
 	Sent       time.Time
 }
@@ -159,7 +147,7 @@ type telnetData struct {
 
 type accountData struct {
 	Version int
-	UUID    UUIDData
+	UUID    uuidData
 	Level   int
 
 	Login    string

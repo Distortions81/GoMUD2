@@ -91,7 +91,7 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 		return nil
 	}
 
-	uuid := UUIDData{}
+	uuid := uuidData{}
 	for _, target := range desc.account.Characters {
 		if target.Login == plrStr {
 			uuid = target.UUID

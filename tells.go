@@ -11,13 +11,13 @@ func (player *characterData) checkTells() {
 	if numTells > 0 {
 		player.send("{rYou have {R%v {rtells waiting.", numTells-1)
 	}
-	if player.Config.HasFlag(CONFIG_NOTELL) {
+	if player.Config.hasFlag(CONFIG_NOTELL) {
 		player.send("You currently have tells disabled!")
 	}
 }
 
 func cmdTells(player *characterData, input string) {
-	if player.Config.HasFlag(CONFIG_NOTELL) {
+	if player.Config.hasFlag(CONFIG_NOTELL) {
 		player.send("Notice: You currently have tells disabled!")
 	}
 	numTells := len(player.Tells)
@@ -40,7 +40,7 @@ func cmdTells(player *characterData, input string) {
 }
 
 func cmdTell(player *characterData, input string) {
-	if player.Config.HasFlag(CONFIG_NOTELL) {
+	if player.Config.hasFlag(CONFIG_NOTELL) {
 		player.send("You currently have tells disabled.")
 		return
 	}
@@ -61,7 +61,7 @@ func cmdTell(player *characterData, input string) {
 			player.send("You tell yourself: %v", parts[1])
 			return
 		}
-		if target.Config.HasFlag(CONFIG_NOTELL) {
+		if target.Config.hasFlag(CONFIG_NOTELL) {
 			player.send("Sorry, they have tells disabled.")
 		}
 		player.send("You tell %v: %v", target.Name, parts[1])
@@ -87,7 +87,7 @@ func cmdTell(player *characterData, input string) {
 	tDesc := descData{}
 	target := tDesc.pLoad(parts[0])
 	if target != nil {
-		if target.Config.HasFlag(CONFIG_NOTELL) {
+		if target.Config.hasFlag(CONFIG_NOTELL) {
 			player.send("Sorry, they have tells disabled.")
 			return
 		}

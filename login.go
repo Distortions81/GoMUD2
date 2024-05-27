@@ -69,7 +69,7 @@ var accountIndex = make(map[string]*accountIndexData)
 
 type accountIndexData struct {
 	Login string
-	UUID  UUIDData
+	UUID  uuidData
 	Added time.Time
 }
 
@@ -168,13 +168,13 @@ func gPass(desc *descData, input string) {
 
 	hashLock.Lock()
 	defer hashLock.Unlock()
-	if HashDepth > HASH_DEPTH_MAX {
+	if hashDepth > HASH_DEPTH_MAX {
 		desc.send("Sorry, too many passphrase requests are already in the queue. Please try again later.")
 		desc.state = CON_DISCONNECTED
 		desc.valid = false
 	} else {
 		desc.send("Checking your passphrase, please wait.")
-		HashDepth++
+		hashDepth++
 		hashList = append(hashList, &hashData{id: desc.id, desc: desc, hash: desc.account.PassHash, pass: []byte(input), failed: false, doEncrypt: false, started: time.Now()})
 		desc.state = CON_CHECK_PASS
 	}
@@ -251,7 +251,7 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 		desc.sendln("Processing passphrase, please wait.")
 
 		hashLock.Lock()
-		if HashDepth > HASH_DEPTH_MAX {
+		if hashDepth > HASH_DEPTH_MAX {
 			desc.send("Sorry, too many passphrase requests are already in the queue. Please try again later.")
 			desc.state = CON_DISCONNECTED
 			desc.valid = false
@@ -259,7 +259,7 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 			hashLock.Unlock()
 			return
 		}
-		HashDepth++
+		hashDepth++
 		hashList = append(hashList, &hashData{id: desc.id, desc: desc, pass: []byte(desc.account.tempString), hash: []byte{}, failed: false, doEncrypt: true, started: time.Now()})
 
 		hashLock.Unlock()

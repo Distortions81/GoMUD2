@@ -9,6 +9,7 @@ import (
 const LOGIN_IDLE = time.Second * 30
 const MENU_IDLE = time.Minute * 5
 const CHARACTER_IDLE = time.Minute * 30
+const BUILDER_IDLE = time.Hour * 3
 
 func (desc *descData) interp() bool {
 	var input string
@@ -119,7 +120,8 @@ func (player *characterData) handleCommands(input string) {
 	cmdStr, args, _ := strings.Cut(input, " ")
 
 	cmdStr = strings.ToLower(cmdStr)
-	if player.OLCEditor.OLCInvert && player.OLCEditor.OLCMode > OLC_NONE {
+	if !player.Config.hasFlag(CONFIG_OLC) &&
+		player.OLCEditor.OLCMode != OLC_NONE {
 		interpOLC(player, input)
 		return
 	}

@@ -9,21 +9,21 @@ import (
 	"time"
 )
 
-var areaList map[UUIDData]*areaData = make(map[UUIDData]*areaData)
-var sysAreaUUID, sysRoomUUID UUIDData
+var areaList map[uuidData]*areaData = make(map[uuidData]*areaData)
+var sysAreaUUID, sysRoomUUID uuidData
 
-type RoomMap struct {
-	Data map[UUIDData]*roomData
+type roomMap struct {
+	Data map[uuidData]*roomData
 }
 
-func (room RoomMap) MarshalJSON() ([]byte, error) {
+func (room roomMap) MarshalJSON() ([]byte, error) {
 	var pairs []struct {
-		UUID UUIDData
+		UUID uuidData
 		Room *roomData
 	}
 	for k, v := range room.Data {
 		pairs = append(pairs, struct {
-			UUID UUIDData
+			UUID uuidData
 			Room *roomData
 		}{k, v})
 	}
@@ -31,10 +31,10 @@ func (room RoomMap) MarshalJSON() ([]byte, error) {
 	return json.Marshal(pairs)
 }
 
-func (room *RoomMap) UnmarshalJSON(data []byte) error {
+func (room *roomMap) UnmarshalJSON(data []byte) error {
 
 	var pairs []struct {
-		UUID UUIDData
+		UUID uuidData
 		Room *roomData
 	}
 
@@ -42,7 +42,7 @@ func (room *RoomMap) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	room.Data = make(map[UUIDData]*roomData)
+	room.Data = make(map[uuidData]*roomData)
 	for _, pair := range pairs {
 		room.Data[pair.UUID] = pair.Room
 	}
@@ -52,11 +52,11 @@ func (room *RoomMap) UnmarshalJSON(data []byte) error {
 func makeTestArea() {
 	sysAreaUUID, sysRoomUUID = makeUUID(), makeUUID()
 
-	sysRooms := make(map[UUIDData]*roomData)
+	sysRooms := make(map[uuidData]*roomData)
 	sysRooms[sysRoomUUID] = &roomData{
 		Version: 1, UUID: sysRoomUUID, VNUM: 0, Name: "The void", Description: "You are floating in a void."}
 	areaList[sysAreaUUID] = &areaData{
-		Version: 1, UUID: sysAreaUUID, VNUM: 0, Name: "system", Rooms: RoomMap{Data: sysRooms}}
+		Version: 1, UUID: sysAreaUUID, VNUM: 0, Name: "system", Rooms: roomMap{Data: sysRooms}}
 }
 
 func saveAllAreas(force bool) {

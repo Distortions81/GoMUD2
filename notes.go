@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-type NoteListData struct {
+type noteListData struct {
 	Version  int
 	Name     string
 	File     string
@@ -29,15 +29,15 @@ type noteData struct {
 	Modified time.Time
 }
 
-var noteTypes []NoteListData
+var noteTypes []noteListData
 
-var noteTypeMap map[string]*NoteListData
+var noteTypeMap map[string]*noteListData
 
 func readNotes() {
 	noteLock.Lock()
 	defer noteLock.Unlock()
 
-	noteTypeMap = make(map[string]*NoteListData)
+	noteTypeMap = make(map[string]*noteListData)
 
 	contents, err := os.ReadDir(DATA_DIR + NOTES_DIR)
 	if err != nil {
@@ -62,7 +62,7 @@ func readNote(fileName string) {
 		return
 	}
 
-	new := NoteListData{File: filePath}
+	new := noteListData{File: filePath}
 	err = json.Unmarshal(data, &new)
 	if err != nil {
 		critLog("readNote: Unable to unmarshal note file: %v", filePath)
@@ -87,7 +87,7 @@ func saveNotes(force bool) {
 		tempList := item
 		item.dirty = false
 
-		go func(tempList NoteListData) {
+		go func(tempList noteListData) {
 			tempList.Version = NOTES_VERSION
 			filePath := DATA_DIR + NOTES_DIR + tempList.File + ".json"
 
@@ -135,7 +135,7 @@ func listNoteTypes(player *characterData) {
 
 func cmdNotes(player *characterData, input string) {
 	parts := strings.SplitN(input, " ", 2)
-	var noteType *NoteListData
+	var noteType *noteListData
 	if input == "" {
 		listNoteTypes(player)
 		return
