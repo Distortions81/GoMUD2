@@ -11,8 +11,8 @@ const (
 	ROUND_LENGTH_uS    = 250000 //0.25s
 	CONNECT_THROTTLE   = time.Microsecond * 200
 	SAVE_INTERVAL      = 4 * 5
-	INTERP_LOOP_MARGIN = time.Millisecond * 5
-	INTERP_LOOP_REST   = time.Millisecond
+	INTERP_LOOP_MARGIN = time.Millisecond * 15
+	INTERP_LOOP_REST   = time.Millisecond * 5
 )
 
 func mainLoop() {
