@@ -15,6 +15,8 @@ const (
 	INTERP_LOOP_REST_uS = 1000
 )
 
+var loopTask int
+
 func mainLoop() {
 	var tickNum uint64
 
@@ -26,17 +28,30 @@ func mainLoop() {
 		start := time.Now()
 
 		descLock.Lock()
-		removeDeadDesc()
-		removeDeadChar()
+
 		hashReceiver()
-		descShuffle()
-		expireBlocks()
-		saveNotes(false)
-		writeBlocked(false)
-		saveAllAreas(false)
-		if tickNum%SAVE_INTERVAL == 0 {
+
+		switch loopTask {
+		case 0:
+			expireBlocks()
+		case 1:
+			saveNotes(false)
+		case 2:
+			writeBlocked(false)
+		case 3:
+			saveAllAreas(false)
+		case 4:
 			saveCharacters(false)
+		case 5:
+			removeDeadDesc()
+		case 6:
+			removeDeadChar()
+		case 7:
+			descShuffle()
+			loopTask = 0
 		}
+		loopTask++
+
 		resetProcessed()
 		interpAllDesc()
 		sendOutput()
@@ -57,13 +72,21 @@ func mainLoop() {
 				//Sleep for remaining interp loop time
 				loopLeft := loopTime - time.Since(loopStart)
 				time.Sleep(loopLeft)
+
+				/*
+					used := loopTime - loopLeft
+					if used > time.Microsecond*15 {
+						fmt.Printf("%v\r\n", used)
+					}
+				*/
 			}
 		}
 		descLock.Unlock()
 
 		//Sleep for remaining round time
 		timeLeft := roundTime - time.Since(start)
-		if timeLeft <= 0 {
+		//Alert if we went more than 10% over frame time
+		if timeLeft < -(time.Millisecond * 25) {
 			critLog("Round went over: %v", time.Duration(timeLeft).Truncate(time.Microsecond).Abs().String())
 		} else {
 			//critLog("Round left: %v", time.Duration(timeLeft).Truncate(time.Microsecond).Abs().String())
@@ -177,10 +200,13 @@ func removeDeadChar() {
 
 func removeDeadDesc() {
 	//Remove dead descriptors
+
+	descCount = 0
 	var newDescList []*descData
 	for _, desc := range descList {
 		if desc.state == CON_HASH_WAIT {
 			newDescList = append(newDescList, desc)
+			descCount++
 			continue
 
 		} else if desc.state <= CON_CHECK_PASS &&
@@ -204,6 +230,7 @@ func removeDeadDesc() {
 			continue
 		} else {
 			newDescList = append(newDescList, desc)
+			descCount++
 		}
 	}
 	descList = newDescList

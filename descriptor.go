@@ -89,6 +89,7 @@ func handleDesc(conn net.Conn, tls bool) {
 		reader: bufio.NewReader(conn), tls: tls, ip: ip,
 		state: CON_LOGIN, telnet: tnd, valid: true, idleTime: time.Now()}
 	descList = append(descList, desc)
+	descCount++
 	descLock.Unlock()
 
 	go func(desc *descData, ip string) {
