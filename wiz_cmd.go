@@ -8,17 +8,13 @@ import (
 const disCol = 4
 
 func cmdConInfo(player *characterData, input string) {
-	player.send("Characters:")
-	for _, item := range charList {
-		if item.desc != nil {
-			player.send("Name: %30v -- ID: %v (%v)", item.Name, item.desc.id, levelName[item.Level])
-		} else {
-			player.send("Name: %30v -- (no link)", item.Name)
-		}
-	}
-	player.send("\r\nDescriptors:")
+	player.send("Descriptors:")
 	for _, item := range descList {
-		player.send(" id: %4v addr: %16v state: %v\r\ndns: %v ", item.id, item.ip, stateName[item.state], item.dns)
+		player.send("\r\nID: %-32v IP: %v", item.id, item.ip)
+		player.send("State: %-29v DNS: %v", stateName[item.state], item.dns)
+		if item.character != nil {
+			player.send("Name: %-30v Account: %v", item.character.Name, item.account.Login)
+		}
 	}
 }
 

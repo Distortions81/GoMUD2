@@ -77,8 +77,8 @@ var stateName [CON_MAX]string = [CON_MAX]string{
 	CON_RECONNECT_CONFIRM:      "Reconnecting",
 	CON_HASH_WAIT:              "Hash wait",
 	CON_CHAR_LIST:              "Character list",
-	CON_CHAR_CREATE:            "Create new character",
-	CON_CHAR_CREATE_CONFIRM:    "Confirm new character",
+	CON_CHAR_CREATE:            "Create new char",
+	CON_CHAR_CREATE_CONFIRM:    "Confirm new char",
 	CON_PLAYING:                "Playing",
 }
 
