@@ -91,7 +91,7 @@ func handleDesc(conn net.Conn, tls bool) {
 	desc := &descData{
 		conn: conn, id: topID, connectTime: time.Now(),
 		reader: bufio.NewReader(conn), tls: tls, ip: ip,
-		state: CON_LOGIN, telnet: tnd, valid: true, idleTime: time.Now()}
+		state: CON_ACCOUNT, telnet: tnd, valid: true, idleTime: time.Now()}
 	descList = append(descList, desc)
 	descLock.Unlock()
 

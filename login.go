@@ -33,7 +33,7 @@ const (
 
 	//Greet
 	CON_WELCOME
-	CON_LOGIN
+	CON_ACCOUNT
 	CON_PASS
 	CON_CHECK_PASS
 	//CON_CHECK_PASS or below
@@ -41,8 +41,8 @@ const (
 	//idle disconnect timer
 
 	//New users
-	CON_NEW_LOGIN
-	CON_NEW_LOGIN_CONFIRM
+	CON_NEW_ACCOUNT
+	CON_NEW_ACCOUNT_CONFIRM
 	CON_NEW_PASSPHRASE
 	CON_NEW_PASSPHRASE_CONFIRM
 	CON_RECONNECT_CONFIRM
@@ -64,6 +64,24 @@ const (
 	CON_MAX
 )
 
+var stateName [CON_MAX]string = [CON_MAX]string{
+	CON_DISCONNECTED:           "Disconnected",
+	CON_WELCOME:                "Welcome",
+	CON_ACCOUNT:                "Account",
+	CON_PASS:                   "Pass",
+	CON_CHECK_PASS:             "Checking pass",
+	CON_NEW_ACCOUNT:            "Create new acc",
+	CON_NEW_ACCOUNT_CONFIRM:    "Confirm new acc",
+	CON_NEW_PASSPHRASE:         "New acc pass",
+	CON_NEW_PASSPHRASE_CONFIRM: "New acc pass confirm",
+	CON_RECONNECT_CONFIRM:      "Reconnecting",
+	CON_HASH_WAIT:              "Hash wait",
+	CON_CHAR_LIST:              "Character list",
+	CON_CHAR_CREATE:            "Create new character",
+	CON_CHAR_CREATE_CONFIRM:    "Confirm new character",
+	CON_PLAYING:                "Playing",
+}
+
 // Quick login lookup
 var accountIndex = make(map[string]*accountIndexData)
 
@@ -84,7 +102,7 @@ type loginStates struct {
 // These can be defined out of order, neato!
 var loginStateList = [CON_MAX]loginStates{
 	//Normal login
-	CON_LOGIN: {
+	CON_ACCOUNT: {
 		prompt: "To create a new account type: NEW\r\nAccount name: ",
 		goDo:   gLogin,
 	},
@@ -95,11 +113,11 @@ var loginStateList = [CON_MAX]loginStates{
 	},
 
 	//New login
-	CON_NEW_LOGIN: {
+	CON_NEW_ACCOUNT: {
 		prompt: "(up to 48 characters, spaces and symbols are accepted)\r\nPlease type your desired account name:",
 		goDo:   gNewLogin,
 	},
-	CON_NEW_LOGIN_CONFIRM: {
+	CON_NEW_ACCOUNT_CONFIRM: {
 		prompt: "(type 'back' to go back)\r\nConfirm new login: ",
 		goDo:   gNewLoginConfirm,
 		anyKey: true,
@@ -141,7 +159,7 @@ func gLogin(desc *descData, input string) {
 
 	if strings.EqualFold("new", input) {
 		critLog("#%v: %v is creating a new login.", desc.id, desc.ip)
-		desc.state = CON_NEW_LOGIN
+		desc.state = CON_NEW_ACCOUNT
 
 	} else if inputLen := len(input); inputLen < MIN_LOGIN_LEN || inputLen > MAX_LOGIN_LEN {
 		desc.close()
@@ -160,7 +178,7 @@ func gLogin(desc *descData, input string) {
 	} else {
 		//desc.sendln("Login name not found, creating new account.")
 		gNewLogin(desc, input)
-		desc.state = CON_NEW_LOGIN_CONFIRM
+		desc.state = CON_NEW_ACCOUNT_CONFIRM
 	}
 }
 
@@ -203,7 +221,7 @@ func gNewLogin(desc *descData, input string) {
 		CreDate: time.Now().UTC(),
 		ModDate: time.Now().UTC(),
 	}
-	desc.state = CON_NEW_LOGIN_CONFIRM
+	desc.state = CON_NEW_ACCOUNT_CONFIRM
 
 }
 
@@ -218,7 +236,7 @@ func gNewLoginConfirm(desc *descData, input string) {
 	} else {
 		if input == "" || strings.EqualFold(input, "back") {
 			desc.sendln("Okay, let's try again.")
-			desc.state = CON_NEW_LOGIN
+			desc.state = CON_NEW_ACCOUNT
 		} else {
 			desc.sendln("Login names didn't match.\r\nTry again, to type 'back' to go back.")
 		}

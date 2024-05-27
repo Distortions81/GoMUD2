@@ -41,8 +41,8 @@ func readTextFiles() {
 	sslBuf := fmt.Sprintf("Use port %v for SSL.\r\n", *portTLS)
 
 	//Save greet, aurevoir and warning
-	greetBuf = LICENSE + string(ANSIColor([]byte(textFiles["greet"]))) + loginStateList[CON_LOGIN].prompt
-	greetBufNoSSL = LICENSE + string(ANSIColor([]byte(textFiles["greet"]))) + sslBuf + loginStateList[CON_LOGIN].prompt
+	greetBuf = LICENSE + string(ANSIColor([]byte(textFiles["greet"]))) + loginStateList[CON_ACCOUNT].prompt
+	greetBufNoSSL = LICENSE + string(ANSIColor([]byte(textFiles["greet"]))) + sslBuf + loginStateList[CON_ACCOUNT].prompt
 	aurevoirBuf = textFiles["aurevoir"]
 	warnBuf = textFiles["warn"]
 }

@@ -11,14 +11,14 @@ func cmdConInfo(player *characterData, input string) {
 	player.send("Characters:")
 	for _, item := range charList {
 		if item.desc != nil {
-			player.send("Name: %30v -- ID: %v", item.Name, item.desc.id)
+			player.send("Name: %30v -- ID: %v (%v)", item.Name, item.desc.id, levelName[item.Level])
 		} else {
 			player.send("Name: %30v -- (no link)", item.Name)
 		}
 	}
 	player.send("\r\nDescriptors:")
 	for _, item := range descList {
-		player.send("id: %04v addr: %16v state: %v\r\ndns: %v ", item.id, item.ip, item.state, item.dns)
+		player.send(" id: %4v addr: %16v state: %v\r\ndns: %v ", item.id, item.ip, stateName[item.state], item.dns)
 	}
 }
 
