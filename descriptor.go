@@ -205,12 +205,12 @@ func (desc *descData) readDescLoop() {
 				}
 
 				if desc.inBufLen > 0 {
-					if data == '\b' {
+					if data == 127 {
 						desc.inBufLen--
-						desc.inBuf = desc.inBuf[:desc.inBufLen-1]
+						desc.inBuf = desc.inBuf[:desc.inBufLen]
 					}
 				} else {
-					if data == '\b' {
+					if data == 127 {
 						continue
 					}
 				}
