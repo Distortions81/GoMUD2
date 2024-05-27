@@ -11,10 +11,10 @@ import (
 )
 
 const (
-	BLOCKED_SAVE_INTERVAL = time.Minute
-	BLOCKED_THRESH        = 6
-	BLOCKED_FORGIVE       = 15
-	BLOCKED_COOLDOWN      = time.Hour
+	BLOCKED_THRESH       = 6
+	BLOCKED_FORGIVE      = 15
+	BLOCKED_MAX_ATTEMPTS = 500
+	BLOCKED_COOLDOWN     = time.Hour
 )
 
 var blockedMap map[string]*blockedData = make(map[string]*blockedData)
@@ -25,6 +25,7 @@ type blockedData struct {
 	Host     string
 	Attempts int  `json:",omitempty"`
 	Blocked  bool `json:",omitempty"`
+	History  int  `json:",omitempty"`
 	HTTP     bool `json:",omitempty"`
 
 	Created  time.Time
@@ -45,11 +46,16 @@ func expireBlocks() {
 		if item.Attempts > BLOCKED_FORGIVE {
 			continue
 		}
+		if item.History > BLOCKED_MAX_ATTEMPTS {
+			continue
+		}
 		if time.Since(item.Modified) < BLOCKED_COOLDOWN {
 			continue
 		}
 		errLog("Removing block on '%v' because of cooldown.", i)
-		delete(blockedMap, i)
+		item.Blocked = false
+		item.History += item.Attempts
+		item.Attempts = 0
 		break
 	}
 }
@@ -188,7 +194,7 @@ func cmdBlocked(player *characterData, input string) {
 	})
 
 	player.send("Blocked connections:")
-	player.send("%50v : %-8v %v %v", "hostname", "Attempts", "(Blocked)", "(HTTP)")
+	player.send("%50v : %-8v:%-8v %v %v", "hostname", "Attempts", "History", "(Blocked)", "(HTTP)")
 
 	count := 0
 	var buf string
@@ -197,7 +203,7 @@ func cmdBlocked(player *characterData, input string) {
 			continue
 		}
 		count++
-		buf = buf + fmt.Sprintf("%50v : %8v", item.Host, item.Attempts)
+		buf = buf + fmt.Sprintf("%50v : %8v:%8v", item.Host, item.Attempts, item.History)
 		if item.Blocked {
 			buf = buf + " (Blocked)"
 		}
