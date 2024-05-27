@@ -80,6 +80,7 @@ func main() {
 
 	loadAllAreas()
 	readTextFiles()
+	loadEmojiHelp()
 
 	loadHelps()
 	saveHelps()
