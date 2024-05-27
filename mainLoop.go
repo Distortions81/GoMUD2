@@ -8,17 +8,18 @@ import (
 )
 
 const (
-	ROUND_LENGTH_uS    = 250000 //0.25s
-	CONNECT_THROTTLE   = time.Microsecond * 200
-	SAVE_INTERVAL      = 4 * 5
-	INTERP_LOOP_MARGIN = time.Millisecond * 15
-	INTERP_LOOP_REST   = time.Millisecond * 5
+	ROUND_LENGTH_uS     = 250000 //0.25s
+	CONNECT_THROTTLE    = time.Microsecond * 200
+	SAVE_INTERVAL       = 4 * 5
+	INTERP_LOOP_MARGIN  = time.Millisecond * 5
+	INTERP_LOOP_REST_uS = 1000
 )
 
 func mainLoop() {
 	var tickNum uint64
 
 	roundTime := time.Duration(ROUND_LENGTH_uS * time.Microsecond)
+	loopTime := time.Duration(INTERP_LOOP_REST_uS * time.Microsecond)
 
 	for serverState.Load() == SERVER_RUNNING {
 		tickNum++
@@ -44,14 +45,8 @@ func mainLoop() {
 		/* Burns all free frame time looking for incoming commands */
 		if *instantRespond {
 			for {
-				for _, desc := range descList {
-					if desc.processed {
-						continue
-					}
-					if desc.interp() {
-						desc.processed = true
-					}
-				}
+				loopStart := time.Now()
+				interpAllDesc()
 				sendOutput()
 
 				timeLeft := roundTime - time.Since(start)
@@ -59,7 +54,9 @@ func mainLoop() {
 					break
 				}
 
-				time.Sleep(INTERP_LOOP_REST)
+				//Sleep for remaining interp loop time
+				loopLeft := loopTime - time.Since(loopStart)
+				time.Sleep(loopLeft)
 			}
 		}
 		descLock.Unlock()
@@ -144,10 +141,10 @@ func descShuffle() {
 func interpAllDesc() {
 	//Interpret all
 	for _, desc := range descList {
-		if desc.processed {
+		if !desc.valid {
 			continue
 		}
-		if !desc.valid {
+		if desc.processed {
 			continue
 		}
 		if desc.interp() {
