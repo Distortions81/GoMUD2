@@ -48,15 +48,15 @@ func mainLoop() {
 				}
 				if desc.interp() {
 					desc.processed = true
-					if desc.haveOut {
-						desc.doOutput()
-					}
 				}
 			}
+			sendOutput()
+
 			timeLeft := roundTime - time.Since(start)
 			if timeLeft < INTERP_LOOP_MARGIN {
 				break
 			}
+
 			time.Sleep(INTERP_LOOP_REST)
 		}
 		descLock.Unlock()
