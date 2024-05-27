@@ -110,7 +110,7 @@ func sendOutput() {
 		if desc.haveOut {
 			wg.Add()
 			go func(tdesc *descData) {
-				desc.doOutput()
+				tdesc.doOutput()
 				wg.Done()
 			}(desc)
 		}
