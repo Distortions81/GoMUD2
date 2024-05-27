@@ -200,12 +200,10 @@ func removeDeadChar() {
 func removeDeadDesc() {
 	//Remove dead descriptors
 
-	descCount = 0
 	var newDescList []*descData
 	for _, desc := range descList {
 		if desc.state == CON_HASH_WAIT {
 			newDescList = append(newDescList, desc)
-			descCount++
 			continue
 
 		} else if desc.state <= CON_CHECK_PASS &&
@@ -229,7 +227,6 @@ func removeDeadDesc() {
 			continue
 		} else {
 			newDescList = append(newDescList, desc)
-			descCount++
 		}
 	}
 	descList = newDescList

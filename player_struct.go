@@ -33,11 +33,10 @@ var levelName map[int]string = map[int]string{
 }
 
 var (
-	topID     uint64
-	descList  []*descData
-	descCount int
-	descLock  sync.Mutex
-	charList  []*characterData
+	topID    uint64
+	descList []*descData
+	descLock sync.Mutex
+	charList []*characterData
 )
 
 type descData struct {
