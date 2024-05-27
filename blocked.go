@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -18,6 +19,7 @@ const (
 
 var blockedMap map[string]*blockedData = make(map[string]*blockedData)
 var blockedDirty bool
+var blockedLock sync.Mutex
 
 type blockedData struct {
 	Host     string
@@ -30,6 +32,9 @@ type blockedData struct {
 }
 
 func expireBlocks() {
+	blockedLock.Lock()
+	defer blockedLock.Unlock()
+
 	for i, item := range blockedMap {
 		if item.HTTP {
 			continue
@@ -55,10 +60,12 @@ func writeBlocked(force bool) {
 		return
 	}
 
+	blockedLock.Lock()
 	var atd []blockedData
 	for _, item := range blockedMap {
 		atd = append(atd, *item)
 	}
+	blockedLock.Unlock()
 
 	sort.Slice(atd, func(i, j int) bool {
 		return atd[i].Attempts < atd[j].Attempts || atd[i].Host < atd[j].Host
@@ -100,6 +107,7 @@ func readBlocked() error {
 		return err
 	}
 
+	blockedLock.Lock()
 	blockedMap = make(map[string]*blockedData)
 	for _, item := range blocked {
 		blockedMap[item.Host] = &blockedData{
@@ -107,10 +115,14 @@ func readBlocked() error {
 			Blocked: item.Blocked, HTTP: item.HTTP,
 			Created: item.Created, Modified: item.Modified}
 	}
+	blockedLock.Unlock()
 	return nil
 }
 
 func cmdBlocked(player *characterData, input string) {
+	blockedLock.Lock()
+	defer blockedLock.Unlock()
+
 	args := strings.Split(input, " ")
 	numArgs := len(args)
 	var target string

@@ -55,25 +55,29 @@ func handleDesc(conn net.Conn, tls bool) {
 	ip, _, _ := net.SplitHostPort(a)
 
 	//Track connection attempts.
+	blockedLock.Lock()
 	if blockedMap[ip] != nil {
 		blockedMap[ip].Attempts++
 		blockedDirty = true
 		if blockedMap[ip].Blocked {
 			conn.Close()
+			blockedLock.Unlock()
 			return
 		} else if blockedMap[ip].Attempts >= BLOCKED_THRESH {
 			conn.Close()
 			critLog("Too many connect attempts from %v. Blocking!", ip)
 			blockedMap[ip].Blocked = true
-			blockedMap[ip].Modified = time.Now()
+			blockedMap[ip].Modified = time.Now().UTC()
 			blockedDirty = true
+			blockedLock.Unlock()
 			return
 		}
 
 	} else {
-		blockedMap[ip] = &blockedData{Host: ip, Created: time.Now()}
+		blockedMap[ip] = &blockedData{Host: ip, Created: time.Now().UTC()}
 		blockedDirty = true
 	}
+	blockedLock.Unlock()
 
 	//Create descriptor
 	descLock.Lock()
@@ -101,10 +105,12 @@ func handleDesc(conn net.Conn, tls bool) {
 		data, err := desc.reader.ReadString('\n')
 		if err == nil && strings.ContainsAny("GET", data) {
 			critLog("HTTP request from %v. Adding to ignore list.", ip)
+			blockedLock.Lock()
 			if blockedMap[ip] == nil {
 				blockedMap[ip] = &blockedData{Host: ip, Blocked: true, HTTP: true}
 				blockedDirty = true
 			}
+			blockedLock.Unlock()
 			conn.Write([]byte(`HTTP/1.1 301 Moved Permanently\r\nLocation: http://www.example.org/`))
 			conn.Close()
 			return
