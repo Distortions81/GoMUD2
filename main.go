@@ -107,9 +107,12 @@ func main() {
 	signal.Notify(signalHandle, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-signalHandle
 
+	buf := "--> Server is rebooting <--"
+	ToAllConnections(buf)
+	ToAllConnections(buf)
+	ToAllConnections(buf)
+
 	saveCharacters(true)
-	writeBlocked(true)
-	//saveAllAreas(true)
 	serverState.Store(SERVER_SHUTDOWN)
 	time.Sleep(time.Second)
 

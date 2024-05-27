@@ -152,6 +152,12 @@ func sendStart(conn net.Conn, tls bool) {
 	}
 }
 
+func ToAllConnections(format string, args ...any) {
+	for _, desc := range descList {
+		desc.sendln(format, args...)
+	}
+}
+
 func (desc *descData) readDescLoop() {
 
 	//Read loop
