@@ -12,7 +12,7 @@ const (
 	CONNECT_THROTTLE   = time.Microsecond * 200
 	SAVE_INTERVAL      = 4 * 5
 	INTERP_LOOP_MARGIN = time.Millisecond * 5
-	INTERP_LOOP_REST   = time.Microsecond * 10
+	INTERP_LOOP_REST   = time.Millisecond
 )
 
 func mainLoop() {
@@ -41,23 +41,26 @@ func mainLoop() {
 		sendOutput()
 
 		/* Instant command response */
-		for {
-			for _, desc := range descList {
-				if desc.processed {
-					continue
+		/* Burns all free frame time looking for incoming commands */
+		if *instantRespond {
+			for {
+				for _, desc := range descList {
+					if desc.processed {
+						continue
+					}
+					if desc.interp() {
+						desc.processed = true
+					}
 				}
-				if desc.interp() {
-					desc.processed = true
+				sendOutput()
+
+				timeLeft := roundTime - time.Since(start)
+				if timeLeft < INTERP_LOOP_MARGIN {
+					break
 				}
-			}
-			sendOutput()
 
-			timeLeft := roundTime - time.Since(start)
-			if timeLeft < INTERP_LOOP_MARGIN {
-				break
+				time.Sleep(INTERP_LOOP_REST)
 			}
-
-			time.Sleep(INTERP_LOOP_REST)
 		}
 		descLock.Unlock()
 

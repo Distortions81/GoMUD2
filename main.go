@@ -27,13 +27,14 @@ var (
 
 	signalHandle chan os.Signal
 
-	port          *int
-	portTLS       *int
-	noTLS         *bool
-	makeTestFiles *bool
-	bindIP        *string
-	serverState   atomic.Int32
-	numThreads    int
+	port           *int
+	portTLS        *int
+	noTLS          *bool
+	makeTestFiles  *bool
+	instantRespond *bool
+	bindIP         *string
+	serverState    atomic.Int32
+	numThreads     int
 )
 
 func main() {
@@ -45,6 +46,7 @@ func main() {
 	noTLS = flag.Bool("noSSL", true, "disable TLS listener")
 	bindIP = flag.String("bindIP", "localhost", "Bind to a specific IP.")
 	makeTestFiles = flag.Bool("fileBootstrap", false, "Create simple example area and help files.")
+	instantRespond = flag.Bool("instantRespond", true, "Respond to commands instantly, instead of once per pulse.")
 	flag.Parse()
 
 	//Make sure all directories we need are created
