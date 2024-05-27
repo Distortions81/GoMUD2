@@ -11,7 +11,7 @@ const (
 	ROUND_LENGTH_uS    = 250000 //0.25s
 	CONNECT_THROTTLE   = time.Microsecond * 200
 	SAVE_INTERVAL      = 4 * 5
-	INTERP_LOOP_MARGIN = time.Millisecond * 2
+	INTERP_LOOP_MARGIN = time.Millisecond * 5
 	INTERP_LOOP_REST   = time.Microsecond * 10
 )
 
@@ -36,11 +36,11 @@ func mainLoop() {
 		if tickNum%SAVE_INTERVAL == 0 {
 			saveCharacters(false)
 		}
+		resetProcessed()
 		interpAllDesc()
 		sendOutput()
 
 		/* Instant command response */
-		resetProcessed()
 		for {
 			for _, desc := range descList {
 				if desc.processed {
@@ -51,10 +51,6 @@ func mainLoop() {
 					if desc.haveOut {
 						desc.doOutput()
 					}
-				}
-				timeLeft := roundTime - time.Since(start)
-				if timeLeft < INTERP_LOOP_MARGIN {
-					break
 				}
 			}
 			timeLeft := roundTime - time.Since(start)
@@ -145,10 +141,15 @@ func descShuffle() {
 func interpAllDesc() {
 	//Interpret all
 	for _, desc := range descList {
+		if desc.processed {
+			continue
+		}
 		if !desc.valid {
 			continue
 		}
-		desc.interp()
+		if desc.interp() {
+			desc.processed = true
+		}
 	}
 }
 
