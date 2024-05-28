@@ -61,12 +61,10 @@ var cmdMap = map[string]*commandData{
 	"telnet":    {level: LEVEL_NEWBIE, hint: "telnet options", goDo: cmdTelnet},
 	//"chat":      {level: LEVEL_NEWBIE, hint: "chat on a channel", goDo: cmdChat, hide: true},
 	"channels": {level: LEVEL_NEWBIE, hint: "turn chat channels on or off", goDo: cmdChannels, args: []string{"channel command"}},
-
-	//Player
-	"logout":   {level: LEVEL_PLAYER, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
-	"tell":     {level: LEVEL_PLAYER, hint: "send a private message", args: []string{"target", "message"}, goDo: cmdTell},
-	"config":   {level: LEVEL_PLAYER, hint: "configure your prefrences", goDo: cmdConfig, args: []string{"1 or more config options to toggle"}},
-	"charlist": {level: LEVEL_PLAYER, hint: "see your list of characters", goDo: cmdCharList},
+	"config":   {level: LEVEL_NEWBIE, hint: "configure your prefrences", goDo: cmdConfig, args: []string{"1 or more config options to toggle"}},
+	"tell":     {level: LEVEL_NEWBIE, hint: "send a private message", args: []string{"target", "message"}, goDo: cmdTell},
+	"logout":   {level: LEVEL_NEWBIE, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
+	"charlist": {level: LEVEL_NEWBIE, hint: "see your list of characters", goDo: cmdCharList},
 
 	//Builder/mod/imm
 	"olc":     {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC, args: []string{"room", "asave", "dig"}},
