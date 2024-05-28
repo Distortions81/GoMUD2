@@ -159,7 +159,7 @@ func (tdesc *descData) doOutput() {
 	if tdesc.state == CON_PLAYING {
 		if target := tdesc.character; target != nil {
 			if target.OLCEditor.OLCMode != OLC_NONE {
-				buf := fmt.Sprintf("<OLC %v: (Quit: EXIT)>:\r\n", olcModes[target.OLCEditor.OLCMode].name)
+				buf := fmt.Sprintf("<OLC %v (exit, cmd, help)>:\r\n", olcModes[target.OLCEditor.OLCMode].name)
 				tdesc.outBuf = append(tdesc.outBuf, []byte(buf)...)
 			}
 			if target.Prompt != "" {

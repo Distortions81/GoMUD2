@@ -1,16 +1,9 @@
 package main
 
 import (
-	"sort"
 	"strings"
 	"time"
 )
-
-func init() {
-	for i, item := range olcMap {
-		item.name = i
-	}
-}
 
 const (
 	OLC_NONE = iota
@@ -23,24 +16,13 @@ const (
 	OLC_MAX
 )
 
-func init() {
-	olcList = []*commandData{}
-	for _, item := range olcMap {
-		olcList = append(olcList, item)
-	}
-
-	sort.Slice(olcList, func(i, j int) bool {
-		return olcList[i].name < olcList[j].name
-	})
-}
-
 type olcModeType struct {
 	name string
 	goDo func(player *characterData, input string)
 }
 
 var olcModes [OLC_MAX]olcModeType = [OLC_MAX]olcModeType{
-	OLC_NONE:   {name: "NONE", goDo: olcRoom},
+	OLC_NONE:   {name: "NONE"},
 	OLC_ROOM:   {name: "ROOM", goDo: olcRoom},
 	OLC_AREA:   {name: "AREA", goDo: olcArea},
 	OLC_RESET:  {name: "RESET", goDo: olcReset},
@@ -48,31 +30,40 @@ var olcModes [OLC_MAX]olcModeType = [OLC_MAX]olcModeType{
 	OLC_MOBILE: {name: "MOBILE", goDo: olcMobile},
 }
 
-var olcMap = map[string]*commandData{
-	"dig":   {level: LEVEL_BUILDER, hint: "dig out new rooms", goDo: olcDig, args: []string{"direction"}},
-	"asave": {level: LEVEL_BUILDER, hint: "force save all areas", goDo: olcAsaveAll},
-	"room":  {olcMode: OLC_ROOM, level: LEVEL_BUILDER, hint: "room edit mode", goDo: olcRoom},
-}
-var olcList []*commandData
-
 func cmdOLC(player *characterData, input string) {
 	interpOLC(player, input)
 }
 
 func olcRoom(player *characterData, input string) {
 	if input == "" || strings.EqualFold("help", input) {
-		player.send("room edit help")
+		player.send("room edit help goes here")
 		return
 	}
 }
 
 func olcArea(player *characterData, input string) {
+	if input == "" || strings.EqualFold("help", input) {
+		player.send("area edit help goes here")
+		return
+	}
 }
 func olcReset(player *characterData, input string) {
+	if input == "" || strings.EqualFold("help", input) {
+		player.send("reset edit help goes here")
+		return
+	}
 }
 func olcObject(player *characterData, input string) {
+	if input == "" || strings.EqualFold("help", input) {
+		player.send("object edit help goes here")
+		return
+	}
 }
 func olcMobile(player *characterData, input string) {
+	if input == "" || strings.EqualFold("help", input) {
+		player.send("mobile edit help goes here")
+		return
+	}
 }
 
 func interpOLC(player *characterData, input string) {
@@ -91,8 +82,8 @@ func interpOLC(player *characterData, input string) {
 			player.send("Exited OLC editor.")
 			return
 		}
-		for _, item := range olcList {
-			if item.olcMode == player.OLCEditor.OLCMode {
+		for i, item := range olcModes {
+			if i == player.OLCEditor.OLCMode {
 				item.goDo(player, input)
 				return
 			}
@@ -100,9 +91,12 @@ func interpOLC(player *characterData, input string) {
 	}
 	player.send("That isn't a valid OLC command.")
 
-	player.send("OLC commands:")
-	for _, item := range olcList {
-		player.send("%10v -- %v", item.name, item.hint)
+	player.send("OLC modes:")
+	for _, item := range olcModes {
+		if item.goDo == nil {
+			continue
+		}
+		player.send("%-10v", item.name)
 	}
 }
 

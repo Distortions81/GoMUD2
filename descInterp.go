@@ -147,10 +147,26 @@ func (player *characterData) handleCommands(input string) {
 
 	if !player.Config.hasFlag(CONFIG_OLC) &&
 		player.OLCEditor.OLCMode != OLC_NONE {
+
+		args := strings.SplitN(input, " ", 2)
+		if input != "" &&
+			strings.EqualFold(args[0], "cmd") {
+			if len(args) == 2 {
+				parseCommand(player, args[1])
+			} else {
+				parseCommand(player, "")
+			}
+			return
+		}
 		interpOLC(player, input)
 		return
 	}
 
+	parseCommand(player, input)
+
+}
+
+func parseCommand(player *characterData, input string) {
 	cmdStr, args, _ := strings.Cut(input, " ")
 	cmdStr = strings.ToLower(cmdStr)
 	command := cmdMap[cmdStr]
