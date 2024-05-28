@@ -7,8 +7,6 @@ import (
 	"os"
 	"strings"
 	"time"
-
-	"github.com/enescakir/emoji"
 )
 
 var helpFiles []*helpTopicData
@@ -36,12 +34,17 @@ type helpData struct {
 var emojiHelp, moreEmojiHelp string
 
 func loadEmojiHelp() {
-	symbols := strings.Split(textFiles["emoji"], "\n")
+
 	var buf string
 	var c int
-	for _, item := range symbols {
-		data := emoji.Parse(":" + item + ":")
-		if len(data) <= 5 {
+	for item, emoji := range nameToEmoji {
+		if len(item) < MAX_EMOJI_NAME {
+			continue
+		}
+		if len(emoji) > 5 {
+			continue
+		}
+		if strings.HasPrefix(item, "flag") {
 			continue
 		}
 		if c%2 == 0 {
@@ -56,18 +59,17 @@ func loadEmojiHelp() {
 
 	buf = ""
 	c = 0
-	for _, item := range symbols {
+	for item, emoji := range nameToEmoji {
 		if len(item) >= MAX_EMOJI_NAME {
 			continue
 		}
-		if strings.ContainsAny(item, "_") || strings.ContainsAny(item, "-") {
-			continue
-		}
-		data := emoji.Parse(":" + item + ":")
-		if len(data) > 5 {
+		if len(emoji) > 5 {
 			continue
 		}
 		if item == "copyright" {
+			continue
+		}
+		if strings.HasPrefix(item, "flag") {
 			continue
 		}
 		if c%4 == 0 {
