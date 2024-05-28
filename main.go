@@ -81,6 +81,7 @@ func main() {
 	loadAllAreas()
 	readTextFiles()
 	loadEmojiHelp()
+	updateFontList()
 
 	loadHelps()
 	saveHelps()

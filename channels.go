@@ -17,19 +17,37 @@ type chanData struct {
 	disabled bool
 }
 
+// Do not change order or delete, only append to the list.
+const (
+	CHAT_IMP = iota
+	CHAT_ADMIN
+	CHAT_BUILD
+	CHAT_STAFF
+	CHAT_MOD
+	CHAT_ANN
+	CHAT_GRAT
+	CHAT_NEWB
+	CHAT_OOC
+	CHAT_CRAZY
+
+	//Do not move, remove or use.
+	CHAT_MAX
+)
+
 // Do not change channel IDs (MAX 63)
 // use 'disabled: true' to disable vs deleting.
 // Otherwise a 'new' channel using the old ID will be 'off' if old channel was off for a player.
 var channels []*chanData = []*chanData{
-	0: {name: "Implementer", cmd: "imp", desc: "Implementer chat", format: "[IMP] %v: %v", level: LEVEL_IMPLEMENTER},
-	1: {name: "Administrator", cmd: "admin", desc: "Administrator chat", format: "[ADMIN] %v: %v", level: LEVEL_ADMIN},
-	2: {name: "Builder", cmd: "build", desc: "Builder chat", format: "[BUILDER] %v: %v", level: LEVEL_BUILDER},
-	3: {name: "Staff", cmd: "staff", desc: "Chat for all staff", format: "[STAFF] %v: %v", level: LEVEL_MODERATOR},
-	4: {name: "Moderation", cmd: "mod", desc: "Moderatorion Request", format: "[MOD] %v: %v", level: LEVEL_ANY},
-	5: {name: "Announce", cmd: "announce", desc: "Official Announcements", format: "[Announcement] %v: %v", level: LEVEL_ADMIN},
-	6: {name: "Congrats", cmd: "grats", desc: "Congratulate someone!", format: "[Grats] %v: %v", level: LEVEL_PLAYER},
-	7: {name: "Newbie", cmd: "newb", desc: "A place for newbies to chat or ask for help", format: "[Newbie] %v: %v", level: LEVEL_NEWBIE},
-	8: {name: "OOC", cmd: "ooc", desc: "out-of-character chat", format: "[OOC] %v: %v", level: LEVEL_NEWBIE},
+	CHAT_IMP:   {name: "Implementer", cmd: "imp", desc: "Implementer chat", format: "[IMP] %v: %v", level: LEVEL_IMPLEMENTER},
+	CHAT_ADMIN: {name: "Administrator", cmd: "admin", desc: "Administrator chat", format: "[ADMIN] %v: %v", level: LEVEL_ADMIN},
+	CHAT_BUILD: {name: "Builder", cmd: "build", desc: "Builder chat", format: "[BUILDER] %v: %v", level: LEVEL_BUILDER},
+	CHAT_STAFF: {name: "Staff", cmd: "staff", desc: "Chat for all staff", format: "[STAFF] %v: %v", level: LEVEL_MODERATOR},
+	CHAT_MOD:   {name: "Moderation", cmd: "mod", desc: "Moderatorion Request", format: "[MOD] %v: %v", level: LEVEL_ANY},
+	CHAT_ANN:   {name: "Announce", cmd: "announce", desc: "Official Announcements", format: "[Announcement] %v: %v", level: LEVEL_ADMIN},
+	CHAT_GRAT:  {name: "Congrats", cmd: "grats", desc: "Congratulate someone!", format: "[Grats] %v: %v", level: LEVEL_PLAYER},
+	CHAT_NEWB:  {name: "Newbie", cmd: "newb", desc: "A place for newbies to chat or ask for help", format: "[Newbie] %v: %v", level: LEVEL_NEWBIE},
+	CHAT_OOC:   {name: "OOC", cmd: "ooc", desc: "out-of-character chat", format: "[OOC] %v: %v", level: LEVEL_NEWBIE},
+	CHAT_CRAZY: {name: "CrazyTalk", cmd: "crazytalk", desc: "chat with ascii-art text", format: "[Crazy Talk] %v says: %v", level: LEVEL_PLAYER},
 }
 
 func sendToChannel(player *characterData, input string, channel int) bool {

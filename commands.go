@@ -56,7 +56,7 @@ var cmdMap = map[string]*commandData{
 
 	//Newbie
 	"say":       {level: LEVEL_NEWBIE, hint: "speak out loud", goDo: cmdSay, args: []string{"message"}},
-	"crazytalk": {level: LEVEL_NEWBIE, hint: "chat with ascii-art text", goDo: cmdSay, args: []string{"font", "message"}},
+	"crazytalk": {level: LEVEL_NEWBIE, hint: "chat with ascii-art text", goDo: cmdCrazyTalk, args: []string{"font", "message"}},
 	"emote":     {level: LEVEL_NEWBIE, hint: "emote", goDo: cmdEmote, args: []string{"message"}},
 	"telnet":    {level: LEVEL_NEWBIE, hint: "telnet options", goDo: cmdTelnet},
 	"chat":      {level: LEVEL_NEWBIE, hint: "chat on a channel", goDo: cmdChat},
@@ -65,7 +65,7 @@ var cmdMap = map[string]*commandData{
 	//Player
 	"logout":   {level: LEVEL_PLAYER, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
 	"tell":     {level: LEVEL_PLAYER, hint: "send a private message", args: []string{"target", "message"}, goDo: cmdTell},
-	"config":   {level: LEVEL_PLAYER, hint: "configure your prefrences.", goDo: cmdConfig, args: []string{"1 or more config options to toggle"}},
+	"config":   {level: LEVEL_PLAYER, hint: "configure your prefrences", goDo: cmdConfig, args: []string{"1 or more config options to toggle"}},
 	"charlist": {level: LEVEL_PLAYER, hint: "see your list of characters", goDo: cmdCharList},
 
 	//Builder/mod/imm
@@ -74,11 +74,7 @@ var cmdMap = map[string]*commandData{
 	"pset":    {level: LEVEL_IMPLEMENTER, hint: "set player parameters", goDo: cmdPset, args: []string{"player-name", "level", "level-number"}},
 	"disable": {level: LEVEL_ADMIN, hint: "disable/enable a command or channel", goDo: cmdDisable, args: []string{"command/channel", "name of command or channel"}},
 	"blocked": {level: LEVEL_ADMIN, hint: "Shows blocked connections", args: []string{"add or delete", "hostname or ip"}, goDo: cmdBlocked},
-	"boom":    {level: LEVEL_ADMIN, hint: "Boom a message", goDo: cmdBoom},
-}
-
-func cmdCrazyTalk(player *characterData, input string) {
-	player.send("Not yet implemented.")
+	"boom":    {level: LEVEL_ADMIN, hint: "Boom a message at everyone", goDo: cmdBoom},
 }
 
 func cmdLicense(player *characterData, input string) {

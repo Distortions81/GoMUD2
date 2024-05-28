@@ -11,7 +11,11 @@ const disCol = 4
 
 func cmdBoom(player *characterData, input string) {
 	buf := fmt.Sprintf("%v booms: %v", player.Name, input)
-	boom := figletlib.TXTToAscii(buf, "standard", "left", 0)
+	boom, err := figletlib.TXTToAscii(buf, "standard", "left", 0)
+	if err != nil {
+		player.send("Sorry, unable to load the font.")
+		return
+	}
 	for _, target := range charList {
 		target.send(boom)
 	}

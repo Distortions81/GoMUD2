@@ -6,7 +6,7 @@ import (
 
 const FONT_DIR = "figletlib/fonts"
 
-func TXTToAscii(input, font, just string, cols int) string {
+func TXTToAscii(input, font, just string, cols int) (string, error) {
 	// Create a byte slice
 	var buf []byte
 
@@ -22,12 +22,12 @@ func TXTToAscii(input, font, just string, cols int) string {
 
 	f, err := GetFontByName(FONT_DIR, font)
 	if err != nil {
-		return ""
+		return "", err
 	}
 	if cols == 0 {
 		cols = 80
 	}
 
 	FPrintMsg(w, input, f, cols, f.Settings(), just)
-	return w.String()
+	return w.String(), nil
 }
