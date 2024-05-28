@@ -73,24 +73,27 @@ func loadEmojiHelp() {
 	emojiHelp = buf
 }
 
-func nameToUnicode(input string) string {
-	var output string
+func nameToUnicode(input []byte) []byte {
+	var output []byte
 
-	parts := strings.Split(input, ":")
+	parts := strings.Split(string(input), ":")
 	count := 0
 
 	wasEmoji := false
 	for _, item := range parts {
-		symbol := nameToEmoji[item]
+		symbol := ""
+		if len(item) < 50 {
+			symbol = nameToEmoji[item]
+		}
 
 		if symbol != "" {
-			output = output + symbol
+			output = append(output, []byte(symbol)...)
 			wasEmoji = true
 		} else {
 			if count == 0 || wasEmoji {
-				output = output + item
+				output = append(output, []byte(item)...)
 			} else {
-				output = output + ":" + item
+				output = append(output, []byte(":"+item)...)
 			}
 			wasEmoji = false
 		}
@@ -101,18 +104,17 @@ func nameToUnicode(input string) string {
 	return output
 }
 
-func unicodeToName(input string) string {
-	var output string
+func unicodeToName(input []byte) []byte {
+	var output []byte
 
 	for _, item := range input {
 		name := emojiToName[string(item)]
 		if name != "" {
-			output = output + ":" + name + ":"
+			output = append(output, ":"+name+":"...)
 		} else {
-			output = output + string(item)
+			output = append(output, item)
 		}
 	}
-
 	return output
 }
 

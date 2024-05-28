@@ -120,6 +120,18 @@ func sendOutput() {
 }
 
 func (tdesc *descData) doOutput() {
+
+	//Emoji
+	if tdesc.character != nil && tdesc.character.Config.hasFlag(CONFIG_TEXT_EMOJI) {
+		tdesc.outBuf = unicodeToName(tdesc.outBuf)
+	} else {
+		if tdesc.telnet.Options != nil && tdesc.telnet.Options.UTF {
+			tdesc.outBuf = nameToUnicode(tdesc.outBuf)
+		} else {
+			tdesc.outBuf = unicodeToName(tdesc.outBuf)
+		}
+	}
+
 	//Color
 	if !tdesc.telnet.Options.ColorDisable {
 		tdesc.outBuf = ANSIColor(tdesc.outBuf)
@@ -131,6 +143,7 @@ func (tdesc *descData) doOutput() {
 	if !tdesc.telnet.Options.UTF {
 		tdesc.outBuf = encodeFromUTF(tdesc.telnet.charMap, tdesc.outBuf)
 	}
+
 	//Add telnet go-ahead if enabled, and there is no newline ending
 	if tdesc.telnet.Options != nil && !tdesc.telnet.Options.suppressGoAhead {
 		outLen := len(tdesc.outBuf) - 1
