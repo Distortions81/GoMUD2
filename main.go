@@ -88,6 +88,7 @@ func main() {
 	readBlocked()
 	readDisables()
 	readNotes()
+	readBugs()
 	saveNotes(true)
 
 	setupListener()

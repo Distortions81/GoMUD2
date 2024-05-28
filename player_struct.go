@@ -94,6 +94,7 @@ type characterData struct {
 	Ignores    []IgnoreData  `json:",omitempty"`
 	LastChange time.Time     `json:",omitempty"`
 	curChange  *noteData
+	NumReports int `json:",omitempty"`
 
 	SaveTime time.Time
 	CreDate  time.Time

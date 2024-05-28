@@ -65,6 +65,7 @@ var cmdMap = map[string]*commandData{
 	"tell":     {level: LEVEL_NEWBIE, hint: "send a private message", args: []string{"target", "message"}, goDo: cmdTell},
 	"logout":   {level: LEVEL_NEWBIE, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
 	"charlist": {level: LEVEL_NEWBIE, hint: "see your list of characters", goDo: cmdCharList},
+	"bug":      {level: LEVEL_NEWBIE, hint: "Report a bug or typo in the game.", goDo: cmdBug, args: []string{"report message"}},
 
 	//Builder/mod/imm
 	"olc":     {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC, args: []string{"room", "asave", "dig"}},

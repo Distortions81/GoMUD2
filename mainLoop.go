@@ -48,6 +48,8 @@ func mainLoop() {
 			removeDeadChar()
 		case 7:
 			descShuffle()
+		case 8:
+			writeBugs()
 			loopTask = 0
 		}
 		loopTask++
