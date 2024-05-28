@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"goMUD2/figletlib"
 	"sort"
 	"strings"
 	"time"
@@ -73,6 +74,15 @@ var cmdMap = map[string]*commandData{
 	"pset":    {level: LEVEL_IMPLEMENTER, hint: "set player parameters", goDo: cmdPset, args: []string{"player-name", "level", "level-number"}},
 	"disable": {level: LEVEL_ADMIN, hint: "disable/enable a command or channel", goDo: cmdDisable, args: []string{"command/channel", "name of command or channel"}},
 	"blocked": {level: LEVEL_ADMIN, hint: "Shows blocked connections", args: []string{"add or delete", "hostname or ip"}, goDo: cmdBlocked},
+	"boom":    {level: LEVEL_ADMIN, hint: "Boom a message", goDo: cmdBoom},
+}
+
+func cmdBoom(player *characterData, input string) {
+	buf := fmt.Sprintf("%v booms: %v", player.Name, input)
+	boom := figletlib.TXTToAscii(buf)
+	for _, target := range charList {
+		target.send(boom)
+	}
 }
 
 func cmdLicense(player *characterData, input string) {

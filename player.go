@@ -161,7 +161,7 @@ func checkPlayingPMatch(name string) *characterData {
 
 func (player *characterData) quit(doClose bool) {
 
-	player.desc.sendln(aurevoirBuf)
+	player.desc.sendln(fairwellBuf)
 	if player.saveCharacter() {
 		player.send("Character saved.")
 		critLog("Saved %v", player.Name)

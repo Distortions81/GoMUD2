@@ -106,7 +106,7 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 	target := checkPlayingUUID(plrStr, uuid)
 
 	if target != nil {
-		target.send(aurevoirBuf)
+		target.send(fairwellBuf)
 		target.send("Another connection from your account has forcefully taken over control of this character.")
 		target.desc.close()
 

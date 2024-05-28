@@ -7,7 +7,7 @@ import (
 )
 
 var textFiles map[string]string
-var greetBuf, greetBufNoSSL, aurevoirBuf, warnBuf string
+var greetBuf, greetBufNoSSL, fairwellBuf, warnBuf string
 
 const textExt = ".txt"
 
@@ -40,9 +40,9 @@ func readTextFiles() {
 
 	sslBuf := fmt.Sprintf("Use port %v for SSL.\r\n", *portTLS)
 
-	//Save greet, aurevoir and warning
+	//Save greet, fairwell and warning
 	greetBuf = LICENSE + string(ANSIColor([]byte(textFiles["greet"]))) + loginStateList[CON_ACCOUNT].prompt
 	greetBufNoSSL = LICENSE + string(ANSIColor([]byte(textFiles["greet"]))) + sslBuf + loginStateList[CON_ACCOUNT].prompt
-	aurevoirBuf = textFiles["aurevoir"]
+	fairwellBuf = textFiles["fairwell"]
 	warnBuf = textFiles["warn"]
 }

@@ -135,13 +135,15 @@ func listNoteTypes(player *characterData) {
 
 func cmdNotes(player *characterData, input string) {
 	parts := strings.SplitN(input, " ", 2)
+	numParts := len(parts)
+
 	var noteType *noteListData
 	if input == "" {
 		listNoteTypes(player)
 		return
-	} else {
+	} else if numParts == 2 && parts[1] != "" {
 		for _, item := range noteTypes {
-			if strings.EqualFold(item.Name, parts[0]) {
+			if strings.EqualFold(item.Name, parts[1]) {
 				noteType = &item
 				break
 			}
@@ -224,7 +226,7 @@ func cmdNotes(player *characterData, input string) {
 			player.curChange = nil
 			noteType.dirty = true
 		} else {
-			player.send("That isn't a valid option.")
+			player.send("That isn't a valid option. Options are: add, date, text or done.")
 		}
 	}
 }
