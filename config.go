@@ -11,6 +11,7 @@ const (
 	CONFIG_NOWRAP
 	CONFIG_OLC
 	CONFIG_NOCOLOR
+	CONFIG_TEXT_EMOJI
 
 	//Keep at end, do not use or delete
 	CONFIG_MAX
@@ -27,7 +28,8 @@ var configNames map[int]configInfo = map[int]configInfo{
 	CONFIG_NOCHANNEL: {name: "NoChannel", desc: "Mute all channels"},
 	CONFIG_DEAF:      {name: "Deaf", desc: "Mute say/emote/yell"},
 	//CONFIG_NOWRAP:    {Name: "NoWrap", Description: "Do not word-wrap"},
-	CONFIG_OLC: {name: "OLCMode", desc: "Require 'OLC' before OLC commands.", level: LEVEL_BUILDER},
+	CONFIG_OLC:        {name: "OLCMode", desc: "Require 'OLC' before OLC commands.", level: LEVEL_BUILDER},
+	CONFIG_TEXT_EMOJI: {name: "TextEmoji", desc: "Attempt to replace emoji with emoji names.", level: LEVEL_BUILDER},
 }
 
 func cmdConfig(player *characterData, input string) {

@@ -383,10 +383,14 @@ func (desc *descData) send(format string, args ...any) error {
 		data = format
 	}
 
-	if desc.telnet.Options != nil && desc.telnet.Options.UTF {
-		data = nameToUnicode(data)
-	} else {
+	if desc.character != nil && desc.character.Config.hasFlag(CONFIG_TEXT_EMOJI) {
 		data = unicodeToName(data)
+	} else {
+		if desc.telnet.Options != nil && desc.telnet.Options.UTF {
+			data = nameToUnicode(data)
+		} else {
+			data = unicodeToName(data)
+		}
 	}
 
 	desc.outBuf = append(desc.outBuf, data...)
