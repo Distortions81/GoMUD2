@@ -222,7 +222,8 @@ func removeDeadChar() {
 			target.quit(true)
 			continue
 
-		} else if time.Since(target.idleTime) > CHARACTER_IDLE {
+		} else if target.Level < LEVEL_BUILDER &&
+			time.Since(target.idleTime) > CHARACTER_IDLE {
 			target.send("Idle too long, quitting...")
 			target.quit(true)
 			continue
