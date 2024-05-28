@@ -77,7 +77,7 @@ var cmdMap = map[string]*commandData{
 	"boom":    {level: LEVEL_ADMIN, hint: "Boom a message", goDo: cmdBoom},
 }
 
-func cmdCrazyTalk(player *characterData, input string) {\
+func cmdCrazyTalk(player *characterData, input string) {
 	player.send("Not yet implemented.")
 }
 
