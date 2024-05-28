@@ -85,10 +85,18 @@ func (desc *descData) interp() bool {
 	return true
 }
 
-func (player *characterData) listCommands() {
-	player.send("Commands:")
+func (player *characterData) listCommands(input string) {
+	if input == "" {
+		player.send("Commands:")
+	}
+
 	var lastLevel int
 	for _, item := range cmdList {
+		if input != "" {
+			if !strings.EqualFold(input, item.name) {
+				continue
+			}
+		}
 		if item.hide {
 			continue
 		}
@@ -102,16 +110,20 @@ func (player *characterData) listCommands() {
 		}
 
 		var parts string
-		if item.args != nil {
-			parts += " -- "
-		}
 		for i, arg := range item.args {
 			if i > 0 {
 				parts += ", "
 			}
 			parts += fmt.Sprintf("<%v>", arg)
 		}
-		player.send("%10v -- %v%v", item.name, item.hint, parts)
+		if parts != "" {
+			parts += " "
+		}
+		player.send("%10v %v-- %v", item.name, parts, item.hint)
+	}
+
+	if input == "" {
+		return
 	}
 	buf := "\r\nChannels: "
 	count := 0
@@ -221,7 +233,7 @@ func findCommandMatch(player *characterData, cmdStr string, args string) {
 		}
 	}
 	player.send("That isn't an available command.")
-	player.listCommands()
+	player.listCommands("")
 }
 
 // Returns true if allowed

@@ -34,13 +34,22 @@ type helpData struct {
 func cmdHelp(player *characterData, input string) {
 	//Redirect command list
 	if player.desc != nil && strings.EqualFold("commands", input) {
-		player.listCommands()
+		player.listCommands("")
 		return
 	}
-	//Redirect to OLC command
-	if player.desc != nil && strings.EqualFold("olc", input) {
-		cmdOLC(player, "help")
-		return
+
+	//Autohelp
+	for _, item := range cmdList {
+		if strings.EqualFold(input, item.name) {
+			player.send("Help %v:", item.name)
+			if !item.noShort && !item.noAutoHelp {
+				item.goDo(player, "")
+				return
+			} else {
+				player.listCommands(item.name)
+				return
+			}
+		}
 	}
 
 	if player.desc != nil && strings.EqualFold("emoji", input) {
@@ -91,7 +100,7 @@ func cmdHelp(player *characterData, input string) {
 		player.send("Sorry, I didn't find a help page for that.")
 	}
 	if len(helpKeywords) > 0 {
-		player.send("Help topics: commands, OLC, emoji, more-emoji %v", strings.Join(helpKeywords, ", "))
+		player.send("Help topics: <command name>, commands, emoji, more-emoji, OLC, %v", strings.Join(helpKeywords, ", "))
 	} else {
 		player.send("No help topics found?")
 	}
@@ -106,7 +115,6 @@ var helpKeywords []string
 
 func loadHelps() {
 	helpKeywords = []string{}
-	//helpFiles = []*helpTopicData{}
 
 	dir, err := os.ReadDir(DATA_DIR + HELPS_DIR)
 	if err != nil {
@@ -120,7 +128,9 @@ func loadHelps() {
 				if help != nil {
 					//mudLog("Loaded help: %v", item.Name())
 					helpFiles = append(helpFiles, help)
-					helpKeywords = append(helpKeywords, help.Topic)
+					for _, h := range help.Helps {
+						helpKeywords = append(helpKeywords, h.Name)
+					}
 				}
 			}
 		}
@@ -179,7 +189,9 @@ func saveHelps() {
 				critLog("--> Saving help file failed: %v", topic.Topic)
 			}
 		}
-		helpKeywords = append(helpKeywords, topic.Topic)
+		for _, h := range topic.Helps {
+			helpKeywords = append(helpKeywords, h.Name)
+		}
 	}
 }
 

@@ -326,7 +326,7 @@ func (desc *descData) ingestLine() {
 	}
 
 	//Append line to buffer
-	desc.inputLines = append(desc.inputLines, buf)
+	desc.inputLines = append(desc.inputLines, strings.TrimSpace(buf))
 	desc.numInputLines++
 
 	//Reset input buffer

@@ -48,6 +48,7 @@ func cmdConfig(player *characterData, input string) {
 			}
 			player.send("%15v: (%v) %v", item.name, status, item.desc)
 		}
+		player.send("config <option> to toggle")
 		return
 	}
 

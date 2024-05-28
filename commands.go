@@ -14,16 +14,17 @@ const MAX_CHAT_LENGTH = 2048
 var shortUnits durafmt.Units
 
 type commandData struct {
-	name     string
-	noShort  bool
-	hint     string
-	level    int
-	goDo     func(player *characterData, data string)
-	args     []string
-	hide     bool
-	forceArg string
-	disabled bool
-	olcMode  int
+	name       string
+	noShort    bool
+	hint       string
+	level      int
+	goDo       func(player *characterData, data string)
+	args       []string
+	hide       bool
+	forceArg   string
+	disabled   bool
+	olcMode    int
+	noAutoHelp bool
 }
 
 var cmdList []*commandData
@@ -44,33 +45,33 @@ var cmdMap = map[string]*commandData{
 	"d":  {level: LEVEL_ANY, noShort: true, goDo: cmdGo, hide: true, forceArg: "down"},
 
 	//Anyone
-	"go":        {level: LEVEL_ANY, hint: "go", goDo: cmdGo, args: []string{"exit name"}},
-	"help":      {level: LEVEL_ANY, hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}},
+	"go":        {level: LEVEL_ANY, hint: "go", goDo: cmdGo, args: []string{"exit name"}, noAutoHelp: true},
+	"help":      {level: LEVEL_ANY, hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}, noAutoHelp: true},
 	"say":       {level: LEVEL_ANY, hint: "speak out loud", goDo: cmdSay, args: []string{"message"}},
 	"emote":     {level: LEVEL_ANY, hint: "emote", goDo: cmdEmote, args: []string{"message"}},
-	"tell":      {level: LEVEL_ANY, hint: "send a private message", args: []string{"target", "message"}, goDo: cmdTell},
+	"tell":      {level: LEVEL_ANY, hint: "send a private message", args: []string{"target", "message"}, goDo: cmdTell, noAutoHelp: true},
 	"tells":     {level: LEVEL_ANY, hint: "read pending tells", goDo: cmdTells},
 	"channels":  {level: LEVEL_ANY, hint: "turn chat channels on or off", goDo: cmdChannels, args: []string{"channel command"}},
-	"look":      {level: LEVEL_ANY, hint: "look around the room", goDo: cmdLook},
-	"who":       {level: LEVEL_ANY, hint: "show players online", goDo: cmdWho},
+	"look":      {level: LEVEL_ANY, hint: "look around the room", goDo: cmdLook, noAutoHelp: true},
+	"who":       {level: LEVEL_ANY, hint: "show players online", goDo: cmdWho, noAutoHelp: true},
 	"ignore":    {level: LEVEL_ANY, hint: "ignore someone. add 'silent' to silently ignore", goDo: cmdIgnore, args: []string{"player name", "silent"}},
-	"config":    {level: LEVEL_ANY, hint: "configure your prefrences", goDo: cmdConfig, args: []string{"1 or more config options to toggle"}},
-	"telnet":    {level: LEVEL_ANY, hint: "telnet options", goDo: cmdTelnet},
-	"quit":      {level: LEVEL_ANY, noShort: true, hint: "quit and disconnect", goDo: cmdQuit},
+	"config":    {level: LEVEL_ANY, hint: "configure your prefrences", goDo: cmdConfig, args: []string{"1 or more config options to toggle"}, noAutoHelp: true},
+	"telnet":    {level: LEVEL_ANY, hint: "telnet options", goDo: cmdTelnet, noAutoHelp: true},
+	"quit":      {level: LEVEL_ANY, noShort: true, hint: "quit and disconnect", goDo: cmdQuit, noAutoHelp: true},
 	"license":   {level: LEVEL_ANY, noShort: true, hint: "See MUD's version number and license information.", goDo: cmdLicense},
-	"note":      {level: LEVEL_ANY, hint: "read notes", goDo: cmdNotes, args: []string{"note type", "list, next"}},
+	"note":      {level: LEVEL_ANY, hint: "read notes", goDo: cmdNotes, args: []string{"note type", "list, next"}, noAutoHelp: true},
 	"crazytalk": {level: LEVEL_ANY, hint: "global chat with ascii-art text", goDo: cmdCrazyTalk, args: []string{"font", "message"}, hide: true},
-	"charlist":  {level: LEVEL_ANY, hint: "see your list of characters", goDo: cmdCharList},
-	"bug":       {level: LEVEL_ANY, hint: "Report a bug or typo in the game.", goDo: cmdBug, args: []string{"report message"}},
-	"logout":    {level: LEVEL_ANY, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
+	"charlist":  {level: LEVEL_ANY, hint: "see your list of characters", goDo: cmdCharList, noAutoHelp: true},
+	"bug":       {level: LEVEL_ANY, hint: "Report a bug or typo in the game", goDo: cmdBug, args: []string{"report message"}, noAutoHelp: true},
+	"logout":    {level: LEVEL_ANY, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout, noAutoHelp: true},
 
 	//Builder/mod/imm
 	"olc":     {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC, args: []string{"room", "asave", "dig"}},
-	"coninfo": {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdConInfo},
-	"pset":    {level: LEVEL_IMPLEMENTER, hint: "set player parameters", goDo: cmdPset, args: []string{"player-name", "level", "level-number"}},
-	"disable": {level: LEVEL_ADMIN, hint: "disable/enable a command or channel", goDo: cmdDisable, args: []string{"command/channel", "name of command or channel"}},
-	"blocked": {level: LEVEL_ADMIN, hint: "Shows blocked connections", args: []string{"add or delete", "hostname or ip"}, goDo: cmdBlocked},
-	"boom":    {level: LEVEL_ADMIN, hint: "Boom a message at everyone", goDo: cmdBoom},
+	"coninfo": {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdConInfo, noAutoHelp: true},
+	"pset":    {level: LEVEL_MODERATOR, hint: "set player parameters", goDo: cmdPset, args: []string{"player-name", "level", "level-number"}, noAutoHelp: true},
+	"disable": {level: LEVEL_MODERATOR, hint: "disable/enable a command or channel", goDo: cmdDisable, args: []string{"command/channel", "name of command or channel"}, noAutoHelp: true},
+	"blocked": {level: LEVEL_MODERATOR, hint: "Shows blocked connections", args: []string{"add or delete", "hostname or ip"}, goDo: cmdBlocked},
+	"boom":    {level: LEVEL_MODERATOR, hint: "Boom a message at everyone", args: []string{"message"}, goDo: cmdBoom, noAutoHelp: true},
 }
 
 func cmdLicense(player *characterData, input string) {

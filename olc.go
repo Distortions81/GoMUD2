@@ -77,13 +77,9 @@ func interpOLC(player *characterData, input string) {
 		}
 	}
 
-	if input == "" && !strings.EqualFold(input, "help") {
-		player.send("That doesn't seem to be a OLC command.")
-	} else {
-		player.send("OLC commands:")
-		for _, item := range olcList {
-			player.send("%10v -- %v", item.name, item.hint)
-		}
+	player.send("OLC commands:")
+	for _, item := range olcList {
+		player.send("%10v -- %v", item.name, item.hint)
 	}
 }
 
