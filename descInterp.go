@@ -144,16 +144,16 @@ func (player *characterData) listCommands(input string) {
 }
 
 func (player *characterData) handleCommands(input string) {
-	cmdStr, args, _ := strings.Cut(input, " ")
 
-	cmdStr = strings.ToLower(cmdStr)
 	if !player.Config.hasFlag(CONFIG_OLC) &&
 		player.OLCEditor.OLCMode != OLC_NONE {
 		interpOLC(player, input)
 		return
 	}
-	command := cmdMap[cmdStr]
 
+	cmdStr, args, _ := strings.Cut(input, " ")
+	cmdStr = strings.ToLower(cmdStr)
+	command := cmdMap[cmdStr]
 	if command != nil {
 		if command.disabled {
 			player.send("That command is disabled.")

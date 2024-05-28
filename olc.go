@@ -1,12 +1,13 @@
 package main
 
 import (
+	"sort"
 	"strings"
 	"time"
 )
 
 func init() {
-	for i, item := range olcList {
+	for i, item := range olcMap {
 		item.name = i
 	}
 }
@@ -22,6 +23,17 @@ const (
 	OLC_MAX
 )
 
+func init() {
+	olcList = []*commandData{}
+	for _, item := range olcMap {
+		olcList = append(olcList, item)
+	}
+
+	sort.Slice(olcList, func(i, j int) bool {
+		return olcList[i].name < olcList[j].name
+	})
+}
+
 type olcModeType struct {
 	name string
 	goDo func(player *characterData, input string)
@@ -36,20 +48,21 @@ var olcModes [OLC_MAX]olcModeType = [OLC_MAX]olcModeType{
 	OLC_MOBILE: {name: "MOBILE", goDo: olcMobile},
 }
 
-var olcList = map[string]*commandData{
+var olcMap = map[string]*commandData{
 	"dig":   {level: LEVEL_BUILDER, hint: "dig out new rooms", goDo: olcDig, args: []string{"direction"}},
 	"asave": {level: LEVEL_BUILDER, hint: "force save all areas", goDo: olcAsaveAll},
 	"room":  {olcMode: OLC_ROOM, level: LEVEL_BUILDER, hint: "room edit mode", goDo: olcRoom},
 }
+var olcList []*commandData
 
 func cmdOLC(player *characterData, input string) {
 	interpOLC(player, input)
 }
 
 func olcRoom(player *characterData, input string) {
-	if player.OLCEditor.OLCMode != OLC_ROOM {
-		player.send("OLC now in room edit mode.")
-		player.OLCEditor.OLCMode = OLC_ROOM
+	if input == "" || strings.EqualFold("help", input) {
+		player.send("room edit help")
+		return
 	}
 }
 
@@ -63,10 +76,19 @@ func olcMobile(player *characterData, input string) {
 }
 
 func interpOLC(player *characterData, input string) {
+
+	for i, item := range olcModes {
+		if strings.EqualFold(item.name, input) {
+			player.OLCEditor.OLCMode = i
+			player.send("Entering %v edit mode.", item.name)
+			item.goDo(player, "")
+			return
+		}
+	}
 	if player.OLCEditor.OLCMode != OLC_NONE {
 		if strings.EqualFold("exit", input) {
 			player.OLCEditor.OLCMode = OLC_NONE
-			player.send("Exited OLC.")
+			player.send("Exited OLC editor.")
 			return
 		}
 		for _, item := range olcList {
@@ -76,6 +98,7 @@ func interpOLC(player *characterData, input string) {
 			}
 		}
 	}
+	player.send("That isn't a valid OLC command.")
 
 	player.send("OLC commands:")
 	for _, item := range olcList {
