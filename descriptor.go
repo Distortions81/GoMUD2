@@ -104,7 +104,11 @@ func handleDesc(conn net.Conn, tls bool) {
 			critLog("HTTP request from %v. Adding to ignore list.", ip)
 			blockedLock.Lock()
 			if blockedMap[ip] == nil {
-				blockedMap[ip] = &blockedData{Host: ip, Blocked: true, HTTP: true}
+				blockedMap[ip] = &blockedData{Host: ip, Blocked: true, HTTP: true, Created: time.Now().UTC()}
+				blockedDirty = true
+			} else {
+				blockedMap[ip].Blocked = true
+				blockedMap[ip].HTTP = true
 				blockedDirty = true
 			}
 			blockedLock.Unlock()
