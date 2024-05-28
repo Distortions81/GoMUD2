@@ -40,7 +40,7 @@ func loadEmojiHelp() {
 	}
 	buf = buf + "\r\nSimply chat :emoji name:\r\n"
 	buf = buf + "These will show up as text to players using mud clients that do not support UTF."
-	buf = buf + fmt.Sprintf("\r\nFound %v emoji. For more emoji, see help emoji.", c)
+	buf = buf + fmt.Sprintf("\r\n%v emoji. For more emoji see help emoji.", c)
 	moreEmojiHelp = buf
 
 	buf = ""
@@ -69,7 +69,7 @@ func loadEmojiHelp() {
 	}
 	buf = buf + "\r\nSimply chat :emoji name:\r\n"
 	buf = buf + "These will show up as text to players using mud clients that do not support UTF."
-	buf = buf + fmt.Sprintf("\r\nFound %v emoji. For more emoji, see help more-emoji.", c)
+	buf = buf + fmt.Sprintf("\r\n%v emoji. For more emoji see help more-emoji.", c)
 	emojiHelp = buf
 }
 
