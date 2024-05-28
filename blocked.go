@@ -55,6 +55,7 @@ func expireBlocks() {
 		errLog("Removing block on '%v' because of cooldown.", i)
 		item.Blocked = false
 		item.History += item.Attempts
+		item.Modified = time.Now().UTC()
 		item.Attempts = 0
 		break
 	}
@@ -157,7 +158,7 @@ func cmdBlocked(player *characterData, input string) {
 			} else if strings.EqualFold(args[0], "add") {
 
 				if blockedMap[target] == nil {
-					blockedMap[target] = &blockedData{Host: target, Blocked: true, Created: time.Now()}
+					blockedMap[target] = &blockedData{Host: target, Blocked: true, Created: time.Now().UTC(), Modified: time.Now().UTC()}
 					player.send("Host '%v' added to the list.", target)
 					blockedDirty = true
 				} else {
