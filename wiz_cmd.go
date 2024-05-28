@@ -11,7 +11,7 @@ const disCol = 4
 
 func cmdBoom(player *characterData, input string) {
 	buf := fmt.Sprintf("%v booms: %v", player.Name, input)
-	boom := figletlib.TXTToAscii(buf)
+	boom := figletlib.TXTToAscii(buf, "standard", "left", 0)
 	for _, target := range charList {
 		target.send(boom)
 	}

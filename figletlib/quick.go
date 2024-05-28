@@ -6,18 +6,28 @@ import (
 
 const FONT_DIR = "figletlib/fonts"
 
-func TXTToAscii(input string) string {
+func TXTToAscii(input, font, just string, cols int) string {
 	// Create a byte slice
 	var buf []byte
 
 	// Create a bytes.Buffer, which implements io.Writer
 	w := bytes.NewBuffer(buf)
 
-	f, err := GetFontByName(FONT_DIR, "standard")
+	if font == "" {
+		font = "standard"
+	}
+	if just == "" {
+		just = "left"
+	}
+
+	f, err := GetFontByName(FONT_DIR, font)
 	if err != nil {
 		return ""
 	}
+	if cols == 0 {
+		cols = 80
+	}
 
-	FPrintMsg(w, input, f, 80, f.Settings(), "left")
+	FPrintMsg(w, input, f, cols, f.Settings(), just)
 	return w.String()
 }
