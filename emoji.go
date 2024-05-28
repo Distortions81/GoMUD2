@@ -1,6 +1,9 @@
 package main
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 var emojiToName map[string]string
 
@@ -11,7 +14,64 @@ func init() {
 	}
 }
 
-const MAX_EMOJI_NAME = 17
+const MAX_EMOJI_NAME = 10
+
+var emojiHelp, moreEmojiHelp string
+
+func loadEmojiHelp() {
+
+	var buf string
+	var c int
+	for item, emoji := range nameToEmoji {
+		if len(item) < MAX_EMOJI_NAME {
+			continue
+		}
+		if len(emoji) > 5 {
+			continue
+		}
+		if strings.HasPrefix(item, "flag") {
+			continue
+		}
+		if c%2 == 0 {
+			buf = buf + "\r\n"
+		}
+		c++
+		buf = buf + fmt.Sprintf(":%v: %-37v ", item, item)
+	}
+	buf = buf + "\r\nSimply chat :emoji name:\r\n"
+	buf = buf + "These will show up as text to players using mud clients that do not support UTF."
+	buf = buf + fmt.Sprintf("\r\nFound %v emoji. For more emoji, see help emoji.", c)
+	moreEmojiHelp = buf
+
+	buf = ""
+	c = 0
+	for item, emoji := range nameToEmoji {
+		if item == "registered" {
+			continue
+		}
+		if len(item) >= MAX_EMOJI_NAME {
+			continue
+		}
+		if len(emoji) > 5 {
+			continue
+		}
+		if item == "copyright" {
+			continue
+		}
+		if strings.HasPrefix(item, "flag") {
+			continue
+		}
+		if c%5 == 0 {
+			buf = buf + "\r\n"
+		}
+		c++
+		buf = buf + fmt.Sprintf(":%v: %-11v ", item, item)
+	}
+	buf = buf + "\r\nSimply chat :emoji name:\r\n"
+	buf = buf + "These will show up as text to players using mud clients that do not support UTF."
+	buf = buf + fmt.Sprintf("\r\nFound %v emoji. For more emoji, see help more-emoji.", c)
+	emojiHelp = buf
+}
 
 func nameToUnicode(input string) string {
 	var output string

@@ -31,58 +31,6 @@ type helpData struct {
 	topic *helpTopicData
 }
 
-var emojiHelp, moreEmojiHelp string
-
-func loadEmojiHelp() {
-
-	var buf string
-	var c int
-	for item, emoji := range nameToEmoji {
-		if len(item) < MAX_EMOJI_NAME {
-			continue
-		}
-		if len(emoji) > 5 {
-			continue
-		}
-		if strings.HasPrefix(item, "flag") {
-			continue
-		}
-		if c%2 == 0 {
-			buf = buf + "\r\n"
-		}
-		c++
-		buf = buf + fmt.Sprintf(":%v: %-37v ", item, item)
-	}
-	buf = buf + "\r\nSimply chat :emoji name:\r\n"
-	buf = buf + "These will show up as text to players using mud clients that do not support UTF."
-	moreEmojiHelp = buf
-
-	buf = ""
-	c = 0
-	for item, emoji := range nameToEmoji {
-		if len(item) >= MAX_EMOJI_NAME {
-			continue
-		}
-		if len(emoji) > 5 {
-			continue
-		}
-		if item == "copyright" {
-			continue
-		}
-		if strings.HasPrefix(item, "flag") {
-			continue
-		}
-		if c%4 == 0 {
-			buf = buf + "\r\n"
-		}
-		c++
-		buf = buf + fmt.Sprintf(":%v: %-18v ", item, item)
-	}
-	buf = buf + "\r\nSimply chat :emoji name:\r\n"
-	buf = buf + "These will show up as text to players using mud clients that do not support UTF."
-	emojiHelp = buf
-}
-
 func cmdHelp(player *characterData, input string) {
 	//Redirect command list
 	if player.desc != nil && strings.EqualFold("commands", input) {
@@ -95,13 +43,13 @@ func cmdHelp(player *characterData, input string) {
 		return
 	}
 
-	if player.desc != nil && strings.EqualFold("more-emoji", input) {
-		player.send(moreEmojiHelp)
+	if player.desc != nil && strings.EqualFold("emoji", input) {
+		player.send(emojiHelp)
 		return
 	}
 
-	if player.desc != nil && strings.EqualFold("emoji", input) {
-		player.send(emojiHelp)
+	if player.desc != nil && strings.EqualFold("more-emoji", input) {
+		player.send(moreEmojiHelp)
 		return
 	}
 
