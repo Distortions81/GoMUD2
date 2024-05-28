@@ -86,7 +86,7 @@ func (desc *descData) interp() bool {
 }
 
 func (player *characterData) listCommands() {
-	player.send("\r\nCommands:\r\n")
+	player.send("Commands:")
 	var lastLevel int
 	for _, item := range cmdList {
 		if item.hide {
@@ -113,7 +113,22 @@ func (player *characterData) listCommands() {
 		}
 		player.send("%10v -- %v%v", item.name, item.hint, parts)
 	}
-	player.send("")
+	buf := "\r\nChannels: "
+	count := 0
+	for _, ch := range channels {
+		if ch.disabled {
+			continue
+		}
+		if ch.level > player.Level {
+			continue
+		}
+		if count > 0 {
+			buf = buf + ", "
+		}
+		buf = buf + ch.cmd
+		count++
+	}
+	player.send(buf)
 }
 
 func (player *characterData) handleCommands(input string) {
@@ -140,7 +155,9 @@ func (player *characterData) handleCommands(input string) {
 			}
 		}
 	} else {
-		findCommandMatch(player, cmdStr, args)
+		if cmdChat(player, input) {
+			findCommandMatch(player, cmdStr, args)
+		}
 	}
 }
 

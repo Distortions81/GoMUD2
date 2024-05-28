@@ -56,11 +56,11 @@ var cmdMap = map[string]*commandData{
 
 	//Newbie
 	"say":       {level: LEVEL_NEWBIE, hint: "speak out loud", goDo: cmdSay, args: []string{"message"}},
-	"crazytalk": {level: LEVEL_NEWBIE, hint: "global chat with ascii-art text", goDo: cmdCrazyTalk, args: []string{"font", "message"}},
+	"crazytalk": {level: LEVEL_NEWBIE, hint: "global chat with ascii-art text", goDo: cmdCrazyTalk, args: []string{"font", "message"}, hide: true},
 	"emote":     {level: LEVEL_NEWBIE, hint: "emote", goDo: cmdEmote, args: []string{"message"}},
 	"telnet":    {level: LEVEL_NEWBIE, hint: "telnet options", goDo: cmdTelnet},
-	"chat":      {level: LEVEL_NEWBIE, hint: "chat on a channel", goDo: cmdChat},
-	"channels":  {level: LEVEL_NEWBIE, hint: "turn chat channels on or off", goDo: cmdChannels, args: []string{"channel command"}},
+	//"chat":      {level: LEVEL_NEWBIE, hint: "chat on a channel", goDo: cmdChat, hide: true},
+	"channels": {level: LEVEL_NEWBIE, hint: "turn chat channels on or off", goDo: cmdChannels, args: []string{"channel command"}},
 
 	//Player
 	"logout":   {level: LEVEL_PLAYER, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},

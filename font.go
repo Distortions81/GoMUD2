@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"goMUD2/figletlib"
 	"os"
 	"strings"
@@ -13,10 +12,6 @@ const (
 )
 
 func cmdCrazyTalk(player *characterData, input string) {
-	if player.Channels.hasFlag(1 << CHAT_CRAZY) {
-		player.send("You have the crazytalk channel turned off.")
-		return
-	}
 	args := strings.SplitN(input, " ", 2)
 	numArgs := len(args)
 
@@ -54,12 +49,7 @@ func cmdCrazyTalk(player *characterData, input string) {
 		return
 	}
 
-	buf := fmt.Sprintf("[CRAZY TALK] %v says:\r\n%v", player.Name, asciiMsg)
-	for _, target := range charList {
-		if !target.Channels.hasFlag(1 << CHAT_CRAZY) {
-			target.send(buf)
-		}
-	}
+	sendToChannel(player, asciiMsg, CHAT_CRAZY)
 }
 
 var fontList map[string]string

@@ -15,6 +15,7 @@ type chanData struct {
 	format   string
 	level    int
 	disabled bool
+	special  bool
 }
 
 // Do not change order or delete, only append to the list.
@@ -47,7 +48,7 @@ var channels []*chanData = []*chanData{
 	CHAT_GRAT:  {name: "Congrats", cmd: "grats", desc: "Congratulate someone!", format: "[Grats] %v: %v", level: LEVEL_PLAYER},
 	CHAT_NEWB:  {name: "Newbie", cmd: "newb", desc: "A place for newbies to chat or ask for help", format: "[Newbie] %v: %v", level: LEVEL_NEWBIE},
 	CHAT_OOC:   {name: "OOC", cmd: "ooc", desc: "out-of-character chat", format: "[OOC] %v: %v", level: LEVEL_NEWBIE},
-	CHAT_CRAZY: {name: "CrazyTalk", cmd: "crazytalk", desc: "chat with ascii-art text", format: "[Crazy Talk] %v: %v", level: LEVEL_PLAYER},
+	CHAT_CRAZY: {name: "CrazyTalk", cmd: "crazytalk", desc: "chat with ascii-art text", format: "[Crazy Talk] %v:\r\n%v", level: LEVEL_PLAYER, special: true}, //Has it's own command.
 }
 
 func sendToChannel(player *characterData, input string, channel int) bool {
@@ -91,26 +92,23 @@ func sendToChannel(player *characterData, input string, channel int) bool {
 	return false
 }
 
-func cmdChat(player *characterData, input string) {
+func cmdChat(player *characterData, input string) bool {
 	if player.Config.hasFlag(CONFIG_NOCHANNEL) {
-		player.send("You currently have channels disabled.")
-		return
+		//player.send("You currently have channels disabled.")
+		return true
 	}
 	cmd := strings.SplitN(input, " ", 2)
 	numCmd := len(cmd)
 
-	//No arguments, show channel list
-	if numCmd == 0 || input == "" {
-		cmdChannels(player, "")
-		return
-	}
-
 	if numCmd < 2 {
-		player.send("But what do you want to say?")
-		return
+		//player.send("But what do you want to say?")
+		return true
 	}
 	//Check for full match
 	for c, ch := range channels {
+		if ch.special {
+			continue
+		}
 		if ch.disabled {
 			continue
 		}
@@ -119,12 +117,15 @@ func cmdChat(player *characterData, input string) {
 		}
 		if strings.EqualFold(ch.cmd, cmd[0]) {
 			if sendToChannel(player, cmd[1], c) {
-				return
+				return false
 			}
 		}
 	}
 	//Otherwise, check for partial match
 	for c, ch := range channels {
+		if ch.special {
+			continue
+		}
 		if ch.disabled {
 			continue
 		}
@@ -133,11 +134,11 @@ func cmdChat(player *characterData, input string) {
 		}
 		if strings.HasPrefix(ch.cmd, cmd[0]) {
 			sendToChannel(player, cmd[1], c)
-			return
+			return false
 		}
 	}
-	cmdChannels(player, "")
-	player.send("That doesn't seem to be a valid channel.")
+	//player.send("That doesn't seem to be a valid channel.")
+	return true
 }
 
 func cmdChannels(player *characterData, input string) {
