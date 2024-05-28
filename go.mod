@@ -3,7 +3,6 @@ module goMUD2
 go 1.22.0
 
 require (
-	github.com/enescakir/emoji v1.0.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/martinhoefling/goxkcdpwgen v0.1.1
 	github.com/muesli/reflow v0.3.0
