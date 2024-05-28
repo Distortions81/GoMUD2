@@ -112,6 +112,9 @@ func (desc *descData) enterWorld(player *characterData) {
 	desc.state = CON_PLAYING
 	cmdLook(desc.character, "")
 	desc.character.checkTells()
+	if player.Level < LEVEL_PLAYER {
+		player.send("To see the command list type: help commands")
+	}
 }
 
 func checkPlayingUUID(name string, uuid uuidData) *characterData {
