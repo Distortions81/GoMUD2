@@ -5,6 +5,9 @@ import (
 	"goMUD2/figletlib"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/hako/durafmt"
 )
 
 const disCol = 4
@@ -26,8 +29,16 @@ func cmdConInfo(player *characterData, input string) {
 	for _, item := range descList {
 		player.send("\r\nID: %-32v IP: %v", item.id, item.ip)
 		player.send("State: %-29v DNS: %v", stateName[item.state], item.dns)
+		player.send("Idle: %-30v Connected: %v", durafmt.ParseShort(time.Since(item.idleTime)), durafmt.ParseShort(time.Since(item.connectTime)))
+
+		charmap := item.telnet.charMap.String()
+		if item.telnet.Options != nil && item.telnet.Options.UTF {
+			charmap = "UTF"
+		}
+
+		player.send("Clinet: %-28v Charmap: %v", item.telnet.termType, charmap)
 		if item.character != nil {
-			player.send("Name: %-30v Account: %v", item.character.Name, item.account.Login)
+			player.send("Char: %-30v Account: %v", item.character.Name, item.account.Login)
 		}
 	}
 }
