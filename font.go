@@ -21,7 +21,7 @@ func cmdCrazyTalk(player *characterData, input string) {
 	numArgs := len(args)
 
 	if numArgs < 2 {
-		player.send(fontList)
+		player.send(fontListText)
 		player.send("What font?")
 		return
 	}
@@ -31,13 +31,25 @@ func cmdCrazyTalk(player *characterData, input string) {
 		return
 	}
 
-	asciiMsg, err := figletlib.TXTToAscii(args[1], args[0], "left", 0)
+	defer func() {
+		if r := recover(); r != nil {
+			player.send("Sorry, something went wrong rendering that font.")
+			return
+		}
+	}()
+
+	lowerArg := strings.ToLower(args[0])
+	asciiMsg, err := figletlib.TXTToAscii(args[1], fontList[lowerArg], "left", 0)
 	if err != nil {
 		player.send("Sorry, that isn't a valid font.")
 		return
 	}
 
-	if len(asciiMsg) > MAX_CRAZY_OUTPUT {
+	asciiLen := len(asciiMsg)
+	if asciiLen < 1 {
+		player.send("Sorry, something went wrong rendering that font.")
+	}
+	if asciiLen > MAX_CRAZY_OUTPUT {
 		player.send("That message is too long.")
 		return
 	}
@@ -50,7 +62,8 @@ func cmdCrazyTalk(player *characterData, input string) {
 	}
 }
 
-var fontList string
+var fontList map[string]string
+var fontListText string
 
 func updateFontList() error {
 	dir, err := os.ReadDir(figletlib.FONT_DIR)
@@ -58,14 +71,29 @@ func updateFontList() error {
 		critLog("Unable to read font directory: %v -- %v", figletlib.FONT_DIR, err.Error())
 		return err
 	}
+	fontList = make(map[string]string)
+	fontListText = ""
+	itemNum := 0
 	for _, item := range dir {
 		if item.IsDir() {
 			continue
 		}
-		if strings.HasSuffix(item.Name(), ".flf") {
-			fontList = fontList + strings.TrimSuffix(item.Name(), ".flf") + ", "
-			fontList = wordWrap(fontList, 80)
+		name := item.Name()
+		if strings.HasSuffix(name, ".flf") {
+			fname := strings.TrimSuffix(name, ".flf")
+			fname = strings.ToLower(fname)
+			fname = strings.ReplaceAll(fname, " ", "")
+			fname = strings.ReplaceAll(fname, "-", "")
+			fname = strings.ReplaceAll(fname, "_", "")
+			fontList[fname] = name
+
+			if itemNum > 0 {
+				fontListText = fontListText + ", "
+			}
+			itemNum++
+			fontListText = fontListText + fname
 		}
+		fontListText = wordWrap(fontListText, 80)
 	}
 
 	return nil

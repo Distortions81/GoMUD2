@@ -17,6 +17,27 @@ func isAccNameAvail(name string) bool {
 	return accountIndex[name] == nil
 }
 
+func cmdCharList(player *characterData, input string) {
+	if player.desc == nil {
+		return
+	}
+
+	var buf string = "Characters:\r\n"
+	for i, item := range player.desc.account.Characters {
+		var playing string
+		if target := checkPlayingUUID(item.Login, item.UUID); target != nil {
+			if target == player {
+				playing = " (THIS IS YOU)"
+			} else {
+				playing = " (ALSO PLAYING)"
+			}
+		}
+		buf = buf + fmt.Sprintf("#%v: %v%v\r\n", i+1, item.Login, playing)
+	}
+	player.send(buf)
+
+}
+
 func gCharList(desc *descData) {
 
 	//They logged in, reset the attempt count.

@@ -10,6 +10,7 @@ const (
 	CONFIG_DEAF
 	CONFIG_NOWRAP
 	CONFIG_OLC
+	CONFIG_NOCOLOR
 
 	//Keep at end, do not use or delete
 	CONFIG_MAX

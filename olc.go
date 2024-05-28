@@ -42,6 +42,10 @@ var olcList = map[string]*commandData{
 	"room":  {olcMode: OLC_ROOM, level: LEVEL_BUILDER, hint: "room edit mode", goDo: olcRoom},
 }
 
+func cmdOLC(player *characterData, input string) {
+	interpOLC(player, input)
+}
+
 func olcRoom(player *characterData, input string) {
 	if player.OLCEditor.OLCMode != OLC_ROOM {
 		player.send("OLC now in room edit mode.")
