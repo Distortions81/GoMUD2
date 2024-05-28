@@ -1,11 +1,21 @@
 package main
 
 import (
+	"fmt"
+	"goMUD2/figletlib"
 	"strconv"
 	"strings"
 )
 
 const disCol = 4
+
+func cmdBoom(player *characterData, input string) {
+	buf := fmt.Sprintf("%v booms: %v", player.Name, input)
+	boom := figletlib.TXTToAscii(buf)
+	for _, target := range charList {
+		target.send(boom)
+	}
+}
 
 func cmdConInfo(player *characterData, input string) {
 	player.send("Descriptors:")

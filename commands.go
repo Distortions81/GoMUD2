@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"goMUD2/figletlib"
 	"sort"
 	"strings"
 	"time"
@@ -56,11 +55,12 @@ var cmdMap = map[string]*commandData{
 	"license": {level: LEVEL_ANY, noShort: true, hint: "See MUD's version number and license information.", goDo: cmdLicense},
 
 	//Newbie
-	"say":      {level: LEVEL_NEWBIE, hint: "speak out loud", goDo: cmdSay, args: []string{"message"}},
-	"emote":    {level: LEVEL_NEWBIE, hint: "emote", goDo: cmdEmote, args: []string{"message"}},
-	"telnet":   {level: LEVEL_NEWBIE, hint: "telnet options", goDo: cmdTelnet},
-	"chat":     {level: LEVEL_NEWBIE, hint: "chat on a channel", goDo: cmdChat},
-	"channels": {level: LEVEL_NEWBIE, hint: "turn chat channels on or off", goDo: cmdChannels, args: []string{"channel command"}},
+	"say":       {level: LEVEL_NEWBIE, hint: "speak out loud", goDo: cmdSay, args: []string{"message"}},
+	"crazytalk": {level: LEVEL_NEWBIE, hint: "chat with ascii-art text", goDo: cmdSay, args: []string{"font", "message"}},
+	"emote":     {level: LEVEL_NEWBIE, hint: "emote", goDo: cmdEmote, args: []string{"message"}},
+	"telnet":    {level: LEVEL_NEWBIE, hint: "telnet options", goDo: cmdTelnet},
+	"chat":      {level: LEVEL_NEWBIE, hint: "chat on a channel", goDo: cmdChat},
+	"channels":  {level: LEVEL_NEWBIE, hint: "turn chat channels on or off", goDo: cmdChannels, args: []string{"channel command"}},
 
 	//Player
 	"logout":   {level: LEVEL_PLAYER, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout},
@@ -77,12 +77,8 @@ var cmdMap = map[string]*commandData{
 	"boom":    {level: LEVEL_ADMIN, hint: "Boom a message", goDo: cmdBoom},
 }
 
-func cmdBoom(player *characterData, input string) {
-	buf := fmt.Sprintf("%v booms: %v", player.Name, input)
-	boom := figletlib.TXTToAscii(buf)
-	for _, target := range charList {
-		target.send(boom)
-	}
+func cmdCrazyTalk(player *characterData, input string) {\
+	player.send("Not yet implemented.")
 }
 
 func cmdLicense(player *characterData, input string) {
