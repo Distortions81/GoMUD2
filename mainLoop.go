@@ -13,9 +13,15 @@ const (
 	CONNECT_THROTTLE    = time.Microsecond * 200
 	INTERP_LOOP_MARGIN  = time.Millisecond * 5
 	INTERP_LOOP_REST_uS = 1000
+
+	MAX_HISTORY_LEN = 1200 // 5min
 )
 
 var loopTask int
+var fullPulseHistory, partialPulseHistory []int64
+var peakFullPulse, peakPartialPulse int64
+
+var historyLen int
 
 func mainLoop() {
 	var tickNum uint64
@@ -58,6 +64,13 @@ func mainLoop() {
 		interpAllDesc()
 		sendOutput()
 
+		/* Record remaining time */
+		ppulse := time.Since(start).Microseconds()
+		partialPulseHistory = append(partialPulseHistory, ppulse)
+		if peakPartialPulse < ppulse {
+			peakPartialPulse = ppulse
+		}
+
 		/* Instant command response */
 		/* Burns all free frame time looking for incoming commands */
 		if *instantRespond {
@@ -74,19 +87,29 @@ func mainLoop() {
 				//Sleep for remaining interp loop time
 				loopLeft := loopTime - time.Since(loopStart)
 				time.Sleep(loopLeft)
-
-				/*
-					used := loopTime - loopLeft
-					if used > time.Microsecond*15 {
-						fmt.Printf("%v\r\n", used)
-					}
-				*/
 			}
 		}
 		descLock.Unlock()
 
 		//Sleep for remaining round time
-		timeLeft := roundTime - time.Since(start)
+		took := time.Since(start)
+		timeLeft := roundTime - took
+
+		/* Record remaining time */
+		tookMicro := took.Microseconds()
+		fullPulseHistory = append(fullPulseHistory, tookMicro)
+		if peakFullPulse < tookMicro {
+			peakFullPulse = tookMicro
+		}
+
+		/* Trim to max history */
+		if historyLen > MAX_HISTORY_LEN {
+			fullPulseHistory = fullPulseHistory[:MAX_HISTORY_LEN-1]
+			partialPulseHistory = partialPulseHistory[:MAX_HISTORY_LEN-1]
+		} else {
+			historyLen++
+		}
+
 		//Alert if we went more than 10% over frame time
 		if timeLeft < -(time.Millisecond * 25) {
 			critLog("Round went over: %v", time.Duration(timeLeft).Truncate(time.Microsecond).Abs().String())

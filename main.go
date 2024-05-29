@@ -100,8 +100,8 @@ func main() {
 
 	go waitNewConnection()
 	go waitNewConnectionSSL()
-	go mainLoop()
 	go hasherDaemon()
+	go mainLoop()
 
 	//After starting loops, wait here for process signals
 	signalHandle = make(chan os.Signal, 1)

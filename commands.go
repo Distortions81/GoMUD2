@@ -64,6 +64,7 @@ var cmdMap = map[string]*commandData{
 	"charlist":  {level: LEVEL_ANY, hint: "see your list of characters", goDo: cmdCharList, noAutoHelp: true},
 	"bug":       {level: LEVEL_ANY, hint: "Report a bug or typo in the game", goDo: cmdBug, args: []string{"report message"}, noAutoHelp: true},
 	"logout":    {level: LEVEL_ANY, noShort: true, hint: "quit and go back to character selection menu", goDo: cmdLogout, noAutoHelp: true},
+	"stats":     {level: LEVEL_ANY, hint: "show some mud stats", goDo: cmdStat, noAutoHelp: true},
 
 	//Builder/mod/imm
 	"olc":     {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC, args: []string{"room", "asave", "dig"}},
@@ -72,6 +73,29 @@ var cmdMap = map[string]*commandData{
 	"disable": {level: LEVEL_MODERATOR, hint: "disable/enable a command or channel", goDo: cmdDisable, args: []string{"command/channel", "name of command or channel"}, noAutoHelp: true},
 	"blocked": {level: LEVEL_MODERATOR, hint: "Shows blocked connections", args: []string{"add or delete", "hostname or ip"}, goDo: cmdBlocked},
 	"boom":    {level: LEVEL_MODERATOR, hint: "Boom a message at everyone", args: []string{"message"}, goDo: cmdBoom, noAutoHelp: true},
+}
+
+func cmdStat(player *characterData, input string) {
+	var ppulse uint64
+	var fpulse uint64
+	for x := 0; x < historyLen; x++ {
+		fpulse += uint64(fullPulseHistory[x])
+		ppulse += uint64(partialPulseHistory[x])
+	}
+	fpulse = fpulse / uint64(historyLen)
+	ppulse = ppulse / uint64(historyLen)
+
+	player.send("\r\nMud load: Pulse: %3.2f%% / Window: %3.2f%%",
+		(float64(ppulse)/float64(ROUND_LENGTH_uS))*100.0,
+		(float64(fpulse)/float64(ROUND_LENGTH_uS))*100.0)
+	player.send("Pulse time: %v (%v peak)",
+		durafmt.ParseShort(time.Duration(ppulse*uint64(time.Microsecond))),
+		durafmt.ParseShort(time.Duration(peakPartialPulse)*time.Microsecond))
+	player.send("Window time: %v (%v peak)",
+		durafmt.ParseShort(time.Duration(fpulse*uint64(time.Microsecond))),
+		durafmt.ParseShort(time.Duration(peakFullPulse)*time.Microsecond))
+	player.send("(%v averaged)",
+		durafmt.ParseShort(time.Duration(time.Duration(historyLen)/(1000000/ROUND_LENGTH_uS)*time.Second)))
 }
 
 func cmdLicense(player *characterData, input string) {
