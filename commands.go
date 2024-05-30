@@ -78,7 +78,7 @@ var cmdMap = map[string]*commandData{
 func cmdStat(player *characterData, input string) {
 	var ppulse uint64
 	var fpulse uint64
-	for x := 0; x < historyLen-1; x++ {
+	for x := 0; x < historyLen-2; x++ {
 		fpulse += uint64(fullPulseHistory[x])
 		ppulse += uint64(partialPulseHistory[x])
 	}
