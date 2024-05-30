@@ -170,7 +170,7 @@ func (tdesc *descData) doOutput() {
 	}
 
 	//Add telnet go-ahead if enabled, and there is no newline ending
-	if tdesc.telnet.Options != nil && !tdesc.telnet.Options.suppressGoAhead {
+	if tdesc.telnet.Options != nil && !tdesc.telnet.Options.SuppressGoAhead {
 		outLen := len(tdesc.outBuf) - 1
 		if outLen > 0 {
 			if tdesc.outBuf[outLen-1] != '\n' {

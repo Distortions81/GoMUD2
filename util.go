@@ -60,15 +60,14 @@ func (player *characterData) sendWW(format string, args ...any) {
 
 	} else if player.desc != nil {
 		if player.desc.telnet.Options != nil {
-			if player.desc.telnet.Options.Columns != 0 {
-				player.send(wordWrap(data, player.desc.telnet.Options.Columns))
+			if player.desc.telnet.Options.NAWS {
+				player.send(wordWrap(data, player.desc.telnet.Options.TermWidth))
 				return
 			}
 		}
 	}
 
 	player.send(wordWrap(data, 80))
-
 }
 
 func wordWrap(input string, cols int) string {

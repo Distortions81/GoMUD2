@@ -159,8 +159,6 @@ type accountData struct {
 	CreDate time.Time
 	ModDate time.Time
 
-	TelnetSettings *telnetData `json:",omitempty"`
-
 	Characters []accountIndexData
 	Banned     *banData `json:",omitempty"`
 

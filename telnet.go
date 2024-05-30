@@ -6,11 +6,20 @@ import (
 	"strings"
 )
 
+const (
+	MIN_TERM_WIDTH = 80
+	MAX_TERM_WIDTH = 254
+
+	MIN_TERM_HEIGHT = 20
+	MAX_TERM_HEIGHT = 254
+)
+
 func sendTelnetCmds(conn net.Conn) {
 	sendCmd(conn, TermCmd_DO, TermOpt_SUP_GOAHEAD)
 	sendCmd(conn, TermCmd_DO, TermOpt_TERMINAL_TYPE)
 	sendCmd(conn, TermCmd_WILL, TermOpt_CHARSET)
 	sendCmd(conn, TermCmd_WILL, TermOpt_SUP_GOAHEAD)
+	sendCmd(conn, TermCmd_DO, TermOpt_WINDOW_SIZE)
 }
 func (player *characterData) sendTestString() {
 	player.send("Falsches Üben von Xylophonmusik quält jeden größeren Zwerg")
@@ -34,17 +43,22 @@ func cmdTelnet(player *characterData, input string) {
 		if telnet.Options == nil {
 			return
 		}
-		if telnet.Options.suppressGoAhead {
+		if telnet.Options.SuppressGoAhead {
 			buf = buf + "Supressing Go-Ahead Signal (SUPGA)\r\n"
 		}
 		if telnet.Options.ColorDisable {
-			buf = buf + "Color disabled.\r\n"
+			buf = buf + "ANSI Color disabled.\r\n"
+		} else {
+			buf = buf + "ANSI Color enabled.\r\n"
 		}
-		if telnet.Options.ansi256 {
+		if telnet.Options.ANSI256 {
 			buf = buf + "Supports 256 color mode\r\n"
 		}
-		if telnet.Options.ansi24 {
+		if telnet.Options.ANSI24 {
 			buf = buf + "Supports 24-bit true-color\r\n"
+		}
+		if telnet.Options.NAWS {
+			buf = buf + fmt.Sprintf("Window size: %v x %v", telnet.Options.TermWidth, telnet.Options.TermHeight)
 		}
 
 		player.send(buf)
@@ -68,15 +82,6 @@ func cmdTelnet(player *characterData, input string) {
 		}
 		return
 	}
-	if strings.EqualFold("SAVE", input) {
-		if player.desc == nil {
-			return
-		}
-		player.desc.account.TelnetSettings = &player.desc.telnet
-		player.desc.account.saveAccount()
-		player.send("Your telnet settings have been saved to your account.")
-		return
-	}
 	if strings.EqualFold("UTF", input) {
 		if telnet.Options.UTF {
 			player.desc.telnet.Options.UTF = false
@@ -90,11 +95,11 @@ func cmdTelnet(player *characterData, input string) {
 		return
 	}
 	if strings.EqualFold("supga", input) {
-		if telnet.Options.suppressGoAhead {
-			player.desc.telnet.Options.suppressGoAhead = false
+		if telnet.Options.SuppressGoAhead {
+			player.desc.telnet.Options.SuppressGoAhead = false
 			player.send("SUPGA mode disabled.")
 		} else {
-			player.desc.telnet.Options.suppressGoAhead = true
+			player.desc.telnet.Options.SuppressGoAhead = true
 			player.send("SUPGA mode enabled.")
 		}
 		return
@@ -145,16 +150,8 @@ func (desc *descData) sendSubSeq(data string, args ...byte) error {
 	buf = append(buf, []byte{TermCmd_IAC, TermCmd_SE}...)
 	dlen, err := desc.conn.Write(buf)
 	if err != nil || dlen != len(buf) {
-		//mudLog("#%v: %v: sub send failed (connection lost)", desc.id, desc.cAddr)
 		return err
 	}
-
-	/*
-		if len(args) > 1 {
-			mudLog("#%v: Sent sub: %v %v %d", desc.id, data, TermOpt2TXT[int(args[0])], args[1])
-		}
-	*/
-
 	return nil
 }
 
@@ -170,7 +167,6 @@ func (desc *descData) inputFull() {
 func (desc *descData) readByte() (byte, error) {
 	data, err := desc.reader.ReadByte()
 	if err != nil {
-		//mudLog("#%v: %v: Connection closed by server.", desc.id, desc.cAddr)
 		descLock.Lock()
 		desc.valid = false
 		desc.state = CON_DISCONNECTED

@@ -2,7 +2,9 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"context"
+	"encoding/binary"
 	"fmt"
 	"net"
 	"strings"
@@ -90,6 +92,7 @@ func handleDesc(conn net.Conn, tls bool) {
 		reader: bufio.NewReader(conn), tls: tls, ip: ip,
 		state: CON_ACCOUNT, telnet: tnd, valid: true, idleTime: time.Now()}
 	descList = append(descList, desc)
+	desc.UpdateTermSize()
 	descLock.Unlock()
 
 	go func(desc *descData, ip string) {
@@ -182,6 +185,11 @@ func (desc *descData) readDescLoop() {
 				return
 			}
 
+			if command == TermCmd_IAC {
+				desc.getSubSeqData(data)
+				continue
+			}
+
 			//Sub-negotiation sequence END
 			if command == TermCmd_SE {
 
@@ -189,6 +197,8 @@ func (desc *descData) readDescLoop() {
 					desc.getTermType()
 				} else if desc.telnet.subSeqType == TermOpt_CHARSET {
 					desc.getCharset()
+				} else if desc.telnet.subSeqType == TermOpt_WINDOW_SIZE {
+					desc.getWindowSize()
 				} else {
 					critLog("#%v: GOT unknown sub data: %v: %v", desc.id, TermOpt2TXT[int(desc.telnet.subSeqType)], string(desc.telnet.subSeqData))
 				}
@@ -248,41 +258,91 @@ func (desc *descData) readDescLoop() {
 	}
 }
 
+func (desc *descData) getWindowSize() {
+	seqLen := len(desc.telnet.subSeqData)
+
+	var SizeX, SizeY int
+	buf := bytes.NewBuffer(desc.telnet.subSeqData)
+	var sizex, sizey uint16
+	binary.Read(buf, binary.BigEndian, &sizex)
+	binary.Read(buf, binary.BigEndian, &sizey)
+	SizeX, SizeY = int(sizex), int(sizey)
+
+	desc.telnet.Options.TermWidth, desc.telnet.Options.TermHeight = SizeX, SizeY
+	desc.telnet.Options.NAWS = true
+	critLog("NAWS: (%v) %v x %v", seqLen, SizeX, SizeY)
+	desc.UpdateTermSize()
+}
+
+func (desc *descData) UpdateTermSize() {
+	if desc.telnet.Options.TermWidth < MIN_TERM_WIDTH {
+		desc.telnet.Options.TermWidth = MIN_TERM_WIDTH
+
+	} else if desc.telnet.Options.TermWidth > MAX_TERM_WIDTH {
+		desc.telnet.Options.TermWidth = MAX_TERM_WIDTH
+	}
+
+	if desc.telnet.Options.TermHeight < MIN_TERM_HEIGHT {
+		desc.telnet.Options.TermHeight = MIN_TERM_HEIGHT
+
+	} else if desc.telnet.Options.TermHeight > MAX_TERM_HEIGHT {
+		desc.telnet.Options.TermHeight = MAX_TERM_HEIGHT
+	}
+}
+
 func (desc *descData) getTermType() {
 	desc.telnet.termType = txtTo7bitUpper(string(desc.telnet.subSeqData))
 	match := termTypeMap[desc.telnet.termType]
 
 	//errLog("#%v: GOT %v: %s", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.subData)
 	if match != nil {
-		desc.telnet.Options = &termSettings{
-			ansi256: match.ansi256, ansi24: match.ansi24,
-			UTF: match.UTF, suppressGoAhead: match.suppressGoAhead}
+		if desc.telnet.Options == nil {
+			desc.telnet.Options = match
+		} else {
+			desc.telnet.Options.ANSI256 = match.ANSI256
+			desc.telnet.Options.ANSI24 = match.ANSI24
+			desc.telnet.Options.UTF = match.UTF
+			desc.telnet.Options.SuppressGoAhead = match.SuppressGoAhead
+			if desc.telnet.Options.charMap != nil {
+				desc.telnet.charMap = match.charMap
+			}
+		}
+
 		if match.charMap != nil {
 			desc.telnet.charMap = match.charMap
 		}
 		mudLog("Found client match: %v", desc.telnet.termType)
 	}
-	for n, item := range termTypeMap {
+	for n, match := range termTypeMap {
 		if strings.HasPrefix(desc.telnet.termType, n) {
 			mudLog("Found client prefix match: %v", desc.telnet.termType)
-			desc.telnet.Options = &termSettings{
-				ansi256: item.ansi256, ansi24: item.ansi24,
-				UTF: item.UTF, suppressGoAhead: item.suppressGoAhead}
-			if item.charMap != nil {
-				desc.telnet.charMap = item.charMap
+			if desc.telnet.Options == nil {
+				desc.telnet.Options = match
+			} else {
+				desc.telnet.Options.ANSI256 = match.ANSI256
+				desc.telnet.Options.ANSI24 = match.ANSI24
+				desc.telnet.Options.UTF = match.UTF
+				desc.telnet.Options.SuppressGoAhead = match.SuppressGoAhead
+			}
+			if desc.telnet.Options.charMap != nil {
+				desc.telnet.charMap = match.charMap
 			}
 		} else if strings.HasSuffix(desc.telnet.termType, n) {
 			mudLog("Found client suffix match: %v", desc.telnet.termType)
-			desc.telnet.Options = &termSettings{
-				ansi256: item.ansi256, ansi24: item.ansi24,
-				UTF: item.UTF, suppressGoAhead: item.suppressGoAhead}
-			if item.charMap != nil {
-				desc.telnet.charMap = item.charMap
+			if desc.telnet.Options == nil {
+				desc.telnet.Options = match
+			} else {
+				desc.telnet.Options.ANSI256 = match.ANSI256
+				desc.telnet.Options.ANSI24 = match.ANSI24
+				desc.telnet.Options.UTF = match.UTF
+				desc.telnet.Options.SuppressGoAhead = match.SuppressGoAhead
+			}
+			if desc.telnet.Options.charMap != nil {
+				desc.telnet.charMap = match.charMap
 			}
 		}
 	}
 }
-
 func (desc *descData) getCharset() {
 	desc.telnet.Charset = txtTo7bitUpper(string(desc.telnet.subSeqData))
 	desc.setCharset()
@@ -301,10 +361,8 @@ func (desc *descData) getSubSeqData(data byte) {
 		return
 	}
 
-	//7-bit ascii only
-	if data >= ' ' && data <= '~' {
-		desc.telnet.subSeqData = append(desc.telnet.subSeqData, data)
-	}
+	desc.telnet.subSeqData = append(desc.telnet.subSeqData, data)
+
 }
 
 func (desc *descData) ingestLine() {
@@ -347,7 +405,9 @@ func (desc *descData) handleTelnetCmd(command, option byte) {
 		if option == TermOpt_TERMINAL_TYPE {
 			desc.sendSubSeq("", TermOpt_TERMINAL_TYPE, SB_SEND)
 		} else if option == TermOpt_SUP_GOAHEAD {
-			desc.telnet.Options.suppressGoAhead = true
+			desc.telnet.Options.SuppressGoAhead = true
+		} else if option == TermOpt_WINDOW_SIZE {
+			desc.telnet.Options.NAWS = true
 		}
 
 	} else if command == TermCmd_DO {
@@ -355,19 +415,19 @@ func (desc *descData) handleTelnetCmd(command, option byte) {
 		if option == TermOpt_CHARSET {
 			desc.sendSubSeq(charsetSend, TermOpt_CHARSET, SB_REQ)
 		} else if option == TermOpt_SUP_GOAHEAD {
-			desc.telnet.Options.suppressGoAhead = true
+			desc.telnet.Options.SuppressGoAhead = true
 		}
 
 	} else if command == TermCmd_DONT {
 
 		if option == TermOpt_SUP_GOAHEAD {
-			desc.telnet.Options.suppressGoAhead = false
+			desc.telnet.Options.SuppressGoAhead = false
 		}
 
 	} else if command == TermCmd_WONT {
 
 		if option == TermCmd_GOAHEAD {
-			desc.telnet.Options.suppressGoAhead = false
+			desc.telnet.Options.SuppressGoAhead = false
 		}
 	}
 }

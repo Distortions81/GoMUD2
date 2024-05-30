@@ -280,17 +280,6 @@ func (desc *descData) loadAccount(uuid uuidData) error {
 		return err
 	}
 
-	if accData.TelnetSettings != nil {
-		if desc.telnet.termType == "" {
-			if !accData.TelnetSettings.Options.UTF {
-				if accData.TelnetSettings.Charset != "" {
-					desc.telnet.charMap = charsetList[accData.TelnetSettings.Charset]
-				}
-			}
-			desc.telnet = *accData.TelnetSettings
-		}
-	}
-
 	desc.account = accData
 	return nil
 }
