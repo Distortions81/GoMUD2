@@ -85,7 +85,7 @@ func cmdStat(player *characterData, input string) {
 	fpulse = fpulse / uint64(historyLen)
 	ppulse = ppulse / uint64(historyLen)
 
-	player.send("\r\nMud load: Pulse: %3.2f%% / Window: %3.2f%%",
+	player.send("\r\nMud load: Pulse: %3.4f%% / Window: %3.2f%%",
 		(float64(ppulse)/float64(ROUND_LENGTH_uS))*100.0,
 		(float64(fpulse)/float64(ROUND_LENGTH_uS))*100.0)
 	player.send("Pulse time: %v (%v peak)",
