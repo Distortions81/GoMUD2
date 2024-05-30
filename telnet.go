@@ -37,8 +37,8 @@ func cmdTelnet(player *characterData, input string) {
 		if telnet.termType != "" {
 			termType = telnet.termType
 		}
-		buf = buf + fmt.Sprintf("Selected character map: %v\r\n\r\n", telnet.Charset)
-		buf = buf + fmt.Sprintf("Mud client: %v\r\n", termType)
+		buf = buf + fmt.Sprintf("Selected character map: %v\r\n", telnet.Charset)
+		buf = buf + fmt.Sprintf("Detected client: %v\r\n", termType)
 
 		if telnet.Options == nil {
 			return

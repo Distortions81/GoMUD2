@@ -259,8 +259,6 @@ func (desc *descData) readDescLoop() {
 }
 
 func (desc *descData) getWindowSize() {
-	seqLen := len(desc.telnet.subSeqData)
-
 	var SizeX, SizeY int
 	buf := bytes.NewBuffer(desc.telnet.subSeqData)
 	var sizex, sizey uint16
@@ -270,7 +268,7 @@ func (desc *descData) getWindowSize() {
 
 	desc.telnet.Options.TermWidth, desc.telnet.Options.TermHeight = SizeX, SizeY
 	desc.telnet.Options.NAWS = true
-	critLog("NAWS: (%v) %v x %v", seqLen, SizeX, SizeY)
+
 	desc.UpdateTermSize()
 }
 
