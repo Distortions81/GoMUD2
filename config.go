@@ -23,11 +23,11 @@ type configInfo struct {
 }
 
 var configNames map[int]configInfo = map[int]configInfo{
-	CONFIG_HIDDEN:    {name: "Hidden", desc: "Don't show up in who, join or leave."},
-	CONFIG_NOTELL:    {name: "NoTell", desc: "Reject tells"},
-	CONFIG_NOCHANNEL: {name: "NoChannel", desc: "Mute all channels"},
-	CONFIG_DEAF:      {name: "Deaf", desc: "Mute say/emote/yell"},
-	//CONFIG_NOWRAP:    {Name: "NoWrap", Description: "Do not word-wrap"},
+	CONFIG_HIDDEN:     {name: "Hidden", desc: "Don't show up in who, join or leave."},
+	CONFIG_NOTELL:     {name: "NoTell", desc: "Reject tells"},
+	CONFIG_NOCHANNEL:  {name: "NoChannel", desc: "Mute all channels"},
+	CONFIG_DEAF:       {name: "Deaf", desc: "Mute say/emote/yell"},
+	CONFIG_NOWRAP:     {name: "NoWrap", desc: "Do not word-wrap"},
 	CONFIG_OLC:        {name: "OLCMode", desc: "Require 'OLC' before OLC commands.", level: LEVEL_BUILDER},
 	CONFIG_TEXT_EMOJI: {name: "TextEmoji", desc: "Attempt to replace emoji with emoji names.", level: LEVEL_BUILDER},
 }

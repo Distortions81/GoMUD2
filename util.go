@@ -55,7 +55,7 @@ func (player *characterData) sendWW(format string, args ...any) {
 }
 
 func (player *characterData) wordWrap(input string) string {
-	if len(input) <= 80 {
+	if player.Config.hasFlag(CONFIG_NOWRAP) || len(input) <= 80 {
 		return input
 	}
 
