@@ -75,21 +75,23 @@ func sendToChannel(player *characterData, input string, channel int) bool {
 		player.send("You currently have chat channels disabled.")
 		return false
 	}
+	msg := input
 	for _, target := range charList {
 		if target.Config.hasFlag(CONFIG_NOCHANNEL) {
 			continue
 		}
 		if !target.Channels.hasFlag(1<<channel) && notIgnored(player, target, false) {
-
-			if target == player {
-				target.send(chd.format, "You", input)
-			} else {
-				target.send(chd.format, player.Name, input)
+			if channel == CHAT_CRAZY {
+				msg = handleCrazy(target, input)
 			}
-			return true
+			if target == player {
+				target.send(chd.format, "You", msg)
+			} else {
+				target.send(chd.format, player.Name, msg)
+			}
 		}
 	}
-	return false
+	return true
 }
 
 func cmdChat(player *characterData, input string) bool {

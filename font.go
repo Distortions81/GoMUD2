@@ -34,13 +34,7 @@ func cmdCrazyTalk(player *characterData, input string) {
 	}()
 
 	lowerArg := strings.ToLower(args[0])
-	width := 80
-	if player.desc != nil &&
-		player.desc.telnet.Options != nil &&
-		!player.Config.hasFlag(CONFIG_NOWRAP) {
-		width = player.desc.telnet.Options.TermWidth
-	}
-	asciiMsg, err := figletlib.TXTToAscii(args[1], fontList[lowerArg], "left", width)
+	asciiMsg, err := figletlib.TXTToAscii(args[1], fontList[lowerArg], "left", 0)
 	if err != nil {
 		player.send("Sorry, that isn't a valid font.")
 		return
@@ -55,7 +49,26 @@ func cmdCrazyTalk(player *characterData, input string) {
 		return
 	}
 
-	sendToChannel(player, asciiMsg, CHAT_CRAZY)
+	sendToChannel(player, input, CHAT_CRAZY)
+}
+
+func handleCrazy(player *characterData, input string) string {
+	width := 80
+	if player.desc != nil &&
+		player.desc.telnet.Options != nil &&
+		!player.Config.hasFlag(CONFIG_NOWRAP) {
+		width = player.desc.telnet.Options.TermWidth
+	}
+
+	args := strings.SplitN(input, " ", 2)
+	numArgs := len(args)
+
+	if numArgs < 2 {
+		return "Error."
+	}
+
+	asciiMsg, _ := figletlib.TXTToAscii(args[1], args[0], "left", width)
+	return asciiMsg
 }
 
 var fontList map[string]string
