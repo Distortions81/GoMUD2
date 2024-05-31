@@ -51,46 +51,51 @@ func (player *characterData) sendWW(format string, args ...any) {
 		data = format
 	}
 
-	if player.Config.hasFlag(CONFIG_NOWRAP) {
-		player.send(format, args)
-		return
-	} else if player.Columns != 0 {
-		player.send(wordWrap(data, player.Columns))
-		return
-
-	} else if player.desc != nil {
-		if player.desc.telnet.Options != nil {
-			if player.desc.telnet.Options.NAWS {
-				player.send(wordWrap(data, player.desc.telnet.Options.TermWidth))
-				return
-			}
-		}
-	}
-
-	player.send(wordWrap(data, 80))
+	player.send(player.wordWrap(data))
 }
 
-func wordWrap(input string, cols int) string {
+func (player *characterData) wordWrap(input string) string {
+	if len(input) <= 80 {
+		return input
+	}
+
 	words := strings.Split(input, " ")
+	width := 80
+
+	if player.desc != nil &&
+		player.desc.telnet.Options != nil &&
+		!player.Config.hasFlag(CONFIG_NOWRAP) {
+		width = player.desc.telnet.Options.TermWidth
+	}
 
 	buf := ""
 	lineLen := 0
-	for i, item := range words {
+	for _, item := range words {
 		if strings.ContainsAny(item, "\n") ||
 			strings.ContainsAny(item, "\r") {
 			lineLen = 0
 		}
-		itemLen := len(string(ColorRemove([]byte(item))))
-		if lineLen+itemLen > cols {
+		itemLen := len([]byte(item))
+		//Don't bother to check the whole thing if the item itself is larger than width (deco)
+		if itemLen > width {
+			buf = buf + "\r\n" + item
+			lineLen = 0
+			continue
+		}
+		//If adding this word to the line would go over, add a newline and reset line width
+		if lineLen+itemLen >= width {
 			buf = buf + "\r\n"
 			lineLen = 0
 		}
-		if i > 0 {
+		//If not the first word, add a space before adding it
+		if lineLen > 0 {
 			buf = buf + " " + item
 			lineLen++
 		} else {
+			//Otherwise just add the text
 			buf = buf + item
 		}
+		//Add item len to line
 		lineLen += itemLen
 	}
 	return buf

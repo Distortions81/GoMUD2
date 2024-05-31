@@ -119,7 +119,7 @@ func (player *characterData) listCommands(input string) {
 		if parts != "" {
 			parts += " "
 		}
-		player.send("%10v %v-- %v", item.name, parts, item.hint)
+		player.sendWW("%10v %v-- %v", item.name, parts, item.hint)
 	}
 
 	if input == "" {
@@ -140,7 +140,7 @@ func (player *characterData) listCommands(input string) {
 		buf = buf + ch.cmd
 		count++
 	}
-	player.send(buf)
+	player.sendWW(buf)
 }
 
 func (player *characterData) handleCommands(input string) {

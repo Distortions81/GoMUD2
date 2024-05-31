@@ -8,7 +8,7 @@ import (
 
 const (
 	MAX_CRAZY_INPUT  = 128
-	MAX_CRAZY_OUTPUT = 3200
+	MAX_CRAZY_OUTPUT = 6000
 )
 
 func cmdCrazyTalk(player *characterData, input string) {
@@ -16,7 +16,7 @@ func cmdCrazyTalk(player *characterData, input string) {
 	numArgs := len(args)
 
 	if numArgs < 2 {
-		player.send(fontListText)
+		player.sendWW(fontListText)
 		player.send("What font?")
 		return
 	}
@@ -34,7 +34,13 @@ func cmdCrazyTalk(player *characterData, input string) {
 	}()
 
 	lowerArg := strings.ToLower(args[0])
-	asciiMsg, err := figletlib.TXTToAscii(args[1], fontList[lowerArg], "left", 0)
+	width := 80
+	if player.desc != nil &&
+		player.desc.telnet.Options != nil &&
+		!player.Config.hasFlag(CONFIG_NOWRAP) {
+		width = player.desc.telnet.Options.TermWidth
+	}
+	asciiMsg, err := figletlib.TXTToAscii(args[1], fontList[lowerArg], "left", width)
 	if err != nil {
 		player.send("Sorry, that isn't a valid font.")
 		return
@@ -83,7 +89,6 @@ func updateFontList() error {
 			itemNum++
 			fontListText = fontListText + fname
 		}
-		fontListText = wordWrap(fontListText, 80)
 	}
 
 	return nil
