@@ -240,9 +240,8 @@ func (desc *descData) readDescLoop() {
 				}
 
 				//Detect line end, ingest line
-				if (lastByte == '\r' && data == '\n') ||
-					(lastByte == '\n' && data == '\r') ||
-					((lastByte != '\r' && lastByte != '\n') && data == '\r') {
+				if (lastByte == '\r' && data == '\n') || //Windows \r\n
+					(lastByte != '\n' && data == '\r') { //Telnet \r
 					desc.ingestLine()
 					continue
 				}
