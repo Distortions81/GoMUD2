@@ -156,7 +156,7 @@ func (desc *descData) sendSubSeq(data string, args ...byte) error {
 }
 
 func (desc *descData) inputFull() {
-	desc.send(warnBuf)
+	desc.sendln(warnBuf)
 	buf := "Input buffer full! Stop spamming. Closing connection..."
 	desc.sendln(buf)
 	critLog("#%v: ERROR: %v: %v", desc.id, desc.ip, buf)

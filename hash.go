@@ -11,7 +11,7 @@ import (
 const (
 	HASH_SLEEP           = time.Millisecond * 10
 	HASH_TIMEOUT         = time.Second * 60
-	PASSPHRASE_HASH_COST = 15
+	PASSPHRASE_HASH_COST = 14
 	HASH_DEPTH_MAX       = 100
 )
 
@@ -121,7 +121,7 @@ func changePass(item *hashData) {
 		//Save account
 		if !item.desc.account.saveAccount() {
 			//Save failure
-			item.desc.send(warnBuf)
+			item.desc.sendln(warnBuf)
 			item.desc.sendln("Unable to save account!")
 			critLog("#%v unable to save account!", item.id)
 			item.desc.close()
@@ -212,7 +212,7 @@ func hashGenComplete(item *hashData) {
 	//Create account
 	err := item.desc.account.createAccountDir()
 	if err != nil {
-		item.desc.send(warnBuf)
+		item.desc.sendln(warnBuf)
 		item.desc.sendln("Unable to create account!")
 		critLog("#%v unable to create account!", item.id)
 		item.desc.close()

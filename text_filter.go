@@ -25,8 +25,9 @@ func txtTo7bitUpper(data string) string {
 
 // Returns true if reserved
 func isNameReserved(name string) bool {
+	name = titleCaseAlphaOnly(name)
 	for _, item := range reservedNames {
-		if item == name {
+		if strings.EqualFold(item, name) {
 			return true
 		}
 	}

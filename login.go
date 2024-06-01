@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -53,8 +54,6 @@ const (
 	CON_CHAR_CREATE_CONFIRM
 
 	CON_OPTIONS
-	CON_RETIRE
-	CON_RETIRE_CONFIRM
 	CON_REROLL
 	CON_REROLL_CONFIRM
 
@@ -90,8 +89,6 @@ var stateName [CON_MAX]string = [CON_MAX]string{
 	CON_CHAR_CREATE:            "Create new char",
 	CON_CHAR_CREATE_CONFIRM:    "Confirm new char",
 	CON_OPTIONS:                "Options menu",
-	CON_RETIRE:                 "Retire menu",
-	CON_RETIRE_CONFIRM:         "Retire confirm",
 	CON_REROLL:                 "Reroll menu",
 	CON_REROLL_CONFIRM:         "Reroll confirm",
 	CON_CHANGE_PASS_OLD:        "Changing password",
@@ -176,14 +173,6 @@ var loginStateList = [CON_MAX]loginStates{
 		goPrompt: pOptionsMenu,
 		goDo:     gOptionsMenu,
 	},
-	CON_RETIRE: {
-		goPrompt: pRetire,
-		goDo:     gRetire,
-	},
-	CON_RETIRE_CONFIRM: {
-		goPrompt: pRetireConfirm,
-		goDo:     gRetireConfirm,
-	},
 	CON_REROLL: {
 		goPrompt: pReroll,
 		goDo:     gReroll,
@@ -207,28 +196,97 @@ var loginStateList = [CON_MAX]loginStates{
 }
 
 func pOptionsMenu(desc *descData) {
+	desc.sendln("Note: 'reroll' means the character will start over as NEW.")
+	desc.sendln("Type 'BACK' to go back. Options: changepass, reroll")
 }
 func gOptionsMenu(desc *descData, input string) {
-}
-
-func pRetire(desc *descData) {
-}
-func gRetire(desc *descData, input string) {
-}
-
-func pRetireConfirm(desc *descData) {
-}
-func gRetireConfirm(desc *descData, input string) {
+	if strings.EqualFold(input, "back") {
+		desc.state = CON_CHAR_LIST
+	} else if strings.EqualFold(input, "reroll") {
+		if len(desc.account.Characters) == 0 {
+			desc.send("Sorry, you have no characters you can reroll.")
+			return
+		}
+		desc.state = CON_REROLL
+	} else if strings.EqualFold(input, "changepass") {
+		desc.state = CON_CHANGE_PASS_OLD
+	}
 }
 
 func pReroll(desc *descData) {
+	var buf string = "\r\n"
+
+	desc.sendln("\r\nType 'CANCEL' to cancel.\r\nCharacters you can reroll:")
+	for i, item := range desc.account.Characters {
+		var playing string
+		if target := checkPlayingUUID(item.Login, item.UUID); target != nil {
+			playing = " (PLAYING)"
+		}
+		buf = buf + fmt.Sprintf("#%v: %v%v\r\n", i+1, item.Login, playing)
+	}
+	buf = buf + "\r\n"
+	buf = buf + "Select a character by #number or name to reroll: "
+	desc.sendln(buf)
 }
 func gReroll(desc *descData, input string) {
+	if strings.EqualFold(input, "cancel") {
+		desc.state = CON_OPTIONS
+		return
+	}
+	nStr, _ := strings.CutPrefix(input, "#")
+	num, err := strconv.Atoi(nStr)
+	if err != nil { //Find by name
+		for _, item := range desc.account.Characters {
+			if strings.EqualFold(item.Login, input) {
+				if target := checkPlayingUUID(item.Login, item.UUID); target != nil {
+					desc.sendln("That character is currently playing and can not be rerolled.")
+					return
+				}
+				desc.account.tempString = desc.account.Characters[num-1].Login
+				desc.state = CON_REROLL_CONFIRM
+				continue
+			}
+		}
+	} else if len(desc.account.Characters) > num-1 { //Find by number
+		desc.account.tempString = desc.account.Characters[num-1].Login
+		desc.state = CON_REROLL_CONFIRM
+	} else {
+		desc.sendln("That isn't a valid choice.")
+	}
 }
 
 func pRerollConfirm(desc *descData) {
+	if desc.account.tempString == "" {
+		desc.state = CON_OPTIONS
+		critLog("pRerollConfirm: tempString was empty.")
+		desc.sendln("Sorry, something went wrong!")
+		return
+	}
+	desc.sendln(warnBuf)
+	desc.sendln("*** REROLLNG WILL RESET THIS CHARACTER TO NEW!!!")
+	desc.sendln("*** THIS ACTION IS IRREVERSIBLE!!!")
+	desc.sendln("Type CANCEL to cancel.")
+	desc.sendln("TO CONFIRM, type: CONFIRM REROLL %v", strings.ToUpper(desc.account.tempString))
 }
 func gRerollConfirm(desc *descData, input string) {
+	if strings.EqualFold(input, "cancel") {
+		desc.state = CON_OPTIONS
+		return
+	}
+	if desc.account.tempString == "" {
+		desc.state = CON_OPTIONS
+		critLog("gRerollConfirm: tempString was empty.")
+		desc.sendln("Sorry, something went wrong!")
+		return
+	}
+
+	key := fmt.Sprintf("CONFIRM REROLL %v", desc.account.tempString)
+	if strings.EqualFold(key, input) {
+		desc.sendln("Character %v rerolled.", desc.account.tempString)
+		desc.state = CON_CHAR_LIST
+	} else {
+		desc.sendln("That isn't a valid choice.")
+	}
 }
 
 func gOldPass(desc *descData, input string) {
@@ -299,7 +357,7 @@ func gLogin(desc *descData, input string) {
 		if desc.account != nil {
 			desc.state = CON_PASS
 		} else {
-			desc.send(warnBuf + "\r\n")
+			desc.sendln(warnBuf)
 			desc.sendln("ERROR: Sorry, unable to load that account!")
 			critLog("gLogin: %v: %v: Unable to load account: %v (%v)", desc.id, desc.ip, input, err)
 			desc.close()

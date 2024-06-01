@@ -82,8 +82,8 @@ func gCharSelect(desc *descData, input string) {
 		canMakeCharacter(desc, input)
 		return
 	}
-	if strings.EqualFold(input, "newpass") {
-		desc.state = CON_CHANGE_PASS_OLD
+	if strings.EqualFold(input, "options") {
+		desc.state = CON_OPTIONS
 		return
 	}
 	nStr, _ := strings.CutPrefix(input, "#")
@@ -159,45 +159,46 @@ func gReconnectConfirm(desc *descData, input string) {
 }
 
 func gCharNewName(desc *descData, input string) {
+	input = titleCaseAlphaOnly(input)
+
 	if input == "" || strings.EqualFold(input, "cancel") {
 		desc.sendln("New character create canceled.")
 		desc.state = CON_CHAR_LIST
 		return
 	}
 
+	if checkCharacterName(desc, input) {
+		desc.account.tempString = input
+		desc.state = CON_CHAR_CREATE_CONFIRM
+	}
+}
+
+func checkCharacterName(desc *descData, input string) bool {
 	input = titleCaseAlphaOnly(input)
 	if isNameReserved(input) {
 		desc.sendln("The name you've chosen for your character is not allowed or is reserved.\r\nPlease try a different name.")
-		return
+		return false
 	}
 
 	newNameLen := len(input)
 	if newNameLen < MIN_NAME_LEN && newNameLen > MAX_NAME_LEN {
 		desc.sendln("Character names must be between %v and %v in length.\r\nPlease choose another.", MIN_NAME_LEN, MAX_NAME_LEN)
-		return
+		return false
 	}
 
 	if !characterNameAvailable(input) {
 		desc.sendln("Unfortunately, the name you've chosen is already taken.")
-		return
+		return false
 	}
-
-	desc.account.tempString = input
-	desc.state = CON_CHAR_CREATE_CONFIRM
+	return true
 }
 
 func gCharConfirmName(desc *descData, input string) {
 	input = titleCaseAlphaOnly(input)
 	if input == desc.account.tempString {
-		newNameLen := len(input)
-		if newNameLen < MIN_NAME_LEN && newNameLen > MAX_NAME_LEN {
-			desc.sendln("Character names must be between %v and %v in length.\r\nPlease choose another.", MIN_NAME_LEN, MAX_NAME_LEN)
-			desc.state = CON_CHAR_CREATE
-			return
-		}
 
-		if !characterNameAvailable(input) {
-			desc.sendln("Unfortunately, the name you've chosen is already taken.")
+		if !checkCharacterName(desc, input) {
+			desc.state = CON_CHAR_LIST
 			return
 		}
 

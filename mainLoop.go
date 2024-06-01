@@ -11,8 +11,8 @@ import (
 const (
 	ROUND_LENGTH_uS     = 250000 //0.25s
 	CONNECT_THROTTLE    = time.Microsecond * 200
-	INTERP_LOOP_MARGIN  = time.Millisecond * 5
-	INTERP_LOOP_REST_uS = 1000
+	INTERP_LOOP_MARGIN  = (INTERP_LOOP_REST_uS * 2) * time.Microsecond
+	INTERP_LOOP_REST_uS = 10000
 
 	MAX_HISTORY_LEN = 1200 // 5min
 )
