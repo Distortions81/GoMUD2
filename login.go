@@ -52,6 +52,10 @@ const (
 	CON_CHAR_CREATE
 	CON_CHAR_CREATE_CONFIRM
 
+	CON_CHANGE_PASS_OLD
+	CON_CHANGE_PASS_NEW
+	CON_CHANGE_PASS_CONFIRM
+
 	//Playing
 	CON_PLAYING
 
@@ -79,6 +83,9 @@ var stateName [CON_MAX]string = [CON_MAX]string{
 	CON_CHAR_LIST:              "Character list",
 	CON_CHAR_CREATE:            "Create new char",
 	CON_CHAR_CREATE_CONFIRM:    "Confirm new char",
+	CON_CHANGE_PASS_OLD:        "Changing password",
+	CON_CHANGE_PASS_NEW:        "Changing password",
+	CON_CHANGE_PASS_CONFIRM:    "Changing password",
 	CON_PLAYING:                "Playing",
 }
 
@@ -103,7 +110,7 @@ type loginStates struct {
 var loginStateList = [CON_MAX]loginStates{
 	//Normal login
 	CON_ACCOUNT: {
-		prompt: "To create a new account type: NEW\r\nAccount name: ",
+		prompt: "To create a new account type NEW.\r\nAccount name: ",
 		goDo:   gLogin,
 	},
 	CON_PASS: {
@@ -118,17 +125,17 @@ var loginStateList = [CON_MAX]loginStates{
 		goDo:   gNewLogin,
 	},
 	CON_NEW_ACCOUNT_CONFIRM: {
-		prompt: "(type 'back' to go back)\r\nConfirm new login: ",
+		prompt: "Confirm new login: ",
 		goDo:   gNewLoginConfirm,
 		anyKey: true,
 	},
 	CON_NEW_PASSPHRASE: {
-		goPrompt: gNewPassPrompt,
+		goPrompt: pNewPassPrompt,
 		goDo:     gNewPassphrase,
 		hideInfo: true,
 	},
 	CON_NEW_PASSPHRASE_CONFIRM: {
-		prompt:   "(type 'back' to go back)\r\nConfirm passphrase: ",
+		prompt:   "Confirm passphrase: ",
 		goDo:     gNewPassphraseConfirm,
 		anyKey:   true,
 		hideInfo: true,
@@ -136,22 +143,89 @@ var loginStateList = [CON_MAX]loginStates{
 
 	//Character menu
 	CON_CHAR_LIST: {
-		goPrompt: gCharList,
+		goPrompt: pCharList,
 		goDo:     gCharSelect,
 	},
 	CON_RECONNECT_CONFIRM: {
-		goPrompt: gAlreadyPlayingWarn,
+		goPrompt: pAlreadyPlayingWarn,
 		goDo:     gReconnectConfirm,
 	},
 	CON_CHAR_CREATE: {
-		prompt: "A-z only, no spaces, number or symbols are allowed.\r\nCharacter name:",
+		prompt: "Type 'cancel' to cancel.\r\nA-z only, no spaces, numbers or symbols are allowed.\r\nNew character name:",
 		goDo:   gCharNewName,
 	},
 	CON_CHAR_CREATE_CONFIRM: {
-		prompt: "(type 'back' to go back)\r\nConfirm character name:",
+		prompt: "Confirm new character name:",
 		goDo:   gCharConfirmName,
 		anyKey: true,
 	},
+
+	//Change password
+	CON_CHANGE_PASS_OLD: {
+		prompt: "Current passphrase:",
+		goDo:   gOldPass,
+	},
+	CON_CHANGE_PASS_NEW: {
+		prompt: "New passphrase:",
+		goDo:   gNewPass,
+	},
+	CON_CHANGE_PASS_CONFIRM: {
+		prompt: "Confirm new passphrase:",
+		goDo:   gConfirmNewPass,
+	},
+}
+
+func gOldPass(desc *descData, input string) {
+	hashLock.Lock()
+	defer hashLock.Unlock()
+	if hashDepth > HASH_DEPTH_MAX {
+		desc.send("Sorry, too many passphrase requests are already in the queue. Please try again later.")
+		desc.state = CON_DISCONNECTED
+		desc.valid = false
+	} else {
+		desc.send("Checking your passphrase, please wait.")
+		hashDepth++
+		hashList = append(hashList, &hashData{id: desc.id, desc: desc, hash: desc.account.PassHash, pass: []byte(input), failed: false, doEncrypt: false, started: time.Now(), changePass: true})
+		desc.state = CON_HASH_WAIT
+	}
+}
+func gNewPass(desc *descData, input string) {
+	//min/max passphrase len
+	passLen := len([]byte(input))
+	if passLen < MIN_PASSPHRASE_LENGTH ||
+		passLen > MAX_PASSPHRASE_LENGTH {
+		desc.sendln("Sorry, that passphrase is either over %v or under %v characters. Please try again.", MAX_PASSPHRASE_LENGTH, MIN_PASSPHRASE_LENGTH)
+		return
+	}
+
+	desc.account.tempString = input
+	desc.state = CON_CHANGE_PASS_CONFIRM
+}
+func gConfirmNewPass(desc *descData, input string) {
+	if input == desc.account.tempString {
+		desc.state = CON_HASH_WAIT
+		desc.idleTime = time.Now()
+		desc.sendln("Processing passphrase, please wait.")
+
+		hashLock.Lock()
+		if hashDepth > HASH_DEPTH_MAX {
+			desc.send("Sorry, too many passphrase requests are already in the queue. Please try again later.")
+			desc.state = CON_DISCONNECTED
+			desc.valid = false
+			desc.account.tempString = ""
+			hashLock.Unlock()
+			return
+		}
+		hashDepth++
+		hashList = append(hashList, &hashData{id: desc.id, desc: desc, pass: []byte(desc.account.tempString), hash: []byte{}, failed: false, doEncrypt: true, started: time.Now(), changePass: true})
+
+		hashLock.Unlock()
+		desc.account.tempString = ""
+	} else {
+		desc.state = CON_CHANGE_PASS_OLD
+		desc.account.tempString = ""
+		desc.sendln("Passphrases did not match!")
+	}
 }
 
 // Normal login
@@ -176,7 +250,7 @@ func gLogin(desc *descData, input string) {
 
 		}
 	} else {
-		//desc.sendln("Login name not found, creating new account.")
+		desc.sendln("Login name not found, creating new account.")
 		gNewLogin(desc, input)
 		desc.state = CON_NEW_ACCOUNT_CONFIRM
 	}
@@ -234,12 +308,8 @@ func gNewLoginConfirm(desc *descData, input string) {
 		}
 		desc.state = CON_NEW_PASSPHRASE
 	} else {
-		if input == "" || strings.EqualFold(input, "back") {
-			desc.sendln("Okay, let's try again.")
-			desc.state = CON_NEW_ACCOUNT
-		} else {
-			desc.sendln("Login names didn't match.\r\nTry again, to type 'back' to go back.")
-		}
+		desc.sendln("Login names didn't match.")
+		desc.state = CON_NEW_ACCOUNT
 	}
 }
 
@@ -257,12 +327,6 @@ func gNewPassphrase(desc *descData, input string) {
 }
 
 func gNewPassphraseConfirm(desc *descData, input string) {
-	if input == "" || strings.EqualFold(input, "back") {
-		desc.state = CON_NEW_PASSPHRASE
-		desc.account.tempString = ""
-		desc.sendln("Okay, lets try again.")
-		return
-	}
 	if input == desc.account.tempString {
 		desc.state = CON_HASH_WAIT
 		desc.idleTime = time.Now()
@@ -283,6 +347,8 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 		hashLock.Unlock()
 		desc.account.tempString = ""
 	} else {
+		desc.state = CON_NEW_PASSPHRASE
+		desc.account.tempString = ""
 		desc.sendln("Passphrases did not match!")
 	}
 }
@@ -304,7 +370,7 @@ func (desc *descData) suggestPasswords() {
 	desc.sendln(buf)
 }
 
-func gNewPassPrompt(desc *descData) {
+func pNewPassPrompt(desc *descData) {
 	desc.suggestPasswords()
 	desc.sendln("\r\n(%v to %v characters long)\r\nPassphrase: ", MIN_PASSPHRASE_LENGTH, MAX_PASSPHRASE_LENGTH)
 }

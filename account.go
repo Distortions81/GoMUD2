@@ -38,7 +38,7 @@ func cmdCharList(player *characterData, input string) {
 
 }
 
-func gCharList(desc *descData) {
+func pCharList(desc *descData) {
 
 	//They logged in, reset the attempt count.
 	blockedLock.Lock()
@@ -52,7 +52,7 @@ func gCharList(desc *descData) {
 	var buf string = "\r\n"
 	numChars := len(desc.account.Characters)
 	if numChars == 0 {
-		desc.sendln("\r\nYou're starting fresh with no characters.")
+		desc.sendln("\r\nYou currently have no characters!")
 	} else {
 		desc.sendln("\r\nYour characters:")
 
@@ -65,8 +65,9 @@ func gCharList(desc *descData) {
 		}
 		buf = buf + "\r\n"
 	}
+	buf = buf + "Type 'newpass' to change your account password.\r\n"
 	if numChars < MAX_CHAR_SLOTS {
-		buf = buf + "Type 'NEW' or desired name to create a new character.\r\n"
+		buf = buf + "Type NEW or desired name to create a new character.\r\n"
 	}
 	if numChars > 0 {
 		buf = buf + "Select a character by #number or name: "
@@ -79,6 +80,10 @@ func gCharSelect(desc *descData, input string) {
 	input = strings.TrimSpace(input)
 	if strings.EqualFold(input, "new") {
 		canMakeCharacter(desc, input)
+		return
+	}
+	if strings.EqualFold(input, "newpass") {
+		desc.state = CON_CHANGE_PASS_OLD
 		return
 	}
 	nStr, _ := strings.CutPrefix(input, "#")
@@ -154,6 +159,12 @@ func gReconnectConfirm(desc *descData, input string) {
 }
 
 func gCharNewName(desc *descData, input string) {
+	if input == "" || strings.EqualFold(input, "cancel") {
+		desc.sendln("New character create canceled.")
+		desc.state = CON_CHAR_LIST
+		return
+	}
+
 	input = titleCaseAlphaOnly(input)
 	if isNameReserved(input) {
 		desc.sendln("The name you've chosen for your character is not allowed or is reserved.\r\nPlease try a different name.")
@@ -177,11 +188,14 @@ func gCharNewName(desc *descData, input string) {
 
 func gCharConfirmName(desc *descData, input string) {
 	input = titleCaseAlphaOnly(input)
-	if input == "" || strings.EqualFold(input, "back") {
-		desc.sendln("Okay, we can try a different name.")
-		desc.state = CON_CHAR_CREATE
-		return
-	} else if input == desc.account.tempString {
+	if input == desc.account.tempString {
+		newNameLen := len(input)
+		if newNameLen < MIN_NAME_LEN && newNameLen > MAX_NAME_LEN {
+			desc.sendln("Character names must be between %v and %v in length.\r\nPlease choose another.", MIN_NAME_LEN, MAX_NAME_LEN)
+			desc.state = CON_CHAR_CREATE
+			return
+		}
+
 		if !characterNameAvailable(input) {
 			desc.sendln("Unfortunately, the name you've chosen is already taken.")
 			return
@@ -211,7 +225,8 @@ func gCharConfirmName(desc *descData, input string) {
 		desc.character.sendToPlaying("--> {GW{gelcome{x %v to the lands! <--", desc.account.tempString)
 		desc.sendln("To see a list of commands type: HELP COMMANDS")
 	} else {
-		desc.sendln("Names did not match. Try again, or type 'back' to choose a new name.")
+		desc.state = CON_CHAR_CREATE
+		desc.sendln("Names did not match.")
 	}
 }
 
@@ -329,7 +344,7 @@ func alreadyPlayingWarnVictim(target *characterData) {
 	target.send("\r\nAnother connection on your account is attempting to play this character.\r\nIf they choose 'yes' to confirm you will be kicked.")
 }
 
-func gAlreadyPlayingWarn(desc *descData) {
+func pAlreadyPlayingWarn(desc *descData) {
 	desc.send(textFiles["warn"])
 	desc.send("\r\nThat character is already playing.\r\nDo you wish to disconnect the other session and take control of the character? (y/N)")
 }

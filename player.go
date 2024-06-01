@@ -188,8 +188,8 @@ func (player *characterData) quit(doClose bool) {
 		go func(target *characterData) {
 			descLock.Lock()
 			target.desc.state = CON_CHAR_LIST
+			showStatePrompt(target.desc)
 			target.valid = false
-			gCharList(target.desc)
 			descLock.Unlock()
 		}(player)
 

@@ -68,4 +68,5 @@ var reservedNames = []string{
 	"imp",
 	"immortal",
 	"back",
+	"cancel",
 }

@@ -61,12 +61,7 @@ func (desc *descData) interp() bool {
 		loginStateList[desc.state].goDo(desc, input)
 	}
 
-	//Show prompt from next state
-	if loginStateList[desc.state].goPrompt != nil {
-		loginStateList[desc.state].goPrompt(desc)
-	} else if loginStateList[desc.state].prompt != "" {
-		desc.sendln("\r\n" + loginStateList[desc.state].prompt)
-	}
+	showStatePrompt(desc)
 
 	//Suppress echo for passwords
 	if loginStateList[desc.state].hideInfo {
@@ -83,6 +78,15 @@ func (desc *descData) interp() bool {
 		}
 	}
 	return true
+}
+
+func showStatePrompt(desc *descData) {
+	//Show prompt from next state
+	if loginStateList[desc.state].goPrompt != nil {
+		loginStateList[desc.state].goPrompt(desc)
+	} else if loginStateList[desc.state].prompt != "" {
+		desc.sendln("\r\n" + loginStateList[desc.state].prompt)
+	}
 }
 
 func (player *characterData) listCommands(input string) {

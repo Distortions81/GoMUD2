@@ -22,9 +22,10 @@ type hashData struct {
 	id     uint64
 	desc   *descData
 
-	pass      []byte
-	hash      []byte
-	doEncrypt bool
+	pass       []byte
+	hash       []byte
+	doEncrypt  bool
+	changePass bool
 
 	complete    bool
 	failed      bool
@@ -46,6 +47,10 @@ func hashReceiver() {
 	var newCount int
 	for _, item := range hashList {
 		if item.complete && !item.failed {
+			if item.changePass {
+				changePass(item)
+				continue
+			}
 			if item.doEncrypt {
 				hashGenComplete(item)
 			} else {
@@ -109,6 +114,35 @@ func hasherDaemon() {
 	}
 }
 
+func changePass(item *hashData) {
+	if item.doEncrypt {
+		item.desc.account.PassHash = item.hash
+
+		//Save account
+		if !item.desc.account.saveAccount() {
+			//Save failure
+			item.desc.send(warnBuf)
+			item.desc.sendln("Unable to save account!")
+			critLog("#%v unable to save account!", item.id)
+			item.desc.close()
+			return
+		}
+
+		item.desc.sendln("Passphrase changed and saved.")
+		item.desc.state = CON_CHAR_LIST
+		showStatePrompt(item.desc)
+	} else {
+		if item.correctPass {
+			item.desc.state = CON_CHANGE_PASS_NEW
+		} else {
+			item.desc.sendln("Incorrect passphrase, try again.")
+			item.desc.state = CON_CHANGE_PASS_OLD
+		}
+		showStatePrompt(item.desc)
+	}
+
+}
+
 func processHash(item *hashData, wg *sizedwaitgroup.SizedWaitGroup) {
 	var err error
 
@@ -146,7 +180,7 @@ func passCheckComplete(item *hashData) {
 	if item.correctPass {
 		//Send to char menu
 		item.desc.state = CON_CHAR_LIST
-		gCharList(item.desc)
+		pCharList(item.desc)
 	} else {
 		item.desc.send("Incorrect passphrase.")
 		critLog("#%v tried an incorrect passphrase.", item.id)
@@ -210,7 +244,7 @@ func hashGenComplete(item *hashData) {
 
 	//Send to char menu
 	item.desc.state = CON_CHAR_LIST
-	gCharList(item.desc)
+	showStatePrompt(item.desc)
 }
 
 func hashGenFail(item *hashData) {
