@@ -52,6 +52,12 @@ const (
 	CON_CHAR_CREATE
 	CON_CHAR_CREATE_CONFIRM
 
+	CON_OPTIONS
+	CON_RETIRE
+	CON_RETIRE_CONFIRM
+	CON_REROLL
+	CON_REROLL_CONFIRM
+
 	CON_CHANGE_PASS_OLD
 	CON_CHANGE_PASS_NEW
 	CON_CHANGE_PASS_CONFIRM
@@ -83,6 +89,11 @@ var stateName [CON_MAX]string = [CON_MAX]string{
 	CON_CHAR_LIST:              "Character list",
 	CON_CHAR_CREATE:            "Create new char",
 	CON_CHAR_CREATE_CONFIRM:    "Confirm new char",
+	CON_OPTIONS:                "Options menu",
+	CON_RETIRE:                 "Retire menu",
+	CON_RETIRE_CONFIRM:         "Retire confirm",
+	CON_REROLL:                 "Reroll menu",
+	CON_REROLL_CONFIRM:         "Reroll confirm",
 	CON_CHANGE_PASS_OLD:        "Changing password",
 	CON_CHANGE_PASS_NEW:        "Changing password",
 	CON_CHANGE_PASS_CONFIRM:    "Changing password",
@@ -151,7 +162,7 @@ var loginStateList = [CON_MAX]loginStates{
 		goDo:     gReconnectConfirm,
 	},
 	CON_CHAR_CREATE: {
-		prompt: "Type 'cancel' to cancel.\r\nA-z only, no spaces, numbers or symbols are allowed.\r\nNew character name:",
+		prompt: "Type 'CANCEL' to cancel.\r\nA-z only, no spaces, numbers or symbols are allowed.\r\nNew character name:",
 		goDo:   gCharNewName,
 	},
 	CON_CHAR_CREATE_CONFIRM: {
@@ -160,7 +171,27 @@ var loginStateList = [CON_MAX]loginStates{
 		anyKey: true,
 	},
 
-	//Change password
+	//Options area
+	CON_OPTIONS: {
+		goPrompt: pOptionsMenu,
+		goDo:     gOptionsMenu,
+	},
+	CON_RETIRE: {
+		goPrompt: pRetire,
+		goDo:     gRetire,
+	},
+	CON_RETIRE_CONFIRM: {
+		goPrompt: pRetireConfirm,
+		goDo:     gRetireConfirm,
+	},
+	CON_REROLL: {
+		goPrompt: pReroll,
+		goDo:     gReroll,
+	},
+	CON_REROLL_CONFIRM: {
+		goPrompt: pRerollConfirm,
+		goDo:     gRerollConfirm,
+	},
 	CON_CHANGE_PASS_OLD: {
 		prompt: "Current passphrase:",
 		goDo:   gOldPass,
@@ -173,6 +204,31 @@ var loginStateList = [CON_MAX]loginStates{
 		prompt: "Confirm new passphrase:",
 		goDo:   gConfirmNewPass,
 	},
+}
+
+func pOptionsMenu(desc *descData) {
+}
+func gOptionsMenu(desc *descData, input string) {
+}
+
+func pRetire(desc *descData) {
+}
+func gRetire(desc *descData, input string) {
+}
+
+func pRetireConfirm(desc *descData) {
+}
+func gRetireConfirm(desc *descData, input string) {
+}
+
+func pReroll(desc *descData) {
+}
+func gReroll(desc *descData, input string) {
+}
+
+func pRerollConfirm(desc *descData) {
+}
+func gRerollConfirm(desc *descData, input string) {
 }
 
 func gOldPass(desc *descData, input string) {

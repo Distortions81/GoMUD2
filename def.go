@@ -56,6 +56,10 @@ func init() {
 
 var reservedNames = []string{
 	"new",
+	"back",
+	"cancel",
+	"options",
+
 	"admin",
 	"moderator",
 	"mod",
@@ -67,6 +71,4 @@ var reservedNames = []string{
 	"imm",
 	"imp",
 	"immortal",
-	"back",
-	"cancel",
 }

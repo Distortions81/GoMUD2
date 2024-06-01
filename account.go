@@ -65,7 +65,7 @@ func pCharList(desc *descData) {
 		}
 		buf = buf + "\r\n"
 	}
-	buf = buf + "Type 'newpass' to change your account password.\r\n"
+	buf = buf + "Type 'options' for more options.\r\n"
 	if numChars < MAX_CHAR_SLOTS {
 		buf = buf + "Type NEW or desired name to create a new character.\r\n"
 	}
