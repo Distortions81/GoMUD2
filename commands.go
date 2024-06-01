@@ -78,9 +78,16 @@ var cmdMap = map[string]*commandData{
 func cmdStat(player *characterData, input string) {
 	var ppulse uint64
 	var fpulse uint64
+	var fpeak, ppeak int64
 	for x := 0; x < historyLen-1; x++ {
 		fpulse += uint64(fullPulseHistory[x])
 		ppulse += uint64(partialPulseHistory[x])
+		if fullPulseHistory[x] > int64(fpeak) {
+			fpeak = fullPulseHistory[x]
+		}
+		if partialPulseHistory[x] > int64(ppeak) {
+			ppeak = partialPulseHistory[x]
+		}
 	}
 	fpulse = fpulse / uint64(historyLen)
 	ppulse = ppulse / uint64(historyLen)
@@ -88,12 +95,15 @@ func cmdStat(player *characterData, input string) {
 	player.send("\r\nMud load: Pulse: %3.4f%% / Window: %3.2f%%",
 		(float64(ppulse)/float64(ROUND_LENGTH_uS))*100.0,
 		(float64(fpulse)/float64(ROUND_LENGTH_uS))*100.0)
-	player.send("Pulse time: %v (%v peak)",
+	player.send("Pulse time: %v (%v peak, %v 5m peak)",
 		durafmt.ParseShort(time.Duration(ppulse*uint64(time.Microsecond))),
-		durafmt.ParseShort(time.Duration(peakPartialPulse)*time.Microsecond))
-	player.send("Window time: %v (%v peak)",
+		durafmt.ParseShort(time.Duration(peakPartialPulse)*time.Microsecond),
+		durafmt.ParseShort(time.Duration(ppeak)*time.Microsecond))
+
+	player.send("Window time: %v (%v peak, %v 5m peak)",
 		durafmt.ParseShort(time.Duration(fpulse*uint64(time.Microsecond))),
-		durafmt.ParseShort(time.Duration(peakFullPulse)*time.Microsecond))
+		durafmt.ParseShort(time.Duration(peakFullPulse)*time.Microsecond),
+		durafmt.ParseShort(time.Duration(fpeak)*time.Microsecond))
 	player.send("(%v averaged)",
 		durafmt.ParseShort(time.Duration(time.Duration(historyLen)/(1000000/ROUND_LENGTH_uS)*time.Second)))
 }
