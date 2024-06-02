@@ -36,7 +36,7 @@ func loadEmojiHelp() {
 			buf = buf + "\r\n"
 		}
 		c++
-		buf = buf + fmt.Sprintf(":%v: %-37v ", item, item)
+		buf = buf + fmt.Sprintf(":%v: %-37v ", item, cEllip(item, 37))
 	}
 	buf = buf + "\r\nSimply chat :emoji name:\r\n"
 	buf = buf + "These will show up as text to players using mud clients that do not support UTF."
@@ -65,7 +65,7 @@ func loadEmojiHelp() {
 			buf = buf + "\r\n"
 		}
 		c++
-		buf = buf + fmt.Sprintf(":%v: %-11v ", item, item)
+		buf = buf + fmt.Sprintf(":%v: %-11v ", item, cEllip(item, 11))
 	}
 	buf = buf + "\r\nSimply chat :emoji name:\r\n"
 	buf = buf + "These will show up as text to players using mud clients that do not support UTF."

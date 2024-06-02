@@ -246,17 +246,19 @@ func cmdConInfo(player *characterData, input string) {
 	player.send("Descriptors:")
 	for _, item := range descList {
 		player.send("\r\nID: %-32v IP: %v", item.id, item.ip)
-		player.send("State: %-29v DNS: %v", stateName[item.state], item.dns)
-		player.send("Idle: %-30v Connected: %v", durafmt.ParseShort(time.Since(item.idleTime)), durafmt.ParseShort(time.Since(item.connectTime)))
+		player.send("State: %-29v DNS: %v", cEllip(stateName[item.state], 29), item.dns)
+		player.send("Idle: %-30v Connected: %v",
+			cEllip(durafmt.ParseShort(time.Since(item.idleTime)).String(), 30),
+			durafmt.ParseShort(time.Since(item.connectTime)))
 
 		charmap := item.telnet.charMap.String()
 		if item.telnet.Options != nil && item.telnet.Options.UTF {
 			charmap = "UTF"
 		}
 
-		player.send("Clinet: %-28v Charmap: %v", item.telnet.termType, charmap)
+		player.send("Clinet: %-28v Charmap: %v", cEllip(item.telnet.termType, 28), charmap)
 		if item.character != nil {
-			player.send("Char: %-30v Account: %v", item.character.Name, item.account.Login)
+			player.send("Char: %-30v Account: %v", cEllip(item.character.Name, 30), item.account.Login)
 		}
 	}
 }

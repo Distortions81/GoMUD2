@@ -66,7 +66,7 @@ func olcHelp(player *characterData, olcCmdList []*commandData) {
 		if parts != "" {
 			parts += " "
 		}
-		player.sendWW("%10v %v-- %v", item.name, parts, item.hint)
+		player.sendWW("%10v %v-- %v", cEllip(item.name, 10), parts, item.hint)
 	}
 }
 
@@ -125,7 +125,7 @@ func interpOLC(player *characterData, input string) {
 
 	player.send("OLC modes:")
 	for _, item := range olcModes {
-		player.send("%-10v", item.name)
+		player.send("%-10v", cEllip(item.name, 10))
 	}
 }
 

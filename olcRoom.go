@@ -2,6 +2,7 @@ package main
 
 import (
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -19,20 +20,35 @@ func rUndo(player *characterData, input string) {
 	player.send("Edit history:")
 
 	for i, item := range player.OLCEditor.Undo {
-		player.send("#%-5v Type: %-15v Mode: %-8v Loc: %v", i+1, item.Name, modeToText[item.OLCMode], item.Loc.toString())
-		player.send(item.Text + "\r\n")
+		var room *roomData
+		var avnum, rvnum string = item.Loc.AreaUUID.toString(), item.Loc.RoomUUID.toString()
+
+		area := areaList[item.Loc.AreaUUID]
+		if area != nil {
+			room = areaList[item.Loc.AreaUUID].Rooms.Data[item.Loc.RoomUUID]
+			if room != nil {
+				avnum = strconv.FormatInt(int64(area.VNUM), 10)
+				rvnum = strconv.FormatInt(int64(room.VNUM), 10)
+			}
+		}
+		player.send("#%-5v Type: %-15v Mode: %-8v Loc: %v:%v", i+1, cEllip(item.Name, 15), modeToText[item.OLCMode], avnum, rvnum)
+		player.send("From:\r\n%v\r\nTo:\r\n%v\r\n", item.From, item.To)
 	}
 }
 
 func rDesc(player *characterData, input string) {
 	newUndo := UndoData{
 		OLCMode: OLC_ROOM, Name: "description",
-		Text: player.OLCEditor.room.Description, Loc: player.OLCEditor.Location}
-	limitUndo(player)
+		From: player.OLCEditor.room.Description,
+		To:   input,
+		Loc:  player.OLCEditor.Location}
 
 	player.OLCEditor.Undo = append(player.OLCEditor.Undo, newUndo)
+	limitUndo(player)
+	player.dirty = true
 
 	player.OLCEditor.room.Description = input
+	player.room.pArea.dirty = true
 	player.send("Room description set.")
 }
 
@@ -43,6 +59,7 @@ func rSelect(player *characterData, input string) {
 		if !player.Config.hasFlag(CONFIG_OLCHERE) {
 			player.send("Type 'config OLCHere' to always edit current area/room by default.")
 		}
+		player.room.pArea.dirty = true
 	} else {
 		//
 	}
@@ -77,7 +94,8 @@ func rList(player *characterData, input string) {
 		if player.OLCEditor.room == room {
 			eLoc = "@"
 		}
-		player.send("%v%v VNUM: %-6v Name: %-15v Desc: %-35v Exits: %v{x", pLoc, eLoc, room.VNUM, room.Name, room.Description, exits)
+		player.send("%v%v VNUM: %-6v Name: %-15v Desc: %-35v Exits: %v{x",
+			pLoc, eLoc, room.VNUM, cEllip(room.Name, 15), cEllip(room.Description, 35), exits)
 	}
 	player.send("* = Your location, @ = Edit location")
 }

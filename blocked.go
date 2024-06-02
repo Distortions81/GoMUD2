@@ -204,7 +204,7 @@ func cmdBlocked(player *characterData, input string) {
 			continue
 		}
 		count++
-		buf = buf + fmt.Sprintf("%40v : %8v:%-8v", item.Host, item.Attempts, item.History)
+		buf = buf + fmt.Sprintf("%40v : %8v:%-8v", cEllip(item.Host, 40), item.Attempts, item.History)
 		if item.Blocked {
 			buf = buf + " (Blocked)"
 		}

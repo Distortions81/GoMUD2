@@ -108,7 +108,7 @@ func cmdDisable(player *characterData, input string) {
 				continue
 			}
 
-			buf = buf + fmt.Sprintf("%10v ", cmd.name)
+			buf = buf + fmt.Sprintf("%10v ", cEllip(cmd.name, 10))
 			if cmd.disabled {
 				buf = buf + "(X) "
 			} else {
@@ -126,7 +126,7 @@ func cmdDisable(player *characterData, input string) {
 		buf = ""
 		count = 1
 		for _, cmd := range channels {
-			buf = buf + fmt.Sprintf("%10v ", cmd.cmd)
+			buf = buf + fmt.Sprintf("%10v ", cEllip(cmd.cmd, 10))
 			if cmd.disabled {
 				buf = buf + "(X)"
 			} else {

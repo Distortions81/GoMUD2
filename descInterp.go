@@ -123,7 +123,7 @@ func (player *characterData) listCommands(input string) {
 		if parts != "" {
 			parts += " "
 		}
-		player.sendWW("%10v %v-- %v", item.name, parts, item.hint)
+		player.sendWW("%10v %v-- %v", cEllip(item.name, 10), parts, item.hint)
 	}
 
 	if input == "" {

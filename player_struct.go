@@ -119,7 +119,8 @@ type VitalsData struct {
 type UndoData struct {
 	OLCMode int
 	Name    string
-	Text    string
+	From    string
+	To      string
 	Loc     LocData
 }
 

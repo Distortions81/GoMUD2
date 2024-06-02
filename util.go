@@ -38,6 +38,24 @@ func (old DIR) revDir() DIR {
 	}
 }
 
+func cEllip(input string, limit int) string {
+	inLen := len(input)
+	if inLen > limit {
+		return input[:limit-3] + "..."
+	}
+
+	return input
+}
+
+func cText(input string, limit int) string {
+	inLen := len(input)
+	if inLen > limit {
+		return input[:limit]
+	}
+
+	return input
+}
+
 func boolToText(value bool) string {
 	if value {
 		return "{gOn{x"
