@@ -84,7 +84,7 @@ func cmdTell(player *characterData, input string) {
 	if len(parts[1]) > MAX_TELL_LENGTH {
 		player.send("That is too long of a message for a tell. Maybe mail them a letter?")
 	}
-	tDesc := descData{}
+	tDesc := descData{valid: true}
 	target := tDesc.pLoad(parts[0])
 	if target != nil {
 		if target.Config.hasFlag(CONFIG_NOTELL) {

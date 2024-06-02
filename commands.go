@@ -74,6 +74,7 @@ var cmdMap = map[string]*commandData{
 	"blocked": {level: LEVEL_MODERATOR, hint: "Shows blocked connections", args: []string{"add or delete", "hostname or ip"}, goDo: cmdBlocked},
 	"boom":    {level: LEVEL_MODERATOR, hint: "Boom a message at everyone", args: []string{"message"}, goDo: cmdBoom, noAutoHelp: true},
 	"ban":     {level: LEVEL_MODERATOR, hint: "Ban a character", args: []string{"target", "reason"}, goDo: cmdBan, noAutoHelp: true},
+	"unban":   {level: LEVEL_MODERATOR, hint: "Unban a character", args: []string{"target"}, goDo: cmdUnban, noAutoHelp: true},
 }
 
 func cmdStat(player *characterData, input string) {
