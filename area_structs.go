@@ -126,3 +126,18 @@ var dirToShortColor [DIR_MAX]string = [DIR_MAX]string{
 
 	DIR_CUSTOM: "Custom",
 }
+
+var dirToShort [DIR_MAX]string = [DIR_MAX]string{
+	DIR_NORTH:      "N",
+	DIR_NORTH_EAST: "NE",
+	DIR_EAST:       "E",
+	DIR_SOUTH_EAST: "SE",
+	DIR_SOUTH:      "S",
+	DIR_SOUTH_WEST: "SW",
+	DIR_WEST:       "W",
+	DIR_NORTH_WEST: "NW",
+	DIR_DOWN:       "D",
+	DIR_UP:         "U",
+
+	DIR_CUSTOM: "Custom",
+}

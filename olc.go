@@ -44,7 +44,7 @@ var olcModes [OLC_MAX]olcModeType = [OLC_MAX]olcModeType{
 
 // Available in all modes
 var gOLCcmds []*commandData = []*commandData{
-	{name: "cmd", goDo: olcExternalCmd, hint: "run a non-olc command", args: []string{"command"}},
+	{name: "cmd", goDo: olcExternalCmd, hint: "run a normal non-OLC command (see config OLCMode)", args: []string{"command"}},
 	{name: "exit", goDo: olcExit, hint: "exit OLC"},
 	{name: "asave", goDo: olcAsaveAll, hint: "save all areas"},
 	{name: "help", subType: olcHelp, hint: "list available commands"},

@@ -42,8 +42,11 @@ func rList(player *characterData, input string) {
 		exits := ""
 		for _, exit := range room.Exits {
 			if exit.DirName == "" {
-				exits = exits + dirToShortColor[exit.Direction]
+				exits = exits + dirToShort[exit.Direction]
 			} else {
+				if exits != "" {
+					exits = exits + ", "
+				}
 				exits = exits + exit.DirName
 			}
 		}
