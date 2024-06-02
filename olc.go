@@ -33,44 +33,68 @@ var olcModes [OLC_MAX]olcModeType = [OLC_MAX]olcModeType{
 	OLC_MOBILE: {name: "MOBILE", goDo: olcMobile},
 }
 
+var roomCmd []commandData = []commandData{
+	{name: "help", goDo: rHelp, args: []string{"<none or command>"}},
+	{name: "list", goDo: rList, hint: "shows list of room in current area"},
+	{name: "revnum", goDo: rRevnum, hint: "automatically reassigns new vnums to all room in the area"},
+	{name: "description", goDo: rDesc, hint: "Set room description", args: []string{"room description"}},
+}
+
 func cmdOLC(player *characterData, input string) {
 	interpOLC(player, input)
 }
 
-func olcRoom(player *characterData, input string) {
-	if input == "" || strings.EqualFold("help", input) {
-		player.send("room edit help goes here")
-		return
-	} else if strings.EqualFold(input, "desc") {
-		//
+func rHelp(player *characterData, input string) {
+	player.send("Commands: desc, list, revnum, here")
+}
 
-	} else if strings.EqualFold(input, "list") {
-		player.send("Area room list:")
-		var roomList []*roomData
-		for _, room := range player.room.pArea.Rooms.Data {
-			roomList = append(roomList, room)
-		}
-		sort.Slice(roomList, func(i, j int) bool {
-			return roomList[i].VNUM < roomList[j].VNUM
-		})
-		for _, room := range roomList {
-			player.send("VNUM: %-6v Name: %-30v Desc: %-40v", room.VNUM, room.Name, room.Description)
-		}
-	} else if strings.EqualFold(input, "revnum") {
-		var roomList []*roomData
-		for _, room := range player.room.pArea.Rooms.Data {
-			roomList = append(roomList, room)
-		}
-		//Sort by UUID time
-		sort.Slice(roomList, func(i, j int) bool {
-			return roomList[i].UUID.T < roomList[j].UUID.T
-		})
-		for r, room := range roomList {
-			room.VNUM = r * vnumSpace
-		}
-		player.send("Renumbered %v rooms.", len(roomList))
-		player.room.pArea.dirty = true
+func rDesc(player *characterData, input string) {
+}
+
+func rList(player *characterData, input string) {
+	player.send("Area room list:")
+	var roomList []*roomData
+	for _, room := range player.room.pArea.Rooms.Data {
+		roomList = append(roomList, room)
 	}
+	sort.Slice(roomList, func(i, j int) bool {
+		return roomList[i].VNUM < roomList[j].VNUM
+	})
+	for _, room := range roomList {
+		player.send("VNUM: %-6v Name: %-30v Desc: %-40v", room.VNUM, room.Name, room.Description)
+	}
+}
+func rRevnum(player *characterData, input string) {
+	var roomList []*roomData
+	for _, room := range player.room.pArea.Rooms.Data {
+		roomList = append(roomList, room)
+	}
+	//Sort by UUID time
+	sort.Slice(roomList, func(i, j int) bool {
+		return roomList[i].UUID.T < roomList[j].UUID.T
+	})
+	for r, room := range roomList {
+		room.VNUM = r * vnumSpace
+	}
+	player.send("Renumbered %v rooms.", len(roomList))
+	player.room.pArea.dirty = true
+}
+
+func olcRoom(player *characterData, input string) {
+	args := strings.SplitN(input, " ", 2)
+
+	for _, item := range roomCmd {
+		if strings.EqualFold(item.name, args[0]) {
+			if len(args) != 2 {
+				item.goDo(player, "")
+			} else {
+				item.goDo(player, args[1])
+			}
+			return
+		}
+	}
+
+	rHelp(player, "")
 }
 
 func olcArea(player *characterData, input string) {
