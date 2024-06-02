@@ -7,9 +7,9 @@ import (
 )
 
 type termSettings struct {
-	ColorDisable, ANSI256, ANSI24, UTF, SuppressGoAhead, NAWS bool
-	TermWidth, TermHeight                                     int
-	charMap                                                   *charmap.Charmap
+	NoColor, ANSI256, ANSI24, UTF, SuppressGoAhead, NAWS bool
+	TermWidth, TermHeight                                int
+	charMap                                              *charmap.Charmap
 }
 
 var termTypeMap map[string]*termSettings = map[string]*termSettings{

@@ -114,6 +114,8 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 		desc.character.desc = desc
 		desc.state = CON_PLAYING
 
+		desc.telnet.Options.NoColor = target.Config.hasFlag(CONFIG_NOCOLOR)
+
 		return target
 	} else {
 		data, err := readFile(DATA_DIR + ACCOUNT_DIR + desc.account.UUID.toString() + "/" + uuid.toString() + ".json")

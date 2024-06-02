@@ -135,11 +135,11 @@ func olcRoom(player *characterData, input string) {
 		}
 	}
 	if len(args) != 2 {
-		if findCommandMatch(roomCmdList, player, args[0], "") {
+		if !findCommandMatch(roomCmdList, player, args[0], "") {
 			rHelp(player, "")
 		}
 	} else {
-		if findCommandMatch(roomCmdList, player, args[0], args[1]) {
+		if !findCommandMatch(roomCmdList, player, args[0], args[1]) {
 			rHelp(player, "")
 		}
 	}

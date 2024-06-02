@@ -28,6 +28,7 @@ var configNames map[int]configInfo = map[int]configInfo{
 	CONFIG_NOCHANNEL:  {name: "NoChannel", desc: "Mute all channels"},
 	CONFIG_DEAF:       {name: "Deaf", desc: "Mute say/emote/yell"},
 	CONFIG_NOWRAP:     {name: "NoWrap", desc: "Do not word-wrap"},
+	CONFIG_NOCOLOR:    {name: "NoColor", desc: "Disable ANSI color"},
 	CONFIG_OLC:        {name: "OLCMode", desc: "Require 'OLC' before OLC commands.", level: LEVEL_BUILDER},
 	CONFIG_TEXT_EMOJI: {name: "TextEmoji", desc: "Attempt to replace emoji with emoji names.", level: LEVEL_BUILDER},
 }
@@ -66,6 +67,9 @@ func cmdConfig(player *characterData, input string) {
 			}
 			if strings.EqualFold(item.name, parts[y]) {
 				found = true
+				if player.desc != nil {
+					player.desc.telnet.Options.NoColor = player.Config.hasFlag(CONFIG_NOCOLOR)
+				}
 				if player.Config.hasFlag(1 << x) {
 					player.send("%v is now OFF.", item.name)
 					player.Config.clearFlag(1 << x)

@@ -188,7 +188,9 @@ func parseCommand(player *characterData, input string) {
 		}
 	} else {
 		if cmdChat(player, input) {
-			findCommandMatch(cmdList, player, cmdStr, args)
+			if !findCommandMatch(cmdList, player, cmdStr, args) {
+				player.listCommands("")
+			}
 		}
 	}
 }

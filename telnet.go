@@ -46,7 +46,7 @@ func cmdTelnet(player *characterData, input string) {
 		if telnet.Options.SuppressGoAhead {
 			buf = buf + "Supressing Go-Ahead Signal (SUPGA)\r\n"
 		}
-		if telnet.Options.ColorDisable {
+		if telnet.Options.NoColor {
 			buf = buf + "ANSI Color disabled.\r\n"
 		} else {
 			buf = buf + "ANSI Color enabled.\r\n"
@@ -73,11 +73,11 @@ func cmdTelnet(player *characterData, input string) {
 		if player.desc == nil {
 			return
 		}
-		if telnet.Options.ColorDisable {
-			player.desc.telnet.Options.ColorDisable = false
+		if telnet.Options.NoColor {
+			player.desc.telnet.Options.NoColor = false
 			player.send("ANSI color is now enabled.")
 		} else {
-			player.desc.telnet.Options.ColorDisable = true
+			player.desc.telnet.Options.NoColor = true
 			player.send("ANSI color is now disabled.")
 		}
 		return
