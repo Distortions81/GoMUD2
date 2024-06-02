@@ -67,16 +67,17 @@ var cmdMap = map[string]*commandData{
 	"stats":     {level: LEVEL_ANY, hint: "show some mud stats", goDo: cmdStat, noAutoHelp: true},
 
 	//Builder/mod/imm
-	"olc":      {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC, args: []string{"room", "asave", "dig"}},
-	"coninfo":  {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdConInfo, noAutoHelp: true},
-	"pset":     {level: LEVEL_MODERATOR, hint: "set player parameters", goDo: cmdPset, args: []string{"target", "level", "level-number"}, noAutoHelp: true},
-	"disable":  {level: LEVEL_MODERATOR, hint: "disable/enable a command or channel", goDo: cmdDisable, args: []string{"command/channel", "name of command or channel"}, noAutoHelp: true},
-	"blocked":  {level: LEVEL_MODERATOR, hint: "Shows blocked connections", args: []string{"add or delete", "hostname or ip"}, goDo: cmdBlocked},
-	"boom":     {level: LEVEL_MODERATOR, hint: "Boom a message at everyone", args: []string{"message"}, goDo: cmdBoom, noAutoHelp: true},
-	"ban":      {level: LEVEL_MODERATOR, hint: "Ban a character", args: []string{"target", "reason"}, goDo: cmdBan, noAutoHelp: true},
-	"unban":    {level: LEVEL_MODERATOR, hint: "Unban a character", args: []string{"target"}, goDo: cmdUnban, noAutoHelp: true},
-	"settings": {level: LEVEL_MODERATOR, hint: "Change server settings", args: []string{"option"}, goDo: cmdServSet},
-	"force":    {level: LEVEL_MODERATOR, hint: "Force a player to type something.", args: []string{"target/all", "command"}, goDo: cmdForce},
+	"olc":       {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC, args: []string{"room", "asave", "dig"}},
+	"coninfo":   {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdConInfo, noAutoHelp: true},
+	"pset":      {level: LEVEL_MODERATOR, hint: "set player parameters", goDo: cmdPset, args: []string{"target", "level", "level-number"}, noAutoHelp: true},
+	"disable":   {level: LEVEL_MODERATOR, hint: "disable/enable a command or channel", goDo: cmdDisable, args: []string{"command/channel", "name of command or channel"}, noAutoHelp: true},
+	"blocked":   {level: LEVEL_MODERATOR, hint: "Shows blocked connections", args: []string{"add or delete", "hostname or ip"}, goDo: cmdBlocked},
+	"boom":      {level: LEVEL_MODERATOR, hint: "Boom a message at everyone", args: []string{"message"}, goDo: cmdBoom, noAutoHelp: true},
+	"ban":       {level: LEVEL_MODERATOR, hint: "Ban a character", args: []string{"target", "reason"}, goDo: cmdBan, noAutoHelp: true},
+	"unban":     {level: LEVEL_MODERATOR, hint: "Unban a character", args: []string{"target"}, goDo: cmdUnban, noAutoHelp: true},
+	"settings":  {level: LEVEL_MODERATOR, hint: "Change server settings", args: []string{"option"}, goDo: cmdServSet},
+	"force":     {level: LEVEL_MODERATOR, hint: "Force a player to type something.", args: []string{"target/all", "command"}, goDo: cmdForce},
+	"transport": {level: LEVEL_MODERATOR, hint: "Force a player to recall.", args: []string{"target"}, goDo: cmdTransport},
 }
 
 func cmdStat(player *characterData, input string) {
