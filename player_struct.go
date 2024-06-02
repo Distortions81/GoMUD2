@@ -83,6 +83,8 @@ type characterData struct {
 	Loc   LocData
 	Level int
 
+	Vitals VitalsData
+
 	Prompt string `json:",omitempty"`
 
 	Channels Bitmask `json:",omitempty"`
@@ -107,6 +109,11 @@ type characterData struct {
 
 	dirty bool
 	valid bool
+}
+
+type VitalsData struct {
+	Heal, Move, Mana         int
+	Dead, Immobile, Silenced bool
 }
 
 type olcEditorData struct {

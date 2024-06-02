@@ -1,6 +1,7 @@
 package main
 
 import (
+	"sort"
 	"strings"
 	"time"
 )
@@ -38,6 +39,34 @@ func olcRoom(player *characterData, input string) {
 	if input == "" || strings.EqualFold("help", input) {
 		player.send("room edit help goes here")
 		return
+	} else if strings.EqualFold(input, "desc") {
+		//
+
+	} else if strings.EqualFold(input, "list") {
+		player.send("Area room list:")
+		var roomList []*roomData
+		for _, room := range player.room.pArea.Rooms.Data {
+			roomList = append(roomList, room)
+		}
+		sort.Slice(roomList, func(i, j int) bool {
+			return roomList[i].VNUM < roomList[j].VNUM || roomList[i].UUID.T < roomList[j].UUID.T || roomList[i].Name < roomList[j].Name
+		})
+		for _, room := range roomList {
+			player.send("VNUM: %-6v Name: %-30v Desc: %-40v", room.VNUM, room.Name, room.Description)
+		}
+	} else if strings.EqualFold(input, "revnum") {
+		var roomList []*roomData
+		for _, room := range player.room.pArea.Rooms.Data {
+			roomList = append(roomList, room)
+		}
+		sort.Slice(roomList, func(i, j int) bool {
+			return roomList[i].UUID.T < roomList[j].UUID.T || roomList[i].Name < roomList[j].Name
+		})
+		for r, room := range roomList {
+			room.VNUM = r
+		}
+		player.send("Renumbered %v rooms.", len(roomList))
+		player.room.pArea.dirty = true
 	}
 }
 
