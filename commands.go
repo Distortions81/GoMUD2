@@ -23,7 +23,6 @@ type commandData struct {
 	hide       bool
 	forceArg   string
 	disabled   bool
-	olcMode    int
 	noAutoHelp bool
 	subType    func(player *characterData, list []*commandData)
 }

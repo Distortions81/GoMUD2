@@ -7,7 +7,7 @@ import (
 )
 
 var roomCmds []*commandData = []*commandData{
-	{name: "dig", goDo: olcDig, hint: "Create a new room in <direction>", args: []string{"direction"}},
+	{name: "dig", goDo: rDig, hint: "Create a new room in <direction>", args: []string{"direction"}},
 	{name: "list", goDo: rList, hint: "shows list of rooms in current area"},
 	{name: "revnum", goDo: rRevnum, hint: "automatically reassigns new vnums to all room in the area"},
 	{name: "description", goDo: rDesc, hint: "Set room description", args: []string{"room description"}},
@@ -51,7 +51,7 @@ func makeRoom(area *areaData) *roomData {
 
 // TO DO: currently works from player position, should use different value
 // with option of copying player position
-func olcDig(player *characterData, input string) {
+func rDig(player *characterData, input string) {
 	for i, item := range dirToText {
 		if i == DIR_MAX {
 			continue

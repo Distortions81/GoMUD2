@@ -47,7 +47,7 @@ var gOLCcmds []*commandData = []*commandData{
 	{name: "cmd", goDo: olcExternalCmd, hint: "run a non-olc command", args: []string{"command"}},
 	{name: "exit", goDo: olcExit, hint: "exit OLC"},
 	{name: "asave", goDo: olcAsaveAll, hint: "save all areas"},
-	{name: "help", subType: olcHelp, args: []string{"empty/command"}},
+	{name: "help", subType: olcHelp, hint: "list available commands"},
 }
 
 func olcExit(player *characterData, input string) {
@@ -80,6 +80,10 @@ func olcModeCommand(mode olcModeType, player *characterData, input string) {
 
 	for _, item := range mode.list {
 		if strings.EqualFold(item.name, args[0]) {
+			if item.goDo == nil {
+				item.subType(player, mode.list)
+				return
+			}
 			if len(args) != 2 {
 				item.goDo(player, "")
 			} else {
