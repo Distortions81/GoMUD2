@@ -54,7 +54,7 @@ var cmdMap = map[string]*commandData{
 	"channels":  {level: LEVEL_ANY, hint: "turn chat channels on or off", goDo: cmdChannels, args: []string{"channel command"}},
 	"look":      {level: LEVEL_ANY, hint: "look around the room", goDo: cmdLook, noAutoHelp: true},
 	"who":       {level: LEVEL_ANY, hint: "show players online", goDo: cmdWho, noAutoHelp: true},
-	"ignore":    {level: LEVEL_ANY, hint: "ignore someone. add 'silent' to silently ignore", goDo: cmdIgnore, args: []string{"player name", "silent"}},
+	"ignore":    {level: LEVEL_ANY, hint: "ignore someone", goDo: cmdIgnore, args: []string{"player name", "silent"}},
 	"config":    {level: LEVEL_ANY, hint: "configure your prefrences", goDo: cmdConfig, args: []string{"1 or more config options to toggle"}, noAutoHelp: true},
 	"telnet":    {level: LEVEL_ANY, hint: "telnet options", goDo: cmdTelnet, noAutoHelp: true},
 	"quit":      {level: LEVEL_ANY, noShort: true, hint: "quit and disconnect", goDo: cmdQuit, noAutoHelp: true},
@@ -67,7 +67,7 @@ var cmdMap = map[string]*commandData{
 	"stats":     {level: LEVEL_ANY, hint: "show some mud stats", goDo: cmdStat, noAutoHelp: true},
 
 	//Builder/mod/imm
-	"olc":       {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC},
+	"olc":       {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC, args: []string{"room,area,reset,object,mobile"}},
 	"coninfo":   {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdConInfo, noAutoHelp: true},
 	"pset":      {level: LEVEL_MODERATOR, hint: "set player parameters", goDo: cmdPset, args: []string{"target", "level", "level-number"}, noAutoHelp: true},
 	"disable":   {level: LEVEL_MODERATOR, hint: "disable/enable a command or channel", goDo: cmdDisable, args: []string{"command/channel", "name of command or channel"}, noAutoHelp: true},
