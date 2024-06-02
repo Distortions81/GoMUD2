@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+const vnumSpace = 1
+
 const (
 	OLC_NONE = iota
 	OLC_ROOM
@@ -49,7 +51,7 @@ func olcRoom(player *characterData, input string) {
 			roomList = append(roomList, room)
 		}
 		sort.Slice(roomList, func(i, j int) bool {
-			return roomList[i].VNUM < roomList[j].VNUM || roomList[i].UUID.T < roomList[j].UUID.T || roomList[i].Name < roomList[j].Name
+			return roomList[i].VNUM < roomList[j].VNUM
 		})
 		for _, room := range roomList {
 			player.send("VNUM: %-6v Name: %-30v Desc: %-40v", room.VNUM, room.Name, room.Description)
@@ -59,11 +61,12 @@ func olcRoom(player *characterData, input string) {
 		for _, room := range player.room.pArea.Rooms.Data {
 			roomList = append(roomList, room)
 		}
+		//Sort by UUID time
 		sort.Slice(roomList, func(i, j int) bool {
-			return roomList[i].UUID.T < roomList[j].UUID.T || roomList[i].Name < roomList[j].Name
+			return roomList[i].UUID.T < roomList[j].UUID.T
 		})
 		for r, room := range roomList {
-			room.VNUM = r
+			room.VNUM = r * vnumSpace
 		}
 		player.send("Renumbered %v rooms.", len(roomList))
 		player.room.pArea.dirty = true
