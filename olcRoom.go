@@ -12,7 +12,7 @@ var roomCmds []*commandData = []*commandData{
 	{name: "revnum", goDo: rRevnum, hint: "automatically reassigns new vnums to all room in the area"},
 	{name: "description", goDo: rDesc, hint: "Set room description", args: []string{"room description"}},
 	{name: "select", goDo: rSelect, hint: "Select room to edit", args: []string{"here"}},
-	{name: "undo", goDo: rUndo, hint: "WIP"},
+	{name: "undo", goDo: rUndo, hint: "Show some edit history (WIP)"},
 }
 
 func rUndo(player *characterData, input string) {
