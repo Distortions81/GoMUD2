@@ -114,8 +114,9 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 		desc.character.desc = desc
 		desc.state = CON_PLAYING
 
-		desc.telnet.Options.NoColor = target.Config.hasFlag(CONFIG_NOCOLOR)
-
+		if desc.telnet.Options != nil {
+			desc.telnet.Options.NoColor = target.Config.hasFlag(CONFIG_NOCOLOR)
+		}
 		return target
 	} else {
 		data, err := readFile(DATA_DIR + ACCOUNT_DIR + desc.account.UUID.toString() + "/" + uuid.toString() + ".json")
@@ -129,6 +130,8 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 			critLog("loadPlayer: Unable to unmarshal the data.")
 			return nil
 		}
+
+		desc.telnet.Options.NoColor = player.Config.hasFlag(CONFIG_NOCOLOR)
 		return player
 	}
 }

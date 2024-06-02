@@ -67,15 +67,16 @@ func cmdConfig(player *characterData, input string) {
 			}
 			if strings.EqualFold(item.name, parts[y]) {
 				found = true
-				if player.desc != nil {
-					player.desc.telnet.Options.NoColor = player.Config.hasFlag(CONFIG_NOCOLOR)
-				}
+
 				if player.Config.hasFlag(1 << x) {
 					player.send("%v is now OFF.", item.name)
 					player.Config.clearFlag(1 << x)
 				} else {
 					player.send("%v is now ON", item.name)
 					player.Config.addFlag(1 << x)
+				}
+				if player.desc != nil && player.desc.telnet.Options != nil {
+					player.desc.telnet.Options.NoColor = player.Config.hasFlag(CONFIG_NOCOLOR)
 				}
 				player.dirty = true
 				break

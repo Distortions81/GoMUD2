@@ -300,17 +300,12 @@ func (desc *descData) getTermType() {
 	//errLog("#%v: GOT %v: %s", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.subData)
 	if match != nil {
 		if desc.telnet.Options == nil {
-			desc.telnet.Options = match
-		} else {
-			desc.telnet.Options.ANSI256 = match.ANSI256
-			desc.telnet.Options.ANSI24 = match.ANSI24
-			desc.telnet.Options.UTF = match.UTF
-			desc.telnet.Options.SuppressGoAhead = match.SuppressGoAhead
-			if desc.telnet.Options.charMap != nil {
-				desc.telnet.charMap = match.charMap
-			}
+			desc.telnet.Options = &termSettings{}
 		}
-
+		desc.telnet.Options.ANSI256 = match.ANSI256
+		desc.telnet.Options.ANSI24 = match.ANSI24
+		desc.telnet.Options.UTF = match.UTF
+		desc.telnet.Options.SuppressGoAhead = match.SuppressGoAhead
 		if match.charMap != nil {
 			desc.telnet.charMap = match.charMap
 		}
@@ -320,27 +315,26 @@ func (desc *descData) getTermType() {
 		if strings.HasPrefix(desc.telnet.termType, n) {
 			mudLog("Found client prefix match: %v", desc.telnet.termType)
 			if desc.telnet.Options == nil {
-				desc.telnet.Options = match
-			} else {
-				desc.telnet.Options.ANSI256 = match.ANSI256
-				desc.telnet.Options.ANSI24 = match.ANSI24
-				desc.telnet.Options.UTF = match.UTF
-				desc.telnet.Options.SuppressGoAhead = match.SuppressGoAhead
+				desc.telnet.Options = &termSettings{}
 			}
-			if desc.telnet.Options.charMap != nil {
+			desc.telnet.Options.ANSI256 = match.ANSI256
+			desc.telnet.Options.ANSI24 = match.ANSI24
+			desc.telnet.Options.UTF = match.UTF
+			desc.telnet.Options.SuppressGoAhead = match.SuppressGoAhead
+			if match.charMap != nil {
 				desc.telnet.charMap = match.charMap
 			}
 		} else if strings.HasSuffix(desc.telnet.termType, n) {
 			mudLog("Found client suffix match: %v", desc.telnet.termType)
 			if desc.telnet.Options == nil {
-				desc.telnet.Options = match
-			} else {
-				desc.telnet.Options.ANSI256 = match.ANSI256
-				desc.telnet.Options.ANSI24 = match.ANSI24
-				desc.telnet.Options.UTF = match.UTF
-				desc.telnet.Options.SuppressGoAhead = match.SuppressGoAhead
+				desc.telnet.Options = &termSettings{}
 			}
-			if desc.telnet.Options.charMap != nil {
+			desc.telnet.Options.ANSI256 = match.ANSI256
+			desc.telnet.Options.ANSI24 = match.ANSI24
+			desc.telnet.Options.UTF = match.UTF
+			desc.telnet.Options.SuppressGoAhead = match.SuppressGoAhead
+
+			if match.charMap != nil {
 				desc.telnet.charMap = match.charMap
 			}
 		}

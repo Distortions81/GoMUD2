@@ -179,10 +179,12 @@ func (tdesc *descData) doOutput() {
 	}
 
 	//Color
-	if !tdesc.telnet.Options.NoColor {
-		tdesc.outBuf = ANSIColor(tdesc.outBuf)
-	} else {
+
+	if tdesc.telnet.Options == nil ||
+		(tdesc.telnet.Options != nil && tdesc.telnet.Options.NoColor) {
 		tdesc.outBuf = ColorRemove(tdesc.outBuf)
+	} else {
+		tdesc.outBuf = ANSIColor(tdesc.outBuf)
 	}
 
 	//Character map translation

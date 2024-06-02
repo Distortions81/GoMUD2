@@ -41,7 +41,7 @@ func cmdTelnet(player *characterData, input string) {
 		buf = buf + fmt.Sprintf("Detected client: %v\r\n", termType)
 
 		if telnet.Options == nil {
-			return
+			telnet.Options = &termSettings{}
 		}
 		if telnet.Options.SuppressGoAhead {
 			buf = buf + "Supressing Go-Ahead Signal (SUPGA)\r\n"
