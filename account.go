@@ -121,6 +121,13 @@ func canMakeCharacter(desc *descData, input string) bool {
 
 func loadchar(desc *descData, login string, uuid uuidData) {
 	if target := checkPlayingUUID(login, uuid); target != nil {
+		for _, item := range target.Banned {
+			if !item.Revoked {
+				desc.sendln("This character is banned.")
+				desc.close()
+				return
+			}
+		}
 		alreadyPlayingWarnVictim(target)
 		desc.account.tempString = login
 		desc.state = CON_RECONNECT_CONFIRM
@@ -128,6 +135,15 @@ func loadchar(desc *descData, login string, uuid uuidData) {
 	}
 	var newPlayer *characterData
 	if newPlayer = desc.loadCharacter(login); newPlayer != nil {
+
+		for _, item := range newPlayer.Banned {
+			if !item.Revoked {
+				desc.sendln("This character is banned.")
+				desc.close()
+				return
+			}
+		}
+
 		desc.enterWorld(newPlayer)
 	} else {
 		desc.sendln("Failed to load character %v.", login)

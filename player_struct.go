@@ -100,7 +100,8 @@ type characterData struct {
 	CreDate  time.Time
 	idleTime time.Time
 
-	Tells []tellData `json:",omitempty"`
+	Tells  []tellData `json:",omitempty"`
+	Banned []banData  `json:",omitempty"`
 
 	loginTime time.Time
 
@@ -160,14 +161,18 @@ type accountData struct {
 	ModDate time.Time
 
 	Characters []accountIndexData
-	Banned     *banData `json:",omitempty"`
+	Banned     []banData `json:",omitempty"`
 
 	dirty bool
 }
 
 type banData struct {
-	Reason  string `json:",omitempty"`
-	Date    time.Time
-	BanBy   string
+	Reason string `json:",omitempty"`
+	Date   time.Time
+	BanBy  string
+
+	Temporary bool
+	Until     time.Time
+
 	Revoked bool
 }

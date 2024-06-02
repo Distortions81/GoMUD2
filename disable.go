@@ -93,6 +93,8 @@ func readDisables() {
 	restoreDisables()
 }
 
+const disCol = 4
+
 func cmdDisable(player *characterData, input string) {
 	parts := strings.SplitN(input, " ", 2)
 	numParts := len(parts)
