@@ -121,7 +121,7 @@ func goForce(player *characterData, input string) {
 		}
 	} else {
 		if cmdChat(player, input) {
-			findCommandMatch(player, cmdStr, args)
+			findCommandMatch(cmdList, player, cmdStr, args)
 		}
 	}
 }

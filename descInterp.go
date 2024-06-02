@@ -188,19 +188,19 @@ func parseCommand(player *characterData, input string) {
 		}
 	} else {
 		if cmdChat(player, input) {
-			findCommandMatch(player, cmdStr, args)
+			findCommandMatch(cmdList, player, cmdStr, args)
 		}
 	}
 }
 
-func findCommandMatch(player *characterData, cmdStr string, args string) {
+func findCommandMatch(list []*commandData, player *characterData, cmdStr string, args string) bool {
 	//Find best partial match
 	var scores map[*commandData]int = make(map[*commandData]int)
 	cmdStrLen := len(cmdStr)
 	var highScoreCmd *commandData
 	var highScore = 0
 	for x := 0; x < 2; x++ {
-		for _, cmd := range cmdList {
+		for _, cmd := range list {
 			if cmd.disabled {
 				continue
 			}
@@ -238,7 +238,7 @@ func findCommandMatch(player *characterData, cmdStr string, args string) {
 		if highScoreCmd.noShort {
 			//Let player know this command cannot be a partial match
 			player.send("Did you mean %v? You must type that command in full.", highScoreCmd.name)
-			return
+			return true
 		} else {
 			//Run the command
 			if highScoreCmd.goDo != nil {
@@ -249,12 +249,12 @@ func findCommandMatch(player *characterData, cmdStr string, args string) {
 						highScoreCmd.goDo(player, args)
 					}
 				}
-				return
+				return true
 			}
 		}
 	}
 	player.send("That isn't an available command.")
-	player.listCommands("")
+	return false
 }
 
 // Returns true if allowed

@@ -24,6 +24,16 @@ type olcModeType struct {
 	goDo func(player *characterData, input string)
 }
 
+func init() {
+	roomCmdList = []*commandData{}
+	for _, item := range olcCmd {
+		roomCmd[item.name] = item
+	}
+	for _, item := range roomCmd {
+		roomCmdList = append(roomCmdList, item)
+	}
+}
+
 var olcModes [OLC_MAX]olcModeType = [OLC_MAX]olcModeType{
 	OLC_NONE:   {name: "NONE"},
 	OLC_ROOM:   {name: "ROOM", goDo: olcRoom},
@@ -33,11 +43,26 @@ var olcModes [OLC_MAX]olcModeType = [OLC_MAX]olcModeType{
 	OLC_MOBILE: {name: "MOBILE", goDo: olcMobile},
 }
 
-var roomCmd []commandData = []commandData{
-	{name: "help", goDo: rHelp, args: []string{"<none or command>"}},
-	{name: "list", goDo: rList, hint: "shows list of room in current area"},
-	{name: "revnum", goDo: rRevnum, hint: "automatically reassigns new vnums to all room in the area"},
-	{name: "description", goDo: rDesc, hint: "Set room description", args: []string{"room description"}},
+var olcCmd []*commandData = []*commandData{
+	{name: "cmd", goDo: olcDoCmd, hint: "run a non-olc command", args: []string{"command"}},
+	{name: "exit", goDo: olcExit, hint: "exit OLC"},
+}
+
+func olcExit(player *characterData, input string) {
+	player.OLCEditor.OLCMode = OLC_NONE
+	player.send("Exited OLC mode.")
+}
+
+func olcDoCmd(player *characterData, input string) {
+	parseCommand(player, input)
+}
+
+var roomCmdList []*commandData
+var roomCmd map[string]*commandData = map[string]*commandData{
+	"help":        {name: "help", goDo: rHelp, args: []string{"<none or command>"}},
+	"list":        {name: "list", goDo: rList, hint: "shows list of rooms in current area"},
+	"revnum":      {name: "revnum", goDo: rRevnum, hint: "automatically reassigns new vnums to all room in the area"},
+	"description": {name: "description", goDo: rDesc, hint: "Set room description", args: []string{"room description"}},
 }
 
 func cmdOLC(player *characterData, input string) {
@@ -45,7 +70,9 @@ func cmdOLC(player *characterData, input string) {
 }
 
 func rHelp(player *characterData, input string) {
-	player.send("Commands: desc, list, revnum, here")
+	for _, item := range roomCmdList {
+		player.send("%v: %v %v", item.name, item.hint, strings.Join(item.args, ">, <"))
+	}
 }
 
 func rDesc(player *characterData, input string) {
@@ -93,6 +120,15 @@ func olcRoom(player *characterData, input string) {
 			return
 		}
 	}
+	if len(args) != 2 {
+		if findCommandMatch(roomCmdList, player, args[0], "") {
+			rHelp(player, "")
+		}
+	} else {
+		if findCommandMatch(roomCmdList, player, args[0], args[1]) {
+			rHelp(player, "")
+		}
+	}
 
 	rHelp(player, "")
 }
@@ -124,14 +160,6 @@ func olcMobile(player *characterData, input string) {
 
 func interpOLC(player *characterData, input string) {
 
-	for i, item := range olcModes {
-		if strings.EqualFold(item.name, input) {
-			player.OLCEditor.OLCMode = i
-			player.send("Entering %v edit mode.", item.name)
-			item.goDo(player, "")
-			return
-		}
-	}
 	if player.OLCEditor.OLCMode != OLC_NONE {
 		if strings.EqualFold("exit", input) {
 			player.OLCEditor.OLCMode = OLC_NONE
@@ -143,6 +171,14 @@ func interpOLC(player *characterData, input string) {
 				item.goDo(player, input)
 				return
 			}
+		}
+	}
+	for i, item := range olcModes {
+		if strings.EqualFold(item.name, input) {
+			player.OLCEditor.OLCMode = i
+			player.send("Entering %v edit mode.", item.name)
+			item.goDo(player, "")
+			return
 		}
 	}
 	player.send("That isn't a valid OLC command.")
