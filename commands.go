@@ -49,7 +49,7 @@ var cmdMap = map[string]*commandData{
 	"help":      {level: LEVEL_ANY, hint: "get help", goDo: cmdHelp, args: []string{"command, keyword, name or topic"}, noAutoHelp: true},
 	"say":       {level: LEVEL_ANY, hint: "speak out loud", goDo: cmdSay, args: []string{"message"}},
 	"emote":     {level: LEVEL_ANY, hint: "emote", goDo: cmdEmote, args: []string{"message"}},
-	"tell":      {level: LEVEL_ANY, hint: "send a private message", args: []string{"target", "message"}, goDo: cmdTell, noAutoHelp: true},
+	"tell":      {level: LEVEL_ANY, hint: "send a private message, even if offline", args: []string{"target", "message"}, goDo: cmdTell, noAutoHelp: true},
 	"tells":     {level: LEVEL_ANY, hint: "read pending tells", goDo: cmdTells},
 	"channels":  {level: LEVEL_ANY, hint: "turn chat channels on or off", goDo: cmdChannels, args: []string{"channel command"}},
 	"look":      {level: LEVEL_ANY, hint: "look around the room", goDo: cmdLook, noAutoHelp: true},
