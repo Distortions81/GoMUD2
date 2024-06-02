@@ -6,7 +6,7 @@ Ultrablaze
 Quasarax
 Novaflux
 --Warpfire
-Galaxium
+--Galaxium
 --Voidstorm
 --Starshock
 --Nebulon

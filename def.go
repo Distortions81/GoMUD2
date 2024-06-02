@@ -3,10 +3,11 @@ package main
 import "strings"
 
 const (
-	VERSION  = "v0.0.20a-05-28-2024-0939p"
-	CODENAME = "Blitzstar"
+	VERSION  = "v0.0.21a"
+	VWHEN    = "06-01-2024-0929p"
+	CODENAME = "Galaxium"
 
-	LICENSE = "GOMUD2: " + VERSION + "-" + CODENAME + "\n" +
+	LICENSE = "GOMUD2: " + VERSION + "-" + VWHEN + "-" + CODENAME + "\n" +
 		"Copyright 2024 Carl Frank Otto III (carlotto81@gmail.com). All rights reserved.\n"
 
 		//Directories
