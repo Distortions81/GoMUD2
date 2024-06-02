@@ -25,6 +25,7 @@ type commandData struct {
 	disabled   bool
 	olcMode    int
 	noAutoHelp bool
+	subType    func(player *characterData, list []*commandData)
 }
 
 var cmdList []*commandData
@@ -78,6 +79,10 @@ var cmdMap = map[string]*commandData{
 	"settings":  {level: LEVEL_MODERATOR, hint: "Change server settings", args: []string{"option"}, goDo: cmdServSet},
 	"force":     {level: LEVEL_MODERATOR, hint: "Force a player to type something.", args: []string{"target/all", "command"}, goDo: cmdForce},
 	"transport": {level: LEVEL_MODERATOR, hint: "Force a player to recall.", args: []string{"target"}, goDo: cmdTransport},
+}
+
+func cmdOLC(player *characterData, input string) {
+	interpOLC(player, input)
 }
 
 func cmdStat(player *characterData, input string) {

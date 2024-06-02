@@ -10,6 +10,34 @@ import (
 
 var saveFileLock sync.Mutex
 
+func (old DIR) revDir() DIR {
+
+	switch old {
+	case DIR_NORTH:
+		return DIR_SOUTH
+	case DIR_SOUTH:
+		return DIR_NORTH
+	case DIR_EAST:
+		return DIR_WEST
+	case DIR_WEST:
+		return DIR_EAST
+	case DIR_UP:
+		return DIR_DOWN
+	case DIR_DOWN:
+		return DIR_UP
+	case DIR_NORTH_EAST:
+		return DIR_SOUTH_WEST
+	case DIR_SOUTH_WEST:
+		return DIR_NORTH_EAST
+	case DIR_NORTH_WEST:
+		return DIR_SOUTH_EAST
+	case DIR_SOUTH_EAST:
+		return DIR_NORTH_WEST
+	default:
+		return old
+	}
+}
+
 func boolToText(value bool) string {
 	if value {
 		return "{gOn{x"
