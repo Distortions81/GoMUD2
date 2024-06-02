@@ -12,9 +12,9 @@ var saveFileLock sync.Mutex
 
 func boolToText(value bool) string {
 	if value {
-		return "On"
+		return "{gOn{x"
 	} else {
-		return "Off"
+		return "{rOff{x"
 	}
 }
 

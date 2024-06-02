@@ -151,10 +151,10 @@ func cmdDisable(player *characterData, input string) {
 				if strings.EqualFold(cmd.name, parts[1]) {
 					if !cmd.disabled {
 						cmd.disabled = true
-						player.send("The %v command is now disabled.", cmd.name)
+						player.send("The %v command is now {rdisabled{x.", cmd.name)
 					} else {
 						cmd.disabled = false
-						player.send("The %v command is now enabled.", cmd.name)
+						player.send("The %v command is now {genabled{x.", cmd.name)
 					}
 					writeDisables()
 					return
@@ -167,10 +167,10 @@ func cmdDisable(player *characterData, input string) {
 				if strings.EqualFold(ch.cmd, parts[1]) {
 					if !ch.disabled {
 						ch.disabled = true
-						player.send("The %v channel is now disabled.", ch.name)
+						player.send("The %v channel is now {rdisabled{x.", ch.name)
 					} else {
 						ch.disabled = false
-						player.send("The %v channel is now enabled.", ch.name)
+						player.send("The %v channel is now {genabled{x.", ch.name)
 					}
 					writeDisables()
 					return

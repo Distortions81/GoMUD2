@@ -159,9 +159,9 @@ func cmdChannels(player *characterData, input string) {
 			}
 			var status string
 			if player.Channels.hasFlag(1 << c) {
-				status = "OFF"
+				status = "{RO{rFF"
 			} else {
-				status = "ON"
+				status = "{GO{gN"
 			}
 			player.send("%10v: (%3v) %v", ch.cmd, status, ch.name)
 		}

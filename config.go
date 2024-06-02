@@ -43,10 +43,8 @@ func cmdConfig(player *characterData, input string) {
 			if item.name == "" {
 				continue
 			}
-			status := "OFF"
-			if player.Config.hasFlag(1 << x) {
-				status = "On "
-			}
+
+			status := boolToText(player.Config.hasFlag(1 << x))
 			player.send("%15v: (%v) %v", item.name, status, item.desc)
 		}
 		player.send("config <option> to toggle")

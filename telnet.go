@@ -49,7 +49,7 @@ func cmdTelnet(player *characterData, input string) {
 		if telnet.Options.NoColor {
 			buf = buf + "ANSI Color disabled.\r\n"
 		} else {
-			buf = buf + "ANSI Color enabled.\r\n"
+			buf = buf + "ANSI {RC{Go{Yl{Bo{Mr{x enabled.\r\n"
 		}
 		if telnet.Options.ANSI256 {
 			buf = buf + "Supports 256 color mode\r\n"
