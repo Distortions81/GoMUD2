@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 	"time"
@@ -43,9 +44,11 @@ var olcModes [OLC_MAX]olcModeType = [OLC_MAX]olcModeType{
 	OLC_MOBILE: {name: "MOBILE", goDo: olcMobile},
 }
 
+// Available in all modes
 var olcCmd []*commandData = []*commandData{
 	{name: "cmd", goDo: olcDoCmd, hint: "run a non-olc command", args: []string{"command"}},
 	{name: "exit", goDo: olcExit, hint: "exit OLC"},
+	{name: "asave", goDo: olcAsaveAll, hint: "save all areas"},
 }
 
 func olcExit(player *characterData, input string) {
@@ -59,7 +62,8 @@ func olcDoCmd(player *characterData, input string) {
 
 var roomCmdList []*commandData
 var roomCmd map[string]*commandData = map[string]*commandData{
-	"help":        {name: "help", goDo: rHelp, args: []string{"<none or command>"}},
+	"dig":         {name: "dig", goDo: olcDig, hint: "Create a new room in <direction>", args: []string{"direction"}},
+	"help":        {name: "help", goDo: rHelp, args: []string{"empty/command"}},
 	"list":        {name: "list", goDo: rList, hint: "shows list of rooms in current area"},
 	"revnum":      {name: "revnum", goDo: rRevnum, hint: "automatically reassigns new vnums to all room in the area"},
 	"description": {name: "description", goDo: rDesc, hint: "Set room description", args: []string{"room description"}},
@@ -71,7 +75,17 @@ func cmdOLC(player *characterData, input string) {
 
 func rHelp(player *characterData, input string) {
 	for _, item := range roomCmdList {
-		player.send("%v: %v %v", item.name, item.hint, strings.Join(item.args, ">, <"))
+		var parts string
+		for i, arg := range item.args {
+			if i > 0 {
+				parts += ", "
+			}
+			parts += fmt.Sprintf("<%v>", arg)
+		}
+		if parts != "" {
+			parts += " "
+		}
+		player.sendWW("%10v %v-- %v", item.name, parts, item.hint)
 	}
 }
 

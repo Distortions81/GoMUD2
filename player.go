@@ -113,7 +113,7 @@ func (desc *descData) enterWorld(player *characterData) {
 	cmdLook(desc.character, "")
 	desc.character.checkTells()
 	if player.Level < LEVEL_PLAYER {
-		player.send("To see the command list type: help commands")
+		player.send("To see the command list type: HELP COMMANDS")
 	}
 }
 

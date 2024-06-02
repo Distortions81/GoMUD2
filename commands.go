@@ -67,7 +67,7 @@ var cmdMap = map[string]*commandData{
 	"stats":     {level: LEVEL_ANY, hint: "show some mud stats", goDo: cmdStat, noAutoHelp: true},
 
 	//Builder/mod/imm
-	"olc":       {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC, args: []string{"room", "asave", "dig"}},
+	"olc":       {level: LEVEL_BUILDER, hint: "world editor", goDo: cmdOLC},
 	"coninfo":   {level: LEVEL_MODERATOR, hint: "shows list of connections and characters in the world", goDo: cmdConInfo, noAutoHelp: true},
 	"pset":      {level: LEVEL_MODERATOR, hint: "set player parameters", goDo: cmdPset, args: []string{"target", "level", "level-number"}, noAutoHelp: true},
 	"disable":   {level: LEVEL_MODERATOR, hint: "disable/enable a command or channel", goDo: cmdDisable, args: []string{"command/channel", "name of command or channel"}, noAutoHelp: true},
