@@ -37,37 +37,33 @@ func mainLoop() {
 
 		hashReceiver()
 
-		forceCharSave := false
 		//Force save all every 30 mins.
 		if tickNum%1200 == 0 {
 			saveCharacters(true)
-			forceCharSave = true
-		}
-
-		switch loopTask {
-		case 0:
-			expireBlocks()
-		case 1:
-			saveNotes(false)
-		case 2:
-			writeBlocked(false)
-		case 3:
-			if !forceCharSave {
+		} else {
+			switch loopTask {
+			case 0:
+				expireBlocks()
+			case 1:
+				saveNotes(false)
+			case 2:
+				writeBlocked(false)
+			case 3:
 				saveAllAreas(false)
+			case 4:
+				saveCharacters(false)
+			case 5:
+				removeDeadDesc()
+			case 6:
+				removeDeadChar()
+			case 7:
+				descShuffle()
+			case 8:
+				writeBugs()
+				loopTask = 0
 			}
-		case 4:
-			saveCharacters(false)
-		case 5:
-			removeDeadDesc()
-		case 6:
-			removeDeadChar()
-		case 7:
-			descShuffle()
-		case 8:
-			writeBugs()
-			loopTask = 0
+			loopTask++
 		}
-		loopTask++
 
 		resetProcessed()
 		interpAllDesc()
