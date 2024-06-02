@@ -50,8 +50,17 @@ func rList(player *characterData, input string) {
 				exits = exits + exit.DirName
 			}
 		}
-		player.send("VNUM: %-6v Name: %-15v Desc: %-35v Exits: %v{x", room.VNUM, room.Name, room.Description, exits)
+		eLoc := " "
+		pLoc := " "
+		if room == player.room {
+			pLoc = "*"
+		}
+		if player.OLCEditor.room == room {
+			eLoc = "@"
+		}
+		player.send("%v%v VNUM: %-6v Name: %-15v Desc: %-35v Exits: %v{x", pLoc, eLoc, room.VNUM, room.Name, room.Description, exits)
 	}
+	player.send("* = Your location, @ = Edit location")
 }
 func rRevnum(player *characterData, input string) {
 	var roomList []*roomData
