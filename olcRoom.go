@@ -11,10 +11,29 @@ var roomCmds []*commandData = []*commandData{
 	{name: "list", goDo: rList, hint: "shows list of rooms in current area"},
 	{name: "revnum", goDo: rRevnum, hint: "automatically reassigns new vnums to all room in the area"},
 	{name: "description", goDo: rDesc, hint: "Set room description", args: []string{"room description"}},
+	{name: "select", goDo: rSelect, hint: "Select room to edit", args: []string{"here"}},
+	{name: "undo", goDo: rUndo, hint: "WIP"},
+}
+
+func rUndo(player *characterData, input string) {
+	player.send("Edit history:")
+
+	for i, item := range player.OLCEditor.Undo {
+		player.send("#%-5v Type: %-15v Mode: %-8v Loc: %v", i+1, item.Name, modeToText[item.OLCMode], item.Loc.toString())
+		player.send(item.Text + "\r\n")
+	}
 }
 
 func rDesc(player *characterData, input string) {
+	newUndo := UndoData{
+		OLCMode: OLC_ROOM, Name: "description",
+		Text: player.OLCEditor.room.Description, Loc: player.OLCEditor.Location}
+	limitUndo(player)
 
+	player.OLCEditor.Undo = append(player.OLCEditor.Undo, newUndo)
+
+	player.OLCEditor.room.Description = input
+	player.send("Room description set.")
 }
 
 func rSelect(player *characterData, input string) {

@@ -5,7 +5,10 @@ import (
 	"strings"
 )
 
-const vnumSpace = 1
+const (
+	vnumSpace = 1
+	UNDO_MAX  = 50
+)
 
 const (
 	OLC_NONE = iota
@@ -23,15 +26,7 @@ type olcModeType struct {
 	list []*commandData
 }
 
-func init() {
-	/* Append global olc commands to mode commands lists */
-	for m, mode := range olcModes {
-		if mode.list == nil {
-			continue
-		}
-		olcModes[m].list = append(olcModes[m].list, gOLCcmds...)
-	}
-}
+var modeToText [OLC_MAX]string
 
 var olcModes [OLC_MAX]olcModeType = [OLC_MAX]olcModeType{
 	OLC_NONE:   {name: "NONE"},

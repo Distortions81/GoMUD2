@@ -26,6 +26,10 @@ func makeUUID() uuidData {
 	return uuidData{T: time.Now().UTC().UnixNano(), R: rand.Int63(), M: MudID}
 }
 
+func (loc LocData) toString() string {
+	return loc.AreaUUID.toString() + ":" + loc.RoomUUID.toString()
+}
+
 func (id uuidData) toString() string {
 	buf := new(bytes.Buffer)
 	binary.Write(buf, binary.LittleEndian, id.T)

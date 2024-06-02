@@ -116,12 +116,21 @@ type VitalsData struct {
 	Dead, Immobile, Silenced bool
 }
 
+type UndoData struct {
+	OLCMode int
+	Name    string
+	Text    string
+	Loc     LocData
+}
+
 type olcEditorData struct {
 	OLCMode int `json:",omitempty"`
 
 	Location LocData
 	area     *areaData
 	room     *roomData
+
+	Undo []UndoData
 
 	EditText []string `json:",omitempty"`
 }
