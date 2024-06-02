@@ -78,6 +78,7 @@ func main() {
 		critLog("Bootstrap files created.")
 	}
 
+	servSet = loadSettings()
 	loadAllAreas()
 	readTextFiles()
 	loadEmojiHelp()

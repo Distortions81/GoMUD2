@@ -200,7 +200,7 @@ func findCommandMatch(player *characterData, cmdStr string, args string) {
 	var highScoreCmd *commandData
 	var highScore = 0
 	for x := 0; x < 2; x++ {
-		for c, cmd := range cmdMap {
+		for _, cmd := range cmdList {
 			if cmd.disabled {
 				continue
 			}
@@ -208,6 +208,7 @@ func findCommandMatch(player *characterData, cmdStr string, args string) {
 			if x == 0 && cmd.noShort {
 				continue
 			}
+			c := cmd.name
 			cLen := len(c) - 1
 			//If command name is shorter, skip
 			if cLen < cmdStrLen {

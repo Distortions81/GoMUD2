@@ -346,6 +346,10 @@ func gConfirmNewPass(desc *descData, input string) {
 func gLogin(desc *descData, input string) {
 
 	if strings.EqualFold("new", input) {
+		if servSet.NewLock {
+			desc.sendln("Creating new accounts is currently prohibited.")
+			return
+		}
 		critLog("#%v: %v is creating a new login.", desc.id, desc.ip)
 		desc.state = CON_NEW_ACCOUNT
 
@@ -364,6 +368,11 @@ func gLogin(desc *descData, input string) {
 
 		}
 	} else {
+
+		if servSet.NewLock {
+			desc.sendln("Creating new accounts is currently prohibited.")
+			return
+		}
 		desc.sendln("Login name not found, creating new account.")
 		gNewLogin(desc, input)
 		desc.state = CON_NEW_ACCOUNT_CONFIRM

@@ -10,6 +10,14 @@ import (
 
 var saveFileLock sync.Mutex
 
+func boolToText(value bool) string {
+	if value {
+		return "On"
+	} else {
+		return "Off"
+	}
+}
+
 // Saves as a temp file, then renames when done.
 func saveFile(filePath string, data []byte) error {
 	saveFileLock.Lock()

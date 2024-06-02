@@ -151,6 +151,12 @@ func sendStart(conn net.Conn, tls bool) {
 	} else {
 		_, err = conn.Write([]byte(greetBufNoSSL))
 	}
+	if servSet.ModOnly {
+		_, err = conn.Write([]byte("\r\nMud is currently set to staff-only mode:"))
+	}
+	if servSet.NewLock {
+		_, err = conn.Write([]byte("\r\nNew accounts and characters are currently prohibited:"))
+	}
 	if err != nil {
 		conn.Close()
 		return

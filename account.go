@@ -106,6 +106,10 @@ func gCharSelect(desc *descData, input string) {
 }
 
 func canMakeCharacter(desc *descData, input string) bool {
+	if servSet.NewLock {
+		desc.sendln("New characters are currently prohibited.")
+		return false
+	}
 	if len(desc.account.Characters) < MAX_CHAR_SLOTS {
 		if strings.EqualFold(input, "new") {
 			desc.state = CON_CHAR_CREATE
@@ -128,11 +132,16 @@ func loadchar(desc *descData, login string, uuid uuidData) {
 				return
 			}
 		}
+		if servSet.NewLock && desc.character.Level < LEVEL_BUILDER {
+			desc.send("Logins are currently limited to staff only.")
+			return
+		}
 		alreadyPlayingWarnVictim(target)
 		desc.account.tempString = login
 		desc.state = CON_RECONNECT_CONFIRM
 		return
 	}
+
 	var newPlayer *characterData
 	if newPlayer = desc.loadCharacter(login); newPlayer != nil {
 
@@ -142,6 +151,10 @@ func loadchar(desc *descData, login string, uuid uuidData) {
 				desc.close()
 				return
 			}
+		}
+		if servSet.NewLock && newPlayer.Level < LEVEL_BUILDER {
+			desc.send("Logins are currently limited to staff only.")
+			return
 		}
 
 		desc.enterWorld(newPlayer)

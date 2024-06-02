@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"goMUD2/figletlib"
 	"strconv"
@@ -9,6 +11,156 @@ import (
 
 	"github.com/hako/durafmt"
 )
+
+type serverSettingsData struct {
+	Version          int
+	NewLock, ModOnly bool
+}
+
+var servSet serverSettingsData
+
+func cmdServSet(player *characterData, input string) {
+
+	if input == "" {
+		player.send("NewLock: %v, ModOnly: %v",
+			boolToText(servSet.ModOnly), boolToText(servSet.NewLock))
+		player.send("settings: <option name> toggles specified setting on/off")
+		return
+	}
+
+	if strings.EqualFold(input, "modonly") {
+		if servSet.ModOnly {
+			servSet.ModOnly = false
+		} else {
+			servSet.ModOnly = true
+		}
+		servSet.saveSettings()
+		cmdServSet(player, "")
+		player.send("ModeratorOnly is now %v.", boolToText(servSet.ModOnly))
+
+	} else if strings.EqualFold(input, "newlock") {
+		if servSet.NewLock {
+			servSet.NewLock = false
+		} else {
+			servSet.NewLock = true
+		}
+		servSet.saveSettings()
+		cmdServSet(player, "")
+		player.send("NewLock is now %v.", boolToText(servSet.NewLock))
+
+	} else {
+		player.send("That isn't a valid option.")
+	}
+}
+func cmdForce(player *characterData, input string) {
+	args := strings.SplitN(input, " ", 2)
+
+	if input == "" {
+		player.send("force <player name/all> <command>")
+	}
+	if len(args) < 2 {
+		player.send("But what command?")
+		return
+	}
+	if strings.EqualFold(args[1], "force") {
+		player.send("You can't use force to run force.")
+		return
+	}
+
+	if strings.EqualFold(args[0], "all") {
+		for _, target := range charList {
+			if target == player {
+				//Don't force yourself
+				continue
+			}
+			goForce(target, args[1])
+			target.send("%v forced you to: %v", player.Name, args[1])
+		}
+		player.send("Forced everyone to: %v", args[1])
+		critLog("%v forced everyone to: %v", player.Name, args[1])
+		return
+	}
+
+	if target := checkPlaying(args[0]); target != nil {
+		if target == player {
+			player.send("You can't force youself")
+			return
+		}
+		goForce(target, args[1])
+		target.send("%v forced you to: %v", player.Name, args[1])
+		player.send("You forced %v to: %v", target.Name, args[1])
+		critLog("%v forced %v to: %v", player.Name, target.Name, args[1])
+
+	} else {
+		player.send("They don't seem to be online.")
+	}
+}
+
+func goForce(player *characterData, input string) {
+	cmdStr, args, _ := strings.Cut(input, " ")
+	cmdStr = strings.ToLower(cmdStr)
+
+	var command *commandData
+	for _, cmd := range cmdList {
+		if strings.EqualFold(cmd.name, cmdStr) {
+			command = cmd
+			break
+		}
+	}
+	if command != nil {
+		if command.disabled {
+			player.send("That command is disabled.")
+			return
+		}
+		if command.checkCommandLevel(player) {
+			if command.forceArg != "" {
+				command.goDo(player, command.forceArg)
+			} else {
+				command.goDo(player, args)
+			}
+		}
+	} else {
+		if cmdChat(player, input) {
+			findCommandMatch(player, cmdStr, args)
+		}
+	}
+}
+
+func loadSettings() serverSettingsData {
+	set := serverSettingsData{}
+
+	data, err := readFile(DATA_DIR + SETTINGS_FILE)
+	if err != nil {
+		return set
+	}
+
+	err = json.Unmarshal(data, &set)
+	if err != nil {
+		critLog("loadPlayer: Unable to unmarshal the data.")
+		return set
+	}
+	return set
+}
+
+func (set *serverSettingsData) saveSettings() {
+	fileName := DATA_DIR + SETTINGS_FILE
+	outbuf := new(bytes.Buffer)
+	enc := json.NewEncoder(outbuf)
+	enc.SetIndent("", "\t")
+
+	set.Version = SETTINGS_VERSION
+	err := enc.Encode(&set)
+	if err != nil {
+		critLog("saveSettings: enc.Encode: %v", err.Error())
+		return
+	}
+
+	err = saveFile(fileName, outbuf.Bytes())
+	if err != nil {
+		critLog("saveSettings: saveFile failed %v", err.Error())
+		return
+	}
+}
 
 func cmdUnban(player *characterData, input string) {
 	doBan(player, input, true, false)

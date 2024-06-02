@@ -25,6 +25,7 @@ const (
 	DISABLES_FILE  = "disabled.json"
 	BUGS_FILE      = "bugs.json"
 	BLOCKED_FILE   = "blocked.json"
+	SETTINGS_FILE  = "settings.json"
 
 	ACCOUNT_VERSION   = 1
 	CHARACTER_VERSION = 1
@@ -33,6 +34,7 @@ const (
 	BUGS_VERSION      = 1
 	ROOM_VERSION      = 1
 	NOTES_VERSION     = 1
+	SETTINGS_VERSION  = 1
 
 	DEFAULT_CHARSET = "LATIN1"
 )
