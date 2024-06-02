@@ -37,6 +37,13 @@ func mainLoop() {
 
 		hashReceiver()
 
+		forceCharSave := false
+		//Force save all every 30 mins.
+		if tickNum%1200 == 0 {
+			saveCharacters(true)
+			forceCharSave = true
+		}
+
 		switch loopTask {
 		case 0:
 			expireBlocks()
@@ -45,7 +52,9 @@ func mainLoop() {
 		case 2:
 			writeBlocked(false)
 		case 3:
-			saveAllAreas(false)
+			if !forceCharSave {
+				saveAllAreas(false)
+			}
 		case 4:
 			saveCharacters(false)
 		case 5:
@@ -76,7 +85,23 @@ func mainLoop() {
 		if *instantRespond {
 			for {
 				loopStart := time.Now()
-				interpAllDesc()
+				for _, desc := range descList {
+					if !desc.valid {
+						continue
+					}
+					if desc.processed {
+						continue
+					}
+					if desc.interp() {
+						desc.processed = true
+
+						timeLeft := roundTime - time.Since(start)
+						if timeLeft < INTERP_LOOP_MARGIN {
+							break
+						}
+					}
+
+				}
 				sendOutput()
 
 				timeLeft := roundTime - time.Since(start)
