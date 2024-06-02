@@ -119,18 +119,11 @@ type VitalsData struct {
 type olcEditorData struct {
 	OLCMode int `json:",omitempty"`
 
-	RoomEditor   editorData `json:",omitempty"`
-	AreaEditor   editorData `json:",omitempty"`
-	ResetEditor  editorData `json:",omitempty"`
-	ObjectEditor editorData `json:",omitempty"`
-	MobEditor    editorData `json:",omitempty"`
+	Location LocData
+	area     *areaData
+	room     *roomData
 
 	EditText []string `json:",omitempty"`
-}
-
-type editorData struct {
-	TargetUUID string `json:",omitempty"`
-	AreaUUID   string `json:",omitempty"`
 }
 
 type tellData struct {

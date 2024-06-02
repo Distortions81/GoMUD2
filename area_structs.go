@@ -69,8 +69,6 @@ type roomData struct {
 type LocData struct {
 	AreaUUID uuidData
 	RoomUUID uuidData
-
-	Area, Room int `json:",omitempty"`
 }
 
 type exitData struct {
@@ -78,8 +76,8 @@ type exitData struct {
 	DoorName string `json:",omitempty"`
 
 	Direction DIR
-	DirName   string  `json:",omitempty"`
-	ToRoom    LocData `json:",omitempty"`
+	DirName   string `json:",omitempty"`
+	ToRoom    LocData
 
 	pRoom *roomData
 }

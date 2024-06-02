@@ -21,7 +21,8 @@ func (player *characterData) goTo(loc LocData) {
 		return
 	}
 	player.room = room
-	player.Loc = LocData{AreaUUID: loc.AreaUUID, RoomUUID: loc.RoomUUID}
+	player.Loc = loc
+
 	room.players = append(room.players, player)
 	//mudLog("Player %v added to area/room %v / %v", player.Name, area.Name, room.Name)
 	player.dirty = true

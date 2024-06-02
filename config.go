@@ -12,6 +12,7 @@ const (
 	CONFIG_OLC
 	CONFIG_NOCOLOR
 	CONFIG_TEXT_EMOJI
+	CONFIG_OLCHERE
 
 	//Keep at end, do not use or delete
 	CONFIG_MAX
@@ -31,6 +32,7 @@ var configNames map[int]configInfo = map[int]configInfo{
 	CONFIG_NOCOLOR:    {name: "NoColor", desc: "Disable ANSI color"},
 	CONFIG_OLC:        {name: "OLCMode", desc: "Require 'OLC' before OLC commands.", level: LEVEL_BUILDER},
 	CONFIG_TEXT_EMOJI: {name: "TextEmoji", desc: "Attempt to replace emoji with emoji names.", level: LEVEL_BUILDER},
+	CONFIG_OLCHERE:    {name: "OLCHere", desc: "Always edit current area/room by default", level: LEVEL_BUILDER},
 }
 
 func cmdConfig(player *characterData, input string) {

@@ -14,6 +14,19 @@ var roomCmds []*commandData = []*commandData{
 }
 
 func rDesc(player *characterData, input string) {
+
+}
+
+func rSelect(player *characterData, input string) {
+	if strings.EqualFold(input, "here") {
+		player.OLCEditor.Location = player.Loc
+		player.send("Editor selections changed to current character room and area.")
+		if !player.Config.hasFlag(CONFIG_OLCHERE) {
+			player.send("Type 'config OLCHere' to always edit current area/room by default.")
+		}
+	} else {
+		//
+	}
 }
 
 func rList(player *characterData, input string) {
@@ -26,7 +39,15 @@ func rList(player *characterData, input string) {
 		return roomList[i].VNUM < roomList[j].VNUM
 	})
 	for _, room := range roomList {
-		player.send("VNUM: %-6v Name: %-30v Desc: %-40v", room.VNUM, room.Name, room.Description)
+		exits := ""
+		for _, exit := range room.Exits {
+			if exit.DirName == "" {
+				exits = exits + dirToShortColor[exit.Direction]
+			} else {
+				exits = exits + exit.DirName
+			}
+		}
+		player.send("VNUM: %-6v Name: %-15v Desc: %-35v Exits: %v{x", room.VNUM, room.Name, room.Description, exits)
 	}
 }
 func rRevnum(player *characterData, input string) {

@@ -204,8 +204,23 @@ func (tdesc *descData) doOutput() {
 
 	if tdesc.state == CON_PLAYING {
 		if target := tdesc.character; target != nil {
+			flag := ""
+			if target.Config.hasFlag(CONFIG_OLCHERE) {
+				flag = " (OLCHere On)"
+			}
 			if target.OLCEditor.OLCMode != OLC_NONE {
-				buf := fmt.Sprintf("<OLC %v: help, exit>:\r\n", olcModes[target.OLCEditor.OLCMode].name)
+				var avnum, rvnum int
+				if target.OLCEditor.area != nil {
+					avnum = target.OLCEditor.area.VNUM
+				}
+				if target.OLCEditor.room != nil {
+					rvnum = target.OLCEditor.room.VNUM
+				}
+
+				buf := fmt.Sprintf("<OLC %v: (%v:%v) help, exit%v>:\r\n",
+					olcModes[target.OLCEditor.OLCMode].name,
+					avnum, rvnum,
+					flag)
 				tdesc.outBuf = append(tdesc.outBuf, []byte(buf)...)
 			}
 			if target.Prompt != "" {

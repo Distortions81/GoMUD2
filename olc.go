@@ -106,6 +106,7 @@ func olcModeCommand(mode olcModeType, player *characterData, input string) {
 func interpOLC(player *characterData, input string) {
 
 	if player.OLCEditor.OLCMode != OLC_NONE {
+
 		if strings.EqualFold("exit", input) {
 			player.OLCEditor.OLCMode = OLC_NONE
 			player.send("Exited OLC editor.")

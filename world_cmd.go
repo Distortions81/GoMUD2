@@ -58,8 +58,8 @@ func (player *characterData) goExit(exit *exitData) {
 		player.leaveRoom()
 		player.room = exit.pRoom
 		player.room.players = append(player.room.players, player)
-		player.Loc = LocData{AreaUUID: exit.ToRoom.AreaUUID, RoomUUID: exit.ToRoom.RoomUUID}
 
+		player.Loc = exit.ToRoom
 		if exit.Direction == DIR_CUSTOM {
 			dirStr = exit.DirName
 		} else {

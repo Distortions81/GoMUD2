@@ -147,7 +147,20 @@ func (player *characterData) listCommands(input string) {
 	player.sendWW(buf)
 }
 
+func updateOLCHere(player *characterData) {
+	if player.OLCEditor.OLCMode != OLC_NONE &&
+		player.Config.hasFlag(CONFIG_OLCHERE) {
+
+		player.OLCEditor.Location = player.Loc
+
+		player.OLCEditor.area = player.room.pArea
+		player.OLCEditor.room = player.room
+	}
+}
+
 func (player *characterData) handleCommands(input string) {
+
+	defer updateOLCHere(player)
 
 	if !player.Config.hasFlag(CONFIG_OLC) &&
 		player.OLCEditor.OLCMode != OLC_NONE {

@@ -186,7 +186,6 @@ func relinkAreaPointers() {
 			for _, exit := range room.Exits {
 				exitCount++
 				exit.pRoom = areaList[exit.ToRoom.AreaUUID].Rooms.Data[exit.ToRoom.RoomUUID]
-
 			}
 		}
 	}
