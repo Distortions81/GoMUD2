@@ -195,7 +195,7 @@ func cmdBlocked(player *characterData, input string) {
 	})
 
 	player.send("Blocked connections:")
-	player.send("%50v : %8v:%-8v %v %v", "hostname", "Attempts", "History", "(Blocked)", "(HTTP)")
+	player.send("%40v : %8v:%-8v %v %v", "hostname", "Attempts", "History", "(Blocked)", "(HTTP)")
 
 	count := 0
 	var buf string
@@ -204,7 +204,7 @@ func cmdBlocked(player *characterData, input string) {
 			continue
 		}
 		count++
-		buf = buf + fmt.Sprintf("%50v : %8v:%-8v", item.Host, item.Attempts, item.History)
+		buf = buf + fmt.Sprintf("%40v : %8v:%-8v", item.Host, item.Attempts, item.History)
 		if item.Blocked {
 			buf = buf + " (Blocked)"
 		}
