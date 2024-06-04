@@ -101,20 +101,29 @@ func cmdStat(player *characterData, input string) {
 	fpulse = fpulse / uint64(historyLen)
 	ppulse = ppulse / uint64(historyLen)
 
-	player.send("\r\nMud load: Pulse: %3.4f%% / Window: %3.2f%%",
-		(float64(ppulse)/float64(ROUND_LENGTH_uS))*100.0,
-		(float64(fpulse)/float64(ROUND_LENGTH_uS))*100.0)
-	player.send("Pulse time: %v (%v peak, %v 5m peak)",
-		durafmt.ParseShort(time.Duration(ppulse*uint64(time.Microsecond))),
-		durafmt.ParseShort(time.Duration(peakPartialPulse)*time.Microsecond),
-		durafmt.ParseShort(time.Duration(ppeak)*time.Microsecond))
+	player.send("%v averages:", durafmt.ParseShort(time.Duration(time.Duration(historyLen)/PULSE_PER_SECOND*time.Second)).Format(shortUnits))
+	player.send("Mud load: Pulse: %3.4f%% / cmd-window: %3.2f%%",
+		(float64(ppulse)/float64(PULSE_LENGTH_uS))*100.0,
+		(float64(fpulse)/float64(PULSE_LENGTH_uS))*100.0)
+	player.send("Pulse: %v",
+		durafmt.ParseShort(time.Duration(ppulse*uint64(time.Microsecond))).Format(shortUnits))
 
-	player.send("Window time: %v (%v peak, %v 5m peak)",
-		durafmt.ParseShort(time.Duration(fpulse*uint64(time.Microsecond))),
-		durafmt.ParseShort(time.Duration(peakFullPulse)*time.Microsecond),
-		durafmt.ParseShort(time.Duration(fpeak)*time.Microsecond))
-	player.send("(%v averaged)",
-		durafmt.ParseShort(time.Duration(time.Duration(historyLen)/(1000000/ROUND_LENGTH_uS)*time.Second)))
+	player.send("cmd-window: %v",
+		durafmt.ParseShort(time.Duration(fpulse*uint64(time.Microsecond))).Format(shortUnits))
+
+	fpulse = uint64(fullPulseHistory[historyLen-1])
+	ppulse = uint64(partialPulseHistory[historyLen-1])
+	player.send("\r\nCurrent:")
+	player.send("Mud load: Pulse: %3.4f%% / cmd-window: %3.2f%%",
+		(float64(ppulse)/float64(PULSE_LENGTH_uS))*100.0,
+		(float64(fpulse)/float64(PULSE_LENGTH_uS))*100.0)
+	player.send("Pulse: %v (%v peak)",
+		durafmt.ParseShort(time.Duration(ppulse*uint64(time.Microsecond))).Format(shortUnits),
+		durafmt.ParseShort(time.Duration(peakPartialPulse)*time.Microsecond).Format(shortUnits))
+
+	player.send("cmd-window: %v (%v peak)",
+		durafmt.ParseShort(time.Duration(fpulse*uint64(time.Microsecond))).Format(shortUnits),
+		durafmt.ParseShort(time.Duration(peakFullPulse)*time.Microsecond).Format(shortUnits))
 }
 
 func cmdLicense(player *characterData, input string) {

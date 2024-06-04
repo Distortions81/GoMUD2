@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/remeh/sizedwaitgroup"
@@ -9,12 +10,15 @@ import (
 )
 
 const (
-	ROUND_LENGTH_uS     = 250000 //0.25s
-	CONNECT_THROTTLE    = time.Microsecond * 200
-	INTERP_LOOP_MARGIN  = (INTERP_LOOP_REST_uS * 2) * time.Microsecond
-	INTERP_LOOP_REST_uS = 10000
+	PULSE_PER_SECOND = 3.0
+	PULSE_PER_MINUTE = PULSE_PER_SECOND * 60
+	PULSE_LENGTH_uS  = 1000000 / PULSE_PER_SECOND
 
-	MAX_HISTORY_LEN = 1200 // 5min
+	INTERP_LOOP_MARGIN  = (INTERP_LOOP_REST_uS * 5) * time.Microsecond
+	INTERP_LOOP_REST_uS = 1000
+
+	PULSE_HISTORY_LEN  = 5 * PULSE_PER_MINUTE
+	FORCESAVE_INTERVAL = 5 * PULSE_PER_MINUTE
 )
 
 var loopTask int
@@ -26,8 +30,10 @@ var historyLen int
 func mainLoop() {
 	var tickNum uint64
 
-	roundTime := time.Duration(ROUND_LENGTH_uS * time.Microsecond)
+	pulseTime := time.Duration(int(math.Round(PULSE_LENGTH_uS))) * time.Microsecond
 	loopTime := time.Duration(INTERP_LOOP_REST_uS * time.Microsecond)
+
+	errLog("Round time: %v", pulseTime.Abs().String())
 
 	for serverState.Load() == SERVER_RUNNING {
 		tickNum++
@@ -37,8 +43,8 @@ func mainLoop() {
 
 		hashReceiver()
 
-		//Force save all every 30 mins.
-		if tickNum%1200 == 0 {
+		//Force save all
+		if tickNum%FORCESAVE_INTERVAL == 0 {
 			saveCharacters(true)
 		} else {
 			switch loopTask {
@@ -91,7 +97,7 @@ func mainLoop() {
 					if desc.interp() {
 						desc.processed = true
 
-						timeLeft := roundTime - time.Since(start)
+						timeLeft := pulseTime - time.Since(start)
 						if timeLeft < INTERP_LOOP_MARGIN {
 							break
 						}
@@ -100,7 +106,7 @@ func mainLoop() {
 				}
 				sendOutput()
 
-				timeLeft := roundTime - time.Since(start)
+				timeLeft := pulseTime - time.Since(start)
 				if timeLeft < INTERP_LOOP_MARGIN {
 					break
 				}
@@ -114,7 +120,7 @@ func mainLoop() {
 
 		//Sleep for remaining round time
 		took := time.Since(start)
-		timeLeft := roundTime - took
+		timeLeft := pulseTime - took
 
 		/* Record remaining time */
 		tookMicro := took.Microseconds()
@@ -124,9 +130,9 @@ func mainLoop() {
 		}
 
 		/* Trim to max history */
-		if historyLen >= MAX_HISTORY_LEN {
-			fullPulseHistory = fullPulseHistory[:MAX_HISTORY_LEN-1]
-			partialPulseHistory = partialPulseHistory[:MAX_HISTORY_LEN-1]
+		if historyLen >= PULSE_HISTORY_LEN {
+			fullPulseHistory = fullPulseHistory[:PULSE_HISTORY_LEN-1]
+			partialPulseHistory = partialPulseHistory[:PULSE_HISTORY_LEN-1]
 		} else {
 			historyLen++
 		}
@@ -306,12 +312,12 @@ func removeDeadDesc() {
 		} else if desc.state <= CON_CHECK_PASS &&
 			time.Since(desc.idleTime) > LOGIN_IDLE {
 			desc.sendln("\r\nIdle too long, disconnecting.")
-			desc.killDesc()
+			desc.killDesc(false)
 			continue
 
 		} else if desc.state == CON_DISCONNECTED ||
 			!desc.valid {
-			desc.killDesc()
+			desc.killDesc(false)
 			continue
 
 		} else if desc.state != CON_PLAYING &&
@@ -320,7 +326,7 @@ func removeDeadDesc() {
 				continue
 			}
 			desc.sendln("\r\nIdle too long, disconnecting.")
-			desc.killDesc()
+			desc.killDesc(false)
 			continue
 		} else {
 			newDescList = append(newDescList, desc)
@@ -329,8 +335,11 @@ func removeDeadDesc() {
 	descList = newDescList
 }
 
-func (desc *descData) killDesc() {
+func (desc *descData) killDesc(disconnect bool) {
 	//mudLog("Removed #%v", desc.id)
 	desc.valid = false
-	desc.conn.Close()
+	desc.state = CON_DISCONNECTED
+	if disconnect {
+		desc.conn.Close()
+	}
 }

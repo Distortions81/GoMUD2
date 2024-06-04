@@ -9,7 +9,7 @@ import (
 const LOGIN_IDLE = time.Second * 30
 const MENU_IDLE = time.Minute * 10
 const CHARACTER_IDLE = time.Minute * 30
-const BUILDER_IDLE = time.Hour * 2
+const BUILDER_IDLE = time.Hour
 
 func (desc *descData) interp() bool {
 	var input string
@@ -67,13 +67,13 @@ func (desc *descData) interp() bool {
 	if loginStateList[desc.state].hideInfo {
 		if !desc.telnet.hideEcho {
 			desc.telnet.hideEcho = true
-			//mudLog("#%v Suppressing echo for login/pass", desc.id)
+			//errLog("#%v Suppressing echo for login/pass", desc.id)
 			sendCmd(desc.conn, TermCmd_WILL, TermOpt_ECHO)
 		}
 	} else {
 		if desc.telnet.hideEcho {
 			desc.telnet.hideEcho = false
-			//mudLog("#%v No longer suppressing echo for login/pass", desc.id)
+			//errLog("#%v No longer suppressing echo for login/pass", desc.id)
 			sendCmd(desc.conn, TermCmd_WONT, TermOpt_ECHO)
 		}
 	}

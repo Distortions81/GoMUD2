@@ -62,7 +62,7 @@ func loadMudID() {
 			writeMudID()
 			return
 		}
-		//mudLog("%v loaded: %v", MudIDFile, MudID)
+		//errLog("%v loaded: %v", MudIDFile, MudID)
 	}
 }
 

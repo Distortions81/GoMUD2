@@ -35,7 +35,7 @@ func readTextFiles() {
 
 		shortName := strings.TrimSuffix(fname.Name(), textExt)
 		textFiles[shortName] = string(data)
-		//mudLog("readTextFiles: Read: %v", fname.Name())
+		//errLog("readTextFiles: Read: %v", fname.Name())
 	}
 
 	sslBuf := fmt.Sprintf("Use port %v for SSL.\r\n", *portTLS)

@@ -155,7 +155,7 @@ var loginStateList = [CON_MAX]loginStates{
 		goDo:     gCharSelect,
 	},
 	CON_RECONNECT_CONFIRM: {
-		goPrompt: pAlreadyPlayingWarn,
+		goPrompt: alreadyPlayingWarnPlayer,
 		goDo:     gReconnectConfirm,
 	},
 	CON_CHAR_CREATE: {

@@ -12,6 +12,7 @@ import (
 var areaList map[uuidData]*areaData = make(map[uuidData]*areaData)
 var sysAreaUUID, sysRoomUUID uuidData
 
+// Convert map to slice
 type roomMap struct {
 	Data map[uuidData]*roomData
 }

@@ -374,7 +374,7 @@ func alreadyPlayingWarnVictim(target *characterData) {
 	target.send("\r\nAnother connection on your account is attempting to play this character.\r\nIf they choose 'yes' to confirm you will be kicked.")
 }
 
-func pAlreadyPlayingWarn(desc *descData) {
+func alreadyPlayingWarnPlayer(desc *descData) {
 	desc.send(textFiles["warn"])
 	desc.send("\r\nThat character is already playing.\r\nDo you wish to disconnect the other session and take control of the character? (y/N)")
 }

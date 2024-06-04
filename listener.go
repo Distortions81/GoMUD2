@@ -18,6 +18,8 @@ var (
 	listenerTLS net.Listener
 )
 
+const CONNECT_THROTTLE = time.Microsecond * 200
+
 func setupListenerTLS() {
 	if *noTLS {
 		return

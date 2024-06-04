@@ -13,7 +13,7 @@ import (
 
 const (
 	maxInputLineLength = 1024
-	maxLines           = 50
+	maxLines           = 100
 	maxSubLen          = 128
 )
 
@@ -174,6 +174,10 @@ func (desc *descData) readDescLoop() {
 	//Read loop
 	var lastByte byte
 	for serverState.Load() == SERVER_RUNNING {
+
+		if !desc.valid {
+			break
+		}
 
 		//Read byte
 		data, err := desc.readByte()
@@ -380,9 +384,20 @@ func (desc *descData) ingestLine() {
 		buf = string(desc.inBuf)
 	}
 
+	buf = strings.TrimSpace(buf)
+
 	//Append line to buffer
-	desc.inputLines = append(desc.inputLines, strings.TrimSpace(buf))
-	desc.numInputLines++
+	commands := strings.Split(buf, ";;")
+
+	for _, cmd := range commands {
+		desc.inputLines = append(desc.inputLines, cmd)
+		desc.numInputLines++
+
+		if desc.numInputLines >= maxLines {
+			desc.inputFull()
+			return
+		}
+	}
 
 	//Reset input buffer
 	desc.inBuf = []byte{}
