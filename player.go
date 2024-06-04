@@ -171,7 +171,9 @@ func (player *characterData) quit(doClose bool) {
 		critLog("Saved %v", player.Name)
 	} else {
 		player.send("Saving character failed.")
-		critLog("Failed to save %v", player.Name)
+		player.valid = false
+		//critLog("Failed to save %v", player.Name)
+		return
 	}
 
 	if doClose {
