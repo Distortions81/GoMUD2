@@ -54,9 +54,9 @@ func makeTestArea() {
 
 	sysRooms := make(map[uuidData]*roomData)
 	sysRooms[sysRoomUUID] = &roomData{
-		Version: 1, UUID: sysRoomUUID, VNUM: 0, Name: "The void", Description: "You are floating in a void."}
+		Version: ROOM_VERSION, UUID: sysRoomUUID, VNUM: 0, Name: "The void", Description: "You are floating in a void."}
 	areaList[sysAreaUUID] = &areaData{
-		Version: 1, UUID: sysAreaUUID, VNUM: 0, Name: "system", Rooms: roomMap{Data: sysRooms}}
+		Version: AREA_VERSION, UUID: sysAreaUUID, VNUM: 0, Name: "system", Rooms: roomMap{Data: sysRooms}}
 }
 
 func saveAllAreas(force bool) {

@@ -271,7 +271,7 @@ func removeDeadChar() {
 	for _, target := range charList {
 		if !target.valid {
 			target.sendToPlaying("%v slowly fades away.", target.Name)
-			//mudLog("Removed character %v from charList.", target.Name)
+			mudLog("Removed character %v from charList.", target.Name)
 			if target.desc != nil {
 				target.saveCharacter()
 			}
@@ -333,7 +333,4 @@ func (desc *descData) killDesc() {
 	//mudLog("Removed #%v", desc.id)
 	desc.valid = false
 	desc.conn.Close()
-	if desc.character != nil {
-		desc.character.desc = nil
-	}
 }

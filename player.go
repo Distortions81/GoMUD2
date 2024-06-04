@@ -123,7 +123,7 @@ func checkPlayingUUID(name string, uuid uuidData) *characterData {
 		if !item.valid {
 			continue
 		}
-		if item.Name == name || item.UUID == uuid {
+		if item.Name == name && item.UUID == uuid {
 			return item
 		}
 	}
@@ -171,7 +171,7 @@ func (player *characterData) quit(doClose bool) {
 		critLog("Saved %v", player.Name)
 	} else {
 		player.send("Saving character failed.")
-		return
+		critLog("Failed to save %v", player.Name)
 	}
 
 	if doClose {
