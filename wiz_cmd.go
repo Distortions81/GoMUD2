@@ -10,6 +10,10 @@ import (
 	"github.com/hako/durafmt"
 )
 
+func cmdPanic(player *characterData, input string) {
+	panic("test")
+}
+
 func cmdForce(player *characterData, input string) {
 	args := strings.SplitN(input, " ", 2)
 

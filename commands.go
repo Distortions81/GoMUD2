@@ -78,6 +78,7 @@ var cmdMap = map[string]*commandData{
 	"settings":  {level: LEVEL_MODERATOR, hint: "Change server settings", args: []string{"option"}, goDo: cmdServSet},
 	"force":     {level: LEVEL_MODERATOR, hint: "Force a player to type something.", args: []string{"target/all", "command"}, goDo: cmdForce},
 	"transport": {level: LEVEL_MODERATOR, hint: "Force a player to recall.", args: []string{"target"}, goDo: cmdTransport},
+	"panic":     {level: LEVEL_IMPLEMENTER, hint: "Test panic, recover, log and stackdump.", goDo: cmdPanic},
 }
 
 func cmdOLC(player *characterData, input string) {
@@ -102,9 +103,10 @@ func cmdStat(player *characterData, input string) {
 	ppulse = ppulse / uint64(historyLen)
 
 	player.send("%v averages:", durafmt.ParseShort(time.Duration(time.Duration(historyLen)/PULSE_PER_SECOND*time.Second)).Format(shortUnits))
-	player.send("Mud load: Pulse: %3.4f%% / cmd-window: %3.2f%%",
-		(float64(ppulse)/float64(PULSE_LENGTH_uS))*100.0,
-		(float64(fpulse)/float64(PULSE_LENGTH_uS))*100.0)
+	mp := (float64(ppulse) / float64(PULSE_LENGTH_uS)) * 100.0
+	mpc := percentColor(mp)
+	wp := (float64(fpulse) / float64(PULSE_LENGTH_uS)) * 100.0
+	player.send("Mud load: Pulse: %v%3.4f%%{x / cmd-window: %3.2f%%", mpc, mp, wp)
 	player.send("Pulse: %v",
 		durafmt.ParseShort(time.Duration(ppulse*uint64(time.Microsecond))).Format(shortUnits))
 
@@ -114,9 +116,10 @@ func cmdStat(player *characterData, input string) {
 	fpulse = uint64(fullPulseHistory[historyLen-1])
 	ppulse = uint64(partialPulseHistory[historyLen-1])
 	player.send("\r\nCurrent:")
-	player.send("Mud load: Pulse: %3.4f%% / cmd-window: %3.2f%%",
-		(float64(ppulse)/float64(PULSE_LENGTH_uS))*100.0,
-		(float64(fpulse)/float64(PULSE_LENGTH_uS))*100.0)
+	mp = (float64(ppulse) / float64(PULSE_LENGTH_uS)) * 100.0
+	mpc = percentColor(mp)
+	wp = (float64(fpulse) / float64(PULSE_LENGTH_uS)) * 100.0
+	player.send("Mud load: Pulse: %v%3.4f%%{x / cmd-window: %3.2f%%", mpc, mp, wp)
 	player.send("Pulse: %v (%v peak)",
 		durafmt.ParseShort(time.Duration(ppulse*uint64(time.Microsecond))).Format(shortUnits),
 		durafmt.ParseShort(time.Duration(peakPartialPulse)*time.Microsecond).Format(shortUnits))

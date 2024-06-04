@@ -38,6 +38,20 @@ func (old DIR) revDir() DIR {
 	}
 }
 
+func percentColor(per float64) string {
+	if per <= 25 {
+		return "{C"
+	} else if per <= 50 {
+		return "{G"
+	} else if per <= 75 {
+		return "{Y"
+	} else if per <= 85 {
+		return "{M"
+	} else {
+		return "{R"
+	}
+}
+
 func cEllip(input string, limit int) string {
 	inLen := len(input)
 	if inLen > limit {

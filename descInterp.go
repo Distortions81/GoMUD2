@@ -159,7 +159,14 @@ func updateOLCHere(player *characterData) {
 }
 
 func (player *characterData) handleCommands(input string) {
-
+	defer func() {
+		if r := recover(); r != nil {
+			player.send("ERROR: Sorry, something went wrong when running the command: %v", input)
+			critLog("Panic during handleCommand: %v", input)
+			critLog("Panic: %v", r)
+			return
+		}
+	}()
 	defer updateOLCHere(player)
 
 	if !player.Config.hasFlag(CONFIG_OLC) &&

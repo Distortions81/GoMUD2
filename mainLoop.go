@@ -33,7 +33,7 @@ func mainLoop() {
 	pulseTime := time.Duration(int(math.Round(PULSE_LENGTH_uS))) * time.Microsecond
 	loopTime := time.Duration(INTERP_LOOP_REST_uS * time.Microsecond)
 
-	errLog("Round time: %v", pulseTime.Abs().String())
+	//errLog("Pulse time: %v", pulseTime.Abs().String())
 
 	for serverState.Load() == SERVER_RUNNING {
 		tickNum++
@@ -118,7 +118,7 @@ func mainLoop() {
 		}
 		descLock.Unlock()
 
-		//Sleep for remaining round time
+		//Sleep for remaining pulse time
 		took := time.Since(start)
 		timeLeft := pulseTime - took
 
@@ -137,11 +137,12 @@ func mainLoop() {
 			historyLen++
 		}
 
-		//Alert if we went more than 10% over frame time
-		if timeLeft < -(time.Millisecond * 25) {
-			critLog("Round went over: %v", time.Duration(timeLeft).Truncate(time.Microsecond).Abs().String())
+		//Alert if we went more than 1% over frame time
+		pul := int(math.Round(float64(PULSE_LENGTH_uS) / 100.0))
+		if timeLeft < -time.Duration(pul)*time.Microsecond {
+			critLog("Pulse lag: %v", time.Duration(timeLeft).Truncate(time.Microsecond).Abs().String())
 		} else {
-			//critLog("Round left: %v", time.Duration(timeLeft).Truncate(time.Microsecond).Abs().String())
+			//critLog("Pulse left: %v", time.Duration(timeLeft).Truncate(time.Microsecond).Abs().String())
 			time.Sleep(timeLeft)
 		}
 	}

@@ -17,6 +17,7 @@ const (
 	HELPS_DIR   = "helps/"
 	TEXTS_DIR   = "texts/"
 	NOTES_DIR   = "notes/"
+	PANIC_DIR   = "panics"
 
 	LOGS_DIR = "log/"
 
@@ -48,6 +49,7 @@ var makeDirs = []string{
 	DATA_DIR + AREA_DIR,
 	DATA_DIR + TEXTS_DIR,
 	DATA_DIR + NOTES_DIR,
+	DATA_DIR + PANIC_DIR,
 	LOGS_DIR}
 
 // Add commands to reserved names
