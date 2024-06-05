@@ -157,12 +157,7 @@ func cmdChannels(player *characterData, input string) {
 			if ch.level > player.Level {
 				continue
 			}
-			var status string
-			if player.Channels.hasFlag(1 << c) {
-				status = "{ROFF{x"
-			} else {
-				status = "{GON{x"
-			}
+			status := boolToText(!player.Channels.hasFlag(1 << c))
 			player.send("%10v: (%3v) %v", ch.cmd, status, ch.name)
 		}
 		player.send("\r\n<channel command> (toggles on/off)")
