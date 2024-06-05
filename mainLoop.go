@@ -306,17 +306,17 @@ func removeDeadDesc() {
 
 	var newDescList []*descData
 	for _, desc := range descList {
-		if desc.state == CON_HASH_WAIT {
+		if desc.state == CON_DISCONNECTED ||
+			!desc.valid {
+			mudLog("Removed #%v", desc.id)
+			desc.killConn()
+			continue
+		} else if desc.state == CON_HASH_WAIT {
 			//Don't do anything
 		} else if desc.state <= CON_CHECK_PASS &&
 			time.Since(desc.idleTime) > LOGIN_IDLE {
 			desc.sendln("\r\nIdle too long, disconnecting.")
 			desc.kill()
-		} else if desc.state == CON_DISCONNECTED ||
-			!desc.valid {
-			mudLog("Removed #%v", desc.id)
-			desc.killConn()
-			continue
 		} else if desc.state != CON_PLAYING &&
 			time.Since(desc.idleTime) > MENU_IDLE {
 			desc.sendln("\r\nIdle too long, disconnecting.")
