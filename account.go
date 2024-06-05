@@ -128,7 +128,7 @@ func loadchar(desc *descData, login string, uuid uuidData) {
 		for _, item := range target.Banned {
 			if !item.Revoked {
 				desc.sendln("This character is banned.")
-				desc.close()
+				desc.kill()
 				return
 			}
 		}
@@ -148,7 +148,7 @@ func loadchar(desc *descData, login string, uuid uuidData) {
 		for _, item := range newPlayer.Banned {
 			if !item.Revoked {
 				desc.sendln("This character is banned.")
-				desc.close()
+				desc.kill()
 				return
 			}
 		}
@@ -161,8 +161,7 @@ func loadchar(desc *descData, login string, uuid uuidData) {
 	} else {
 		desc.sendln("Failed to load character %v.", login)
 		critLog("Unable to load characer %v!", login)
-		desc.valid = false
-		desc.state = CON_DISCONNECTED
+		desc.kill()
 		return
 	}
 }
@@ -175,7 +174,7 @@ func gReconnectConfirm(desc *descData, input string) {
 		var newPlayer *characterData
 		if newPlayer = desc.loadCharacter(desc.account.tempString); newPlayer == nil {
 			desc.send("Loading the character failed.")
-			desc.close()
+			desc.kill()
 			return
 		}
 		newPlayer.send("Reconnected!")
@@ -247,8 +246,7 @@ func gCharConfirmName(desc *descData, input string) {
 			if desc.character.saveCharacter() {
 				desc.enterWorld(desc.character)
 			} else {
-				desc.valid = false
-				desc.state = CON_DISCONNECTED
+				desc.kill()
 			}
 		}
 

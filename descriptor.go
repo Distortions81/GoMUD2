@@ -136,7 +136,7 @@ func handleDesc(conn net.Conn, tls bool) {
 
 	//When loop exits, close
 	descLock.Lock()
-	desc.close()
+	desc.killConn()
 	descLock.Unlock()
 }
 

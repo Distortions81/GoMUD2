@@ -240,8 +240,7 @@ func (tdesc *descData) doOutput() {
 	_, err := tdesc.conn.Write(tdesc.outBuf)
 	if err != nil {
 		mudLog("#%v: %v: write failed (connection lost)", tdesc.id, tdesc.ip)
-		tdesc.state = CON_DISCONNECTED
-		tdesc.valid = false
+		tdesc.kill()
 	}
 
 	tdesc.outBuf = []byte{}
@@ -307,40 +306,42 @@ func removeDeadDesc() {
 	var newDescList []*descData
 	for _, desc := range descList {
 		if desc.state == CON_HASH_WAIT {
-			newDescList = append(newDescList, desc)
-			continue
-
+			//Don't do anything
 		} else if desc.state <= CON_CHECK_PASS &&
 			time.Since(desc.idleTime) > LOGIN_IDLE {
 			desc.sendln("\r\nIdle too long, disconnecting.")
-			desc.killDesc(false)
-			continue
-
+			desc.kill()
 		} else if desc.state == CON_DISCONNECTED ||
 			!desc.valid {
-			desc.killDesc(true)
+			desc.killConn()
 			continue
-
 		} else if desc.state != CON_PLAYING &&
 			time.Since(desc.idleTime) > MENU_IDLE {
-			if desc.character != nil && desc.character.Level < 0 {
-				continue
-			}
 			desc.sendln("\r\nIdle too long, disconnecting.")
-			desc.killDesc(false)
-			continue
-		} else {
-			newDescList = append(newDescList, desc)
+			desc.kill()
 		}
+
+		newDescList = append(newDescList, desc)
+
 	}
 	descList = newDescList
 }
 
-func (desc *descData) killDesc(disconnect bool) {
+func (desc *descData) kill() {
+	if desc == nil {
+		return
+	}
 	//mudLog("Removed #%v", desc.id)
 	desc.valid = false
 	desc.state = CON_DISCONNECTED
-	if disconnect {
-		desc.conn.Close()
+}
+
+func (desc *descData) killConn() {
+	if desc == nil {
+		return
 	}
+	mudLog("Removed #%v", desc.id)
+	desc.valid = false
+	desc.state = CON_DISCONNECTED
+	desc.conn.Close()
 }

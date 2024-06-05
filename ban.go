@@ -32,7 +32,7 @@ func doBan(player *characterData, input string, unban, account bool) {
 	var target *characterData
 	if target = checkPlaying(args[0]); target != nil {
 		target.send("You have been banned. Reason: %v", reason)
-		target.desc.close()
+		target.desc.kill()
 	}
 
 	if target == nil {

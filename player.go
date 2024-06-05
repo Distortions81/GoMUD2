@@ -165,6 +165,9 @@ func checkPlayingPMatch(name string) *characterData {
 
 func (player *characterData) quit(doClose bool) {
 
+	player.leaveRoom()
+	player.valid = false
+
 	if player.desc != nil {
 		player.desc.sendln(fairwellBuf)
 		if player.saveCharacter() {
@@ -172,31 +175,26 @@ func (player *characterData) quit(doClose bool) {
 			critLog("Saved %v", player.Name)
 		} else {
 			player.send("Saving character failed.")
-			player.valid = false
-			//critLog("Failed to save %v", player.Name)
+			critLog("Failed to save %v", player.Name)
 		}
-	}
-	player.leaveRoom()
+		if doClose {
+			player.desc.kill()
+		}
 
-	if doClose {
-		player.desc.state = CON_DISCONNECTED
-		player.valid = false
-	} else {
+	}
+
+	if !doClose {
 		player.send("\r\nChoose a character to play:")
 		player.desc.inputLock.Lock()
 		player.desc.inputLines = []string{}
 		player.desc.numInputLines = 0
-		player.valid = false
 		player.desc.inputLock.Unlock()
-		player.leaveRoom()
 
 		go func(target *characterData) {
 			descLock.Lock()
 			target.desc.state = CON_CHAR_LIST
 			showStatePrompt(target.desc)
-			target.valid = false
 			descLock.Unlock()
 		}(player)
-
 	}
 }

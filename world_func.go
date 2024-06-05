@@ -18,10 +18,14 @@ func lookRoom(player *characterData) {
 	if len(player.room.players) > 0 {
 		playersList = "\r\nWho's here: "
 		for i, target := range player.room.players {
+
 			if i != 0 {
 				playersList = playersList + ", "
 			}
 			playersList = playersList + target.Name
+			if target.desc == nil || (target.desc != nil && !target.desc.valid) {
+				playersList = playersList + " (no link)"
+			}
 		}
 		if playersList != "" {
 			playersList = playersList + "\r\n"

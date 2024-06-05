@@ -294,8 +294,7 @@ func gOldPass(desc *descData, input string) {
 	defer hashLock.Unlock()
 	if hashDepth > HASH_DEPTH_MAX {
 		desc.send("Sorry, too many passphrase requests are already in the queue. Please try again later.")
-		desc.state = CON_DISCONNECTED
-		desc.valid = false
+		desc.kill()
 	} else {
 		desc.send("Checking your passphrase, please wait.")
 		hashDepth++
@@ -324,8 +323,7 @@ func gConfirmNewPass(desc *descData, input string) {
 		hashLock.Lock()
 		if hashDepth > HASH_DEPTH_MAX {
 			desc.send("Sorry, too many passphrase requests are already in the queue. Please try again later.")
-			desc.state = CON_DISCONNECTED
-			desc.valid = false
+			desc.kill()
 			desc.account.tempString = ""
 			hashLock.Unlock()
 			return
@@ -354,7 +352,7 @@ func gLogin(desc *descData, input string) {
 		desc.state = CON_NEW_ACCOUNT
 
 	} else if inputLen := len(input); inputLen < MIN_LOGIN_LEN || inputLen > MAX_LOGIN_LEN {
-		desc.close()
+		desc.kill()
 
 	} else if accountIndex[input] != nil {
 		err := desc.loadAccount(accountIndex[input].UUID)
@@ -364,7 +362,7 @@ func gLogin(desc *descData, input string) {
 			desc.sendln(warnBuf)
 			desc.sendln("ERROR: Sorry, unable to load that account!")
 			critLog("gLogin: %v: %v: Unable to load account: %v (%v)", desc.id, desc.ip, input, err)
-			desc.close()
+			desc.kill()
 
 		}
 	} else {
@@ -385,8 +383,7 @@ func gPass(desc *descData, input string) {
 	defer hashLock.Unlock()
 	if hashDepth > HASH_DEPTH_MAX {
 		desc.send("Sorry, too many passphrase requests are already in the queue. Please try again later.")
-		desc.state = CON_DISCONNECTED
-		desc.valid = false
+		desc.kill()
 	} else {
 		desc.send("Checking your passphrase, please wait.")
 		hashDepth++
@@ -458,8 +455,7 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 		hashLock.Lock()
 		if hashDepth > HASH_DEPTH_MAX {
 			desc.send("Sorry, too many passphrase requests are already in the queue. Please try again later.")
-			desc.state = CON_DISCONNECTED
-			desc.valid = false
+			desc.kill()
 			desc.account.tempString = ""
 			hashLock.Unlock()
 			return

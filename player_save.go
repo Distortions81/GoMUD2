@@ -108,7 +108,7 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 	if target != nil {
 		target.send(fairwellBuf)
 		target.send("Another connection from your account has forcefully taken over control of this character.")
-		target.desc.close()
+		target.desc.kill()
 
 		desc.character = target
 		desc.character.desc = desc

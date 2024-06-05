@@ -160,27 +160,16 @@ func (desc *descData) inputFull() {
 	buf := "Input buffer full! Stop spamming! Closing connection..."
 	desc.sendln(buf)
 	critLog("#%v: ERROR: %v: %v", desc.id, desc.ip, buf)
-	desc.valid = false
-	desc.killDesc(false)
-	desc.state = CON_DISCONNECTED
+	desc.kill()
 }
 
 func (desc *descData) readByte() (byte, error) {
 	data, err := desc.reader.ReadByte()
 	if err != nil {
 		descLock.Lock()
-		desc.valid = false
-		desc.state = CON_DISCONNECTED
+		desc.kill()
 		descLock.Unlock()
 		return 0, err
 	}
 	return data, nil
-}
-
-func (desc *descData) close() {
-	if desc == nil {
-		return
-	}
-	desc.state = CON_DISCONNECTED
-	desc.valid = false
 }

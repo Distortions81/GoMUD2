@@ -124,7 +124,7 @@ func changePass(item *hashData) {
 			item.desc.sendln(warnBuf)
 			item.desc.sendln("Unable to save account!")
 			critLog("#%v unable to save account!", item.id)
-			item.desc.close()
+			item.desc.kill()
 			return
 		}
 
@@ -184,8 +184,7 @@ func passCheckComplete(item *hashData) {
 	} else {
 		item.desc.send("Incorrect passphrase.")
 		critLog("#%v tried an incorrect passphrase.", item.id)
-		item.desc.state = CON_DISCONNECTED
-		item.desc.valid = false
+		item.desc.kill()
 	}
 }
 
@@ -204,9 +203,7 @@ func hashGenComplete(item *hashData) {
 	//Otherwise could be exploitable.
 	if !isAccNameAvail(item.desc.account.Login) {
 		item.desc.send("Sorry, that login name is already in use.")
-		item.desc.valid = false
-		item.desc.state = CON_DISCONNECTED
-		return
+		item.desc.kill()
 	}
 
 	//Create account
@@ -215,7 +212,7 @@ func hashGenComplete(item *hashData) {
 		item.desc.sendln(warnBuf)
 		item.desc.sendln("Unable to create account!")
 		critLog("#%v unable to create account!", item.id)
-		item.desc.close()
+		item.desc.kill()
 		return
 	}
 
@@ -225,7 +222,7 @@ func hashGenComplete(item *hashData) {
 		item.desc.send(warnBuf)
 		item.desc.sendln("Unable to save account!")
 		critLog("#%v unable to save account!", item.id)
-		item.desc.close()
+		item.desc.kill()
 		return
 	}
 
