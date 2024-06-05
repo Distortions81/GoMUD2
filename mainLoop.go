@@ -318,7 +318,7 @@ func removeDeadDesc() {
 
 		} else if desc.state == CON_DISCONNECTED ||
 			!desc.valid {
-			desc.killDesc(false)
+			desc.killDesc(true)
 			continue
 
 		} else if desc.state != CON_PLAYING &&
