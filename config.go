@@ -9,9 +9,9 @@ const (
 	CONFIG_NOCHANNEL
 	CONFIG_DEAF
 	CONFIG_NOWRAP
-	CONFIG_OLC
 	CONFIG_NOCOLOR
 	CONFIG_TEXT_EMOJI
+	CONFIG_OLC
 	CONFIG_OLCHERE
 	CONFIG_OLCHYBRID
 
@@ -22,6 +22,11 @@ const (
 type configInfo struct {
 	name, desc string
 	level      int
+
+	disableWhenEnabled,
+	enableWhenEnabled,
+	disableWhenDisabled,
+	enableWhenDisabled int
 }
 
 var configNames map[int]configInfo = map[int]configInfo{
@@ -32,9 +37,9 @@ var configNames map[int]configInfo = map[int]configInfo{
 	CONFIG_NOWRAP:     {name: "NoWrap", desc: "Do not word-wrap"},
 	CONFIG_NOCOLOR:    {name: "NoColor", desc: "Disable ANSI color"},
 	CONFIG_TEXT_EMOJI: {name: "TextEmoji", desc: "Attempt to replace emoji with emoji names."},
-	CONFIG_OLC:        {name: "OLCMode", desc: "Require 'OLC' before OLC commands.", level: LEVEL_BUILDER},
 	CONFIG_OLCHERE:    {name: "OLCHere", desc: "Always edit current area/room by default", level: LEVEL_BUILDER},
-	CONFIG_OLCHYBRID:  {name: "OLCHybrid", desc: "Allow OLC and normal commands at the same time.", level: LEVEL_BUILDER},
+	CONFIG_OLC:        {name: "OLCMode", desc: "Require 'OLC' before OLC commands.", level: LEVEL_BUILDER, disableWhenEnabled: CONFIG_OLCHYBRID},
+	CONFIG_OLCHYBRID:  {name: "OLCHybrid", desc: "Allow OLC and normal commands at the same time.", level: LEVEL_BUILDER, disableWhenEnabled: CONFIG_OLC},
 }
 
 func cmdConfig(player *characterData, input string) {
@@ -73,10 +78,25 @@ func cmdConfig(player *characterData, input string) {
 				if player.Config.hasFlag(1 << x) {
 					player.send("%v is now OFF.", item.name)
 					player.Config.clearFlag(1 << x)
+
+					if item.disableWhenDisabled > 0 {
+						player.Config.clearFlag(Bitmask(item.disableWhenEnabled))
+					}
+					if item.enableWhenDisabled > 0 {
+						player.Config.addFlag(Bitmask(item.enableWhenEnabled))
+					}
 				} else {
 					player.send("%v is now ON", item.name)
 					player.Config.addFlag(1 << x)
+
+					if item.disableWhenEnabled > 0 {
+						player.Config.clearFlag(Bitmask(item.disableWhenEnabled))
+					}
+					if item.enableWhenEnabled > 0 {
+						player.Config.addFlag(Bitmask(item.enableWhenEnabled))
+					}
 				}
+
 				if player.desc != nil && player.desc.telnet.Options != nil {
 					player.desc.telnet.Options.NoColor = player.Config.hasFlag(CONFIG_NOCOLOR)
 				}
