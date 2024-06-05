@@ -182,6 +182,11 @@ func (desc *descData) readDescLoop() {
 		//Read byte
 		data, err := desc.readByte()
 		if err != nil {
+			mudLog("#%v: %v: write failed (connection lost)", desc.id, desc.ip)
+			if desc.character != nil {
+				desc.character.sendToRoom("%v has lost their connection.", desc.character.Name)
+			}
+			desc.killConn()
 			return
 		}
 

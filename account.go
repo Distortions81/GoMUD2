@@ -178,7 +178,7 @@ func gReconnectConfirm(desc *descData, input string) {
 			return
 		}
 		newPlayer.send("Reconnected!")
-		newPlayer.sendToRoom("%v reconnected.")
+		newPlayer.sendToRoom("%v has reconnected.", newPlayer.Name)
 		cmdLook(newPlayer, "")
 		desc.character.checkTells()
 	} else {

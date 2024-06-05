@@ -240,7 +240,9 @@ func (tdesc *descData) doOutput() {
 	_, err := tdesc.conn.Write(tdesc.outBuf)
 	if err != nil {
 		mudLog("#%v: %v: write failed (connection lost)", tdesc.id, tdesc.ip)
-		tdesc.kill()
+		if tdesc.character != nil {
+			tdesc.character.sendToRoom("%v has lost their connection.", tdesc.character.Name)
+		}
 	}
 
 	tdesc.outBuf = []byte{}
@@ -312,6 +314,7 @@ func removeDeadDesc() {
 			desc.kill()
 		} else if desc.state == CON_DISCONNECTED ||
 			!desc.valid {
+			mudLog("Removed #%v", desc.id)
 			desc.killConn()
 			continue
 		} else if desc.state != CON_PLAYING &&
@@ -338,7 +341,7 @@ func (desc *descData) killConn() {
 	if desc == nil {
 		return
 	}
-	mudLog("Removed #%v", desc.id)
+
 	desc.valid = false
 	desc.state = CON_DISCONNECTED
 	desc.conn.Close()
