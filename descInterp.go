@@ -9,6 +9,7 @@ import (
 const LOGIN_IDLE = time.Second * 30
 const MENU_IDLE = time.Minute * 10
 const CHARACTER_IDLE = time.Minute * 30
+const NO_LINK_TIME = time.Minute * 2
 const BUILDER_IDLE = time.Hour
 
 func (desc *descData) interp() bool {

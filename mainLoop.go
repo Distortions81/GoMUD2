@@ -275,29 +275,38 @@ func removeDeadChar() {
 	//Remove dead characters
 	var newCharacterList []*characterData
 	for _, target := range charList {
-		if !target.valid {
-			target.sendToPlaying("%v slowly fades away.", target.Name)
-			mudLog("Removed character %v from charList.", target.Name)
-			if target.desc != nil {
-				target.saveCharacter()
-			}
-			target.leaveRoom()
+		if target.desc == nil || (target.desc != nil && !target.desc.valid) &&
+			time.Since(target.idleTime) > NO_LINK_TIME {
+			removeChar(target)
+			continue
+		} else if !target.valid {
+			removeChar(target)
 			continue
 		} else if target.Level >= LEVEL_BUILDER &&
 			time.Since(target.idleTime) > BUILDER_IDLE {
 			target.send("Idle too long, quitting...")
-			target.quit(true)
+			removeChar(target)
 			continue
 
 		} else if target.Level < LEVEL_BUILDER &&
 			time.Since(target.idleTime) > CHARACTER_IDLE {
 			target.send("Idle too long, quitting...")
-			target.quit(true)
+			removeChar(target)
 			continue
 		}
 		newCharacterList = append(newCharacterList, target)
 	}
 	charList = newCharacterList
+}
+
+func removeChar(target *characterData) {
+	target.sendToRoom("%v slowly fades away.", target.Name)
+	mudLog("Removed character %v from charList.", target.Name)
+	if target.desc != nil {
+		target.saveCharacter()
+	}
+	target.valid = false
+	target.quit(true)
 }
 
 func removeDeadDesc() {
