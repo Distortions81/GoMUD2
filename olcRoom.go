@@ -21,6 +21,10 @@ func rUndo(player *characterData, input string) {
 	player.send("Edit history:")
 
 	for i, item := range player.OLCEditor.Undo {
+		if item.OLCMode != player.OLCEditor.OLCMode {
+			continue
+		}
+
 		var room *roomData
 		var avnum, rvnum string = item.Loc.AreaUUID.toString(), item.Loc.RoomUUID.toString()
 
@@ -32,8 +36,8 @@ func rUndo(player *characterData, input string) {
 				rvnum = strconv.FormatInt(int64(room.VNUM), 10)
 			}
 		}
-		player.send("#%-5v Type: %-15v Mode: %-8v Loc: %v:%v", i+1, cEllip(item.Name, 15), modeToText[item.OLCMode], avnum, rvnum)
-		player.send("From:\r\n%v\r\nTo:\r\n%v\r\n", item.From, item.To)
+		player.send("#%-5v Type: %-15v Loc: %v:%v", i+1, cEllip(item.Name, 15), avnum, rvnum)
+		player.send("From: %v\r\nTo: %v\r\n", item.From, item.To)
 	}
 }
 
