@@ -23,6 +23,7 @@ func (desc *descData) interp() bool {
 	} else {
 		//Get oldest line
 		input = desc.inputLines[0]
+		defer reportPanic(desc, "desc: %v", input)
 
 		if desc.numInputLines == 1 {
 			//If only one line, reset buffer
@@ -159,7 +160,6 @@ func updateOLCHere(player *characterData) {
 }
 
 func (player *characterData) handleCommands(input string) {
-	defer reportPanic(player, "command: %v", input)
 	defer updateOLCHere(player)
 
 	if !player.Config.hasFlag(CONFIG_OLC) &&
