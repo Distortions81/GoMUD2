@@ -277,21 +277,20 @@ func removeDeadChar() {
 	for _, target := range charList {
 		if target.desc == nil || (target.desc != nil && !target.desc.valid) &&
 			time.Since(target.idleTime) > NO_LINK_TIME {
-			removeChar(target)
+			target.quit(true)
 			continue
 		} else if !target.valid {
-			removeChar(target)
 			continue
 		} else if target.Level >= LEVEL_BUILDER &&
 			time.Since(target.idleTime) > BUILDER_IDLE {
 			target.send("Idle too long, quitting...")
-			removeChar(target)
+			target.quit(true)
 			continue
 
 		} else if target.Level < LEVEL_BUILDER &&
 			time.Since(target.idleTime) > CHARACTER_IDLE {
 			target.send("Idle too long, quitting...")
-			removeChar(target)
+			target.quit(true)
 			continue
 		}
 		newCharacterList = append(newCharacterList, target)
@@ -299,14 +298,30 @@ func removeDeadChar() {
 	charList = newCharacterList
 }
 
-func removeChar(target *characterData) {
+func (target *characterData) quit(disc bool) {
+	target.send(fairwellBuf)
 	target.sendToRoom("%v slowly fades away.", target.Name)
 	mudLog("Removed character %v from charList.", target.Name)
-	if target.desc != nil {
-		target.saveCharacter()
-	}
+	target.leaveRoom()
+	target.saveCharacter()
 	target.valid = false
-	target.quit(true)
+
+	if !disc {
+		target.send("\r\nChoose a character to play:")
+		target.desc.inputLock.Lock()
+		target.desc.inputLines = []string{}
+		target.desc.numInputLines = 0
+		target.desc.inputLock.Unlock()
+
+		go func(desc *descData) {
+			descLock.Lock()
+			desc.state = CON_CHAR_LIST
+			showStatePrompt(desc)
+			descLock.Unlock()
+		}(target.desc)
+	} else {
+		target.desc.kill()
+	}
 }
 
 func removeDeadDesc() {
@@ -340,7 +355,6 @@ func (desc *descData) kill() {
 	if desc == nil {
 		return
 	}
-	//mudLog("Removed #%v", desc.id)
 	desc.valid = false
 	desc.state = CON_DISCONNECTED
 }

@@ -100,6 +100,7 @@ func (desc *descData) enterWorld(player *characterData) {
 	desc.character.desc = desc
 	desc.character.loginTime = time.Now()
 	desc.character.idleTime = time.Now()
+	desc.state = CON_PLAYING
 
 	charList = append(charList, player)
 	player.goTo(player.Loc)
@@ -110,7 +111,7 @@ func (desc *descData) enterWorld(player *characterData) {
 		}
 	}
 
-	desc.state = CON_PLAYING
+	player.sendToRoom("%v slowly fades into existence.")
 	cmdLook(desc.character, "")
 	desc.character.checkTells()
 	if player.Level < LEVEL_PLAYER {
@@ -161,40 +162,4 @@ func checkPlayingPMatch(name string) *characterData {
 		}
 	}
 	return nil
-}
-
-func (player *characterData) quit(doClose bool) {
-
-	player.leaveRoom()
-	player.valid = false
-
-	if player.desc != nil {
-		player.desc.sendln(fairwellBuf)
-		if player.saveCharacter() {
-			player.send("Character saved.")
-			critLog("Saved %v", player.Name)
-		} else {
-			player.send("Saving character failed.")
-			critLog("Failed to save %v", player.Name)
-		}
-		if doClose {
-			player.desc.kill()
-		}
-
-	}
-
-	if !doClose {
-		player.send("\r\nChoose a character to play:")
-		player.desc.inputLock.Lock()
-		player.desc.inputLines = []string{}
-		player.desc.numInputLines = 0
-		player.desc.inputLock.Unlock()
-
-		go func(target *characterData) {
-			descLock.Lock()
-			target.desc.state = CON_CHAR_LIST
-			showStatePrompt(target.desc)
-			descLock.Unlock()
-		}(player)
-	}
 }
