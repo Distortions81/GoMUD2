@@ -130,7 +130,7 @@ func mainLoop() {
 		}
 
 		/* Trim to max history */
-		if historyLen >= PULSE_HISTORY_LEN {
+		if historyLen >= PULSE_HISTORY_LEN-1 {
 			fullPulseHistory = fullPulseHistory[:PULSE_HISTORY_LEN-1]
 			partialPulseHistory = partialPulseHistory[:PULSE_HISTORY_LEN-1]
 		} else {
