@@ -176,8 +176,9 @@ func (player *characterData) handleCommands(input string) {
 			}
 			return
 		}
-		interpOLC(player, input)
-		return
+		if interpOLC(player, input) {
+			return
+		}
 	}
 
 	parseCommand(player, input)
@@ -203,7 +204,11 @@ func parseCommand(player *characterData, input string) {
 	} else {
 		if cmdChat(player, input) {
 			if !findCommandMatch(cmdList, player, cmdStr, args) {
-				player.listCommands("")
+				if player.OLCEditor.OLCMode == OLC_NONE {
+					player.listCommands("")
+				} else {
+					goForce(player, "")
+				}
 			}
 		}
 	}
@@ -269,7 +274,7 @@ func findCommandMatch(list []*commandData, player *characterData, cmdStr string,
 			}
 		}
 	}
-	player.send("That isn't an available command.")
+	//player.send("That isn't an available command.")
 	return false
 }
 

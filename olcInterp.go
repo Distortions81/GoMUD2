@@ -70,47 +70,65 @@ func olcHelp(player *characterData, olcCmdList []*commandData) {
 	}
 }
 
-func olcModeCommand(mode olcModeType, player *characterData, input string) {
+func olcModeCommand(mode olcModeType, player *characterData, input string) bool {
 	args := strings.SplitN(input, " ", 2)
 
 	for _, item := range mode.list {
 		if strings.EqualFold(item.name, args[0]) {
 			if item.goDo == nil {
 				item.subType(player, mode.list)
-				return
+				return false
 			}
 			if len(args) != 2 {
 				item.goDo(player, "")
 			} else {
 				item.goDo(player, args[1])
 			}
-			return
+			return true
 		}
 	}
 	if len(args) != 2 {
 		if !findCommandMatch(mode.list, player, args[0], "") {
-			olcHelp(player, mode.list)
+			if !player.Config.hasFlag(CONFIG_OLCHYBRID) {
+				olcHelp(player, mode.list)
+				return true
+			}
+			return false
 		}
 	} else {
 		if !findCommandMatch(mode.list, player, args[0], args[1]) {
-			olcHelp(player, mode.list)
+			if !player.Config.hasFlag(CONFIG_OLCHYBRID) {
+				olcHelp(player, mode.list)
+				return true
+			}
+			return false
 		}
 	}
+	return true
 }
 
-func interpOLC(player *characterData, input string) {
+func interpOLC(player *characterData, input string) bool {
 
+	if input == "" {
+		for i, item := range olcModes {
+			if i == player.OLCEditor.OLCMode {
+				olcHelp(player, item.list)
+				return true
+			}
+		}
+	}
 	if player.OLCEditor.OLCMode != OLC_NONE {
 
 		if strings.EqualFold("exit", input) {
 			player.OLCEditor.OLCMode = OLC_NONE
 			player.send("Exited OLC editor.")
-			return
+			return true
 		}
 		for i, item := range olcModes {
 			if i == player.OLCEditor.OLCMode {
-				olcModeCommand(item, player, input)
-				return
+				if olcModeCommand(item, player, input) {
+					return true
+				}
 			}
 		}
 	}
@@ -118,15 +136,20 @@ func interpOLC(player *characterData, input string) {
 		if strings.EqualFold(item.name, input) {
 			player.OLCEditor.OLCMode = i
 			player.send("Entering %v edit mode.", item.name)
-			return
+			return true
 		}
 	}
-	player.send("That isn't a valid OLC command.")
+	if !player.Config.hasFlag(CONFIG_OLCHYBRID) {
+		player.send("That isn't a valid OLC command.")
 
-	player.send("OLC modes:")
-	for _, item := range olcModes {
-		player.send("%-10v", cEllip(item.name, 10))
+		player.send("OLC modes:")
+		for _, item := range olcModes {
+			player.send("%-10v", cEllip(item.name, 10))
+		}
+		return true
 	}
+
+	return false
 }
 
 func olcAsaveAll(player *characterData, input string) {
