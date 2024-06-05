@@ -14,6 +14,7 @@ const (
 	CONFIG_OLC
 	CONFIG_OLCHERE
 	CONFIG_OLCHYBRID
+	CONFIG_SCREENSIZE
 
 	//Keep at end, do not use or delete
 	CONFIG_MAX
@@ -23,6 +24,9 @@ type configInfo struct {
 	name, desc string
 	level      int
 
+	integer bool
+	value   int
+
 	disableWhenEnabled,
 	enableWhenEnabled,
 	disableWhenDisabled,
@@ -30,9 +34,9 @@ type configInfo struct {
 }
 
 var configNames map[int]configInfo = map[int]configInfo{
-	CONFIG_HIDDEN:     {name: "Hidden", desc: "Don't show up in who, join or leave."},
-	CONFIG_NOTELL:     {name: "NoTell", desc: "Reject tells"},
-	CONFIG_NOCHANNEL:  {name: "NoChannel", desc: "Mute all channels"},
+	CONFIG_HIDDEN:     {name: "Hide", desc: "Don't show up in who, join or leave."},
+	CONFIG_NOTELL:     {name: "MuteTells", desc: "Reject tells"},
+	CONFIG_NOCHANNEL:  {name: "MuteChannels", desc: "Mute all channels"},
 	CONFIG_DEAF:       {name: "Deaf", desc: "Mute say/emote/yell"},
 	CONFIG_NOWRAP:     {name: "NoWrap", desc: "Do not word-wrap"},
 	CONFIG_NOCOLOR:    {name: "NoColor", desc: "Disable ANSI color"},
@@ -40,6 +44,7 @@ var configNames map[int]configInfo = map[int]configInfo{
 	CONFIG_OLCHERE:    {name: "OLCHere", desc: "Always edit current area/room by default", level: LEVEL_BUILDER},
 	CONFIG_OLC:        {name: "OLCMode", desc: "Require 'OLC' before OLC commands.", level: LEVEL_BUILDER, disableWhenEnabled: CONFIG_OLCHYBRID},
 	CONFIG_OLCHYBRID:  {name: "OLCHybrid", desc: "Allow OLC and normal commands at the same time.", level: LEVEL_BUILDER, disableWhenEnabled: CONFIG_OLC},
+	CONFIG_SCREENSIZE: {name: "ScreenSize", desc: "Manually specify your terminal size.", integer: true},
 }
 
 func cmdConfig(player *characterData, input string) {
@@ -51,6 +56,14 @@ func cmdConfig(player *characterData, input string) {
 			}
 			if item.name == "" {
 				continue
+			}
+
+			if item.integer {
+				if !player.Config.hasFlag(1 << x) {
+					player.send("%15v: (%v) %v", cEllip(item.name, 15), "{rOff", item.desc)
+				} else {
+					player.send("%15v: (%v) %v", cEllip(item.name, 15), item.value, item.desc)
+				}
 			}
 
 			status := boolToText(player.Config.hasFlag(1 << x))
