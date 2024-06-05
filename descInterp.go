@@ -7,9 +7,9 @@ import (
 )
 
 const LOGIN_IDLE = time.Second * 30
-const MENU_IDLE = time.Minute * 10
-const CHARACTER_IDLE = time.Minute * 30
-const BUILDER_IDLE = time.Hour
+const MENU_IDLE = LOGIN_IDLE
+const CHARACTER_IDLE = LOGIN_IDLE
+const BUILDER_IDLE = LOGIN_IDLE
 
 func (desc *descData) interp() bool {
 	var input string
