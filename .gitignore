@@ -10,3 +10,4 @@ data/disabled.json
 data/blocked.json
 data/bugs.json
 data/settings.json
+data/panics
