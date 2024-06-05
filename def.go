@@ -4,7 +4,7 @@ import "strings"
 
 const (
 	VERSION  = "v0.0.22a"
-	VWHEN    = "06-04-2024-0202p"
+	VWHEN    = "06-04-2024-0706p"
 	CODENAME = "Galaxium"
 
 	LICENSE = "GOMUD2: " + VERSION + "-" + VWHEN + "-" + CODENAME + "\n" +
