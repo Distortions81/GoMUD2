@@ -110,14 +110,13 @@ func main() {
 	signal.Notify(signalHandle, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-signalHandle
 
-	buf := "--> Server is rebooting <--"
-	ToAllConnections(buf)
-	ToAllConnections(buf)
-	ToAllConnections(buf)
-
-	saveCharacters(true)
-	serverState.Store(SERVER_SHUTDOWN)
+	sendToAll("--> Saving areas <--")
+	saveAllAreas(true)
+	sendToAll("--> Saving players <--")
+	saveAllCharacters(true)
+	sendToAll("--> Server rebooting <--")
 	time.Sleep(time.Second)
+	serverState.Store(SERVER_SHUTDOWN)
 
 	//Handle shutdown here
 	closeLogs()

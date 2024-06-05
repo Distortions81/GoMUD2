@@ -45,7 +45,7 @@ func mainLoop() {
 
 		//Force save all
 		if tickNum%FORCESAVE_INTERVAL == 0 {
-			saveCharacters(true)
+			saveAllCharacters(true)
 		} else {
 			switch loopTask {
 			case 0:
@@ -57,7 +57,7 @@ func mainLoop() {
 			case 3:
 				saveAllAreas(false)
 			case 4:
-				saveCharacters(false)
+				saveAllCharacters(false)
 			case 5:
 				removeDeadDesc()
 			case 6:

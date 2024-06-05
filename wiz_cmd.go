@@ -5,10 +5,15 @@ import (
 	"goMUD2/figletlib"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/hako/durafmt"
 )
+
+func cmdShutdown(player *characterData, input string) {
+	signalHandle <- syscall.SIGINT
+}
 
 func cmdPanic(player *characterData, input string) {
 	panic("test")

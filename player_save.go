@@ -9,7 +9,7 @@ import (
 )
 
 // Autosave all players
-func saveCharacters(force bool) {
+func saveAllCharacters(force bool) {
 	for _, target := range charList {
 		if target.dirty || force {
 			target.saveCharacter()

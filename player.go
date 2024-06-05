@@ -82,12 +82,19 @@ func (player *characterData) send(format string, args ...any) {
 	player.desc.sendln(format, args...)
 }
 
-// Send to all players
+// Send to all players except self
 func (player *characterData) sendToPlaying(format string, args ...any) {
 	for _, target := range charList {
 		if target == player {
 			continue
 		}
+		target.send(format, args...)
+	}
+}
+
+// Send to all players
+func sendToAll(format string, args ...any) {
+	for _, target := range charList {
 		target.send(format, args...)
 	}
 }
