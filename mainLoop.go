@@ -240,7 +240,7 @@ func (tdesc *descData) doOutput() {
 	_, err := tdesc.conn.Write(tdesc.outBuf)
 	if err != nil {
 		mudLog("#%v: %v: write failed (connection lost)", tdesc.id, tdesc.ip)
-		if tdesc.character != nil {
+		if tdesc.character != nil && tdesc.character.valid {
 			tdesc.character.sendToRoom("%v has lost their connection.", tdesc.character.Name)
 		}
 	}
