@@ -11,7 +11,8 @@ var roomCmds []*commandData = []*commandData{
 	{name: "dig", goDo: rDig, hint: "Create a new room in <direction>", args: []string{"direction"}},
 	{name: "list", goDo: rList, hint: "shows list of rooms in current area"},
 	{name: "revnum", goDo: rRevnum, hint: "automatically reassigns new vnums to all room in the area"},
-	{name: "description", goDo: rDesc, hint: "Set room description", args: []string{"room description"}},
+	{name: "desc", goDo: rDesc, hint: "Set room description", args: []string{"room description"}},
+	{name: "name", goDo: rName, hint: "Set room name", args: []string{"room name"}},
 	{name: "select", goDo: rSelect, hint: "Select room to edit", args: []string{"here"}},
 	{name: "undo", goDo: rUndo, hint: "Show some edit history (WIP)"},
 }
@@ -34,6 +35,22 @@ func rUndo(player *characterData, input string) {
 		player.send("#%-5v Type: %-15v Mode: %-8v Loc: %v:%v", i+1, cEllip(item.Name, 15), modeToText[item.OLCMode], avnum, rvnum)
 		player.send("From:\r\n%v\r\nTo:\r\n%v\r\n", item.From, item.To)
 	}
+}
+
+func rName(player *characterData, input string) {
+	newUndo := UndoData{
+		OLCMode: OLC_ROOM, Name: "name",
+		From: player.OLCEditor.room.Name,
+		To:   input,
+		Loc:  player.OLCEditor.Location}
+
+	player.OLCEditor.Undo = append(player.OLCEditor.Undo, newUndo)
+	limitUndo(player)
+	player.dirty = true
+
+	player.OLCEditor.room.Name = input
+	player.room.pArea.dirty = true
+	player.send("Room name set.")
 }
 
 func rDesc(player *characterData, input string) {
