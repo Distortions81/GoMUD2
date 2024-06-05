@@ -5,6 +5,31 @@ import (
 	"time"
 )
 
+func (target *characterData) quit(disc bool) {
+	target.send(fairwellBuf)
+	target.sendToRoom("%v slowly fades away.", target.Name)
+	target.leaveRoom()
+	target.saveCharacter()
+	target.valid = false
+
+	if !disc {
+		target.send("\r\nChoose a character to play:")
+		target.desc.inputLock.Lock()
+		target.desc.inputLines = []string{}
+		target.desc.numInputLines = 0
+		target.desc.inputLock.Unlock()
+
+		go func(desc *descData) {
+			descLock.Lock()
+			desc.state = CON_CHAR_LIST
+			showStatePrompt(desc)
+			descLock.Unlock()
+		}(target.desc)
+	} else {
+		target.desc.kill()
+	}
+}
+
 // Send player to a room, if they are not in one
 func (player *characterData) goTo(loc LocData) {
 
@@ -111,7 +136,7 @@ func (desc *descData) enterWorld(player *characterData) {
 		}
 	}
 
-	player.sendToRoom("%v slowly fades into existence.")
+	player.sendToRoom("%v slowly fades into existence.", player.Name)
 	cmdLook(desc.character, "")
 	desc.character.checkTells()
 	if player.Level < LEVEL_PLAYER {

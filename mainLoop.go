@@ -280,6 +280,7 @@ func removeDeadChar() {
 			target.quit(true)
 			continue
 		} else if !target.valid {
+			errLog("Removed character %v from charList.", target.Name)
 			continue
 		} else if target.Level >= LEVEL_BUILDER &&
 			time.Since(target.idleTime) > BUILDER_IDLE {
@@ -296,32 +297,6 @@ func removeDeadChar() {
 		newCharacterList = append(newCharacterList, target)
 	}
 	charList = newCharacterList
-}
-
-func (target *characterData) quit(disc bool) {
-	target.send(fairwellBuf)
-	target.sendToRoom("%v slowly fades away.", target.Name)
-	mudLog("Removed character %v from charList.", target.Name)
-	target.leaveRoom()
-	target.saveCharacter()
-	target.valid = false
-
-	if !disc {
-		target.send("\r\nChoose a character to play:")
-		target.desc.inputLock.Lock()
-		target.desc.inputLines = []string{}
-		target.desc.numInputLines = 0
-		target.desc.inputLock.Unlock()
-
-		go func(desc *descData) {
-			descLock.Lock()
-			desc.state = CON_CHAR_LIST
-			showStatePrompt(desc)
-			descLock.Unlock()
-		}(target.desc)
-	} else {
-		target.desc.kill()
-	}
 }
 
 func removeDeadDesc() {
