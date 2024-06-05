@@ -26,13 +26,6 @@ func cmdCrazyTalk(player *characterData, input string) {
 		return
 	}
 
-	defer func() {
-		if r := recover(); r != nil {
-			player.send("Sorry, something went wrong rendering that font.")
-			return
-		}
-	}()
-
 	lowerArg := strings.ToLower(args[0])
 	asciiMsg, err := figletlib.TXTToAscii(args[1], fontList[lowerArg], "left", 0)
 	if err != nil {
