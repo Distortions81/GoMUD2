@@ -95,8 +95,7 @@ type characterData struct {
 	Channels   Bitmask              `json:",omitempty"`
 	Config     Bitmask              `json:",omitempty"`
 	ConfigVals map[int]*ConfigValue `json:",omitempty"`
-	Columns    int
-	LastHide   time.Time `json:",omitempty"`
+	LastHide   time.Time            `json:",omitempty"`
 
 	OLCEditor  olcEditorData `json:",omitempty"`
 	Ignores    []IgnoreData  `json:",omitempty"`
@@ -137,7 +136,7 @@ type olcEditorData struct {
 	area     *areaData
 	room     *roomData
 
-	Undo []UndoData
+	Undo []UndoData `json:",omitempty"`
 
 	EditText []string `json:",omitempty"`
 }

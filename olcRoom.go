@@ -18,7 +18,12 @@ var roomCmds []*commandData = []*commandData{
 }
 
 func rUndo(player *characterData, input string) {
-	player.send("Edit history:")
+	player.send("Edit history: (To clear: clear)")
+
+	if strings.EqualFold(input, "clear") {
+		player.OLCEditor.Undo = []UndoData{}
+		player.send("Undo history cleared.")
+	}
 
 	for i, item := range player.OLCEditor.Undo {
 		if item.OLCMode != player.OLCEditor.OLCMode {
