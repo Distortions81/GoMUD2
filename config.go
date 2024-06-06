@@ -1,6 +1,9 @@
 package main
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
 // DO NOT CHANGE ORDER
 const (
@@ -14,7 +17,7 @@ const (
 	CONFIG_OLC
 	CONFIG_OLCHERE
 	CONFIG_OLCHYBRID
-	CONFIG_SCREENSIZE
+	CONFIG_TERMWIDTH
 
 	//Keep at end, do not use or delete
 	CONFIG_MAX
@@ -24,8 +27,8 @@ type configInfo struct {
 	name, desc string
 	level      int
 
-	integer bool
-	value   int
+	integer      bool
+	defaultValue int
 
 	disableWhenEnabled,
 	enableWhenEnabled,
@@ -44,7 +47,7 @@ var configNames map[int]configInfo = map[int]configInfo{
 	CONFIG_OLCHERE:    {name: "OLCHere", desc: "Always edit current area/room by default", level: LEVEL_BUILDER},
 	CONFIG_OLC:        {name: "OLCMode", desc: "Require 'OLC' before OLC commands.", level: LEVEL_BUILDER, disableWhenEnabled: CONFIG_OLCHYBRID},
 	CONFIG_OLCHYBRID:  {name: "OLCHybrid", desc: "Allow OLC and normal commands at the same time.", level: LEVEL_BUILDER, disableWhenEnabled: CONFIG_OLC},
-	CONFIG_SCREENSIZE: {name: "ScreenSize", desc: "Manually specify your terminal size.", integer: true},
+	CONFIG_TERMWIDTH:  {name: "TermWidth", desc: "Manually specify your terminal width in columns.", integer: true, defaultValue: 80},
 }
 
 func cmdConfig(player *characterData, input string) {
@@ -60,10 +63,15 @@ func cmdConfig(player *characterData, input string) {
 
 			if item.integer {
 				if !player.Config.hasFlag(1 << x) {
-					player.send("%15v: (%v) %v", cEllip(item.name, 15), "{rOff", item.desc)
+					player.send("%15v: (%v) %v", cEllip(item.name, 15), boolToText(false), item.desc)
 				} else {
-					player.send("%15v: (%v) %v", cEllip(item.name, 15), item.value, item.desc)
+					value := 0
+					if player.ConfigVals[1<<x] != nil {
+						value = player.ConfigVals[1<<x].Value
+					}
+					player.send("%15v: (%v) %v", cEllip(item.name, 15), value, item.desc)
 				}
+				continue
 			}
 
 			status := boolToText(player.Config.hasFlag(1 << x))
@@ -88,9 +96,29 @@ func cmdConfig(player *characterData, input string) {
 			if strings.EqualFold(item.name, parts[y]) {
 				found = true
 
+				if item.integer && y < numParts-1 {
+					i, err := strconv.ParseInt(parts[y+1], 10, 64)
+					if err == nil {
+						if i == 0 {
+							delete(player.ConfigVals, 1<<x)
+						} else {
+							player.ConfigVals[1<<x] = &ConfigValue{Name: item.name, Value: int(i)}
+						}
+
+						player.send("%v is now %v.", item.name, i)
+						player.Config.addFlag(1 << x)
+						continue
+					}
+				}
 				if player.Config.hasFlag(1 << x) {
 					player.send("%v is now OFF.", item.name)
 					player.Config.clearFlag(1 << x)
+
+					if item.integer {
+						if player.ConfigVals[1<<x] != nil {
+							delete(player.ConfigVals, 1<<x)
+						}
+					}
 
 					if item.disableWhenDisabled > 0 {
 						player.Config.clearFlag(Bitmask(item.disableWhenEnabled))
@@ -101,6 +129,12 @@ func cmdConfig(player *characterData, input string) {
 				} else {
 					player.send("%v is now ON", item.name)
 					player.Config.addFlag(1 << x)
+
+					if item.integer {
+						if player.ConfigVals[1<<x] == nil {
+							player.ConfigVals[1<<x] = &ConfigValue{Name: item.name, Value: int(item.defaultValue)}
+						}
+					}
 
 					if item.disableWhenEnabled > 0 {
 						player.Config.clearFlag(Bitmask(item.disableWhenEnabled))

@@ -124,7 +124,7 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 			return nil
 		}
 
-		player := &characterData{}
+		player := &characterData{ConfigVals: map[int]*ConfigValue{}}
 		err = json.Unmarshal(data, player)
 		if err != nil {
 			critLog("loadPlayer: Unable to unmarshal the data.")

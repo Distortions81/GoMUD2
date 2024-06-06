@@ -123,17 +123,24 @@ func (player *characterData) sendWW(format string, args ...any) {
 }
 
 func (player *characterData) wordWrap(input string) string {
-	if player.Config.hasFlag(CONFIG_NOWRAP) || len(input) <= 80 {
-		return input
-	}
 
 	words := strings.Split(input, " ")
 	width := 80
 
 	if player.desc != nil &&
-		player.desc.telnet.Options != nil &&
-		!player.Config.hasFlag(CONFIG_NOWRAP) {
-		width = player.desc.telnet.Options.TermWidth
+		player.desc.telnet.Options != nil {
+
+		if player.Config.hasFlag(CONFIG_TERMWIDTH) &&
+			player.ConfigVals[CONFIG_TERMWIDTH] != nil {
+
+			width = player.ConfigVals[CONFIG_TERMWIDTH].Value
+		} else {
+			width = player.desc.telnet.Options.TermWidth
+		}
+	}
+
+	if player.Config.hasFlag(CONFIG_NOWRAP) || len(input) <= width {
+		return input
 	}
 
 	buf := ""

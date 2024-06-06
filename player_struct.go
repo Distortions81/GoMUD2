@@ -73,6 +73,11 @@ type IgnoreData struct {
 	Added  time.Time
 }
 
+type ConfigValue struct {
+	Name  string
+	Value int
+}
+
 type characterData struct {
 	Version int
 	UUID    uuidData
@@ -87,10 +92,11 @@ type characterData struct {
 
 	Prompt string `json:",omitempty"`
 
-	Channels Bitmask `json:",omitempty"`
-	Config   Bitmask `json:",omitempty"`
-	Columns  int
-	LastHide time.Time `json:",omitempty"`
+	Channels   Bitmask              `json:",omitempty"`
+	Config     Bitmask              `json:",omitempty"`
+	ConfigVals map[int]*ConfigValue `json:",omitempty"`
+	Columns    int
+	LastHide   time.Time `json:",omitempty"`
 
 	OLCEditor  olcEditorData `json:",omitempty"`
 	Ignores    []IgnoreData  `json:",omitempty"`
