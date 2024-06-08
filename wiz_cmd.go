@@ -11,12 +11,6 @@ import (
 	"github.com/hako/durafmt"
 )
 
-func cmdColorTest(player *characterData, input string) {
-	for x := 0; x < 256; x++ {
-		player.send("Color %v: This is a test")
-	}
-}
-
 func cmdShutdown(player *characterData, input string) {
 	signalHandle <- syscall.SIGINT
 }
