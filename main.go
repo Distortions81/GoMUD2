@@ -117,9 +117,9 @@ func mudMain() {
 	<-signalHandle
 
 	sendToAll("--> Saving areas <--")
-	saveAllAreas(true)
+	saveAllAreas(false)
 	sendToAll("--> Saving players <--")
-	saveAllCharacters(true)
+	saveAllCharacters(false)
 	sendToAll("--> Server rebooting <--")
 	time.Sleep(time.Second)
 	serverState.Store(SERVER_SHUTDOWN)
