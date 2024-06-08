@@ -80,6 +80,7 @@ var cmdMap = map[string]*commandData{
 	"transport": {level: LEVEL_MODERATOR, hint: "Force a player to recall.", args: []string{"target"}, goDo: cmdTransport},
 	"panic":     {level: LEVEL_IMPLEMENTER, hint: "Test panic, recover, log and stackdump.", goDo: cmdPanic, noAutoHelp: true, noShort: true},
 	"shutdown":  {level: LEVEL_IMPLEMENTER, hint: "Shutdown", goDo: cmdShutdown, noAutoHelp: true, noShort: true},
+	"ctest":     {level: LEVEL_IMPLEMENTER, hint: "color test", goDo: cmdColorTest, noAutoHelp: true, noShort: true},
 }
 
 func cmdOLC(player *characterData, input string) {
