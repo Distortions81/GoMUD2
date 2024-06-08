@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const ANSI_ESC = "\033["
@@ -23,10 +24,10 @@ func init() {
 	}
 }
 
-func cmdXColor(player *characterData, input string) {
+func xcolorHelp() {
+	var outbuf string
 	var lineBuf []string
-
-	player.send("%-36v %v", "Extended colors:", "Pastel colors:")
+	outbuf = outbuf + fmt.Sprintf("%-36v %v\r\n", "Extended colors:", "Pastel colors:")
 	for _, line := range colorSwatch {
 		buf := ""
 		for _, color := range line {
@@ -42,20 +43,40 @@ func cmdXColor(player *characterData, input string) {
 		}
 		lineBuf[i] = lineBuf[i] + buf
 	}
-	player.send(strings.Join(lineBuf, "\r\n"))
-
-	player.send("")
-	player.send("[xGrayscale:")
+	outbuf = outbuf + strings.Join(lineBuf, "\r\n")
+	outbuf = outbuf + "\r\n"
+	outbuf = outbuf + "[xGrayscale:\r\n"
 	for _, line := range graySwatch {
 		buf := " "
 		for _, color := range line {
 			buf = buf + fmt.Sprintf("[%03v%03v ", color, color)
 		}
-		player.send(buf)
+		outbuf = outbuf + buf
+	}
+	outbuf = outbuf + "\r\n"
+	outbuf = outbuf + "[xSyntax: [[88[88Hello[x[[x."
+	outbuf = outbuf + "\r\n"
+	outbuf = outbuf + "Background colors: add 300 to the number: [[388[388Hello[x[[x."
+
+	for _, file := range helpFiles {
+		if strings.EqualFold(file.Topic, "basics") {
+
+			newHelp := helpData{Name: "xcolor", Keywords: []string{"ANSI", "color", "extended", "256"}, Authors: []string{"System"}, Text: outbuf, topic: file, Created: time.Now().UTC(), Modified: time.Now().UTC()}
+			file.Helps = append(file.Helps, newHelp)
+			file.dirty = true
+
+			//Update if found, otherwise create
+			for _, help := range file.Helps {
+				if strings.EqualFold(help.Name, "xcolor") {
+					help = newHelp
+					return
+				}
+			}
+			file.Helps = append(file.Helps, newHelp)
+
+		}
 	}
 
-	player.send("[xSyntax: [[88[88Hello[x[[x.")
-	player.send("Background colors: add 300 to the number: [[388[388Hello[x.")
 }
 
 var colorTable map[byte]*ctData = map[byte]*ctData{

@@ -27,16 +27,14 @@ var (
 
 	signalHandle chan os.Signal
 
-	port            *int
-	portTLS         *int
-	noTLS           *bool
-	makeTestFiles   *bool
-	instantRespond  *bool
-	disableCopyover *bool
-	clientMode      *bool
-	bindIP          *string
-	serverState     atomic.Int32
-	numThreads      int
+	port           *int
+	portTLS        *int
+	noTLS          *bool
+	makeTestFiles  *bool
+	instantRespond *bool
+	bindIP         *string
+	serverState    atomic.Int32
+	numThreads     int
 )
 
 func main() {
@@ -47,30 +45,12 @@ func main() {
 	bindIP = flag.String("bindIP", "localhost", "Bind to a specific IP.")
 	makeTestFiles = flag.Bool("fileBootstrap", false, "Create simple example area and help files.")
 	instantRespond = flag.Bool("instantRespond", true, "Respond to commands instantly, instead of once per pulse.")
-	disableCopyover = flag.Bool("disableCopyover", true, "Disable copyover capability.")
-	clientMode = flag.Bool("clientMode", false, "Used internally for copyover server/client, don't use this.")
 	flag.Parse()
 
-	if *disableCopyover {
-		oldMain()
-		return
-	}
-	if *clientMode {
-		clientMain()
-	} else {
-		serverMain()
-	}
+	mudMain()
 }
 
-func clientMain() {
-
-}
-
-func serverMain() {
-
-}
-
-func oldMain() {
+func mudMain() {
 	serverState.Store(SERVER_BOOTING)
 	bootTime = time.Now()
 	//Make sure all directories we need are created
@@ -109,6 +89,8 @@ func oldMain() {
 	updateFontList()
 
 	loadHelps()
+	//xcolorHelp()
+
 	saveHelps()
 	readBlocked()
 	readDisables()
