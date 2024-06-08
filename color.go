@@ -14,11 +14,11 @@ var extendedTable map[int]*ctData
 
 func init() {
 	extendedTable = make(map[int]*ctData)
-	for x := 0; x < 256; x++ {
+	for x := 17; x < 256; x++ {
 		extendedTable[x] = &ctData{code: "38;5;" + strconv.FormatInt(int64(x), 10), isFG: true, isBG: false}
 	}
 	offset := 300
-	for x := 0; x < 256; x++ {
+	for x := 17; x < 256; x++ {
 		extendedTable[x+offset] = &ctData{code: "48;5;" + strconv.FormatInt(int64(x), 10), isFG: false, isBG: true}
 	}
 }
@@ -45,7 +45,7 @@ func cmdXColor(player *characterData, input string) {
 	player.send(strings.Join(lineBuf, "\r\n"))
 
 	player.send("")
-	player.send("{xGrayscale:")
+	player.send("[xGrayscale:")
 	for _, line := range graySwatch {
 		buf := " "
 		for _, color := range line {
@@ -54,7 +54,7 @@ func cmdXColor(player *characterData, input string) {
 		player.send(buf)
 	}
 
-	player.send("{xSyntax: [[088[088Hello[[x[x. Must be 3 digit number, 016-255")
+	player.send("[xSyntax: [[88[88Hello[x[[x.")
 	player.send("Background colors: add 300 to the number: [[388[388Hello[x.")
 }
 
@@ -156,10 +156,12 @@ func ANSIColor(in []byte) []byte {
 				if in[x] == '[' {
 					out = append(out, '[')
 					continue
-				} else if in[x] == 'x' && s.hasColor {
-					s.resetState()
+				} else if in[x] == 'x' {
+					if s.hasColor {
+						s.resetState()
 
-					out = append(out, []byte(ANSI_RESET)...)
+						out = append(out, []byte(ANSI_RESET)...)
+					}
 					continue
 				} else if in[x] < '0' || in[x] > '9' {
 					out = append(out, []byte{'[', in[x]}...)
@@ -240,10 +242,12 @@ func ANSIColor(in []byte) []byte {
 					out = append(out, '{')
 					continue
 					//Color reset
-				} else if in[x] == 'x' && s.hasColor {
-					s.resetState()
+				} else if in[x] == 'x' {
+					if s.hasColor {
+						s.resetState()
 
-					out = append(out, []byte(ANSI_RESET)...)
+						out = append(out, []byte(ANSI_RESET)...)
+					}
 					continue
 				}
 
