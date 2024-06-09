@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -13,11 +14,11 @@ const NEWLINE = "\r\n"
 func xcolorHelp() {
 	var outbuf string
 	var lineBuf []string
-	outbuf = outbuf + fmt.Sprintf("%-36v %v"+NEWLINE, "Extended colors:", "Pastel colors:")
+	outbuf = outbuf + fmt.Sprintf("{x%-36v %v{k"+NEWLINE, "Extended colors:", "Pastel colors:")
 	for _, line := range colorSwatch {
 		buf := ""
 		for _, color := range line {
-			buf = buf + fmt.Sprintf("{%03v%03v ", color, color)
+			buf = buf + fmt.Sprintf("{%03v%03v ", color+300, color)
 		}
 		lineBuf = append(lineBuf, buf)
 	}
@@ -25,17 +26,17 @@ func xcolorHelp() {
 	for i, line := range colorPastelSwatch {
 		buf := " "
 		for _, color := range line {
-			buf = buf + fmt.Sprintf("{%03v%03v ", color, color)
+			buf = buf + fmt.Sprintf("{%03v%03v ", color+300, color)
 		}
 		lineBuf[i] = lineBuf[i] + buf
 	}
 	outbuf = outbuf + strings.Join(lineBuf, NEWLINE)
 	outbuf = outbuf + NEWLINE
-	outbuf = outbuf + "{xGrayscale:" + NEWLINE
+	outbuf = outbuf + "{xGrayscale:{k" + NEWLINE
 	for _, line := range graySwatch {
 		buf := " "
 		for _, color := range line {
-			buf = buf + fmt.Sprintf("{%03v%03v ", color, color)
+			buf = buf + fmt.Sprintf("{%03v%03v ", color+300, color)
 		}
 		outbuf = outbuf + buf
 	}
@@ -195,7 +196,12 @@ func ANSIColor(in []byte, colorMode int) []byte {
 						}
 
 					}
-					cVal = &ctData{isFG: true, extended: true, code: "38;5;" + string(ext)}
+					cnum, _ := strconv.ParseInt(string(ext), 10, 64)
+					if cnum > 300 {
+						cVal = &ctData{isFG: true, extended: true, code: "48;5;" + strconv.FormatInt(cnum-300, 10)}
+					} else {
+						cVal = &ctData{isFG: true, extended: true, code: "38;5;" + strconv.FormatInt(cnum, 10)}
+					}
 				} else {
 					//Look up color/style
 					cVal = colorTable[in[x]]
