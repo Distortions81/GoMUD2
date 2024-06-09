@@ -222,12 +222,8 @@ func ANSIColor(in []byte, colorMode int) []byte {
 				if err != nil {
 					continue
 				}
-				var cVal *ctData
-				if colorMode >= COLOR_256 {
-					cVal = extendedTable[int(ival)]
-				} else {
-					cVal = extendedTable[int(ival)]
-				}
+
+				cVal := extendedTable[int(ival)]
 
 				//If redundant, skip
 				if s.lastVal == cVal {
@@ -242,7 +238,11 @@ func ANSIColor(in []byte, colorMode int) []byte {
 
 				//If new FG color, set it.
 				if cVal.isFG && s.curColor != cVal.code {
-					s.nextColor = cVal.code
+					if colorMode >= COLOR_256 {
+						s.nextColor = cVal.code
+					} else {
+						s.nextColor = cVal.code
+					}
 				}
 				//If new BG color, set it.
 				if cVal.isBG && s.curBGColor != cVal.code {
