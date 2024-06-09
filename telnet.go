@@ -52,7 +52,7 @@ func cmdTelnet(player *characterData, input string) {
 			buf = buf + "ANSI {RC{Go{Yl{Bo{Mr{x enabled." + NEWLINE
 		}
 		if telnet.Options.ANSI256 {
-			buf = buf + "Supports 256 color mode" + NEWLINE
+			buf = buf + "Supports [0882[094[0945[1006 [064c[028o[029l[030o[024r [018m[054o[090d[089e[088.[x" + NEWLINE
 		}
 		if telnet.Options.ANSI24 {
 			buf = buf + "Supports 24-bit true-color" + NEWLINE
@@ -88,10 +88,10 @@ func cmdTelnet(player *characterData, input string) {
 		}
 		if telnet.Options.ANSI256 {
 			player.desc.telnet.Options.ANSI256 = false
-			player.send("ANSI256 color is now disabled.")
+			player.send("256 color mode is now disabled.")
 		} else {
 			player.desc.telnet.Options.ANSI256 = true
-			player.send("ANSI256 color is now enabled.")
+			player.send("[0882[094[0945[1006 [064c[028o[029l[030o[024r [018m[054o[090d[089e[088.[x is now enabled.")
 		}
 		return
 	}
