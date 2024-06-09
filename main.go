@@ -89,7 +89,7 @@ func mudMain() {
 	updateFontList()
 
 	loadHelps()
-	//xcolorHelp()
+	xcolorHelp()
 
 	saveHelps()
 	readBlocked()

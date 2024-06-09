@@ -54,25 +54,26 @@ func xcolorHelp() {
 		outbuf = outbuf + buf
 	}
 	outbuf = outbuf + NEWLINE
-	outbuf = outbuf + "[xSyntax: [[88[88Hello[x[[x."
+	outbuf = outbuf + "[xSyntax: [[088[088Hello[x[[x. Requires 3 digits, padded with 0s if needed."
 	outbuf = outbuf + NEWLINE
 	outbuf = outbuf + "Background colors: add 300 to the number: [[388[388Hello[x[[x."
 
 	for _, file := range helpFiles {
 		if strings.EqualFold(file.Topic, "basics") {
 
-			newHelp := helpData{Name: "xcolor", Keywords: []string{"ANSI", "color", "extended", "256"}, Authors: []string{"System"}, Text: outbuf, topic: file, Created: time.Now().UTC(), Modified: time.Now().UTC()}
-			file.Helps = append(file.Helps, newHelp)
-			file.dirty = true
+			newHelp := helpData{Name: "xcolor", Keywords: []string{"ANSI", "color", "extended", "256"}, Authors: []string{"System"}, Text: outbuf, topic: file}
 
 			//Update if found, otherwise create
 			for _, help := range file.Helps {
 				if strings.EqualFold(help.Name, "xcolor") {
+					newHelp.Created = time.Now().UTC()
+					newHelp.Modified = time.Now().UTC()
 					help = newHelp
 					return
 				}
 			}
 			file.Helps = append(file.Helps, newHelp)
+			file.dirty = true
 
 		}
 	}
@@ -197,9 +198,7 @@ func ANSIColor(in []byte, colorMode int) []byte {
 				}
 				ext = ""
 				if in[x] >= '0' && in[x] <= '9' {
-					if in[x] != '0' {
-						ext = ext + string(in[x])
-					}
+					ext = ext + string(in[x])
 					x++
 					if in[x] >= '0' && in[x] <= '9' {
 						ext = ext + string(in[x])
