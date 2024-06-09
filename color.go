@@ -7,7 +7,7 @@ import (
 )
 
 const ANSI_ESC = "\033["
-const ANSI_RESET = ANSI_ESC + "m"
+const ANSI_RESET = ANSI_ESC + "0m"
 const NEWLINE = "\r\n"
 
 func xcolorHelp() {
@@ -77,23 +77,23 @@ var colorTable map[byte]*ctData = map[byte]*ctData{
 	'&': {code: "46", isBG: true}, //cyan
 	'*': {code: "47", isBG: true}, //white
 
-	'k': {code: "30", isFG: true}, //black
-	'r': {code: "31", isFG: true}, //red
-	'g': {code: "32", isFG: true}, //green
-	'y': {code: "33", isFG: true}, //yellow
-	'b': {code: "34", isFG: true}, //blue
-	'm': {code: "35", isFG: true}, //magenta
-	'c': {code: "36", isFG: true}, //cyan
-	'w': {code: "37", isFG: true}, //white
+	'k': {code: "30", isFG: true, removeBold: true}, //black
+	'r': {code: "31", isFG: true, removeBold: true}, //red
+	'g': {code: "32", isFG: true, removeBold: true}, //green
+	'y': {code: "33", isFG: true, removeBold: true}, //yellow
+	'b': {code: "34", isFG: true, removeBold: true}, //blue
+	'm': {code: "35", isFG: true, removeBold: true}, //magenta
+	'c': {code: "36", isFG: true, removeBold: true}, //cyan
+	'w': {code: "37", isFG: true, removeBold: true}, //white
 
-	'K': {code: "90", isFG: true}, //black
-	'R': {code: "91", isFG: true}, //red
-	'G': {code: "92", isFG: true}, //green
-	'Y': {code: "93", isFG: true}, //yellow
-	'B': {code: "94", isFG: true}, //blue
-	'M': {code: "95", isFG: true}, //magenta
-	'C': {code: "96", isFG: true}, //cyan
-	'W': {code: "97", isFG: true}, //white
+	'K': {code: "30", isFG: true, style: bold}, //black
+	'R': {code: "31", isFG: true, style: bold}, //red
+	'G': {code: "32", isFG: true, style: bold}, //green
+	'Y': {code: "33", isFG: true, style: bold}, //yellow
+	'B': {code: "34", isFG: true, style: bold}, //blue
+	'M': {code: "35", isFG: true, style: bold}, //magenta
+	'C': {code: "36", isFG: true, style: bold}, //cyan
+	'W': {code: "37", isFG: true, style: bold}, //white
 
 	'+': {code: "1", disCode: "22", isStyle: true, style: bold},
 	'/': {code: "3", disCode: "23", isStyle: true, style: italic},
