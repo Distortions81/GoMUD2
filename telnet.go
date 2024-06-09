@@ -75,7 +75,7 @@ func cmdTelnet(player *characterData, input string) {
 		}
 		if telnet.Options.NoColor {
 			player.desc.telnet.Options.NoColor = false
-			player.send("ANSI color is now enabled.")
+			player.send("ANSI {RC{Go{Yl{Bo{Mr{x is now enabled.")
 		} else {
 			player.desc.telnet.Options.NoColor = true
 			player.send("ANSI color is now disabled.")
