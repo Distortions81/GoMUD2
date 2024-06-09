@@ -16,7 +16,7 @@ func lookRoom(player *characterData) {
 
 	playersList := ""
 	if len(player.room.players) > 0 {
-		playersList = "\r\nWho's here: "
+		playersList = NEWLINE + "Who's here: "
 		for i, target := range player.room.players {
 
 			if i != 0 {
@@ -28,7 +28,7 @@ func lookRoom(player *characterData) {
 			}
 		}
 		if playersList != "" {
-			playersList = playersList + "\r\n"
+			playersList = playersList + NEWLINE
 		}
 	}
 
@@ -36,7 +36,7 @@ func lookRoom(player *characterData) {
 		exitList = "None"
 	}
 	buf = buf + fmt.Sprintf(
-		"\r\n%v:\r\n%v\r\n%vExits: %v{x",
+		NEWLINE+"%v:"+NEWLINE+"%v"+NEWLINE+"%vExits: %v{x",
 		player.room.Name, player.room.Description,
 		playersList, exitList)
 

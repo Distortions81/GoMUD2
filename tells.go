@@ -23,7 +23,7 @@ func cmdTells(player *characterData, input string) {
 	numTells := len(player.Tells)
 	if numTells > 0 {
 		tell := player.Tells[0]
-		player.send("At %v\r\n%v told you: %v", tell.Sent.String(), tell.SenderName, tell.Message)
+		player.send("At %v"+NEWLINE+"%v told you: %v", tell.Sent.String(), tell.SenderName, tell.Message)
 		if numTells > 1 {
 			player.Tells = player.Tells[1:numTells]
 		} else {

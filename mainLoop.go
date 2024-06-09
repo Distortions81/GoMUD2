@@ -191,7 +191,7 @@ func (tdesc *descData) doOutput() {
 		(tdesc.telnet.Options != nil && tdesc.telnet.Options.NoColor) {
 		tdesc.outBuf = ColorRemove(tdesc.outBuf)
 	} else {
-		tdesc.outBuf = ANSIColor(tdesc.outBuf)
+		tdesc.outBuf = ANSIColor(tdesc.outBuf, COLOR_16)
 	}
 
 	//Character map translation
@@ -224,14 +224,14 @@ func (tdesc *descData) doOutput() {
 					rvnum = target.OLCEditor.room.VNUM
 				}
 
-				buf := fmt.Sprintf("<OLC %v: (%v:%v) help, exit%v>:\r\n",
+				buf := fmt.Sprintf("<OLC %v: (%v:%v) help, exit%v>:"+NEWLINE,
 					olcModes[target.OLCEditor.OLCMode].name,
 					avnum, rvnum,
 					flag)
 				tdesc.outBuf = append(tdesc.outBuf, []byte(buf)...)
 			}
 			if target.Prompt != "" {
-				buf := fmt.Sprintf("<%v>:\r\n", target.Prompt)
+				buf := fmt.Sprintf("<%v>:"+NEWLINE, target.Prompt)
 				tdesc.outBuf = append(tdesc.outBuf, []byte(buf)...)
 			}
 		}
@@ -315,11 +315,11 @@ func removeDeadDesc() {
 			//Don't do anything
 		} else if desc.state <= CON_CHECK_PASS &&
 			time.Since(desc.idleTime) > LOGIN_IDLE {
-			desc.sendln("\r\nIdle too long, disconnecting.")
+			desc.sendln(NEWLINE + "Idle too long, disconnecting.")
 			desc.kill()
 		} else if desc.state != CON_PLAYING &&
 			time.Since(desc.idleTime) > MENU_IDLE {
-			desc.sendln("\r\nIdle too long, disconnecting.")
+			desc.sendln(NEWLINE + "Idle too long, disconnecting.")
 			desc.kill()
 		}
 

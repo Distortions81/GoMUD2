@@ -111,7 +111,7 @@ func cmdBoom(player *characterData, input string) {
 func cmdConInfo(player *characterData, input string) {
 	player.send("Descriptors:")
 	for _, item := range descList {
-		player.send("\r\nID: %-32v IP: %v", item.id, item.ip)
+		player.send(NEWLINE+"ID: %-32v IP: %v", item.id, item.ip)
 		player.send("State: %-29v DNS: %v", cEllip(stateName[item.state], 29), item.dns)
 		player.send("Idle: %-30v Connected: %v",
 			cEllip(durafmt.ParseShort(time.Since(item.idleTime)).String(), 30),

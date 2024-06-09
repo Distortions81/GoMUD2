@@ -27,7 +27,7 @@ func init() {
 func xcolorHelp() {
 	var outbuf string
 	var lineBuf []string
-	outbuf = outbuf + fmt.Sprintf("%-36v %v\r\n", "Extended colors:", "Pastel colors:")
+	outbuf = outbuf + fmt.Sprintf("%-36v %v"+NEWLINE, "Extended colors:", "Pastel colors:")
 	for _, line := range colorSwatch {
 		buf := ""
 		for _, color := range line {
@@ -43,9 +43,9 @@ func xcolorHelp() {
 		}
 		lineBuf[i] = lineBuf[i] + buf
 	}
-	outbuf = outbuf + strings.Join(lineBuf, "\r\n")
-	outbuf = outbuf + "\r\n"
-	outbuf = outbuf + "[xGrayscale:\r\n"
+	outbuf = outbuf + strings.Join(lineBuf, NEWLINE)
+	outbuf = outbuf + NEWLINE
+	outbuf = outbuf + "[xGrayscale:" + NEWLINE
 	for _, line := range graySwatch {
 		buf := " "
 		for _, color := range line {
@@ -53,9 +53,9 @@ func xcolorHelp() {
 		}
 		outbuf = outbuf + buf
 	}
-	outbuf = outbuf + "\r\n"
+	outbuf = outbuf + NEWLINE
 	outbuf = outbuf + "[xSyntax: [[88[88Hello[x[[x."
-	outbuf = outbuf + "\r\n"
+	outbuf = outbuf + NEWLINE
 	outbuf = outbuf + "Background colors: add 300 to the number: [[388[388Hello[x[[x."
 
 	for _, file := range helpFiles {
@@ -125,7 +125,7 @@ func ColorRemove(in []byte) []byte {
 			x++
 			if x < inLen {
 				if in[x] == 'n' {
-					out = append(out, []byte("\r\n")...)
+					out = append(out, []byte(NEWLINE)...)
 				} else if in[x] == '{' {
 					out = append(out, '{')
 				}
@@ -138,8 +138,15 @@ func ColorRemove(in []byte) []byte {
 	return out
 }
 
+const (
+	COLOR_NONE = iota
+	COLOR_16
+	COLOR_256
+	COLOR_TRUE
+)
+
 // Combines multiple color codes, allows styles to be toggled on and off and ignores any code that would set/unset a state that is already set/unset
-func ANSIColor(in []byte) []byte {
+func ANSIColor(in []byte, colorMode int) []byte {
 	var s ansiState
 
 	//Process {n newlines first
@@ -164,7 +171,7 @@ func ANSIColor(in []byte) []byte {
 	}
 	in = out
 
-	//Process ANSI color/style
+	//Process ANSI 256 color
 	out = []byte{}
 	inLen = len(in)
 	var ext string
@@ -215,7 +222,12 @@ func ANSIColor(in []byte) []byte {
 				if err != nil {
 					continue
 				}
-				cVal := extendedTable[int(ival)]
+				var cVal *ctData
+				if colorMode >= COLOR_256 {
+					cVal = extendedTable[int(ival)]
+				} else {
+					cVal = extendedTable[int(ival)]
+				}
 
 				//If redundant, skip
 				if s.lastVal == cVal {
@@ -504,4 +516,23 @@ var colorPastelSwatch [][]int = [][]int{
 var graySwatch [][]int = [][]int{
 	{232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243},
 	{244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255},
+}
+
+var color256to16 []int = []int{
+	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+	0, 4, 4, 4, 12, 12, 2, 6, 4, 4, 12, 12, 2, 2, 6, 4,
+	12, 12, 2, 2, 2, 6, 12, 12, 10, 10, 10, 10, 14, 12, 10, 10,
+	10, 10, 10, 14, 1, 5, 4, 4, 12, 12, 3, 8, 4, 4, 12, 12,
+	2, 2, 6, 4, 12, 12, 2, 2, 2, 6, 12, 12, 10, 10, 10, 10,
+	14, 12, 10, 10, 10, 10, 10, 14, 1, 1, 5, 4, 12, 12, 1, 1,
+	5, 4, 12, 12, 3, 3, 8, 4, 12, 12, 2, 2, 2, 6, 12, 12,
+	10, 10, 10, 10, 14, 12, 10, 10, 10, 10, 10, 14, 1, 1, 1, 5,
+	12, 12, 1, 1, 1, 5, 12, 12, 1, 1, 1, 5, 12, 12, 3, 3,
+	3, 7, 12, 12, 10, 10, 10, 10, 14, 12, 10, 10, 10, 10, 10, 14,
+	9, 9, 9, 9, 13, 12, 9, 9, 9, 9, 13, 12, 9, 9, 9, 9,
+	13, 12, 9, 9, 9, 9, 13, 12, 11, 11, 11, 11, 7, 12, 10, 10,
+	10, 10, 10, 14, 9, 9, 9, 9, 9, 13, 9, 9, 9, 9, 9, 13,
+	9, 9, 9, 9, 9, 13, 9, 9, 9, 9, 9, 13, 9, 9, 9, 9,
+	9, 13, 11, 11, 11, 11, 11, 15, 0, 0, 0, 0, 0, 0, 8, 8,
+	8, 8, 8, 8, 7, 7, 7, 7, 7, 7, 15, 15, 15, 15, 15, 15,
 }

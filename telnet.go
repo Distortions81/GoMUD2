@@ -32,30 +32,30 @@ func cmdTelnet(player *characterData, input string) {
 
 	telnet := player.desc.telnet
 	if input == "" {
-		buf := "Telnet options:\r\n"
+		buf := "Telnet options:" + NEWLINE
 		termType := "Not detected."
 		if telnet.termType != "" {
 			termType = telnet.termType
 		}
-		buf = buf + fmt.Sprintf("Selected character map: %v\r\n", telnet.Charset)
-		buf = buf + fmt.Sprintf("Detected client: %v\r\n", termType)
+		buf = buf + fmt.Sprintf("Selected character map: %v"+NEWLINE, telnet.Charset)
+		buf = buf + fmt.Sprintf("Detected client: %v"+NEWLINE, termType)
 
 		if telnet.Options == nil {
 			telnet.Options = &termSettings{}
 		}
 		if telnet.Options.SuppressGoAhead {
-			buf = buf + "Supressing Go-Ahead Signal (SUPGA)\r\n"
+			buf = buf + "Supressing Go-Ahead Signal (SUPGA)" + NEWLINE
 		}
 		if telnet.Options.NoColor {
-			buf = buf + "ANSI Color disabled.\r\n"
+			buf = buf + "ANSI Color disabled." + NEWLINE
 		} else {
-			buf = buf + "ANSI {RC{Go{Yl{Bo{Mr{x enabled.\r\n"
+			buf = buf + "ANSI {RC{Go{Yl{Bo{Mr{x enabled." + NEWLINE
 		}
 		if telnet.Options.ANSI256 {
-			buf = buf + "Supports 256 color mode\r\n"
+			buf = buf + "Supports 256 color mode" + NEWLINE
 		}
 		if telnet.Options.ANSI24 {
-			buf = buf + "Supports 24-bit true-color\r\n"
+			buf = buf + "Supports 24-bit true-color" + NEWLINE
 		}
 		if telnet.Options.NAWS {
 			buf = buf + fmt.Sprintf("Window size: %v x %v", telnet.Options.TermWidth, telnet.Options.TermHeight)
@@ -79,6 +79,19 @@ func cmdTelnet(player *characterData, input string) {
 		} else {
 			player.desc.telnet.Options.NoColor = true
 			player.send("ANSI color is now disabled.")
+		}
+		return
+	}
+	if strings.EqualFold("256", input) {
+		if player.desc == nil {
+			return
+		}
+		if telnet.Options.ANSI256 {
+			player.desc.telnet.Options.ANSI256 = false
+			player.send("ANSI256 color is now disabled.")
+		} else {
+			player.desc.telnet.Options.ANSI256 = true
+			player.send("ANSI256 color is now enabled.")
 		}
 		return
 	}
@@ -112,7 +125,7 @@ func cmdTelnet(player *characterData, input string) {
 			count++
 			buf = buf + fmt.Sprintf("%18v", cname)
 			if count%4 == 0 {
-				buf = buf + "\r\n"
+				buf = buf + NEWLINE
 			}
 		}
 		player.send(buf)

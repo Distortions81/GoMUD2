@@ -87,7 +87,7 @@ func showStatePrompt(desc *descData) {
 	if loginStateList[desc.state].goPrompt != nil {
 		loginStateList[desc.state].goPrompt(desc)
 	} else if loginStateList[desc.state].prompt != "" {
-		desc.sendln("\r\n" + loginStateList[desc.state].prompt)
+		desc.sendln(NEWLINE + loginStateList[desc.state].prompt)
 	}
 }
 
@@ -111,7 +111,7 @@ func (player *characterData) listCommands(input string) {
 		}
 
 		if lastLevel != item.level {
-			player.send("\r\nLevel: %v", levelName[item.level])
+			player.send(NEWLINE+"Level: %v", levelName[item.level])
 			lastLevel = item.level
 		}
 
@@ -131,7 +131,7 @@ func (player *characterData) listCommands(input string) {
 	if input == "" {
 		return
 	}
-	buf := "\r\nChannels: "
+	buf := NEWLINE + "Channels: "
 	count := 0
 	for _, ch := range channels {
 		if ch.disabled {

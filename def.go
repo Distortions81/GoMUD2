@@ -7,10 +7,10 @@ const (
 	VWHEN    = "06-09-2024-1213"
 	CODENAME = "Galaxium"
 
-	LICENSE = "GOMUD2: " + VERSION + "-" + VWHEN + "-" + CODENAME + "\n" +
-		"Copyright 2024 Carl Frank Otto III (carlotto81@gmail.com). All rights reserved.\n"
+	LICENSE = "GOMUD2: " + VERSION + "-" + VWHEN + "-" + CODENAME + NEWLINE +
+		"Copyright 2024 Carl Frank Otto III (carlotto81@gmail.com). All rights reserved." + NEWLINE
 
-		//Directories
+	//Directories
 	DATA_DIR    = "data/"
 	ACCOUNT_DIR = "accounts/"
 	AREA_DIR    = "areas/"

@@ -153,13 +153,13 @@ func (player *characterData) wordWrap(input string) string {
 		itemLen := len([]byte(item))
 		//Don't bother to check the whole thing if the item itself is larger than width (deco)
 		if itemLen > width {
-			buf = buf + "\r\n" + item
+			buf = buf + NEWLINE + item
 			lineLen = 0
 			continue
 		}
 		//If adding this word to the line would go over, add a newline and reset line width
 		if lineLen+itemLen >= width {
-			buf = buf + "\r\n"
+			buf = buf + NEWLINE
 			lineLen = 0
 		}
 		//If not the first word, add a space before adding it

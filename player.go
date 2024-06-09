@@ -13,7 +13,7 @@ func (target *characterData) quit(disc bool) {
 	target.valid = false
 
 	if !disc {
-		target.send("\r\nChoose a character to play:")
+		target.send(NEWLINE + "Choose a character to play:")
 		target.desc.inputLock.Lock()
 		target.desc.inputLines = []string{}
 		target.desc.numInputLines = 0

@@ -28,10 +28,10 @@ func Test(t *testing.T) {
 	for x := 0; x < 100000000; x++ {
 		id := makeUUID()
 		if lastUUID.T == id.T {
-			log.Fatalf("Duplicate unixnano on interation %v.\n", x)
+			log.Fatalf("Duplicate unixnano on interation %v."+NEWLINE, x)
 		}
 		if lastUUID.R == id.R {
-			log.Fatalf("Duplicate rand on interation %v: rand was: %v\n", x, lastUUID.R)
+			log.Fatalf("Duplicate rand on interation %v: rand was: %v"+NEWLINE, x, lastUUID.R)
 		}
 		lastUUID = id
 	}

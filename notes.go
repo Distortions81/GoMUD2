@@ -170,7 +170,7 @@ func cmdNotes(player *characterData, input string) {
 			if item.Modified.Sub(player.LastChange) < 0 {
 				continue
 			}
-			player.sendWW("%v: (%v)\r\n%v\r\n", item.Subject, item.From, item.Text)
+			player.sendWW("%v: (%v)"+NEWLINE+"%v"+NEWLINE, item.Subject, item.From, item.Text)
 			player.LastChange = item.Modified
 			break
 		}

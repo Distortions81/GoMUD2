@@ -75,7 +75,7 @@ func cmdHelp(player *characterData, input string) {
 				count++
 			}
 			if count > 0 {
-				player.send("Found these help topics:\r\n" + buf)
+				player.send("Found these help topics:" + NEWLINE + buf)
 				return
 			}
 		}
@@ -107,7 +107,7 @@ func cmdHelp(player *characterData, input string) {
 }
 
 func showHelpItem(player *characterData, help helpData) {
-	buf := fmt.Sprintf("HELP: %v (%v)\r\n\r\n%v", help.Name, strings.Join(help.Keywords, ", "), help.Text)
+	buf := fmt.Sprintf("HELP: %v (%v)"+NEWLINE+NEWLINE+"%v", help.Name, strings.Join(help.Keywords, ", "), help.Text)
 	player.send(buf)
 }
 

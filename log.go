@@ -63,10 +63,10 @@ func mudLog(format string, args ...any) {
 func doLog(dest *os.File, format string, args ...any) {
 	if args != nil {
 		buf := fmt.Sprintf(format, args...)
-		dest.Write([]byte(buf + "\n"))
+		dest.Write([]byte(buf + NEWLINE))
 		fmt.Println(buf)
 	} else {
-		dest.Write([]byte(format + "\n"))
+		dest.Write([]byte(format + NEWLINE))
 		fmt.Println(format)
 	}
 }

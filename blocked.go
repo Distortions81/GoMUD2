@@ -211,7 +211,7 @@ func cmdBlocked(player *characterData, input string) {
 		if item.HTTP {
 			buf = buf + " (HTTP)"
 		}
-		buf = buf + "\r\n"
+		buf = buf + NEWLINE
 	}
 	player.send(buf)
 	if count == 0 {

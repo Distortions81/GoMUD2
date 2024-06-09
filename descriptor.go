@@ -116,7 +116,7 @@ func handleDesc(conn net.Conn, tls bool) {
 				blockedDirty = true
 			}
 			blockedLock.Unlock()
-			conn.Write([]byte(`HTTP/1.1 301 Moved Permanently\r\nLocation: http://www.example.org/`))
+			conn.Write([]byte(`HTTP/1.1 301 Moved Permanently"+NEWLINE+"Location: http://www.example.org/`))
 			conn.Close()
 			return
 		}
@@ -152,10 +152,10 @@ func sendStart(conn net.Conn, tls bool) {
 		_, err = conn.Write([]byte(greetBufNoSSL))
 	}
 	if servSet.ModOnly {
-		_, err = conn.Write([]byte("\r\nMud is currently set to staff-only mode:"))
+		_, err = conn.Write([]byte(NEWLINE + "Mud is currently set to staff-only mode:"))
 	}
 	if servSet.NewLock {
-		_, err = conn.Write([]byte("\r\nNew accounts and characters are currently prohibited:"))
+		_, err = conn.Write([]byte(NEWLINE + "New accounts and characters are currently prohibited:"))
 	}
 	if err != nil {
 		conn.Close()
@@ -468,5 +468,5 @@ func (desc *descData) send(format string, args ...any) error {
 }
 
 func (desc *descData) sendln(format string, args ...any) error {
-	return desc.send(format+"\r\n", args...)
+	return desc.send(format+NEWLINE, args...)
 }

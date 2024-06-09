@@ -33,14 +33,14 @@ func loadEmojiHelp() {
 			continue
 		}
 		if c%2 == 0 {
-			buf = buf + "\r\n"
+			buf = buf + NEWLINE
 		}
 		c++
 		buf = buf + fmt.Sprintf(":%v: %-37v ", item, cEllip(item, 37))
 	}
-	buf = buf + "\r\nSimply chat :emoji name:\r\n"
+	buf = buf + NEWLINE + "Simply chat :emoji name:" + NEWLINE
 	buf = buf + "These will show up as text to players using mud clients that do not support UTF."
-	buf = buf + fmt.Sprintf("\r\n%v emoji. For more emoji see help emoji.", c)
+	buf = buf + fmt.Sprintf(NEWLINE+"%v emoji. For more emoji see help emoji.", c)
 	moreEmojiHelp = buf
 
 	buf = ""
@@ -62,14 +62,14 @@ func loadEmojiHelp() {
 			continue
 		}
 		if c%5 == 0 {
-			buf = buf + "\r\n"
+			buf = buf + NEWLINE
 		}
 		c++
 		buf = buf + fmt.Sprintf(":%v: %-11v ", item, cEllip(item, 11))
 	}
-	buf = buf + "\r\nSimply chat :emoji name:\r\n"
+	buf = buf + NEWLINE + "Simply chat :emoji name:" + NEWLINE
 	buf = buf + "These will show up as text to players using mud clients that do not support UTF."
-	buf = buf + fmt.Sprintf("\r\n%v emoji. For more emoji see help more-emoji.", c)
+	buf = buf + fmt.Sprintf(NEWLINE+"%v emoji. For more emoji see help more-emoji.", c)
 	emojiHelp = buf
 }
 

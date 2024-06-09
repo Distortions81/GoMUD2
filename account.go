@@ -22,7 +22,7 @@ func cmdCharList(player *characterData, input string) {
 		return
 	}
 
-	var buf string = "Characters:\r\n"
+	var buf string = "Characters:" + NEWLINE
 	for i, item := range player.desc.account.Characters {
 		var playing string
 		if target := checkPlayingUUID(item.Login, item.UUID); target != nil {
@@ -32,7 +32,7 @@ func cmdCharList(player *characterData, input string) {
 				playing = " (ALSO PLAYING)"
 			}
 		}
-		buf = buf + fmt.Sprintf("#%v: %v%v\r\n", i+1, item.Login, playing)
+		buf = buf + fmt.Sprintf("#%v: %v%v"+NEWLINE, i+1, item.Login, playing)
 	}
 	player.send(buf)
 
@@ -49,25 +49,25 @@ func pCharList(desc *descData) {
 	blockedDirty = true
 	blockedLock.Unlock()
 
-	var buf string = "\r\n"
+	var buf string = NEWLINE
 	numChars := len(desc.account.Characters)
 	if numChars == 0 {
-		desc.sendln("\r\nYou currently have no characters!")
+		desc.sendln(NEWLINE + "You currently have no characters!")
 	} else {
-		desc.sendln("\r\nYour characters:")
+		desc.sendln(NEWLINE + "Your characters:")
 
 		for i, item := range desc.account.Characters {
 			var playing string
 			if target := checkPlayingUUID(item.Login, item.UUID); target != nil {
 				playing = " (PLAYING)"
 			}
-			buf = buf + fmt.Sprintf("#%v: %v%v\r\n", i+1, item.Login, playing)
+			buf = buf + fmt.Sprintf("#%v: %v%v"+NEWLINE, i+1, item.Login, playing)
 		}
-		buf = buf + "\r\n"
+		buf = buf + NEWLINE
 	}
-	buf = buf + "Type 'options' for more options.\r\n"
+	buf = buf + "Type 'options' for more options." + NEWLINE
 	if numChars < MAX_CHAR_SLOTS {
-		buf = buf + "Type NEW or desired name to create a new character.\r\n"
+		buf = buf + "Type NEW or desired name to create a new character." + NEWLINE
 	}
 	if numChars > 0 {
 		buf = buf + "Select a character by #number or name: "
@@ -118,7 +118,7 @@ func canMakeCharacter(desc *descData, input string) bool {
 		gCharNewName(desc, input)
 		return true
 	} else {
-		desc.sendln("Character creation limit (%v) reached.\r\nNo new characters can be added.", MAX_CHAR_SLOTS)
+		desc.sendln("Character creation limit (%v) reached."+NEWLINE+"No new characters can be added.", MAX_CHAR_SLOTS)
 		return false
 	}
 }
@@ -205,13 +205,13 @@ func gCharNewName(desc *descData, input string) {
 func checkCharacterName(desc *descData, input string) bool {
 	input = titleCaseAlphaOnly(input)
 	if isNameReserved(input) {
-		desc.sendln("The name you've chosen for your character is not allowed or is reserved.\r\nPlease try a different name.")
+		desc.sendln("The name you've chosen for your character is not allowed or is reserved." + NEWLINE + "Please try a different name.")
 		return false
 	}
 
 	newNameLen := len(input)
 	if newNameLen < MIN_NAME_LEN && newNameLen > MAX_NAME_LEN {
-		desc.sendln("Character names must be between %v and %v in length.\r\nPlease choose another.", MIN_NAME_LEN, MAX_NAME_LEN)
+		desc.sendln("Character names must be between %v and %v in length."+NEWLINE+"Please choose another.", MIN_NAME_LEN, MAX_NAME_LEN)
 		return false
 	}
 
@@ -370,10 +370,10 @@ func saveAccountIndex() error {
 
 func alreadyPlayingWarnVictim(target *characterData) {
 	target.send(textFiles["warn"])
-	target.send("\r\nAnother connection on your account is attempting to play this character.\r\nIf they choose 'yes' to confirm you will be kicked.")
+	target.send(NEWLINE + "Another connection on your account is attempting to play this character." + NEWLINE + "If they choose 'yes' to confirm you will be kicked.")
 }
 
 func alreadyPlayingWarnPlayer(desc *descData) {
 	desc.send(textFiles["warn"])
-	desc.send("\r\nThat character is already playing.\r\nDo you wish to disconnect the other session and take control of the character? (y/N)")
+	desc.send(NEWLINE + "That character is already playing." + NEWLINE + "Do you wish to disconnect the other session and take control of the character? (y/N)")
 }

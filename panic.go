@@ -28,7 +28,7 @@ func reportPanic(desc *descData, format string, args ...interface{}) {
 		_, filename, line, _ := runtime.Caller(4)
 		input := fmt.Sprintf(format, args...)
 		desc.sendln("Sorry, something went wrong running the %v.", input)
-		buf := fmt.Sprintf("(GAME PANIC)\nBUILD:%v-%v-%v\nLabel:%v File: %v Line: %v\nError:%v\n\nStack Trace:\n%v\n", VERSION, VWHEN, CODENAME, input, filepath.Base(filename), line, r, string(debug.Stack()))
+		buf := fmt.Sprintf("(GAME PANIC)"+NEWLINE+"BUILD:%v-%v-%v"+NEWLINE+"Label:%v File: %v Line: %v"+NEWLINE+"Error:%v"+NEWLINE+NEWLINE+"Stack Trace:"+NEWLINE+"%v"+NEWLINE, VERSION, VWHEN, CODENAME, input, filepath.Base(filename), line, r, string(debug.Stack()))
 
 		panicLogFile := fmt.Sprintf("%v/%v/%v-%v", DATA_DIR, PANIC_DIR, now, pnaicLogName)
 		os.WriteFile(panicLogFile, []byte(buf), 0660)

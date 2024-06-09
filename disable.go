@@ -115,14 +115,14 @@ func cmdDisable(player *characterData, input string) {
 				buf = buf + "( ) "
 			}
 			if count%disCol == 0 {
-				buf = buf + "\r\n"
+				buf = buf + NEWLINE
 				count = 0
 			}
 			count++
 		}
 		player.send(buf)
 
-		player.send("\r\nChannels:")
+		player.send(NEWLINE + "Channels:")
 		buf = ""
 		count = 1
 		for _, cmd := range channels {
@@ -133,7 +133,7 @@ func cmdDisable(player *characterData, input string) {
 				buf = buf + "( )"
 			}
 			if count%disCol == 0 {
-				buf = buf + "\r\n"
+				buf = buf + NEWLINE
 				count = 0
 			}
 			count++

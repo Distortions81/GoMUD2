@@ -118,7 +118,7 @@ type loginStates struct {
 var loginStateList = [CON_MAX]loginStates{
 	//Normal login
 	CON_ACCOUNT: {
-		prompt: "To create a new account type NEW.\r\nAccount name: ",
+		prompt: "To create a new account type NEW." + NEWLINE + "Account name: ",
 		goDo:   gLogin,
 	},
 	CON_PASS: {
@@ -129,7 +129,7 @@ var loginStateList = [CON_MAX]loginStates{
 
 	//New login
 	CON_NEW_ACCOUNT: {
-		prompt: "(up to 48 characters, spaces and symbols are accepted)\r\nPlease type your desired account name:",
+		prompt: "(up to 48 characters, spaces and symbols are accepted)" + NEWLINE + "Please type your desired account name:",
 		goDo:   gNewLogin,
 	},
 	CON_NEW_ACCOUNT_CONFIRM: {
@@ -159,7 +159,7 @@ var loginStateList = [CON_MAX]loginStates{
 		goDo:     gReconnectConfirm,
 	},
 	CON_CHAR_CREATE: {
-		prompt: "Type 'CANCEL' to cancel.\r\nA-z only, no spaces, numbers or symbols are allowed.\r\nNew character name:",
+		prompt: "Type 'CANCEL' to cancel." + NEWLINE + "A-z only, no spaces, numbers or symbols are allowed." + NEWLINE + "New character name:",
 		goDo:   gCharNewName,
 	},
 	CON_CHAR_CREATE_CONFIRM: {
@@ -214,17 +214,17 @@ func gOptionsMenu(desc *descData, input string) {
 }
 
 func pReroll(desc *descData) {
-	var buf string = "\r\n"
+	var buf string = NEWLINE
 
-	desc.sendln("\r\nType 'CANCEL' to cancel.\r\nCharacters you can reroll:")
+	desc.sendln(NEWLINE + "Type 'CANCEL' to cancel." + NEWLINE + "Characters you can reroll:")
 	for i, item := range desc.account.Characters {
 		var playing string
 		if target := checkPlayingUUID(item.Login, item.UUID); target != nil {
 			playing = " (PLAYING)"
 		}
-		buf = buf + fmt.Sprintf("#%v: %v%v\r\n", i+1, item.Login, playing)
+		buf = buf + fmt.Sprintf("#%v: %v%v"+NEWLINE, i+1, item.Login, playing)
 	}
-	buf = buf + "\r\n"
+	buf = buf + NEWLINE
 	buf = buf + "Select a character by #number or name to reroll: "
 	desc.sendln(buf)
 }
@@ -400,11 +400,11 @@ func gNewLogin(desc *descData, input string) {
 		return
 	}
 	if !isAccNameAvail(input) {
-		var buf string = "A few quick random variations:\r\n"
+		var buf string = "A few quick random variations" + NEWLINE
 		for x := 0; x < NUM_LOGIN_SUFFIX; x++ {
-			buf = buf + fmt.Sprintf("%v%v\r\n", input, rand.Intn(999))
+			buf = buf + fmt.Sprintf("%v%v"+NEWLINE, input, rand.Intn(999))
 		}
-		buf = buf + "\r\nSorry, that login name is already in use.\r\nPlease pick another one!"
+		buf = buf + NEWLINE + "Sorry, that login name is already in use." + NEWLINE + "Please pick another one!"
 		desc.send(buf)
 		return
 	}
@@ -482,14 +482,14 @@ func (desc *descData) suggestPasswords() {
 		passSuggestions = append(passSuggestions, sugPass)
 	}
 
-	buf := "\r\nSuggested passphrases:\r\n\r\n"
+	buf := NEWLINE + "Suggested passphrases:" + NEWLINE + NEWLINE
 	for _, item := range passSuggestions {
-		buf = buf + item + "\r\n"
+		buf = buf + item + NEWLINE
 	}
 	desc.sendln(buf)
 }
 
 func pNewPassPrompt(desc *descData) {
 	desc.suggestPasswords()
-	desc.sendln("\r\n(%v to %v characters long)\r\nPassphrase: ", MIN_PASSPHRASE_LENGTH, MAX_PASSPHRASE_LENGTH)
+	desc.sendln(NEWLINE+"(%v to %v characters long)"+NEWLINE+"Passphrase: ", MIN_PASSPHRASE_LENGTH, MAX_PASSPHRASE_LENGTH)
 }

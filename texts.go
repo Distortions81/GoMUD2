@@ -38,11 +38,11 @@ func readTextFiles() {
 		//errLog("readTextFiles: Read: %v", fname.Name())
 	}
 
-	sslBuf := fmt.Sprintf("Use port %v for SSL.\r\n", *portTLS)
+	sslBuf := fmt.Sprintf("Use port %v for SSL."+NEWLINE, *portTLS)
 
 	//Save greet, fairwell and warning
-	greetBuf = LICENSE + string(ANSIColor([]byte(textFiles["greet"]))) + loginStateList[CON_ACCOUNT].prompt
-	greetBufNoSSL = LICENSE + string(ANSIColor([]byte(textFiles["greet"]))) + sslBuf + loginStateList[CON_ACCOUNT].prompt
+	greetBuf = LICENSE + string(ANSIColor([]byte(textFiles["greet"]), COLOR_16)) + loginStateList[CON_ACCOUNT].prompt
+	greetBufNoSSL = LICENSE + string(ANSIColor([]byte(textFiles["greet"]), COLOR_16)) + sslBuf + loginStateList[CON_ACCOUNT].prompt
 	fairwellBuf = textFiles["fairwell"]
 	warnBuf = textFiles["warn"]
 }

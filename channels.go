@@ -48,7 +48,7 @@ var channels []*chanData = []*chanData{
 	CHAT_GRAT:  {name: "Congrats", cmd: "grats", desc: "Congratulate someone!", format: "[Grats] %v: %v", level: LEVEL_PLAYER},
 	CHAT_NEWB:  {name: "Newbie", cmd: "newb", desc: "A place for newbies to chat or ask for help", format: "[Newbie] %v: %v", level: LEVEL_NEWBIE},
 	CHAT_OOC:   {name: "OOC", cmd: "ooc", desc: "out-of-character chat", format: "[OOC] %v: %v", level: LEVEL_NEWBIE},
-	CHAT_CRAZY: {name: "CrazyTalk", cmd: "crazytalk", desc: "chat with ascii-art text", format: "[Crazy Talk] %v:\r\n%v", level: LEVEL_PLAYER, special: true}, //Has it's own command.
+	CHAT_CRAZY: {name: "CrazyTalk", cmd: "crazytalk", desc: "chat with ascii-art text", format: "[Crazy Talk] %v:" + NEWLINE + "%v", level: LEVEL_PLAYER, special: true}, //Has it's own command.
 }
 
 func sendToChannel(player *characterData, input string, channel int) bool {
@@ -160,7 +160,7 @@ func cmdChannels(player *characterData, input string) {
 			status := boolToText(!player.Channels.hasFlag(1 << c))
 			player.send("%10v: (%3v) %v", ch.cmd, status, ch.name)
 		}
-		player.send("\r\n<channel command> (toggles on/off)")
+		player.send(NEWLINE + "<channel command> (toggles on/off)")
 		return
 	}
 

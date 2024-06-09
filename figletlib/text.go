@@ -20,7 +20,7 @@ func (ft *FigText) height() int {
 func (ft *FigText) String() string {
 	str := ""
 	for _, line := range ft.art {
-		str += string(line) + "\n"
+		str += string(line) + "\r\n"
 	}
 	return str
 }

@@ -38,7 +38,7 @@ func cmdBug(player *characterData, input string) {
 	if player.Level >= LEVEL_ADMIN && strings.EqualFold(input, "read") {
 		for _, item := range bugList.Bugs {
 			player.send("(%v) %v", item.Created, item.Reporter.Name)
-			player.send("Message:\r\n%v", item.Text)
+			player.send("Message:"+NEWLINE+"%v", item.Text)
 			player.send("Fixed: %v", item.Fixed)
 		}
 		return

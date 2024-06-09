@@ -42,7 +42,7 @@ func rUndo(player *characterData, input string) {
 			}
 		}
 		player.send("#%-5v Type: %-15v Loc: %v:%v", i+1, cEllip(item.Name, 15), avnum, rvnum)
-		player.send("From: %v\r\nTo: %v\r\n", item.From, item.To)
+		player.send("From: %v"+NEWLINE+"To: %v"+NEWLINE, item.From, item.To)
 	}
 }
 

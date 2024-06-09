@@ -116,7 +116,7 @@ func cmdStat(player *characterData, input string) {
 
 	fpulse = uint64(fullPulseHistory[historyLen-1])
 	ppulse = uint64(partialPulseHistory[historyLen-1])
-	player.send("\r\nCurrent:")
+	player.send(NEWLINE + "Current:")
 	mp = (float64(ppulse) / float64(PULSE_LENGTH_uS)) * 100.0
 	mpc = percentColor(mp)
 	wp = (float64(fpulse) / float64(PULSE_LENGTH_uS)) * 100.0
@@ -181,7 +181,7 @@ func cmdWho(player *characterData, input string) {
 		player.send("You are currently hidden.")
 		return
 	}
-	var buf string = "Players online:\r\n"
+	var buf string = "Players online:" + NEWLINE
 	var tmpCharList []*characterData = charList
 
 	numPlayers := len(tmpCharList)
@@ -195,7 +195,7 @@ func cmdWho(player *characterData, input string) {
 			return tmpCharList[i].desc.id < tmpCharList[j].desc.id
 		})
 	}
-	buf = buf + fmt.Sprintf("%31v - %v %v %v %v\r\n", "Player name", "level", "time-online", "(idle time)", "(no link)")
+	buf = buf + fmt.Sprintf("%31v - %v %v %v %v"+NEWLINE, "Player name", "level", "time-online", "(idle time)", "(no link)")
 	for _, target := range tmpCharList {
 		if target.Config.hasFlag(CONFIG_HIDDEN) {
 			continue
@@ -214,11 +214,11 @@ func cmdWho(player *characterData, input string) {
 			onlineTime = durafmt.Parse(time.Since(target.loginTime).Truncate(time.Minute)).LimitFirstN(2).Format(shortUnits)
 			onlineTime = strings.ReplaceAll(onlineTime, " ", "")
 		}
-		buf = buf + fmt.Sprintf("%31v - %v %v%v%v\r\n", target.Name, levelName[target.Level], onlineTime, idleTime, unlink)
+		buf = buf + fmt.Sprintf("%31v - %v %v%v%v"+NEWLINE, target.Name, levelName[target.Level], onlineTime, idleTime, unlink)
 	}
 	uptime := durafmt.Parse(time.Since(bootTime).Truncate(time.Second)).LimitFirstN(2).Format(shortUnits)
 	uptime = strings.ReplaceAll(uptime, " ", "")
-	buf = buf + fmt.Sprintf("\r\n%v players online. Uptime: %v", numPlayers, uptime)
+	buf = buf + fmt.Sprintf(NEWLINE+"%v players online. Uptime: %v", numPlayers, uptime)
 	player.send(buf)
 }
 
