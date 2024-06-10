@@ -8,6 +8,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/hako/durafmt"
 )
 
 const (
@@ -117,6 +119,9 @@ func readBlocked() error {
 	blockedLock.Lock()
 	blockedMap = make(map[string]*blockedData)
 	for _, item := range blocked {
+		if item.Modified.IsZero() {
+			item.Modified = item.Created
+		}
 		blockedMap[item.Host] = &blockedData{
 			Host: item.Host, Attempts: item.Attempts,
 			Blocked: item.Blocked, HTTP: item.HTTP,
@@ -191,31 +196,49 @@ func cmdBlocked(player *characterData, input string) {
 	}
 
 	sort.Slice(atd, func(i, j int) bool {
-		return atd[i].Attempts < atd[j].Attempts || atd[i].Host < atd[j].Host
+		return atd[i].Created.Unix() < atd[j].Created.Unix()
 	})
 
 	player.send("Blocked connections:")
-	player.send("%40v : %8v:%-8v %v %v", "hostname", "Attempts", "History", "(Blocked)", "(HTTP)")
+	player.send("%20v : %5v:%-5v %-10v %-10v %v %v", "Hostname", "Hits", "Old", "Created", "Modified", "(Blocked)", "(HTTP)")
 
 	count := 0
 	var buf string
-	for _, item := range atd {
-		if item.Attempts == 0 && !item.Blocked {
-			continue
+
+	for x := 0; x < 2; x++ {
+		if x == 1 {
+			buf = buf + NEWLINE + fmt.Sprintf("%20v", "(Mud Connects)") + NEWLINE
+		} else {
+			buf = buf + fmt.Sprintf("%20v", "(HTTP BOTS)") + NEWLINE
 		}
-		count++
-		buf = buf + fmt.Sprintf("%40v : %8v:%-8v", cEllip(item.Host, 40), item.Attempts, item.History)
-		if item.Blocked {
-			buf = buf + " (Blocked)"
+		for _, item := range atd {
+			if !item.Blocked {
+				continue
+			}
+			if item.Attempts == 0 && !item.Blocked {
+				continue
+			}
+			if item.HTTP && x == 1 {
+				continue
+			} else if !item.HTTP && x == 0 {
+				continue
+			}
+			count++
+			buf = buf + fmt.Sprintf("%20v : %5v:%-5v %-10v %-10v", cEllip(item.Host, 20), item.Attempts, item.History, durafmt.Parse(time.Since(item.Created)).LimitFirstN(2).Format(shortUnits), durafmt.Parse(time.Since(item.Modified)).LimitFirstN(2).Format(shortUnits))
+			if item.Blocked {
+				buf = buf + " (Blocked)"
+			}
+			if item.HTTP {
+				buf = buf + " (HTTP)"
+			}
+			buf = buf + NEWLINE
 		}
-		if item.HTTP {
-			buf = buf + " (HTTP)"
-		}
-		buf = buf + NEWLINE
 	}
 	player.send(buf)
 	if count == 0 {
 		player.send("There are no blocked connections.")
+	} else {
+		player.send("%v entries.", count)
 	}
 	player.send("Type 'blocked clear' to clear the list... or <add or delete> <host>")
 

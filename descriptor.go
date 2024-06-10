@@ -73,7 +73,7 @@ func handleDesc(conn net.Conn, tls bool) {
 		}
 
 	} else {
-		blockedMap[ip] = &blockedData{Host: ip, Created: time.Now().UTC()}
+		blockedMap[ip] = &blockedData{Host: ip, Created: time.Now().UTC(), Modified: time.Now().UTC()}
 		blockedDirty = true
 	}
 	blockedLock.Unlock()
