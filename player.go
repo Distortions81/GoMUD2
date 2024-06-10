@@ -135,6 +135,15 @@ func (desc *descData) enterWorld(player *characterData) {
 	desc.state = CON_PLAYING
 
 	charList = append(charList, player)
+
+	mudStats.loginCount++
+	mudStats.LoginEver++
+	numPlayers := len(charList)
+	if mudStats.MostEver < numPlayers {
+		mudStats.MostEver = numPlayers
+	}
+	writeMudStats()
+
 	player.goTo(player.Loc)
 	if !player.Loc.AreaUUID.hasUUID() || !player.Loc.RoomUUID.hasUUID() {
 		if sysAreaUUID.hasUUID() && sysRoomUUID.hasUUID() {

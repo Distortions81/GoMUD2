@@ -70,6 +70,7 @@ func mudMain() {
 
 	startLogs()
 	loadMudID()
+	loadMudStats()
 
 	if *makeTestFiles {
 		makeTestArea()
