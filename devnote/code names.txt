@@ -4,7 +4,7 @@ Hypernova
 Cosmik
 Ultrablaze
 Quasarax
-Novaflux
+--Novaflux
 --Warpfire
 --Galaxium
 --Voidstorm

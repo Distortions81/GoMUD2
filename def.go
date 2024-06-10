@@ -3,9 +3,9 @@ package main
 import "strings"
 
 const (
-	VERSION  = "v0.0.65a"
-	VWHEN    = "06-10-2024-0151p"
-	CODENAME = "Galaxium"
+	VERSION  = "v0.0.66a"
+	VWHEN    = "06-10-2024-0324p"
+	CODENAME = "Novaflux"
 
 	LICENSE = "GOMUD2: " + VERSION + "-" + VWHEN + "-" + CODENAME + NEWLINE +
 		"Copyright 2024 Carl Frank Otto III (carlotto81@gmail.com). All rights reserved." + NEWLINE
