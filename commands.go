@@ -179,7 +179,7 @@ func cmdLogout(player *characterData, input string) {
 func cmdWho(player *characterData, input string) {
 	if player.Config.hasFlag(CONFIG_HIDDEN) {
 		player.Config.clearFlag(CONFIG_HIDDEN)
-		player.send("You had the hidden option enabled, turning off.")
+		player.send("%v was enabled, turning off.", configNames[CONFIG_HIDDEN].name)
 	}
 	var buf string = "Players online:" + NEWLINE
 	var tmpCharList []*characterData = charList
@@ -197,8 +197,13 @@ func cmdWho(player *characterData, input string) {
 	}
 	buf = buf + fmt.Sprintf("%31v - %v %v %v %v"+NEWLINE, "Player name", "level", "time-online", "(idle time)", "(no link)")
 	for _, target := range tmpCharList {
+		hidden := ""
 		if target.Config.hasFlag(CONFIG_HIDDEN) {
-			continue
+			if player.Level >= LEVEL_BUILDER {
+				hidden = " (hidden)"
+			} else {
+				continue
+			}
 		}
 		var idleTime, unlink string
 		if time.Since(target.idleTime) >= (time.Minute * 3) {
@@ -214,7 +219,7 @@ func cmdWho(player *characterData, input string) {
 			onlineTime = durafmt.Parse(time.Since(target.loginTime).Truncate(time.Minute)).LimitFirstN(2).Format(shortUnits)
 			onlineTime = strings.ReplaceAll(onlineTime, " ", "")
 		}
-		buf = buf + fmt.Sprintf("%31v - %v %v%v%v"+NEWLINE, target.Name, levelName[target.Level], onlineTime, idleTime, unlink)
+		buf = buf + fmt.Sprintf("%31v - %v %v%v%v%v"+NEWLINE, target.Name, levelName[target.Level], onlineTime, idleTime, unlink, hidden)
 	}
 	uptime := durafmt.Parse(time.Since(bootTime).Truncate(time.Second)).LimitFirstN(2).Format(shortUnits)
 	uptime = strings.ReplaceAll(uptime, " ", "")

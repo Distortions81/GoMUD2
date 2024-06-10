@@ -70,7 +70,6 @@ func sendToChannel(player *characterData, input string, channel int) bool {
 	}
 	if chd.disabled {
 		player.send("That channel is disabled.")
-		critLog("%v tried to use a disabled comm channel!", player.Name)
 		return false
 	}
 	if chd.talkLevel > player.Level {
@@ -85,7 +84,8 @@ func sendToChannel(player *characterData, input string, channel int) bool {
 		player.send("The %v channel was off, turning it on.", chd.name)
 	}
 	if player.Config.hasFlag(CONFIG_NOCHANNEL) {
-		player.send("NoChannel was enabled, turning it off.")
+		player.send("%v was enabled, turning it off.", configNames[CONFIG_NOCHANNEL].name)
+		player.Config.clearFlag(CONFIG_NOCHANNEL)
 	}
 	msg := input
 	for _, target := range charList {
@@ -115,8 +115,8 @@ func sendToChannel(player *characterData, input string, channel int) bool {
 
 func cmdChat(player *characterData, input string) bool {
 	if player.Config.hasFlag(CONFIG_NOCHANNEL) {
-		player.send("You currently have channels disabled.")
-		return true
+		player.send("%v was enabled, turning it off.", configNames[CONFIG_NOCHANNEL].name)
+		player.Config.clearFlag(CONFIG_NOCHANNEL)
 	}
 	cmd := strings.SplitN(input, " ", 2)
 	numCmd := len(cmd)
@@ -164,8 +164,8 @@ func cmdChat(player *characterData, input string) bool {
 
 func cmdChannels(player *characterData, input string) {
 	if player.Config.hasFlag(CONFIG_NOCHANNEL) {
-		player.send("You currently have channels disabled.")
-		return
+		player.send("%v was enabled, turning it off.", configNames[CONFIG_NOCHANNEL].name)
+		player.Config.clearFlag(CONFIG_NOCHANNEL)
 	}
 	if input == "" {
 		player.send("%10v (%3v)  %v{x", "command:", "on?", "Name")
