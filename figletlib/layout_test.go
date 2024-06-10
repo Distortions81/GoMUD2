@@ -231,7 +231,7 @@ func smushModes() []int {
 	modes := make([]int, 8+1)
 	modes[0] = 0
 	for i := uint(0); i < 8; i++ {
-		modes[i+1] = 1 << i
+		modes[i+1] = int(i)
 	}
 	return modes
 }

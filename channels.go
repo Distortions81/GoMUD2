@@ -80,8 +80,8 @@ func sendToChannel(player *characterData, input string, channel int) bool {
 	if chd.listenLevel > player.Level {
 		player.send(chd.format, "You", input)
 	}
-	if player.Channels.hasFlag(1 << channel) {
-		player.Channels.clearFlag(1 << channel)
+	if player.Channels.hasFlag(channel) {
+		player.Channels.clearFlag(channel)
 		player.send("The %v channel was off, turning it on.", chd.name)
 	}
 	if player.Config.hasFlag(CONFIG_NOCHANNEL) {
@@ -99,7 +99,7 @@ func sendToChannel(player *characterData, input string, channel int) bool {
 		//Bypass channel off for listen-only staff-level channels
 		if (chd.talkLevel >= LEVEL_BUILDER && chd.listenLevel == LEVEL_ANY) ||
 			//Otherwise, skip if channel is off or player is ignored
-			(!target.Channels.hasFlag(1<<channel) && notIgnored(player, target, false)) {
+			(!target.Channels.hasFlag(channel) && notIgnored(player, target, false)) {
 			if channel == CHAT_CRAZY {
 				msg = handleCrazy(target, input)
 			}
@@ -168,10 +168,9 @@ func cmdChannels(player *characterData, input string) {
 		return
 	}
 	if input == "" {
-		player.send("channel command: (on/off) channel name")
 		player.send("%10v (%3v)  %v{x", "command:", "on?", "Name")
 		for c, ch := range channels {
-			status := boolToText(!player.Channels.hasFlag(1 << c))
+			status := boolToText(!player.Channels.hasFlag(c))
 			cmd := ch.cmd + ":"
 
 			dim := "{W "
@@ -221,11 +220,11 @@ func cmdChannels(player *characterData, input string) {
 			continue
 		}
 		if strings.EqualFold(ch.cmd, input) {
-			if player.Channels.hasFlag(1 << c) {
-				player.Channels.clearFlag(1 << c)
+			if player.Channels.hasFlag(c) {
+				player.Channels.clearFlag(c)
 				player.send("%v channel is now on.", ch.name)
 			} else {
-				player.Channels.addFlag(1 << c)
+				player.Channels.addFlag(c)
 				player.send("%v channel is now off.", ch.name)
 			}
 			player.dirty = true

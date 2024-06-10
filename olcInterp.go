@@ -97,7 +97,7 @@ func olcModeCommand(mode olcModeType, player *characterData, input string) bool 
 		}
 	} else {
 		if !findCommandMatch(mode.list, player, args[0], args[1]) {
-			if !player.Config.hasFlag(CONFIG_OLCHYBRID) {
+			if !player.Config.hasFlag(1 << CONFIG_OLCHYBRID) {
 				olcHelp(player, mode.list)
 				return true
 			}
@@ -139,7 +139,7 @@ func interpOLC(player *characterData, input string) bool {
 			return true
 		}
 	}
-	if !player.Config.hasFlag(CONFIG_OLCHYBRID) {
+	if !player.Config.hasFlag(1 << CONFIG_OLCHYBRID) {
 		player.send("That isn't a valid OLC command.")
 
 		player.send("OLC modes:")

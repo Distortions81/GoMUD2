@@ -7,7 +7,7 @@ import (
 
 // DO NOT CHANGE ORDER
 const (
-	CONFIG_HIDDEN = 1 << iota
+	CONFIG_HIDDEN = iota
 	CONFIG_NOTELL
 	CONFIG_NOCHANNEL
 	CONFIG_DEAF
@@ -18,6 +18,7 @@ const (
 	CONFIG_OLCHERE
 	CONFIG_OLCHYBRID
 	CONFIG_TERMWIDTH
+	CONFIG_TIMESTAMP
 
 	//Keep at end, do not use or delete
 	CONFIG_MAX
@@ -48,12 +49,13 @@ var configNames map[int]configInfo = map[int]configInfo{
 	CONFIG_OLC:        {name: "OLCMode", desc: "Require 'OLC' before OLC commands.", level: LEVEL_BUILDER, disableWhenEnabled: CONFIG_OLCHYBRID},
 	CONFIG_OLCHYBRID:  {name: "OLCHybrid", desc: "Allow OLC and normal commands at the same time.", level: LEVEL_BUILDER, disableWhenEnabled: CONFIG_OLC},
 	CONFIG_TERMWIDTH:  {name: "TermWidth", desc: "Manually specify your terminal width in columns.", integer: true, defaultValue: 80},
+	CONFIG_TIMESTAMP:  {name: "Timestamps", desc: "Show a timestamp at the begining of each print.", level: LEVEL_ANY},
 }
 
 func cmdConfig(player *characterData, input string) {
 	if input == "" {
 		for x := 0; x < CONFIG_MAX; x++ {
-			item := configNames[1<<x]
+			item := configNames[x]
 			if item.level > player.Level {
 				continue
 			}
@@ -62,19 +64,19 @@ func cmdConfig(player *characterData, input string) {
 			}
 
 			if item.integer {
-				if !player.Config.hasFlag(1 << x) {
+				if !player.Config.hasFlag(x) {
 					player.send("%15v: (%v) %v", cEllip(item.name, 15), boolToText(false), item.desc)
 				} else {
 					value := 0
-					if player.ConfigVals[1<<x] != nil {
-						value = player.ConfigVals[1<<x].Value
+					if player.ConfigVals[x] != nil {
+						value = player.ConfigVals[x].Value
 					}
 					player.send("%15v: (%v) %v", cEllip(item.name, 15), value, item.desc)
 				}
 				continue
 			}
 
-			status := boolToText(player.Config.hasFlag(1 << x))
+			status := boolToText(player.Config.hasFlag(x))
 			player.send("%15v: (%v) %v", cEllip(item.name, 15), status, item.desc)
 		}
 		player.send("config <option> to toggle on/off, or config <option> <number> to set a value")
@@ -86,7 +88,7 @@ func cmdConfig(player *characterData, input string) {
 	found := false
 	for y := 0; y < numParts; y++ {
 		for x := 0; x < CONFIG_MAX; x++ {
-			item := configNames[1<<x]
+			item := configNames[x]
 			if item.level > player.Level {
 				continue
 			}
@@ -100,47 +102,47 @@ func cmdConfig(player *characterData, input string) {
 					i, err := strconv.ParseInt(parts[y+1], 10, 64)
 					if err == nil {
 						if i == 0 {
-							delete(player.ConfigVals, 1<<x)
+							delete(player.ConfigVals, x)
 						} else {
-							player.ConfigVals[1<<x] = &ConfigValue{Name: item.name, Value: int(i)}
+							player.ConfigVals[x] = &ConfigValue{Name: item.name, Value: int(i)}
 						}
 
 						player.send("%v is now %v.", item.name, i)
-						player.Config.addFlag(1 << x)
+						player.Config.addFlag(x)
 						continue
 					}
 				}
-				if player.Config.hasFlag(1 << x) {
+				if player.Config.hasFlag(x) {
 					player.send("%v is now OFF.", item.name)
-					player.Config.clearFlag(1 << x)
+					player.Config.clearFlag(x)
 
 					if item.integer {
-						if player.ConfigVals[1<<x] != nil {
-							delete(player.ConfigVals, 1<<x)
+						if player.ConfigVals[x] != nil {
+							delete(player.ConfigVals, x)
 						}
 					}
 
 					if item.disableWhenDisabled > 0 {
-						player.Config.clearFlag(Bitmask(item.disableWhenEnabled))
+						player.Config.clearFlag(item.disableWhenEnabled)
 					}
 					if item.enableWhenDisabled > 0 {
-						player.Config.addFlag(Bitmask(item.enableWhenEnabled))
+						player.Config.addFlag(item.enableWhenEnabled)
 					}
 				} else {
 					player.send("%v is now ON", item.name)
-					player.Config.addFlag(1 << x)
+					player.Config.addFlag(x)
 
 					if item.integer {
-						if player.ConfigVals[1<<x] == nil {
-							player.ConfigVals[1<<x] = &ConfigValue{Name: item.name, Value: int(item.defaultValue)}
+						if player.ConfigVals[x] == nil {
+							player.ConfigVals[x] = &ConfigValue{Name: item.name, Value: int(item.defaultValue)}
 						}
 					}
 
 					if item.disableWhenEnabled > 0 {
-						player.Config.clearFlag(Bitmask(item.disableWhenEnabled))
+						player.Config.clearFlag(item.disableWhenEnabled)
 					}
 					if item.enableWhenEnabled > 0 {
-						player.Config.addFlag(Bitmask(item.enableWhenEnabled))
+						player.Config.addFlag(item.enableWhenEnabled)
 					}
 
 				}

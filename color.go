@@ -373,7 +373,7 @@ func (state *ansiState) resetState() {
 }
 
 const (
-	bold = 1 << iota
+	bold = iota
 	italic
 	underline
 	inverse
@@ -382,7 +382,7 @@ const (
 
 type ctData struct {
 	code, disCode string
-	style         Bitmask
+	style         int
 
 	isBG, isFG, removeBold,
 	isStyle, extended bool

@@ -129,7 +129,7 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 		}
 
 		if desc.telnet.Options != nil && player.Config.hasFlag(CONFIG_NOCOLOR) {
-			desc.telnet.Options.MTTS.clearFlag(MTTS_ANSI)
+			desc.telnet.Options.MTTS.clearFlag(1 << MTTS_ANSI)
 		}
 
 		return player

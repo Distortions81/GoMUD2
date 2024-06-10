@@ -172,7 +172,15 @@ func sendOutput() {
 	wg.Wait()
 }
 
+const timeStampFormat = "(3:4:05pm MST):"
+
 func (tdesc *descData) doOutput() {
+
+	//Timestamp
+	if tdesc.character != nil && tdesc.character.Config.hasFlag(CONFIG_TIMESTAMP) {
+		ts := fmt.Sprintf("%v", time.Now().UTC().Format(timeStampFormat)) + NEWLINE
+		tdesc.outBuf = append([]byte(ts), tdesc.outBuf...)
+	}
 
 	//Emoji
 	if tdesc.character != nil && tdesc.character.Config.hasFlag(CONFIG_TEXT_EMOJI) {
@@ -219,7 +227,7 @@ func (tdesc *descData) doOutput() {
 	if tdesc.state == CON_PLAYING {
 		if target := tdesc.character; target != nil {
 			flag := ""
-			if target.Config.hasFlag(CONFIG_OLCHERE) {
+			if target.Config.hasFlag(1 << CONFIG_OLCHERE) {
 				flag = " (OLCHere On)"
 			}
 			if target.OLCEditor.OLCMode != OLC_NONE {

@@ -24,7 +24,7 @@ const (
 
 // DO NOT CHANGE ORDER
 const (
-	EXIT_NORMAL = 1 << iota
+	EXIT_NORMAL = iota
 	EXIT_DOOR
 	EXIT_HIDDEN
 	EXIT_PERSONAL
@@ -72,8 +72,8 @@ type LocData struct {
 }
 
 type exitData struct {
-	ExitType int    `json:",omitempty"`
-	DoorName string `json:",omitempty"`
+	ExitType Bitmask `json:",omitempty"`
+	DoorName string  `json:",omitempty"`
 
 	Direction DIR
 	DirName   string `json:",omitempty"`

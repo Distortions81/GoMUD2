@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	MTTS_ANSI = 1 << iota
+	MTTS_ANSI = iota
 	MTTS_VT100
 	MTTS_UTF8
 	MTTS_256
@@ -25,7 +25,7 @@ type MTTSNameData struct {
 	Name string
 }
 
-var MTTSNames map[Bitmask]MTTSNameData = map[Bitmask]MTTSNameData{
+var MTTSNames map[int]MTTSNameData = map[int]MTTSNameData{
 	MTTS_ANSI:          {Name: "ANSI-Color"},
 	MTTS_VT100:         {Name: "VT100"},
 	MTTS_UTF8:          {Name: "UTF-8"},

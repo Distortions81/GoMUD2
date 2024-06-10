@@ -153,8 +153,8 @@ func cmdSay(player *characterData, input string) {
 
 func cmdEmote(player *characterData, input string) {
 	if player.Config.hasFlag(CONFIG_DEAF) {
-		player.send("You are currently deaf.")
-		return
+		player.Config.clearFlag(CONFIG_DEAF)
+		player.send("You had the deaf option enabled, turning off.")
 	}
 	trimInput := strings.TrimSpace(input)
 	chatLen := len(trimInput)
@@ -178,8 +178,8 @@ func cmdLogout(player *characterData, input string) {
 
 func cmdWho(player *characterData, input string) {
 	if player.Config.hasFlag(CONFIG_HIDDEN) {
-		player.send("You are currently hidden.")
-		return
+		player.Config.clearFlag(CONFIG_HIDDEN)
+		player.send("You had the hidden option enabled, turning off.")
 	}
 	var buf string = "Players online:" + NEWLINE
 	var tmpCharList []*characterData = charList
