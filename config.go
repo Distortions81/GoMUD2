@@ -142,10 +142,10 @@ func cmdConfig(player *characterData, input string) {
 					if item.enableWhenEnabled > 0 {
 						player.Config.addFlag(Bitmask(item.enableWhenEnabled))
 					}
-				}
 
-				if player.desc != nil && player.desc.telnet.Options != nil {
-					player.desc.telnet.Options.NoColor = player.Config.hasFlag(CONFIG_NOCOLOR)
+				}
+				if player.desc != nil && player.Config.hasFlag(CONFIG_NOCOLOR) {
+					player.desc.telnet.Options.MTTS.clearFlag(MTTS_ANSI)
 				}
 				player.dirty = true
 				break

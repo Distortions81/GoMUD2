@@ -114,9 +114,6 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 		desc.character.desc = desc
 		desc.state = CON_PLAYING
 
-		if desc.telnet.Options != nil {
-			desc.telnet.Options.NoColor = target.Config.hasFlag(CONFIG_NOCOLOR)
-		}
 		return target
 	} else {
 		data, err := readFile(DATA_DIR + ACCOUNT_DIR + desc.account.UUID.toString() + "/" + uuid.toString() + ".json")
@@ -131,7 +128,10 @@ func (desc *descData) loadCharacter(plrStr string) *characterData {
 			return nil
 		}
 
-		desc.telnet.Options.NoColor = player.Config.hasFlag(CONFIG_NOCOLOR)
+		if desc.telnet.Options != nil && player.Config.hasFlag(CONFIG_NOCOLOR) {
+			desc.telnet.Options.MTTS.clearFlag(MTTS_ANSI)
+		}
+
 		return player
 	}
 }

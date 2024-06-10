@@ -178,7 +178,7 @@ func (tdesc *descData) doOutput() {
 	if tdesc.character != nil && tdesc.character.Config.hasFlag(CONFIG_TEXT_EMOJI) {
 		tdesc.outBuf = unicodeToName(tdesc.outBuf)
 	} else {
-		if tdesc.telnet.Options != nil && tdesc.telnet.Options.UTF {
+		if tdesc.telnet.Options != nil && tdesc.telnet.Options.MTTS.hasFlag(MTTS_UTF8) {
 			tdesc.outBuf = nameToUnicode(tdesc.outBuf)
 		} else {
 			tdesc.outBuf = unicodeToName(tdesc.outBuf)
@@ -186,13 +186,12 @@ func (tdesc *descData) doOutput() {
 	}
 
 	//Color
-
 	if tdesc.telnet.Options != nil {
-		if tdesc.telnet.Options.NoColor {
+		if !tdesc.telnet.Options.MTTS.hasFlag(MTTS_ANSI) {
 			tdesc.outBuf = ColorRemove(tdesc.outBuf)
-		} else if tdesc.telnet.Options.ANSI256 {
+		} else if tdesc.telnet.Options.MTTS.hasFlag(MTTS_256) {
 			tdesc.outBuf = ANSIColor(tdesc.outBuf, COLOR_256)
-		} else if tdesc.telnet.Options.ANSI24 {
+		} else if tdesc.telnet.Options.MTTS.hasFlag(MTTS_TRUECOLOR) {
 			tdesc.outBuf = ANSIColor(tdesc.outBuf, COLOR_TRUE)
 		} else {
 			tdesc.outBuf = ANSIColor(tdesc.outBuf, COLOR_16)
@@ -202,7 +201,7 @@ func (tdesc *descData) doOutput() {
 	}
 
 	//Character map translation
-	if !tdesc.telnet.Options.UTF {
+	if !tdesc.telnet.Options.MTTS.hasFlag(MTTS_UTF8) {
 		tdesc.outBuf = encodeFromUTF(tdesc.telnet.charMap, tdesc.outBuf)
 	}
 

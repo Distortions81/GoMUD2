@@ -6,50 +6,85 @@ import (
 	"golang.org/x/text/encoding/charmap"
 )
 
+const (
+	MTTS_ANSI = 1 << iota
+	MTTS_VT100
+	MTTS_UTF8
+	MTTS_256
+	MTTS_MOUSE
+	MTTS_OSC_COLOR
+	MTTS_SCREEN_READER
+	MTTS_PROXY
+	MTTS_TRUECOLOR
+	MTTS_MNES
+	MTTS_MSLP
+	MTTS_SSL
+)
+
+type MTTSNameData struct {
+	Name string
+}
+
+var MTTSNames map[Bitmask]MTTSNameData = map[Bitmask]MTTSNameData{
+	MTTS_ANSI:          {Name: "ANSI-Color"},
+	MTTS_VT100:         {Name: "VT100"},
+	MTTS_UTF8:          {Name: "UTF-8"},
+	MTTS_256:           {Name: "256-Colors"},
+	MTTS_MOUSE:         {Name: "Mouse-Support"},
+	MTTS_OSC_COLOR:     {Name: "OSC Color"},
+	MTTS_SCREEN_READER: {Name: "Screen-reader"},
+	MTTS_PROXY:         {Name: "Proxy"},
+	MTTS_TRUECOLOR:     {Name: "True-Color"},
+	MTTS_MNES:          {Name: "MNES"},
+	MTTS_MSLP:          {Name: "MSLP"},
+	MTTS_SSL:           {Name: "Secure-Socket"},
+}
+
 type termSettings struct {
-	NoColor, ANSI256, ANSI24, UTF, SuppressGoAhead, NAWS bool
-	TermWidth, TermHeight                                int
-	charMap                                              *charmap.Charmap
+	MTTS                           Bitmask
+	SuppressGoAhead, NAWS, HasMTTS bool
+	TermWidth, TermHeight          int
+	charMap                        *charmap.Charmap
 }
 
 var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	//amudclient Java, didnt try it
-	"AMUDCLIENT": {ANSI256: true, ANSI24: true, UTF: true},
+	"AMUDCLIENT": {MTTS: MTTS_ANSI | MTTS_256 | MTTS_TRUECOLOR | MTTS_UTF8},
 
 	//atlantis Macintosh / OS X, didn't test
-	"ATLANTIS": {ANSI256: true, UTF: true},
+	"ATLANTIS": {MTTS: MTTS_ANSI | MTTS_256 | MTTS_UTF8},
 
 	//beip Worked fine
-	"BEIP": {ANSI256: true, UTF: true},
+	"BEIP": {MTTS: MTTS_ANSI | MTTS_256 | MTTS_UTF8},
 
 	//ggmud normalizes accents away, always sends UTF-8, but auto-detects recieved?
 	//terminal_type bug (reconnects as "hardcopy", "unknown"?),
-	"GGMUD":    {ANSI256: false, UTF: true},
-	"HARDCOPY": {ANSI256: false, UTF: true},
-	"UNKNOWN":  {ANSI256: false, UTF: true},
+	"GGMUD":    {MTTS: MTTS_ANSI | MTTS_256 | MTTS_UTF8},
+	"HARDCOPY": {MTTS: MTTS_ANSI | MTTS_256 | MTTS_UTF8},
+	"UNKNOWN":  {MTTS: MTTS_ANSI | MTTS_256 | MTTS_UTF8},
 	//ggmud
 
 	//kbtin Didn't find any binaries, just source, did not test
-	"KBTIN": {ANSI256: true, UTF: true},
+	"KBTIN": {MTTS: MTTS_ANSI | MTTS_256 | MTTS_UTF8},
 
 	//mudlet Works fine
-	"MUDLET": {ANSI256: true, UTF: true},
+	"MUDLET": {MTTS: MTTS_ANSI | MTTS_256 | MTTS_UTF8},
 
 	//mudmagic will accept but does not send UTF-8, does not accept latin1
 	//eats whole lines with accents, crashed more than once, no termtype
 	//"MUDMAGIC": {ANSI256: false, UTF: true},
 
 	//mushclient Works fine
-	"MUSHCLIENT": {ANSI256: true, UTF: false},
+	"MUSHCLIENT": {MTTS: MTTS_ANSI | MTTS_256},
 
 	//potato Works fine if you never send GA
-	"POTATO": {ANSI256: true, UTF: true, SuppressGoAhead: true},
+	"POTATO": {MTTS: MTTS_ANSI | MTTS_256 | MTTS_UTF8, SuppressGoAhead: true},
 
 	//POWWOW WINDOWS, uses DOS/OEM/CP437
-	"CYGWIN": {ANSI256: true, charMap: charmap.CodePage437},
+	"CYGWIN": {MTTS: MTTS_ANSI | MTTS_256, charMap: charmap.CodePage437},
 
 	//tintin Newline issues on linux?
-	//"TINTIN": {ANSI256: true, ANSI24: true, UTF: true},
+	"TINTIN": {MTTS: MTTS_ANSI | MTTS_256 | MTTS_UTF8},
 
 	//I couldn't figure out how to connect with it
 	//"TORTILLA": {ANSI256: true, UTF: true},
@@ -58,10 +93,10 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	//"BIOMUD": {ANSI256: true},
 
 	//blowtorch Didn't test, no android devices
-	"BLOWTORCH": {ANSI256: true},
+	"BLOWTORCH": {MTTS: MTTS_ANSI | MTTS_256},
 
 	//Works, but eats whole lines with accent characters?
-	"CMUD": {ANSI256: true},
+	"CMUD": {MTTS: MTTS_ANSI | MTTS_256},
 
 	//Works, but normalizes text, no termtype
 	//"GMUD":       {ANSI256: false},
@@ -73,7 +108,7 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	//"JAMOCHAMUD": {ANSI256: false},
 
 	//kild works fine
-	"KILDCLIENT": {ANSI256: true},
+	"KILDCLIENT": {MTTS: MTTS_ANSI | MTTS_256},
 
 	//Didn't run
 	//"LYNTIN": {ANSI256: true},
@@ -91,7 +126,7 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	//"PORTAL": {ANSI256: false},
 
 	//Works fine but normalizes text
-	"PUEBLO": {ANSI256: false},
+	"PUEBLO": {MTTS: MTTS_ANSI},
 
 	//Works fine, but termtype is just 'ansi'
 	//"SIMPLEMU": {ANSI256: false},
@@ -109,11 +144,15 @@ var termTypeMap map[string]*termSettings = map[string]*termSettings{
 	//"WINTINNET": {ANSI256: true},
 
 	//Worked fine
-	"ZMUD": {ANSI256: false},
+	"ZMUD": {MTTS: MTTS_ANSI},
 
 	//Generic terminal
-	"XTERM256COLOR": {ANSI256: true, UTF: true},
-	"MONO":          {NoColor: true, ANSI256: false, UTF: true},
+	"XTERM256COLOR":  {MTTS: MTTS_ANSI | MTTS_256 | MTTS_UTF8},
+	"XTERMTRUECOLOR": {MTTS: MTTS_ANSI | MTTS_256 | MTTS_TRUECOLOR | MTTS_UTF8},
+	"VT100":          {MTTS: MTTS_ANSI | MTTS_VT100},
+	"ANSI":           {MTTS: MTTS_ANSI},
+	"MONO":           {},
+	"DUMB":           {},
 
 	//Someone said MUDRammer supports UTF-8, check?
 }

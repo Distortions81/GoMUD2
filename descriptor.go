@@ -7,6 +7,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"net"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -85,7 +86,7 @@ func handleDesc(conn net.Conn, tls bool) {
 	topID++
 	tnd := telnetData{
 		Charset: DEFAULT_CHARSET, charMap: DEFAULT_CHARMAP,
-		Options: &termSettings{},
+		Options: &termSettings{MTTS: MTTS_ANSI},
 	}
 	desc := &descData{
 		conn: conn, id: topID, connectTime: time.Now(),
@@ -303,50 +304,90 @@ func (desc *descData) UpdateTermSize() {
 }
 
 func (desc *descData) getTermType() {
-	desc.telnet.termType = txtTo7bitUpper(string(desc.telnet.subSeqData))
-	match := termTypeMap[desc.telnet.termType]
+	TermTypeStr := txtNoControl(string(desc.telnet.subSeqData))
 
-	//errLog("#%v: GOT %v: %s", desc.id, TermOpt2TXT[int(desc.telnet.subType)], desc.telnet.subData)
+	if strings.HasPrefix(strings.ToUpper(TermTypeStr), "MTTS") {
+		args := strings.SplitN(TermTypeStr, " ", 2)
+		if len(args) > 0 {
+			if strings.EqualFold(args[0], "MTTS") {
+
+				bitv, err := strconv.ParseInt(args[1], 10, 64)
+				if err == nil {
+					if bitv > 0 {
+						if desc.telnet.Options == nil {
+							desc.telnet.Options = &termSettings{}
+						}
+						desc.telnet.Options.MTTS = Bitmask(bitv)
+						desc.telnet.Options.HasMTTS = true
+						mudLog("MTTS Detected: %v", TermTypeStr)
+						return
+					}
+				}
+
+			}
+		}
+		return
+	}
+
+	newTType := txtTo7bitUpper(TermTypeStr)
+	if newTType != desc.telnet.termType {
+		desc.telnet.termType = newTType
+		defer desc.sendSubSeq("", TermOpt_TERMINAL_TYPE, SB_SEND)
+	} else {
+		return
+	}
+
+	match := termTypeMap[newTType]
+	found := false
+
 	if match != nil {
+		mudLog("Detected client: %v", newTType)
+		found = true
+
 		if desc.telnet.Options == nil {
 			desc.telnet.Options = &termSettings{}
 		}
-		desc.telnet.Options.ANSI256 = match.ANSI256
-		desc.telnet.Options.ANSI24 = match.ANSI24
-		desc.telnet.Options.UTF = match.UTF
+		desc.telnet.Options.MTTS = match.MTTS
 		desc.telnet.Options.SuppressGoAhead = match.SuppressGoAhead
 		if match.charMap != nil {
 			desc.telnet.charMap = match.charMap
 		}
-		mudLog("Found client match: %v", desc.telnet.termType)
+		return
 	}
 	for n, match := range termTypeMap {
-		if strings.HasPrefix(desc.telnet.termType, n) {
-			mudLog("Found client prefix match: %v", desc.telnet.termType)
-			if desc.telnet.Options == nil {
-				desc.telnet.Options = &termSettings{}
-			}
-			desc.telnet.Options.ANSI256 = match.ANSI256
-			desc.telnet.Options.ANSI24 = match.ANSI24
-			desc.telnet.Options.UTF = match.UTF
-			desc.telnet.Options.SuppressGoAhead = match.SuppressGoAhead
-			if match.charMap != nil {
-				desc.telnet.charMap = match.charMap
-			}
-		} else if strings.HasSuffix(desc.telnet.termType, n) {
-			mudLog("Found client suffix match: %v", desc.telnet.termType)
-			if desc.telnet.Options == nil {
-				desc.telnet.Options = &termSettings{}
-			}
-			desc.telnet.Options.ANSI256 = match.ANSI256
-			desc.telnet.Options.ANSI24 = match.ANSI24
-			desc.telnet.Options.UTF = match.UTF
-			desc.telnet.Options.SuppressGoAhead = match.SuppressGoAhead
+		if strings.HasPrefix(newTType, n) {
+			mudLog("Detected client prefix: %v", newTType)
+			found = true
 
+			if desc.telnet.Options == nil {
+				desc.telnet.Options = &termSettings{}
+			}
+			desc.telnet.Options.MTTS = match.MTTS
+			desc.telnet.Options.SuppressGoAhead = match.SuppressGoAhead
 			if match.charMap != nil {
 				desc.telnet.charMap = match.charMap
 			}
+			return
+		} else if strings.HasSuffix(newTType, n) {
+			mudLog("Detected client suffix: %v", newTType)
+			found = true
+
+			if desc.telnet.Options == nil {
+				desc.telnet.Options = &termSettings{}
+			}
+			desc.telnet.Options.MTTS = match.MTTS
+			desc.telnet.Options.SuppressGoAhead = match.SuppressGoAhead
+			if match.charMap != nil {
+				desc.telnet.charMap = match.charMap
+			}
+			return
 		}
+	}
+	if !found {
+		if desc.telnet.Options == nil {
+			desc.telnet.Options = &termSettings{MTTS: MTTS_ANSI}
+		}
+		critLog("Unknown client detected: %v", newTType)
 	}
 }
 func (desc *descData) getCharset() {
@@ -383,7 +424,7 @@ func (desc *descData) ingestLine() {
 
 	//Charmap translation, if needed
 	var buf string
-	if !desc.telnet.Options.UTF {
+	if !desc.telnet.Options.MTTS.hasFlag(MTTS_UTF8) {
 		buf = encodeToUTF(desc.telnet.charMap, desc.inBuf)
 	} else {
 		buf = string(desc.inBuf)

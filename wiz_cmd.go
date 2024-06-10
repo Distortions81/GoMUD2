@@ -118,7 +118,7 @@ func cmdConInfo(player *characterData, input string) {
 			durafmt.ParseShort(time.Since(item.connectTime)))
 
 		charmap := item.telnet.charMap.String()
-		if item.telnet.Options != nil && item.telnet.Options.UTF {
+		if item.telnet.Options != nil && item.telnet.Options.MTTS.hasFlag(MTTS_UTF8) {
 			charmap = "UTF"
 		}
 

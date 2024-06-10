@@ -16,6 +16,18 @@ func txtTo7bit(data string) string {
 	return tmp
 }
 
+func txtNoControl(data string) string {
+	var tmp string
+	// Filter to 7-bit
+	for _, data := range data {
+		if data >= ' ' {
+			tmp = tmp + string(data)
+		}
+	}
+
+	return tmp
+}
+
 // 7-bit uppercase
 func txtTo7bitUpper(data string) string {
 	ttype := txtTo7bit(data)
