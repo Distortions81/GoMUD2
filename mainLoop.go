@@ -187,9 +187,16 @@ func (tdesc *descData) doOutput() {
 
 	//Color
 
-	if tdesc.telnet.Options == nil ||
-		(tdesc.telnet.Options != nil && tdesc.telnet.Options.NoColor) {
-		tdesc.outBuf = ColorRemove(tdesc.outBuf)
+	if tdesc.telnet.Options != nil {
+		if tdesc.telnet.Options.NoColor {
+			tdesc.outBuf = ColorRemove(tdesc.outBuf)
+		} else if tdesc.telnet.Options.ANSI256 {
+			tdesc.outBuf = ANSIColor(tdesc.outBuf, COLOR_256)
+		} else if tdesc.telnet.Options.ANSI24 {
+			tdesc.outBuf = ANSIColor(tdesc.outBuf, COLOR_TRUE)
+		} else {
+			tdesc.outBuf = ANSIColor(tdesc.outBuf, COLOR_16)
+		}
 	} else {
 		tdesc.outBuf = ANSIColor(tdesc.outBuf, COLOR_16)
 	}
