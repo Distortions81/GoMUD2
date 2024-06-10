@@ -144,9 +144,6 @@ func cmdConfig(player *characterData, input string) {
 					}
 
 				}
-				if player.desc != nil && player.Config.hasFlag(CONFIG_NOCOLOR) {
-					player.desc.telnet.Options.MTTS.clearFlag(MTTS_ANSI)
-				}
 				player.dirty = true
 				break
 			}

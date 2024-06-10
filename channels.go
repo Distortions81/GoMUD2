@@ -81,7 +81,7 @@ func sendToChannel(player *characterData, input string, channel int) bool {
 		player.send(chd.format, "You", input)
 	}
 	if player.Channels.hasFlag(1 << channel) {
-		player.Channels.addFlag(1 << channel)
+		player.Channels.clearFlag(1 << channel)
 		player.send("The %v channel was off, turning it on.", chd.name)
 	}
 	if player.Config.hasFlag(CONFIG_NOCHANNEL) {
@@ -89,8 +89,7 @@ func sendToChannel(player *characterData, input string, channel int) bool {
 	}
 	msg := input
 	for _, target := range charList {
-		if chd.listenLevel != LEVEL_ANY && chd.talkLevel < LEVEL_BUILDER &&
-			target.Level < chd.listenLevel {
+		if target.Level < chd.listenLevel {
 			continue
 		}
 		if target.Config.hasFlag(CONFIG_NOCHANNEL) {

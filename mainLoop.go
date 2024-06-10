@@ -187,7 +187,8 @@ func (tdesc *descData) doOutput() {
 
 	//Color
 	if tdesc.telnet.Options != nil {
-		if !tdesc.telnet.Options.MTTS.hasFlag(MTTS_ANSI) {
+		if !tdesc.telnet.Options.MTTS.hasFlag(MTTS_ANSI) ||
+			(tdesc.character != nil && tdesc.character.Config.hasFlag(CONFIG_NOCOLOR)) {
 			tdesc.outBuf = ColorRemove(tdesc.outBuf)
 		} else if tdesc.telnet.Options.MTTS.hasFlag(MTTS_256) {
 			tdesc.outBuf = ANSIColor(tdesc.outBuf, COLOR_256)

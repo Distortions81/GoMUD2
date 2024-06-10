@@ -384,9 +384,6 @@ func (desc *descData) getTermType() {
 		}
 	}
 	if !found {
-		if desc.telnet.Options == nil {
-			desc.telnet.Options = &termSettings{MTTS: MTTS_ANSI}
-		}
 		critLog("Unknown client detected: %v", newTType)
 	}
 }
