@@ -72,9 +72,9 @@ func cText(input string, limit int) string {
 
 func boolToText(value bool) string {
 	if value {
-		return "{gOn{x"
+		return "{GOn{x "
 	} else {
-		return "{rOff{x"
+		return "{ROff{x"
 	}
 }
 

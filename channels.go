@@ -9,13 +9,14 @@ const MAX_TELL_LENGTH = 250
 const MAX_TELLS_PER_SENDER = 5
 
 type chanData struct {
-	name     string
-	cmd      string
-	desc     string
-	format   string
-	level    int
-	disabled bool
-	special  bool
+	name        string
+	cmd         string
+	desc        string
+	format      string
+	talkLevel   int
+	listenLevel int
+	disabled    bool
+	special     bool
 }
 
 // Do not change order or delete, only append to the list.
@@ -39,16 +40,25 @@ const (
 // use 'disabled: true' to disable vs deleting.
 // Otherwise a 'new' channel using the old ID will be 'off' if old channel was off for a player.
 var channels []*chanData = []*chanData{
-	CHAT_IMP:   {name: "Implementer", cmd: "imp", desc: "Implementer chat", format: "[IMP] %v: %v", level: LEVEL_IMPLEMENTER},
-	CHAT_ADMIN: {name: "Administrator", cmd: "admin", desc: "Administrator chat", format: "[ADMIN] %v: %v", level: LEVEL_ADMIN},
-	CHAT_BUILD: {name: "Builder", cmd: "build", desc: "Builder chat", format: "[BUILDER] %v: %v", level: LEVEL_BUILDER},
-	CHAT_STAFF: {name: "Staff", cmd: "staff", desc: "Chat for all staff", format: "[STAFF] %v: %v", level: LEVEL_MODERATOR},
-	CHAT_MOD:   {name: "Moderation", cmd: "mod", desc: "Moderatorion Request", format: "[MOD] %v: %v", level: LEVEL_ANY},
-	CHAT_ANN:   {name: "Announce", cmd: "announce", desc: "Official Announcements", format: "[Announcement] %v: %v", level: LEVEL_ADMIN},
-	CHAT_GRAT:  {name: "Congrats", cmd: "grats", desc: "Congratulate someone!", format: "[Grats] %v: %v", level: LEVEL_PLAYER},
-	CHAT_NEWB:  {name: "Newbie", cmd: "newb", desc: "A place for newbies to chat or ask for help", format: "[Newbie] %v: %v", level: LEVEL_NEWBIE},
-	CHAT_OOC:   {name: "OOC", cmd: "ooc", desc: "out-of-character chat", format: "[OOC] %v: %v", level: LEVEL_NEWBIE},
-	CHAT_CRAZY: {name: "CrazyTalk", cmd: "crazytalk", desc: "chat with ascii-art text", format: "[Crazy Talk] %v:" + NEWLINE + "%v", level: LEVEL_PLAYER, special: true}, //Has it's own command.
+	CHAT_IMP: {name: "Implementer", cmd: "imp", desc: "Implementer chat", format: "[IMP] %v: %v",
+		talkLevel: LEVEL_IMPLEMENTER, listenLevel: LEVEL_IMPLEMENTER},
+	CHAT_ADMIN: {name: "Administrator", cmd: "admin", desc: "Administrator chat", format: "[ADMIN] %v: %v",
+		talkLevel: LEVEL_ADMIN, listenLevel: LEVEL_ADMIN},
+	CHAT_BUILD: {name: "Builder", cmd: "build", desc: "Builder chat", format: "[BUILDER] %v: %v",
+		talkLevel: LEVEL_BUILDER, listenLevel: LEVEL_BUILDER},
+	CHAT_STAFF: {name: "Staff", cmd: "staff", desc: "Chat for all staff", format: "[STAFF] %v: %v",
+		talkLevel: LEVEL_BUILDER, listenLevel: LEVEL_BUILDER},
+	CHAT_MOD: {name: "Moderation", cmd: "mod", desc: "Moderatorion Request", format: "[MOD] %v: %v",
+		talkLevel: LEVEL_ANY, listenLevel: LEVEL_BUILDER},
+	CHAT_ANN: {name: "Announce", cmd: "announce", desc: "Official Announcements", format: "[Announcement] %v: %v",
+		talkLevel: LEVEL_BUILDER, listenLevel: LEVEL_ANY},
+	CHAT_GRAT: {name: "Congrats", cmd: "grats", desc: "Congratulate someone!", format: "[Grats] %v: %v",
+		talkLevel: LEVEL_PLAYER, listenLevel: LEVEL_ANY},
+	CHAT_NEWB: {name: "Newbie", cmd: "newb", desc: "A place for newbies to chat or ask for help", format: "[Newbie] %v: %v",
+		talkLevel: LEVEL_NEWBIE, listenLevel: LEVEL_ANY},
+	CHAT_OOC: {name: "OOC", cmd: "ooc", desc: "out-of-character chat", format: "[OOC] %v: %v",
+		talkLevel: LEVEL_PLAYER, listenLevel: LEVEL_ANY},
+	CHAT_CRAZY: {name: "CrazyTalk", cmd: "crazytalk", desc: "chat with ascii-art text", format: "[Crazy Talk] %v:" + NEWLINE + "%v", talkLevel: LEVEL_PLAYER, listenLevel: LEVEL_ANY, special: true}, //Has it's own command.
 }
 
 func sendToChannel(player *characterData, input string, channel int) bool {
@@ -63,24 +73,34 @@ func sendToChannel(player *characterData, input string, channel int) bool {
 		critLog("%v tried to use a disabled comm channel!", player.Name)
 		return false
 	}
-	if chd.level > player.Level {
-		player.send("Your level isn't high enough to use that channel.")
+	if chd.talkLevel > player.Level {
+		player.send("Your level isn't high enough to speak on that channel.")
 		return false
+	}
+	if chd.listenLevel > player.Level {
+		player.send(chd.format, "You", input)
 	}
 	if player.Channels.hasFlag(1 << channel) {
-		player.send("You currently have the '%v' (%v) channel turned off.", chd.cmd, chd.name)
-		return false
+		player.Channels.addFlag(1 << channel)
+		player.send("The %v channel was off, turning it on.", chd.name)
 	}
 	if player.Config.hasFlag(CONFIG_NOCHANNEL) {
-		player.send("You currently have chat channels disabled.")
-		return false
+		player.send("NoChannel was enabled, turning it off.")
 	}
 	msg := input
 	for _, target := range charList {
+		if chd.listenLevel != LEVEL_ANY && chd.talkLevel < LEVEL_BUILDER &&
+			target.Level < chd.listenLevel {
+			continue
+		}
 		if target.Config.hasFlag(CONFIG_NOCHANNEL) {
 			continue
 		}
-		if !target.Channels.hasFlag(1<<channel) && notIgnored(player, target, false) {
+
+		//Bypass channel off for listen-only staff-level channels
+		if (chd.talkLevel >= LEVEL_BUILDER && chd.listenLevel == LEVEL_ANY) ||
+			//Otherwise, skip if channel is off or player is ignored
+			(!target.Channels.hasFlag(1<<channel) && notIgnored(player, target, false)) {
 			if channel == CHAT_CRAZY {
 				msg = handleCrazy(target, input)
 			}
@@ -96,7 +116,7 @@ func sendToChannel(player *characterData, input string, channel int) bool {
 
 func cmdChat(player *characterData, input string) bool {
 	if player.Config.hasFlag(CONFIG_NOCHANNEL) {
-		//player.send("You currently have channels disabled.")
+		player.send("You currently have channels disabled.")
 		return true
 	}
 	cmd := strings.SplitN(input, " ", 2)
@@ -114,7 +134,7 @@ func cmdChat(player *characterData, input string) bool {
 		if ch.disabled {
 			continue
 		}
-		if ch.level > player.Level {
+		if ch.talkLevel > player.Level {
 			continue
 		}
 		if strings.EqualFold(ch.cmd, cmd[0]) {
@@ -131,7 +151,7 @@ func cmdChat(player *characterData, input string) bool {
 		if ch.disabled {
 			continue
 		}
-		if ch.level > player.Level {
+		if ch.talkLevel > player.Level {
 			continue
 		}
 		if strings.HasPrefix(ch.cmd, cmd[0]) {
@@ -150,25 +170,55 @@ func cmdChannels(player *characterData, input string) {
 	}
 	if input == "" {
 		player.send("channel command: (on/off) channel name")
+		player.send("%10v (%3v)  %v{x", "command:", "on?", "Name")
 		for c, ch := range channels {
-			if ch.disabled {
-				continue
-			}
-			if ch.level > player.Level {
-				continue
-			}
 			status := boolToText(!player.Channels.hasFlag(1 << c))
-			player.send("%10v: (%3v) %v", ch.cmd, status, ch.name)
+			cmd := ch.cmd + ":"
+
+			dim := "{W "
+			//Disabled
+			if ch.disabled {
+				status = "{R---{x"
+			}
+			//No access
+			if ch.talkLevel > player.Level &&
+				ch.listenLevel > player.Level {
+				status = "   "
+				cmd = ""
+				dim = "{K-"
+			}
+			//listen only
+			if ch.listenLevel <= player.Level &&
+				ch.talkLevel > player.Level {
+				dim = "{y*{x"
+				if ch.talkLevel >= LEVEL_BUILDER {
+					status = "{y***{x"
+				}
+			}
+			//Speak only
+			if ch.listenLevel > player.Level &&
+				ch.talkLevel <= player.Level {
+				dim = "{c#{x"
+				status = "{c###{x"
+			}
+
+			player.send("%10v (%3v) %v%v{x", cmd, status, dim, ch.name)
 		}
 		player.send(NEWLINE + "<channel command> (toggles on/off)")
+		player.send("{y*{x = Listen only, {c#{x = Speak only, {K-{x = No access")
 		return
 	}
 
 	for c, ch := range channels {
-		if ch.disabled {
+		if ch.listenLevel <= LEVEL_ANY &&
+			ch.talkLevel >= LEVEL_BUILDER {
 			continue
 		}
-		if ch.level > player.Level {
+		if ch.listenLevel > player.Level {
+			continue
+		}
+		if ch.listenLevel > player.Level &&
+			ch.talkLevel < player.Level {
 			continue
 		}
 		if strings.EqualFold(ch.cmd, input) {

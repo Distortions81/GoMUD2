@@ -137,7 +137,7 @@ func (player *characterData) listCommands(input string) {
 		if ch.disabled {
 			continue
 		}
-		if ch.level > player.Level {
+		if ch.talkLevel > player.Level {
 			continue
 		}
 		if count > 0 {

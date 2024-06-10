@@ -117,6 +117,11 @@ func cmdTell(player *characterData, input string) {
 }
 
 func notIgnored(player, target *characterData, feedback bool) bool {
+	//Players can't ignore staff.
+	if target.Level >= LEVEL_BUILDER && player.Level < LEVEL_BUILDER {
+		return true
+	}
+
 	for _, item := range target.Ignores {
 		if item.Name == player.Name && item.UUID == player.UUID {
 			if !item.Silent && feedback {
