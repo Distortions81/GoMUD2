@@ -77,7 +77,7 @@ func cmdConfig(player *characterData, input string) {
 			status := boolToText(player.Config.hasFlag(1 << x))
 			player.send("%15v: (%v) %v", cEllip(item.name, 15), status, item.desc)
 		}
-		player.send("config <option> to toggle")
+		player.send("config <option> to toggle on/off, or config <option> <number> to set a value")
 		return
 	}
 

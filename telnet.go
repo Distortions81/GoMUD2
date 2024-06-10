@@ -68,12 +68,6 @@ func cmdTelnet(player *characterData, input string) {
 		}
 		return
 	}
-	if strings.EqualFold("COLOR", input) {
-		if player.desc == nil {
-			return
-		}
-		return
-	}
 	if strings.EqualFold("UTF", input) {
 		if telnet.Options.MTTS.hasFlag(MTTS_UTF8) {
 			player.desc.telnet.Options.MTTS.clearFlag(MTTS_UTF8)
@@ -98,7 +92,7 @@ func cmdTelnet(player *characterData, input string) {
 			}
 		}
 		player.send(buf)
-		player.send("To enable UTF, type 'telnet utf'")
+		player.send("To enable UTF, type 'telnet utf'. To set a charmap: config <map name>")
 		return
 	}
 	for cname, cset := range charsetList {

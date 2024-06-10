@@ -24,6 +24,10 @@ func cmdGo(player *characterData, input string) {
 		player.send("There is nowhere to go.")
 		return
 	}
+	if input == "" {
+		player.send("Go what direction?")
+		return
+	}
 	for _, exit := range player.room.Exits {
 		if exit.Direction == DIR_CUSTOM {
 			if strings.HasPrefix(strings.ToLower(exit.DirName), input) {

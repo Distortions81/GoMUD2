@@ -93,7 +93,7 @@ func showStatePrompt(desc *descData) {
 
 func (player *characterData) listCommands(input string) {
 	if input == "" {
-		player.send("Commands:")
+		player.send("Commands: help <command> for additional help.")
 	}
 
 	var lastLevel int
