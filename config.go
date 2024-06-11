@@ -24,6 +24,12 @@ const (
 	CONFIG_MAX
 )
 
+const (
+	CONFIG_VAL_NONE = iota
+	CONFIG_VAL_INT
+	CONFIG_VAL_STRING
+)
+
 type configInfo struct {
 	name, desc string
 	level      int
@@ -69,7 +75,7 @@ func cmdConfig(player *characterData, input string) {
 				} else {
 					value := 0
 					if player.ConfigVals[x] != nil {
-						value = player.ConfigVals[x].Value
+						value = player.ConfigVals[x].ValInt
 					}
 					player.send("%15v: (%v) %v", cEllip(item.name, 15), value, item.desc)
 				}
@@ -104,7 +110,7 @@ func cmdConfig(player *characterData, input string) {
 						if i == 0 {
 							delete(player.ConfigVals, x)
 						} else {
-							player.ConfigVals[x] = &ConfigValue{Name: item.name, Value: int(i)}
+							player.ConfigVals[x] = &ConfigValue{Name: item.name, ValInt: int(i)}
 						}
 
 						player.send("%v is now %v.", item.name, i)
@@ -134,7 +140,7 @@ func cmdConfig(player *characterData, input string) {
 
 					if item.integer {
 						if player.ConfigVals[x] == nil {
-							player.ConfigVals[x] = &ConfigValue{Name: item.name, Value: int(item.defaultValue)}
+							player.ConfigVals[x] = &ConfigValue{Name: item.name, ValInt: int(item.defaultValue)}
 						}
 					}
 

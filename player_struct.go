@@ -74,8 +74,10 @@ type IgnoreData struct {
 }
 
 type ConfigValue struct {
-	Name  string
-	Value int
+	Format int
+	Name   string
+	ValInt int
+	ValStr string
 }
 
 type characterData struct {

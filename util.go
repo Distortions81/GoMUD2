@@ -133,7 +133,7 @@ func (player *characterData) wordWrap(input string) string {
 		if player.Config.hasFlag(CONFIG_TERMWIDTH) &&
 			player.ConfigVals[CONFIG_TERMWIDTH] != nil {
 
-			width = player.ConfigVals[CONFIG_TERMWIDTH].Value
+			width = player.ConfigVals[CONFIG_TERMWIDTH].ValInt
 		} else {
 			width = player.desc.telnet.Options.TermWidth
 		}
