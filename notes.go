@@ -4,13 +4,20 @@ import (
 	"bytes"
 	"encoding/json"
 	"os"
+	"sort"
 	"strings"
 	"sync"
 	"time"
 )
 
+type unreadNoteData struct {
+	lastRead time.Time
+}
+
 type noteListData struct {
-	Version  int
+	Version int
+	UUID    uuidData
+
 	Name     string
 	File     string
 	Notes    []*noteData
@@ -30,14 +37,13 @@ type noteData struct {
 }
 
 var noteTypes []noteListData
-
-var noteTypeMap map[string]*noteListData
+var noteTypeMap map[uuidData]*noteListData
 
 func readNotes() {
 	noteLock.Lock()
 	defer noteLock.Unlock()
 
-	noteTypeMap = make(map[string]*noteListData)
+	noteTypeMap = make(map[uuidData]*noteListData)
 
 	contents, err := os.ReadDir(DATA_DIR + NOTES_DIR)
 	if err != nil {
@@ -50,12 +56,17 @@ func readNotes() {
 			continue
 		}
 		if strings.HasSuffix(item.Name(), ".json") {
-			readNote(item.Name())
+			readNoteFile(item.Name())
 		}
 	}
+
+	//Sort by name
+	sort.Slice(noteTypes, func(i, j int) bool {
+		return noteTypes[i].Name < noteTypes[j].Name
+	})
 }
 
-func readNote(fileName string) {
+func readNoteFile(fileName string) {
 	filePath := DATA_DIR + NOTES_DIR + fileName
 	data, err := readFile(filePath)
 	if err != nil {
@@ -68,9 +79,8 @@ func readNote(fileName string) {
 		critLog("readNote: Unable to unmarshal note file: %v", filePath)
 	}
 	noteTypes = append(noteTypes, new)
-	numTypes := len(noteTypes) - 1
-	noteTypeMap[new.File] = &noteTypes[numTypes]
-	errLog("Loaded notes %v", new.Name)
+	noteTypeMap[new.UUID] = &new
+	errLog("Loaded note type %v", new.Name)
 }
 
 var noteLock sync.Mutex
@@ -110,22 +120,6 @@ func saveNotes(force bool) {
 	}
 }
 
-func unreadNotes(player *characterData) int {
-
-	var count int
-	for _, noteType := range noteTypes {
-		for _, item := range noteType.Notes {
-			if item.Modified.IsZero() {
-				continue
-			}
-			if item.Modified.Sub(player.LastChange) > 0 {
-				count++
-			}
-		}
-	}
-	return count
-}
-
 func listNoteTypes(player *characterData) {
 	player.send("What note type?")
 	for _, item := range noteTypes {
@@ -152,18 +146,20 @@ func cmdNotes(player *characterData, input string) {
 			player.send("That isn't a valid note type.")
 			listNoteTypes(player)
 			return
+
 		}
+		player.noteType = noteType
 	}
 
 	if input == "" || strings.EqualFold(input, "next") {
 		if unreadNotes(player) == 0 {
 			count := unreadNotes(player)
 			if count == 0 {
-				player.send("No new unread changes.")
+				player.send("No new unread notes.")
 				return
 			}
 		}
-		for _, item := range noteType.Notes {
+		for _, item := range player.noteType.Notes {
 			if item.Modified.IsZero() {
 				continue
 			}
