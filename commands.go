@@ -223,7 +223,7 @@ func cmdWho(player *characterData, input string) {
 	}
 	uptime := durafmt.Parse(time.Since(bootTime).Truncate(time.Second)).LimitFirstN(2).Format(shortUnits)
 	uptime = strings.ReplaceAll(uptime, " ", "")
-	buf = buf + fmt.Sprintf(NEWLINE+"%v players online (%v most ever), Logins: %v (%v ever), Uptime: %v", numPlayers, mudStats.MostEver, mudStats.loginCount, mudStats.LoginEver, uptime)
+	buf = buf + fmt.Sprintf(NEWLINE+"Players: %v (most: %v), Logins: %v (ever: %v), Uptime: %v", numPlayers, mudStats.MostEver, mudStats.loginCount, mudStats.LoginEver, uptime)
 	player.send(buf)
 }
 
