@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -60,6 +61,11 @@ func mudMain() {
 			log.Printf("Unable to create directory: %v: %v", newDir, err)
 			os.Exit(1)
 		}
+	}
+
+	GetOsTimeZones()
+	for rname, region := range tzRegions {
+		fmt.Printf("Region: %v (%v timezones)"+NEWLINE, rname, len(region))
 	}
 
 	var err error
