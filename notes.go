@@ -10,10 +10,6 @@ import (
 	"time"
 )
 
-type unreadNoteData struct {
-	lastRead time.Time
-}
-
 type noteListData struct {
 	Version int
 	UUID    uuidData
@@ -37,13 +33,111 @@ type noteData struct {
 }
 
 var noteTypes []noteListData
-var noteTypeMap map[uuidData]*noteListData
+
+func (noteType *noteListData) unread(player *characterData) (*noteData, int) {
+	if noteType == nil {
+		return nil, 0
+	}
+
+	count := 0
+	var oldestNote *noteData
+	for _, item := range noteType.Notes {
+		if item.Created.Sub(player.NoteRead[noteType.UUID.toString()]) > 0 {
+			count++
+			if oldestNote == nil || item.Created.Sub(oldestNote.Created) < 0 {
+				oldestNote = item
+			}
+		}
+	}
+	return oldestNote, count
+}
+
+func noteSyntax(player *characterData) {
+	listNoteTypes(player)
+	player.send("Syntax: note <type> read or list")
+}
+
+func markRead(player *characterData, noteType *noteListData, note *noteData) {
+	if noteType == nil || note == nil {
+		return
+	}
+	if player.NoteRead[noteType.UUID.toString()].Sub(note.Created) < 0 {
+		player.NoteRead[noteType.UUID.toString()] = note.Created
+		player.dirty = true
+	}
+}
+
+func cmdNotes(player *characterData, input string) {
+	args := strings.SplitN(input, " ", 2)
+	numArgs := len(args)
+
+	var noteType *noteListData
+	var noteTypePos int
+	if input == "" || numArgs == 0 {
+		noteSyntax(player)
+		return
+	}
+	if player.Level > LEVEL_BUILDER && strings.EqualFold(args[0], "create") {
+		newType := noteListData{Version: NOTES_VERSION,
+			UUID: makeUUID(), File: txtTo7bit(args[1]), Name: args[1], Modified: time.Now().UTC(), dirty: true}
+		noteTypes = append(noteTypes, newType)
+		player.send("Created new note type: %v", args[1])
+		return
+	}
+	for ntp, item := range noteTypes {
+		if strings.EqualFold(item.Name, args[0]) {
+			noteType = &item
+			noteTypePos = ntp
+			break
+		}
+	}
+	if noteType == nil {
+		player.send("That isn't a valid note type.")
+		listNoteTypes(player)
+		return
+	}
+
+	if numArgs < 2 {
+		noteSyntax(player)
+		return
+	}
+
+	if strings.EqualFold(args[1], "read") {
+		if note, count := noteType.unread(player); count == 0 {
+			player.send("No unread %v notes.", noteType.Name)
+		} else {
+			player.send("On: %v", note.Created.String())
+			player.send("From: %v", note.From)
+			player.send("To: %v", note.Text)
+			player.send("Subject: %v", note.Subject)
+			player.send(NEWLINE + note.Text)
+
+			markRead(player, noteType, note)
+		}
+		return
+	}
+	if strings.EqualFold(args[1], "write") {
+		newNote := &noteData{From: player.Name, To: "all", Subject: "Test", Text: "Blah", Created: time.Now(), Modified: time.Now()}
+		noteTypes[noteTypePos].Notes = append(noteTypes[noteTypePos].Notes, newNote)
+		noteTypes[noteTypePos].dirty = true
+		player.send("%v note created.", noteType.Name)
+		return
+	}
+	if strings.EqualFold(args[1], "list") {
+		if len(noteType.Notes) == 0 {
+			player.send("There aren't any %v notes.", noteType.Name)
+			return
+		}
+		for i, item := range noteType.Notes {
+			player.send("#%4v: Subject: %v From: %v", i+1, item.Subject, item.From)
+		}
+		return
+	}
+}
 
 func readNotes() {
 	noteLock.Lock()
 	defer noteLock.Unlock()
-
-	noteTypeMap = make(map[uuidData]*noteListData)
 
 	contents, err := os.ReadDir(DATA_DIR + NOTES_DIR)
 	if err != nil {
@@ -79,7 +173,6 @@ func readNoteFile(fileName string) {
 		critLog("readNote: Unable to unmarshal note file: %v", filePath)
 	}
 	noteTypes = append(noteTypes, new)
-	noteTypeMap[new.UUID] = &new
 	errLog("Loaded note type %v", new.Name)
 }
 
@@ -121,108 +214,12 @@ func saveNotes(force bool) {
 }
 
 func listNoteTypes(player *characterData) {
-	player.send("What note type?")
-	for _, item := range noteTypes {
-		player.send("%v", item.Name)
-	}
-}
-
-func cmdNotes(player *characterData, input string) {
-	parts := strings.SplitN(input, " ", 2)
-	numParts := len(parts)
-
-	var noteType *noteListData
-	if input == "" {
-		listNoteTypes(player)
-		return
-	} else if numParts == 2 && parts[1] != "" {
+	if len(noteTypes) == 0 {
+		player.send("Sorry, there aren't any note types available right now.")
+	} else {
+		player.send("What note type?")
 		for _, item := range noteTypes {
-			if strings.EqualFold(item.Name, parts[1]) {
-				noteType = &item
-				break
-			}
-		}
-		if noteType == nil {
-			player.send("That isn't a valid note type.")
-			listNoteTypes(player)
-			return
-
-		}
-		player.noteType = noteType
-	}
-
-	if input == "" || strings.EqualFold(input, "next") {
-		if unreadNotes(player) == 0 {
-			count := unreadNotes(player)
-			if count == 0 {
-				player.send("No new unread notes.")
-				return
-			}
-		}
-		for _, item := range player.noteType.Notes {
-			if item.Modified.IsZero() {
-				continue
-			}
-			if item.Modified.Sub(player.LastChange) < 0 {
-				continue
-			}
-			player.sendWW("%v: (%v)"+NEWLINE+"%v"+NEWLINE, item.Subject, item.From, item.Text)
-			player.LastChange = item.Modified
-			break
-		}
-		count := unreadNotes(player)
-		if count > 0 {
-			player.send("There are %v more unread changes.", count)
-		}
-		return
-	}
-
-	args := strings.SplitN(input, " ", 2)
-	numArgs := len(args)
-
-	if strings.EqualFold(input, "list") {
-		for i, item := range noteType.Notes {
-			if item.Modified.IsZero() {
-				continue
-			}
-			player.send("#%4v -- %v (%v)", i+1, item.Subject, item.From)
-		}
-	} else if strings.EqualFold(input, "check") {
-		count := unreadNotes(player)
-		if count == 0 {
-			player.send("No new unread changes.")
-		} else {
-			player.send("There are %v unread changes", count)
-		}
-		return
-	} else if player.Level >= LEVEL_IMPLEMENTER {
-		if strings.EqualFold(args[0], "add") {
-			newChange := &noteData{From: player.Name}
-			noteType.Notes = append(noteType.Notes, newChange)
-			player.send("New change created, changes date <text> to set date text.")
-			player.curChange = newChange
-		} else if strings.EqualFold(args[0], "date") {
-			if player.curChange != nil {
-				if numArgs == 2 && args[1] != "" {
-					player.curChange.Subject = args[1]
-					player.send("Date text is now: %v", args[1])
-					player.send("To set text: changes text <text>")
-				}
-			}
-		} else if strings.EqualFold(args[0], "text") {
-			if numArgs == 2 && args[1] != "" {
-				player.curChange.Text = args[1]
-				player.send("Text is now: %v", args[1])
-				player.send("To save the change, type changes done")
-			}
-		} else if strings.EqualFold(args[0], "done") {
-			player.send("Change closed and saved.")
-			player.curChange.Modified = time.Now().UTC()
-			noteType.Modified = time.Now().UTC()
-			player.curChange = nil
-			noteType.dirty = true
-		} else {
-			player.send("That isn't a valid option. Options are: add, date, text or done.")
+			player.send("%v", item.Name)
 		}
 	}
 }

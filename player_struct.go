@@ -80,12 +80,6 @@ type ConfigValue struct {
 	ValStr string
 }
 
-type playerNoteData struct {
-	curNoteType *noteListData
-	curChange   *noteData
-	UnreadNotes map[string]unreadNoteData
-}
-
 type characterData struct {
 	Version int
 	UUID    uuidData
@@ -107,7 +101,7 @@ type characterData struct {
 
 	OLCEditor olcEditorData `json:",omitempty"`
 	Ignores   []IgnoreData  `json:",omitempty"`
-	Notes     playerNoteData
+	NoteRead  map[string]time.Time
 
 	NumReports int `json:",omitempty"`
 
