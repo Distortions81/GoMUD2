@@ -224,7 +224,11 @@ func cmdBlocked(player *characterData, input string) {
 				continue
 			}
 			count++
-			buf = buf + fmt.Sprintf("%20v : %5v:%-5v %-10v %-10v", cEllip(item.Host, 20), item.Attempts, item.History, durafmt.Parse(time.Since(item.Created)).LimitFirstN(2).Format(shortUnits), durafmt.Parse(time.Since(item.Modified)).LimitFirstN(2).Format(shortUnits))
+			created := durafmt.Parse(time.Since(item.Created)).LimitFirstN(2).Format(shortUnits)
+			created = strings.ReplaceAll(created, " ", "")
+			modified := durafmt.Parse(time.Since(item.Modified)).LimitFirstN(2).Format(shortUnits)
+			modified = strings.ReplaceAll(modified, " ", "")
+			buf = buf + fmt.Sprintf("%20v : %5v:%-5v %-10v %-10v", cEllip(item.Host, 20), item.Attempts, item.History, created, modified)
 			if item.Blocked {
 				buf = buf + " (Blocked)"
 			}
