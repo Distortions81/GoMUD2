@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"net"
+	"strings"
 	"sync"
 	"time"
 
@@ -25,28 +26,27 @@ type levelNameData struct {
 	Name        string
 	Short       string
 	Description string
-	Level       int
 }
 
 var levelToName map[int]*levelNameData = map[int]*levelNameData{
 	LEVEL_ANY:         {Name: "Anyone", Short: "any", Description: "Anyone"},
 	LEVEL_NEWBIE:      {Name: "Newbie", Short: "newb", Description: "New players"},
-	LEVEL_PLAYER:      {Name: "Players", Short: "player", Description: "Normal players"},
+	LEVEL_PLAYER:      {Name: "Players", Short: "play", Description: "Normal players"},
 	LEVEL_BUILDER:     {Name: "Builders", Short: "build", Description: "People working on areas, objects, mobs, etc."},
 	LEVEL_MODERATOR:   {Name: "Moderator", Short: "mod", Description: "People who moderate the MUD"},
 	LEVEL_ADMIN:       {Name: "Administrators", Short: "admin", Description: "Mud staff, administrators"},
 	LEVEL_IMPLEMENTER: {Name: "Implementer", Short: "imp", Description: "People writing code for the MUD."},
-	LEVEL_OWNER:       {Name: "Owner", Short: "owner", Description: "Owner of the MUD."},
+	LEVEL_OWNER:       {Name: "Owner", Short: "own", Description: "Owner of the MUD."},
 }
 
-func init() {
-	nameToLevel = map[string]*levelNameData{}
-}
-
-func nameToLevel(input string) int {
-	for _, item := range levelToName {
-
+func nameToLevel(input string) (int, bool) {
+	input = strings.ToLower(input)
+	for lvl, item := range levelToName {
+		if strings.HasPrefix(input, item.Short) {
+			return lvl, true
+		}
 	}
+	return LEVEL_ANY, false
 }
 
 var (

@@ -219,7 +219,7 @@ func cmdWho(player *characterData, input string) {
 			onlineTime = durafmt.Parse(time.Since(target.loginTime).Truncate(time.Minute)).LimitFirstN(2).Format(shortUnits)
 			onlineTime = strings.ReplaceAll(onlineTime, " ", "")
 		}
-		buf = buf + fmt.Sprintf("%31v - %v %v%v%v%v"+NEWLINE, target.Name, levelName[target.Level].Name, onlineTime, idleTime, unlink, hidden)
+		buf = buf + fmt.Sprintf("%31v - %v %v%v%v%v"+NEWLINE, target.Name, levelToName[target.Level].Name, onlineTime, idleTime, unlink, hidden)
 	}
 	uptime := durafmt.Parse(time.Since(bootTime).Truncate(time.Second)).LimitFirstN(2).Format(shortUnits)
 	uptime = strings.ReplaceAll(uptime, " ", "")
