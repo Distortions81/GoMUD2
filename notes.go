@@ -169,11 +169,21 @@ func cmdNotes(player *characterData, input string) {
 		return
 	}
 	if player.Level > LEVEL_BUILDER && strings.EqualFold(args[0], "create") {
+
 		typeName := strings.TrimSpace(args[1])
 		fileName := txtTo7bit(typeName)
 		if len(fileName) < 2 {
 			player.send("That note type name is too short: %v", fileName)
 			return
+		}
+		for _, nt := range noteTypes {
+			if strings.EqualFold(fileName, nt.File) ||
+				strings.EqualFold(typeName, nt.Name) {
+				player.send("There is already a note type called that.")
+				player.send("Input: File: %v Name: %v", fileName, typeName)
+				player.send("Existing note type: File: %v Name: %v", nt.File, nt.Name)
+				return
+			}
 		}
 		newType := noteListData{Version: NOTES_VERSION,
 			UUID: makeUUID(), File: fileName, Name: args[1], Modified: time.Now().UTC(), dirty: true}
