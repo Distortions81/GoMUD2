@@ -23,7 +23,8 @@ type noteListData struct {
 	Notes            []*noteData
 	Modified         time.Time
 
-	dirty bool
+	Disabled bool
+	dirty    bool
 }
 
 type noteWhoData struct {
@@ -40,6 +41,8 @@ type noteData struct {
 	BCC     []noteWhoData `json:",omitempty"`
 	Subject string
 	Text    string
+
+	Hidden bool
 
 	Created  time.Time
 	Modified time.Time
