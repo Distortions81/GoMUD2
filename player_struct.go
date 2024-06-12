@@ -80,6 +80,12 @@ type ConfigValue struct {
 	ValStr string
 }
 
+type draftNoteData struct {
+	Editing bool
+
+	DraftNotes []*noteData
+}
+
 type characterData struct {
 	Version int
 	UUID    uuidData
@@ -99,9 +105,10 @@ type characterData struct {
 	ConfigVals map[int]*ConfigValue `json:",omitempty"`
 	LastHide   time.Time            `json:",omitempty"`
 
-	OLCEditor olcEditorData `json:",omitempty"`
-	Ignores   []IgnoreData  `json:",omitempty"`
-	NoteRead  map[string]time.Time
+	OLCEditor  olcEditorData `json:",omitempty"`
+	Ignores    []IgnoreData  `json:",omitempty"`
+	NoteRead   map[string]time.Time
+	DraftNotes draftNoteData `json:",omitempty"`
 
 	NumReports int `json:",omitempty"`
 

@@ -10,14 +10,17 @@ import (
 	"time"
 )
 
+const MAX_DRAFT_NOTES = 5
+
 type noteListData struct {
 	Version int
 	UUID    uuidData
 
-	Name     string
-	File     string
-	Notes    []*noteData
-	Modified time.Time
+	Name             string
+	File             string
+	PostLvl, ReadLvl int
+	Notes            []*noteData
+	Modified         time.Time
 
 	dirty bool
 }
@@ -136,7 +139,26 @@ func markRead(player *characterData, noteType *noteListData, note *noteData) {
 	}
 }
 
+func draftNote(player *characterData, input string) bool {
+	if !player.DraftNotes.Editing {
+		return false
+	}
+
+	player.send("Note edit mode goes here. Exit to exit.")
+
+	if strings.EqualFold(input, "exit") {
+		player.DraftNotes.Editing = false
+	}
+	return true
+}
+
 func cmdNotes(player *characterData, input string) {
+	if draftNote(player, input) {
+		return
+	}
+	if len(player.DraftNotes.DraftNotes) > 0 {
+		player.send("You currently have %v unfinished draft notes.")
+	}
 	args := strings.SplitN(input, " ", 2)
 	numArgs := len(args)
 
@@ -178,8 +200,12 @@ func cmdNotes(player *characterData, input string) {
 			player.send("On: %v", note.Created.String())
 			player.send("From: %v", note.From.Name)
 			player.send("To: %v", formatWho(note.To, player, false))
-			player.send("CC: %v", formatWho(note.CC, player, false))
-			player.send("BCC: %v", formatWho(note.BCC, player, true))
+			if len(note.CC) > 0 {
+				player.send("CC: %v", formatWho(note.CC, player, false))
+			}
+			if len(note.BCC) > 0 {
+				player.send("BCC: %v", formatWho(note.BCC, player, true))
+			}
 			player.send("Subject: %v", note.Subject)
 			player.send(NEWLINE + note.Text)
 
@@ -188,11 +214,10 @@ func cmdNotes(player *characterData, input string) {
 		return
 	}
 	if strings.EqualFold(args[1], "write") {
-		newNote := &noteData{From: noteWhoData{Name: player.Name, UUID: player.UUID}, To: []noteWhoData{{Name: "all"}}, Subject: "Test", Text: "Blah", Created: time.Now().UTC(), Modified: time.Now().UTC()}
+		newNote := &noteData{From: noteWhoData{Name: player.Name, UUID: player.UUID}, To: []noteWhoData{{Name: "all"}}, Subject: "", Text: "", Created: time.Now().UTC(), Modified: time.Now().UTC()}
 		noteTypes[noteTypePos].Modified = time.Now().UTC()
-		noteTypes[noteTypePos].Notes = append(noteTypes[noteTypePos].Notes, newNote)
-		noteTypes[noteTypePos].dirty = true
-		player.send("%v note created.", noteType.Name)
+		player.DraftNotes.DraftNotes = append(player.DraftNotes.DraftNotes, newNote)
+		player.DraftNotes.Editing = true
 		return
 	}
 	if strings.EqualFold(args[1], "list") {
