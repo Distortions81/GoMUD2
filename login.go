@@ -298,7 +298,7 @@ func gOldPass(desc *descData, input string) {
 	} else {
 		desc.send("Checking your passphrase, please wait.")
 		hashDepth++
-		hashList = append(hashList, &hashData{id: desc.id, desc: desc, hash: desc.account.PassHash, pass: []byte(input), failed: false, doEncrypt: false, started: time.Now(), changePass: true})
+		hashList = append(hashList, &hashData{id: desc.id, desc: desc, hash: desc.account.PassHash, pass: []byte(input), failed: false, doEncrypt: false, started: time.Now().UTC(), changePass: true})
 		desc.state = CON_HASH_WAIT
 	}
 }
@@ -317,7 +317,7 @@ func gNewPass(desc *descData, input string) {
 func gConfirmNewPass(desc *descData, input string) {
 	if input == desc.account.tempString {
 		desc.state = CON_HASH_WAIT
-		desc.idleTime = time.Now()
+		desc.idleTime = time.Now().UTC()
 		desc.sendln("Processing passphrase, please wait.")
 
 		hashLock.Lock()
@@ -329,7 +329,7 @@ func gConfirmNewPass(desc *descData, input string) {
 			return
 		}
 		hashDepth++
-		hashList = append(hashList, &hashData{id: desc.id, desc: desc, pass: []byte(desc.account.tempString), hash: []byte{}, failed: false, doEncrypt: true, started: time.Now(), changePass: true})
+		hashList = append(hashList, &hashData{id: desc.id, desc: desc, pass: []byte(desc.account.tempString), hash: []byte{}, failed: false, doEncrypt: true, started: time.Now().UTC(), changePass: true})
 
 		hashLock.Unlock()
 		desc.account.tempString = ""
@@ -387,7 +387,7 @@ func gPass(desc *descData, input string) {
 	} else {
 		desc.send("Checking your passphrase, please wait.")
 		hashDepth++
-		hashList = append(hashList, &hashData{id: desc.id, desc: desc, hash: desc.account.PassHash, pass: []byte(input), failed: false, doEncrypt: false, started: time.Now()})
+		hashList = append(hashList, &hashData{id: desc.id, desc: desc, hash: desc.account.PassHash, pass: []byte(input), failed: false, doEncrypt: false, started: time.Now().UTC()})
 		desc.state = CON_CHECK_PASS
 	}
 }
@@ -449,7 +449,7 @@ func gNewPassphrase(desc *descData, input string) {
 func gNewPassphraseConfirm(desc *descData, input string) {
 	if input == desc.account.tempString {
 		desc.state = CON_HASH_WAIT
-		desc.idleTime = time.Now()
+		desc.idleTime = time.Now().UTC()
 		desc.sendln("Processing passphrase, please wait.")
 
 		hashLock.Lock()
@@ -461,7 +461,7 @@ func gNewPassphraseConfirm(desc *descData, input string) {
 			return
 		}
 		hashDepth++
-		hashList = append(hashList, &hashData{id: desc.id, desc: desc, pass: []byte(desc.account.tempString), hash: []byte{}, failed: false, doEncrypt: true, started: time.Now()})
+		hashList = append(hashList, &hashData{id: desc.id, desc: desc, pass: []byte(desc.account.tempString), hash: []byte{}, failed: false, doEncrypt: true, started: time.Now().UTC()})
 
 		hashLock.Unlock()
 		desc.account.tempString = ""

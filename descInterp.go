@@ -39,13 +39,13 @@ func (desc *descData) interp() bool {
 		desc.inputLock.Unlock()
 	}
 
-	desc.idleTime = time.Now()
+	desc.idleTime = time.Now().UTC()
 
 	//If playing
 	if desc.state == CON_PLAYING {
 		if desc.character != nil {
 			//Run command
-			desc.character.idleTime = time.Now()
+			desc.character.idleTime = time.Now().UTC()
 			desc.character.handleCommands(input)
 			mudLog("%v: %v", desc.character.Name, input)
 		}

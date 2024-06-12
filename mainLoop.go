@@ -37,7 +37,7 @@ func mainLoop() {
 
 	for serverState.Load() == SERVER_RUNNING {
 		tickNum++
-		start := time.Now()
+		start := time.Now().UTC()
 
 		descLock.Lock()
 
@@ -86,7 +86,7 @@ func mainLoop() {
 		/* Burns all free frame time looking for incoming commands */
 		if *instantRespond {
 			for {
-				loopStart := time.Now()
+				loopStart := time.Now().UTC()
 				for _, desc := range descList {
 					if !desc.valid {
 						continue

@@ -175,7 +175,7 @@ func cmdBlocked(player *characterData, input string) {
 						blockedDirty = true
 					}
 				}
-				blockedMap[target].Modified = time.Now()
+				blockedMap[target].Modified = time.Now().UTC()
 				blockedDirty = true
 			} else if args[0] == "" {
 				player.send("Delete, or add item?")

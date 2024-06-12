@@ -89,9 +89,9 @@ func handleDesc(conn net.Conn, tls bool) {
 		Options: &termSettings{MTTS: MTTS_ANSI},
 	}
 	desc := &descData{
-		conn: conn, id: topID, connectTime: time.Now(),
+		conn: conn, id: topID, connectTime: time.Now().UTC(),
 		reader: bufio.NewReader(conn), tls: tls, ip: ip,
-		state: CON_ACCOUNT, telnet: tnd, valid: true, idleTime: time.Now()}
+		state: CON_ACCOUNT, telnet: tnd, valid: true, idleTime: time.Now().UTC()}
 	descList = append(descList, desc)
 	desc.UpdateTermSize()
 	descLock.Unlock()
@@ -102,7 +102,7 @@ func handleDesc(conn net.Conn, tls bool) {
 
 	//If not TLS, look for HTTP request (TLS fails)
 	if !tls {
-		conn.SetReadDeadline(time.Now().Add(time.Millisecond))
+		conn.SetReadDeadline(time.Now().UTC().Add(time.Millisecond))
 		data, err := desc.reader.ReadString('\n')
 		if err == nil && strings.ContainsAny("GET", data) {
 			critLog("HTTP request from %v. Adding to ignore list.", ip)

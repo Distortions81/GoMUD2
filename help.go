@@ -222,13 +222,13 @@ func makeTestHelp() {
 var testHelp []*helpTopicData = []*helpTopicData{
 	{
 		Topic:    "test",
-		Created:  time.Now(),
-		Modified: time.Now(),
+		Created:  time.Now().UTC(),
+		Modified: time.Now().UTC(),
 		Helps: []helpData{
 			{
 				Name:        "test",
-				Created:     time.Now(),
-				Modified:    time.Now(),
+				Created:     time.Now().UTC(),
+				Modified:    time.Now().UTC(),
 				Authors:     []string{"System"},
 				Keywords:    []string{"test"},
 				Description: "This is a test help file.",

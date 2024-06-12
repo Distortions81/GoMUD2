@@ -22,9 +22,18 @@ type noteListData struct {
 	dirty bool
 }
 
+type noteWhoData struct {
+	Name string   `json:",omitempty"`
+	UUID uuidData `json:",omitempty"`
+	//guildid
+}
+
 type noteData struct {
-	To      string
-	From    string
+	From noteWhoData
+
+	To      []noteWhoData `json:",omitempty"`
+	CC      []noteWhoData `json:",omitempty"`
+	BCC     []noteWhoData `json:",omitempty"`
 	Subject string
 	Text    string
 
@@ -36,6 +45,12 @@ var noteTypes []noteListData
 
 func (noteType *noteListData) unread(player *characterData) (*noteData, int) {
 	if noteType == nil {
+		return nil, 0
+	}
+
+	//If note type was modified before or the same as last read...
+	//Then we don't need to check all the notes
+	if noteType.Modified.Sub(player.NoteRead[noteType.UUID.toString()]) <= 0 {
 		return nil, 0
 	}
 
@@ -117,7 +132,8 @@ func cmdNotes(player *characterData, input string) {
 		return
 	}
 	if strings.EqualFold(args[1], "write") {
-		newNote := &noteData{From: player.Name, To: "all", Subject: "Test", Text: "Blah", Created: time.Now(), Modified: time.Now()}
+		newNote := &noteData{From: noteWhoData{Name: player.Name, UUID: player.UUID}, To: []noteWhoData{{Name: "all"}}, Subject: "Test", Text: "Blah", Created: time.Now().UTC(), Modified: time.Now().UTC()}
+		noteTypes[noteTypePos].Modified = time.Now().UTC()
 		noteTypes[noteTypePos].Notes = append(noteTypes[noteTypePos].Notes, newNote)
 		noteTypes[noteTypePos].dirty = true
 		player.send("%v note created.", noteType.Name)

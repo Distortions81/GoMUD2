@@ -53,7 +53,7 @@ func main() {
 
 func mudMain() {
 	serverState.Store(SERVER_BOOTING)
-	bootTime = time.Now()
+	bootTime = time.Now().UTC()
 	//Make sure all directories we need are created
 	for _, newDir := range makeDirs {
 		err := os.Mkdir(newDir, os.ModePerm)

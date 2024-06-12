@@ -236,7 +236,7 @@ func gCharConfirmName(desc *descData, input string) {
 			Name:      input,
 			desc:      desc,
 			valid:     true,
-			loginTime: time.Now(),
+			loginTime: time.Now().UTC(),
 			Level:     LEVEL_NEWBIE,
 			Loc:       LocData{AreaUUID: sysAreaUUID, RoomUUID: sysRoomUUID},
 		}

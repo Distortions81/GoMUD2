@@ -142,7 +142,7 @@ func rRevnum(player *characterData, input string) {
 }
 
 func makeRoom(area *areaData) *roomData {
-	return &roomData{Version: ROOM_VERSION, UUID: makeUUID(), Name: "A new room", Description: "Just an empty room", CreDate: time.Now(), ModDate: time.Now(), players: []*characterData{}, Exits: []*exitData{}, pArea: area}
+	return &roomData{Version: ROOM_VERSION, UUID: makeUUID(), Name: "A new room", Description: "Just an empty room", CreDate: time.Now().UTC(), ModDate: time.Now().UTC(), players: []*characterData{}, Exits: []*exitData{}, pArea: area}
 }
 
 // TO DO: currently works from player position, should use different value

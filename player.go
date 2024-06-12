@@ -130,8 +130,8 @@ func (desc *descData) enterWorld(player *characterData) {
 	player.dirty = true
 	desc.character = player
 	desc.character.desc = desc
-	desc.character.loginTime = time.Now()
-	desc.character.idleTime = time.Now()
+	desc.character.loginTime = time.Now().UTC()
+	desc.character.idleTime = time.Now().UTC()
 	desc.state = CON_PLAYING
 
 	charList = append(charList, player)

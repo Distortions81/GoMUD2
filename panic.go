@@ -15,7 +15,7 @@ const pnaicLogName = "panic.log"
 
 func reportPanic(desc *descData, format string, args ...interface{}) {
 	if r := recover(); r != nil {
-		now := time.Now().UnixNano()
+		now := time.Now().UTC().UnixNano()
 		panicFile := fmt.Sprintf("%v/%v/%v-%v", DATA_DIR, PANIC_DIR, now, panicDumpName)
 		f, err := os.Create(panicFile)
 		if err == nil {

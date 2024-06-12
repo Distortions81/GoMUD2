@@ -1,17 +1,25 @@
 {
 	"Version": 1,
-	"UUID": "OTMrBOMR2Bfze6OiAueQFQ04S4WTHQ4l",
+	"UUID": "wK-CS44Z2BeQT5Xf2HZ1DwkVAVbVmFIX",
 	"Name": "changes",
 	"File": "changes",
 	"Notes": [
 		{
-			"To": "all",
-			"From": "Distortions",
+			"From": {
+				"Name": "Distortions",
+				"UUID": "_KQjPtwC1RdAY9H6jparEgkVAVbVmFIX"
+			},
+			"To": [
+				{
+					"Name": "all",
+					"UUID": ""
+				}
+			],
 			"Subject": "Test",
 			"Text": "Blah",
-			"Created": "2024-06-11T16:19:29.564765118-06:00",
-			"Modified": "2024-06-11T16:19:29.564765148-06:00"
+			"Created": "2024-06-11T18:16:03.99684969-06:00",
+			"Modified": "2024-06-11T18:16:03.996852972-06:00"
 		}
 	],
-	"Modified": "2024-06-11T21:55:24.567033913Z"
+	"Modified": "2024-06-12T00:15:56.784758071Z"
 }
