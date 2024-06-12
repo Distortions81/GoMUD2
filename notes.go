@@ -140,7 +140,7 @@ func (player *characterData) checkUnreadNotes() {
 	if buf == "" {
 		player.send("You have no unread notes.")
 	} else {
-		player.send("Unread notes:" + NEWLINE)
+		player.send("Unread notes: (note <type> read)")
 		player.send(buf)
 	}
 }
