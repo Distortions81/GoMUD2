@@ -3,8 +3,8 @@ package main
 import "strings"
 
 const (
-	VERSION  = "v0.0.66a"
-	VWHEN    = "06-10-2024-0324p"
+	VERSION  = "v0.0.67a"
+	VWHEN    = "06-12-2024-0403p"
 	CODENAME = "Novaflux"
 
 	LICENSE = "GOMUD2: " + VERSION + "-" + VWHEN + "-" + CODENAME + NEWLINE +
