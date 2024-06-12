@@ -43,6 +43,57 @@ type noteData struct {
 
 var noteTypes []noteListData
 
+func (who *noteWhoData) isWho(target *characterData) bool {
+	if strings.EqualFold(who.Name, "all") {
+		return true
+	}
+	if who.Name == target.Name && who.UUID.sameUUID(target.UUID) {
+		return true
+	}
+	return false
+}
+
+func inWhoList(list []noteWhoData, target *characterData) bool {
+	for _, item := range list {
+		if item.isWho(target) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (note *noteData) isFor(target *characterData) bool {
+	if inWhoList(note.To, target) ||
+		inWhoList(note.BCC, target) ||
+		inWhoList(note.CC, target) {
+		return true
+	}
+
+	return false
+}
+
+func formatWho(list []noteWhoData, target *characterData, bcc bool) string {
+	output := ""
+	var count int
+	for _, item := range list {
+		if bcc && !inWhoList(list, target) {
+			continue
+		}
+		if count > 0 {
+			output = output + ", "
+		}
+		if !strings.EqualFold(item.Name, "all") && item.isWho(target) {
+			output = output + "(You)"
+		} else {
+			output = output + item.Name
+		}
+		count++
+	}
+
+	return output
+}
+
 func (noteType *noteListData) unread(player *characterData) (*noteData, int) {
 	if noteType == nil {
 		return nil, 0
@@ -58,6 +109,9 @@ func (noteType *noteListData) unread(player *characterData) (*noteData, int) {
 	var oldestNote *noteData
 	for _, item := range noteType.Notes {
 		if item.Created.Sub(player.NoteRead[noteType.UUID.toString()]) > 0 {
+			if !item.isFor(player) {
+				continue
+			}
 			count++
 			if oldestNote == nil || item.Created.Sub(oldestNote.Created) < 0 {
 				oldestNote = item
@@ -122,8 +176,10 @@ func cmdNotes(player *characterData, input string) {
 			player.send("No unread %v notes.", noteType.Name)
 		} else {
 			player.send("On: %v", note.Created.String())
-			player.send("From: %v", note.From)
-			player.send("To: %v", note.Text)
+			player.send("From: %v", note.From.Name)
+			player.send("To: %v", formatWho(note.To, player, false))
+			player.send("CC: %v", formatWho(note.CC, player, false))
+			player.send("BCC: %v", formatWho(note.BCC, player, true))
 			player.send("Subject: %v", note.Subject)
 			player.send(NEWLINE + note.Text)
 
@@ -144,8 +200,13 @@ func cmdNotes(player *characterData, input string) {
 			player.send("There aren't any %v notes.", noteType.Name)
 			return
 		}
-		for i, item := range noteType.Notes {
-			player.send("#%4v: Subject: %v From: %v", i+1, item.Subject, item.From)
+		pos := 0
+		for _, item := range noteType.Notes {
+			if player.Level < LEVEL_MODERATOR && !item.isFor(player) {
+				continue
+			}
+			player.send("#%4v: Subject: %v From: %v", pos+1, item.Subject, item.From.Name)
+			pos++
 		}
 		return
 	}
