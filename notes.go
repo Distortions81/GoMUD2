@@ -128,6 +128,9 @@ func (noteType *noteListData) unread(player *characterData) (*noteData, int) {
 func noteSyntax(player *characterData) {
 	listNoteTypes(player)
 	player.send("Syntax: note <type> read or list")
+	if player.Level >= LEVEL_MODERATOR {
+		player.send("Mod options: note <type> setting")
+	}
 }
 
 func markRead(player *characterData, noteType *noteListData, note *noteData) {
@@ -253,6 +256,9 @@ func cmdNotes(player *characterData, input string) {
 			player.send("#%4v: Subject: %v From: %v", pos+1, item.Subject, item.From.Name)
 			pos++
 		}
+		return
+	}
+	if player.Level < LEVEL_MODERATOR {
 		return
 	}
 	if strings.EqualFold(args[1], "setting") {
