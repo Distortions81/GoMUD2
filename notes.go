@@ -171,8 +171,8 @@ func cmdNotes(player *characterData, input string) {
 	if player.Level > LEVEL_BUILDER && strings.EqualFold(args[0], "create") {
 		typeName := strings.TrimSpace(args[1])
 		fileName := txtTo7bit(typeName)
-		if len(typeName) < 2 {
-			player.send("That note type name is too short: %v", typeName)
+		if len(fileName) < 2 {
+			player.send("That note type name is too short: %v", fileName)
 			return
 		}
 		newType := noteListData{Version: NOTES_VERSION,
