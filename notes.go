@@ -34,7 +34,7 @@ type noteWhoData struct {
 type noteData struct {
 	From noteWhoData
 
-	To      []noteWhoData `json:",omitempty"`
+	To      []noteWhoData
 	CC      []noteWhoData `json:",omitempty"`
 	BCC     []noteWhoData `json:",omitempty"`
 	Subject string
