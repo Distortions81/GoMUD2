@@ -169,8 +169,14 @@ func cmdNotes(player *characterData, input string) {
 		return
 	}
 	if player.Level > LEVEL_BUILDER && strings.EqualFold(args[0], "create") {
+		typeName := strings.TrimSpace(args[1])
+		fileName := txtTo7bit(typeName)
+		if len(typeName) < 2 {
+			player.send("That note type name is too short: %v", typeName)
+			return
+		}
 		newType := noteListData{Version: NOTES_VERSION,
-			UUID: makeUUID(), File: txtTo7bit(args[1]), Name: args[1], Modified: time.Now().UTC(), dirty: true}
+			UUID: makeUUID(), File: fileName, Name: args[1], Modified: time.Now().UTC(), dirty: true}
 		noteTypes = append(noteTypes, newType)
 		player.send("Created new note type: %v", args[1])
 		return
