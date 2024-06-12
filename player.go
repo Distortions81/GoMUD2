@@ -3,6 +3,8 @@ package main
 import (
 	"strings"
 	"time"
+
+	"github.com/hako/durafmt"
 )
 
 func (target *characterData) quit(disc bool) {
@@ -130,10 +132,10 @@ func (desc *descData) enterWorld(player *characterData) {
 	player.dirty = true
 	desc.character = player
 	desc.character.desc = desc
+
+	desc.state = CON_PLAYING
 	desc.character.loginTime = time.Now().UTC()
 	desc.character.idleTime = time.Now().UTC()
-	desc.state = CON_PLAYING
-
 	charList = append(charList, player)
 
 	mudStats.loginCount++
@@ -154,9 +156,16 @@ func (desc *descData) enterWorld(player *characterData) {
 
 	player.sendToRoom("%v slowly fades into existence.", player.Name)
 	cmdLook(desc.character, "")
+	player.send("")
+	if !player.SaveTime.IsZero() && time.Since(player.SaveTime) > time.Hour {
+		player.send("Welcome back! You've been offline for: %v",
+			durafmt.ParseShort(time.Since(player.SaveTime)))
+	}
+
 	desc.character.checkTells()
 	player.checkUnreadNotes()
 	player.send("To see the command list type: HELP COMMANDS")
+
 }
 
 func checkPlayingUUID(name string, uuid uuidData) *characterData {

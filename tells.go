@@ -11,7 +11,7 @@ func (player *characterData) checkTells() {
 	if numTells > 0 {
 		player.send("{rYou have {R%v {rtells waiting.", numTells-1)
 	} else {
-		player.send("you have no tells waiting.")
+		player.send("You have no tells waiting.")
 	}
 	if player.Config.hasFlag(CONFIG_NOTELL) {
 		player.send("You currently have tells disabled!")

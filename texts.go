@@ -38,7 +38,7 @@ func loadTextFiles() {
 		//errLog("readTextFiles: Read: %v", fname.Name())
 	}
 
-	sslBuf := fmt.Sprintf("Use port %v for SSL."+NEWLINE, *portTLS)
+	sslBuf := fmt.Sprintf("Use port %v for SSL (Encrypted)."+NEWLINE, *portTLS)
 
 	//Save greet, fairwell and warning
 	greetBuf = LICENSE + string(ANSIColor([]byte(textFiles["greet"]), COLOR_16)) + loginStateList[CON_ACCOUNT].prompt
