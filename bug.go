@@ -65,7 +65,7 @@ func cmdBug(player *characterData, input string) {
 	player.send("Your report has been recorded!")
 }
 
-func readBugs() {
+func loadBugs() {
 	data, err := readFile(DATA_DIR + BUGS_FILE)
 	if err != nil {
 		return

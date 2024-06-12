@@ -155,9 +155,8 @@ func (desc *descData) enterWorld(player *characterData) {
 	player.sendToRoom("%v slowly fades into existence.", player.Name)
 	cmdLook(desc.character, "")
 	desc.character.checkTells()
-	if player.Level < LEVEL_PLAYER {
-		player.send("To see the command list type: HELP COMMANDS")
-	}
+	player.checkUnreadNotes()
+	player.send("To see the command list type: HELP COMMANDS")
 }
 
 func checkPlayingUUID(name string, uuid uuidData) *characterData {

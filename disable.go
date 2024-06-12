@@ -79,7 +79,7 @@ func writeDisables() {
 	}
 }
 
-func readDisables() {
+func loadDisables() {
 	data, err := readFile(DATA_DIR + DISABLES_FILE)
 	if err != nil {
 		return

@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"os"
 	"sort"
 	"strconv"
@@ -128,12 +129,51 @@ func (noteType *noteListData) unread(player *characterData) (*noteData, int) {
 	return oldestNote, count
 }
 
+func (player *characterData) checkUnreadNotes() {
+	buf := ""
+
+	for _, nt := range noteTypes {
+		if _, count := nt.unread(player); count != 0 {
+			buf = buf + fmt.Sprintf("%v unread %v"+NEWLINE, count, nt.Name)
+		}
+	}
+	if buf == "" {
+		player.send("You have no unread notes.")
+	} else {
+		player.send("Unread notes:" + NEWLINE)
+		player.send(buf)
+	}
+}
+
 func noteSyntax(player *characterData) {
+	player.checkUnreadNotes()
+
 	listNoteTypes(player)
 	player.send("Syntax: note <type> read or list")
 	if player.Level >= LEVEL_MODERATOR {
 		player.send("Mod options: note <type> setting")
 	}
+}
+
+func readNotes(player *characterData, noteType *noteListData) {
+	if note, count := noteType.unread(player); count == 0 {
+		player.send("No unread %v notes.", noteType.Name)
+	} else {
+		player.send("On: %v", note.Created.String())
+		player.send("From: %v", note.From.Name)
+		player.send("To: %v", formatWho(note.To, player, false))
+		if len(note.CC) > 0 {
+			player.send("CC: %v", formatWho(note.CC, player, false))
+		}
+		if len(note.BCC) > 0 {
+			player.send("BCC: %v", formatWho(note.BCC, player, true))
+		}
+		player.send("Subject: %v", note.Subject)
+		player.send(NEWLINE + note.Text)
+
+		markRead(player, noteType, note)
+	}
+	return
 }
 
 func markRead(player *characterData, noteType *noteListData, note *noteData) {
@@ -220,23 +260,7 @@ func cmdNotes(player *characterData, input string) {
 	}
 
 	if strings.EqualFold(args[1], "read") {
-		if note, count := noteType.unread(player); count == 0 {
-			player.send("No unread %v notes.", noteType.Name)
-		} else {
-			player.send("On: %v", note.Created.String())
-			player.send("From: %v", note.From.Name)
-			player.send("To: %v", formatWho(note.To, player, false))
-			if len(note.CC) > 0 {
-				player.send("CC: %v", formatWho(note.CC, player, false))
-			}
-			if len(note.BCC) > 0 {
-				player.send("BCC: %v", formatWho(note.BCC, player, true))
-			}
-			player.send("Subject: %v", note.Subject)
-			player.send(NEWLINE + note.Text)
-
-			markRead(player, noteType, note)
-		}
+		readNotes(player, noteType)
 		return
 	}
 	if strings.EqualFold(args[1], "write") {
@@ -302,7 +326,7 @@ func cmdNotes(player *characterData, input string) {
 	}
 }
 
-func readNotes() {
+func loadNotes() {
 	noteLock.Lock()
 	defer noteLock.Unlock()
 

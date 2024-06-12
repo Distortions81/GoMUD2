@@ -11,7 +11,7 @@ var greetBuf, greetBufNoSSL, fairwellBuf, warnBuf string
 
 const textExt = ".txt"
 
-func readTextFiles() {
+func loadTextFiles() {
 	textFiles = make(map[string]string)
 
 	dir, err := os.ReadDir(DATA_DIR + TEXTS_DIR)

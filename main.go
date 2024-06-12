@@ -91,7 +91,7 @@ func mudMain() {
 
 	servSet = loadSettings()
 	loadAllAreas()
-	readTextFiles()
+	loadTextFiles()
 	loadEmojiHelp()
 	updateFontList()
 
@@ -99,10 +99,10 @@ func mudMain() {
 	xcolorHelp()
 
 	saveHelps()
-	readBlocked()
-	readDisables()
-	readNotes()
-	readBugs()
+	loadBlocked()
+	loadDisables()
+	loadNotes()
+	loadBugs()
 	saveNotes(true)
 
 	setupListener()

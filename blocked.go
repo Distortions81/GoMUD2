@@ -101,7 +101,7 @@ func writeBlocked(force bool) {
 	blockedDirty = false
 }
 
-func readBlocked() error {
+func loadBlocked() error {
 
 	fileName := DATA_DIR + BLOCKED_FILE
 	data, err := readFile(fileName)

@@ -19,6 +19,7 @@
 			],
 			"Subject": "Test",
 			"Text": "Blah",
+			"Hidden": false,
 			"Created": "2024-06-12T00:34:26.799336222Z",
 			"Modified": "2024-06-12T00:34:26.799339505Z"
 		},
@@ -35,6 +36,7 @@
 			],
 			"Subject": "Test",
 			"Text": "Blah",
+			"Hidden": false,
 			"Created": "2024-06-12T01:16:30.578974719Z",
 			"Modified": "2024-06-12T01:16:30.578978909Z"
 		},
@@ -51,6 +53,7 @@
 			],
 			"Subject": "Test",
 			"Text": "Blah",
+			"Hidden": false,
 			"Created": "2024-06-12T01:22:58.217775638Z",
 			"Modified": "2024-06-12T01:22:58.217778571Z"
 		},
@@ -67,9 +70,11 @@
 			],
 			"Subject": "Test",
 			"Text": "Blah",
+			"Hidden": false,
 			"Created": "2024-06-12T01:24:57.303519738Z",
 			"Modified": "2024-06-12T01:24:57.303523092Z"
 		}
 	],
-	"Modified": "2024-06-12T01:24:57.30353553Z"
+	"Modified": "2024-06-12T01:24:57.30353553Z",
+	"Disabled": false
 }

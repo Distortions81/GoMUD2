@@ -6,13 +6,13 @@ import (
 )
 
 func cmdUnban(player *characterData, input string) {
-	doBan(player, input, true, false)
+	player.doBan(input, true, false)
 }
 func cmdBan(player *characterData, input string) {
-	doBan(player, input, false, false)
+	player.doBan(input, false, false)
 }
 
-func doBan(player *characterData, input string, unban, account bool) {
+func (player *characterData) doBan(input string, unban, account bool) {
 	args := strings.SplitN(input, " ", 2)
 	argCount := len(args)
 
