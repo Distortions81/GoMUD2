@@ -14,20 +14,39 @@ const (
 	LEVEL_NEWBIE = 0
 	LEVEL_PLAYER = 1
 
-	LEVEL_BUILDER     = LEVEL_IMPLEMENTER - 30
-	LEVEL_MODERATOR   = LEVEL_IMPLEMENTER - 20
-	LEVEL_ADMIN       = LEVEL_IMPLEMENTER - 10
-	LEVEL_IMPLEMENTER = 1000
+	LEVEL_BUILDER     = LEVEL_OWNER - 40
+	LEVEL_MODERATOR   = LEVEL_OWNER - 30
+	LEVEL_ADMIN       = LEVEL_OWNER - 20
+	LEVEL_IMPLEMENTER = LEVEL_OWNER - 10
+	LEVEL_OWNER       = 1000
 )
 
-var levelName map[int]string = map[int]string{
-	LEVEL_ANY:         "Anyone",
-	LEVEL_NEWBIE:      "Newbie",
-	LEVEL_PLAYER:      "Player",
-	LEVEL_BUILDER:     "Builder",
-	LEVEL_MODERATOR:   "Moderator",
-	LEVEL_ADMIN:       "Admin",
-	LEVEL_IMPLEMENTER: "Implementer",
+type levelNameData struct {
+	Name        string
+	Short       string
+	Description string
+	Level       int
+}
+
+var levelToName map[int]*levelNameData = map[int]*levelNameData{
+	LEVEL_ANY:         {Name: "Anyone", Short: "any", Description: "Anyone"},
+	LEVEL_NEWBIE:      {Name: "Newbie", Short: "newb", Description: "New players"},
+	LEVEL_PLAYER:      {Name: "Players", Short: "player", Description: "Normal players"},
+	LEVEL_BUILDER:     {Name: "Builders", Short: "build", Description: "People working on areas, objects, mobs, etc."},
+	LEVEL_MODERATOR:   {Name: "Moderator", Short: "mod", Description: "People who moderate the MUD"},
+	LEVEL_ADMIN:       {Name: "Administrators", Short: "admin", Description: "Mud staff, administrators"},
+	LEVEL_IMPLEMENTER: {Name: "Implementer", Short: "imp", Description: "People writing code for the MUD."},
+	LEVEL_OWNER:       {Name: "Owner", Short: "owner", Description: "Owner of the MUD."},
+}
+
+func init() {
+	nameToLevel = map[string]*levelNameData{}
+}
+
+func nameToLevel(input string) int {
+	for _, item := range levelToName {
+
+	}
 }
 
 var (

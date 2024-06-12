@@ -111,7 +111,7 @@ func (player *characterData) listCommands(input string) {
 		}
 
 		if lastLevel != item.level {
-			player.send(NEWLINE+"Level: %v", levelName[item.level])
+			player.send(NEWLINE+"Level: %v", levelName[item.level].Name)
 			lastLevel = item.level
 		}
 
