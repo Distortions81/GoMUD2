@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -159,7 +160,7 @@ func cmdNotes(player *characterData, input string) {
 	if len(player.DraftNotes.DraftNotes) > 0 {
 		player.send("You currently have %v unfinished draft notes.")
 	}
-	args := strings.SplitN(input, " ", 2)
+	args := strings.Split(input, " ")
 	numArgs := len(args)
 
 	var noteType *noteListData
@@ -168,29 +169,32 @@ func cmdNotes(player *characterData, input string) {
 		noteSyntax(player)
 		return
 	}
-	if player.Level > LEVEL_BUILDER && strings.EqualFold(args[0], "create") {
+	if player.Level > LEVEL_BUILDER {
+		if strings.EqualFold(args[0], "create") {
 
-		typeName := strings.TrimSpace(args[1])
-		fileName := txtTo7bit(typeName)
-		if len(fileName) < 2 {
-			player.send("That note type name is too short: %v", fileName)
-			return
-		}
-		for _, nt := range noteTypes {
-			if strings.EqualFold(fileName, nt.File) ||
-				strings.EqualFold(typeName, nt.Name) {
-				player.send("There is already a note type called that.")
-				player.send("Input: File: %v Name: %v", fileName, typeName)
-				player.send("Existing note type: File: %v Name: %v", nt.File, nt.Name)
+			typeName := strings.TrimSpace(args[1])
+			fileName := txtTo7bit(typeName)
+			if len(fileName) < 2 {
+				player.send("That note type name is too short: %v", fileName)
 				return
 			}
+			for _, nt := range noteTypes {
+				if strings.EqualFold(fileName, nt.File) ||
+					strings.EqualFold(typeName, nt.Name) {
+					player.send("There is already a note type called that.")
+					player.send("Input: File: %v Name: %v", fileName, typeName)
+					player.send("Existing note type: File: %v Name: %v", nt.File, nt.Name)
+					return
+				}
+			}
+			newType := noteListData{Version: NOTES_VERSION,
+				UUID: makeUUID(), File: fileName, Name: args[1], Modified: time.Now().UTC(), dirty: true}
+			noteTypes = append(noteTypes, newType)
+			player.send("Created new note type: %v", args[1])
+			return
 		}
-		newType := noteListData{Version: NOTES_VERSION,
-			UUID: makeUUID(), File: fileName, Name: args[1], Modified: time.Now().UTC(), dirty: true}
-		noteTypes = append(noteTypes, newType)
-		player.send("Created new note type: %v", args[1])
-		return
 	}
+
 	for ntp, item := range noteTypes {
 		if strings.EqualFold(item.Name, args[0]) {
 			noteType = &item
@@ -250,6 +254,42 @@ func cmdNotes(player *characterData, input string) {
 			pos++
 		}
 		return
+	}
+	if strings.EqualFold(args[1], "setting") {
+		if numArgs > 2 {
+			if strings.EqualFold(args[2], "readLevel") {
+				if numArgs > 3 {
+					val, err := strconv.ParseUint(args[3], 10, 64)
+					if err != nil {
+						player.send("That isn't a number.")
+						return
+					}
+					noteTypes[noteTypePos].ReadLvl = int(val)
+					noteTypes[noteTypePos].dirty = true
+					player.send("%v: read level set to %v.", noteType.Name, val)
+					return
+				}
+				player.send("Change the readLevel to what?")
+
+			}
+			if strings.EqualFold(args[2], "postLevel") {
+				if numArgs > 3 {
+					val, err := strconv.ParseUint(args[3], 10, 64)
+					if err != nil {
+						player.send("That isn't a number.")
+						return
+					}
+					noteTypes[noteTypePos].PostLvl = int(val)
+					noteTypes[noteTypePos].dirty = true
+					player.send("%v: post level set to %v.", noteType.Name, val)
+					return
+				}
+				player.send("Change the postLevel to what?")
+			}
+			return
+		} else {
+			player.send("what setting?")
+		}
 	}
 }
 
