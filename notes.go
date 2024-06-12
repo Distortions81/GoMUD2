@@ -288,7 +288,7 @@ func cmdNotes(player *characterData, input string) {
 			}
 			return
 		} else {
-			player.send("what setting?")
+			player.send("Settings available: readLevel, postLevel")
 		}
 	}
 }
