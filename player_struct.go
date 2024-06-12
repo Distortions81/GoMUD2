@@ -93,7 +93,7 @@ type characterData struct {
 
 	Name  string
 	room  *roomData
-	Loc   LocData
+	Loc   LocData `json:",omitempty"`
 	Level int
 
 	Vitals VitalsData

@@ -67,8 +67,8 @@ type roomData struct {
 }
 
 type LocData struct {
-	AreaUUID uuidData
-	RoomUUID uuidData
+	AreaUUID uuidData `json:",omitempty"`
+	RoomUUID uuidData `json:",omitempty"`
 }
 
 type exitData struct {
