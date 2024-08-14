@@ -1,0 +1,230 @@
+MUD MAGIC:
+//Won't accept latin1, will accept utf-8 but normalizes accents away
+//Only sends screwed latin1 or some similar encoding
+//EATS LINES WITH ACCENTS
+#13: 127.0.0.1 connected.
+#13: Sent: DO SUP_GOAHEAD
+#13: Sent: DO TERMINAL_TYPE
+#13: Sent: WILL CHARSET
+#13: Sent: WILL SUP_GOAHEAD
+#13: Client: WONT SUP_GOAHEAD
+#13: Client: WONT TERMINAL_TYPE
+#13: Client: DONT CHARSET
+#13: Client: DONT SUP_GOAHEAD
+
+CMUD:
+//CONSTANTLY reconnects forever, iso/latin1
+#1: 127.0.0.1 connected.
+#1: Sent: DO SUP_GOAHEAD
+#1: Sent: DO TERMINAL_TYPE
+#1: Sent: WILL CHARSET
+#1: Sent: WILL SUP_GOAHEAD
+#1: Client: WILL SUP_GOAHEAD
+#1: Sent sub:  TERMINAL_TYPE 1
+#1: Client: WILL TERMINAL_TYPE
+#1: Client: DONT CHARSET
+#1: Client: SB TERMINAL_TYPE
+#1: GOT TERMINAL_TYPE: CMUD
+Found client match: CMUD
+
+KILD:
+//Seems to work fine, iso/latin1
+#3: 127.0.0.1 connected. (TLS)
+#3: Sent: DO SUP_GOAHEAD
+#3: Sent: DO TERMINAL_TYPE
+#3: Sent: WILL CHARSET
+#3: Sent: WILL SUP_GOAHEAD
+#3: Sent sub:  TERMINAL_TYPE 1
+#3: Client: WILL TERMINAL_TYPE
+#3: Client: SB TERMINAL_TYPE
+#3: GOT TERMINAL_TYPE: KildClient
+Found client match: KILDCLIENT
+
+MUDLET:
+//Seems to work fine, UTF-8
+4: 127.0.0.1 connected.
+#4: Sent: DO SUP_GOAHEAD
+#4: Sent: DO TERMINAL_TYPE
+#4: Sent: WILL CHARSET
+#4: Sent: WILL SUP_GOAHEAD
+#4: Client: WONT SUP_GOAHEAD
+#4: Sent sub:  TERMINAL_TYPE 1
+#4: Client: WILL TERMINAL_TYPE
+#4: Sent sub: ;UTF-8;ISO88591;WINDOWS1252;LATIN1;MCP437;CP437;IBM437;MCP850;MCP858;MACROMAN;MACINTOSH;ASCII CHARSET 1
+#4: Client: DO CHARSET
+#4: Client: DONT SUP_GOAHEAD
+#4: Client: SB TERMINAL_TYPE
+#4: GOT TERMINAL_TYPE: Mudlet 4.17.2
+#4: Client: SB CHARSET
+#4: GOT CHARSET: UTF8
+#4: Sent sub: UTF8 CHARSET 2
+
+TINTIN++:
+//Seems to work fine
+#5: 127.0.0.1 connected.
+#5: Sent: DO SUP_GOAHEAD
+#5: Sent: DO TERMINAL_TYPE  
+#5: Sent: WILL CHARSET
+#5: Sent: WILL SUP_GOAHEAD
+#5: Client: WILL SUP_GOAHEAD
+#5: Sent sub:  TERMINAL_TYPE 1
+#5: Client: WILL TERMINAL_TYPE
+#5: Sent sub: ;UTF-8;ISO88591;WINDOWS1252;LATIN1;MCP437;CP437;IBM437;MCP850;MCP858;MACROMAN;MACINTOSH;ASCII CHARSET 1
+#5: Client: DO CHARSET
+#5: Client: SB TERMINAL_TYPE
+#5: GOT TERMINAL_TYPE: TINTIN++
+Found client match: TINTIN
+#5: Client: SB CHARSET
+#5: GOT CHARSET: UTF8
+#5: Sent sub: UTF8 CHARSET 2
+
+GGMUD:
+//wont/dont charset, sup_goahead, UTF-8
+//Won't accept latin1, will accept utf-8 but normalizes accents away
+//Only sends screwed latin1 or some similar encoding
+#5: 192.168.1.189 connected.
+#5: Sent: DO SUP_GOAHEAD
+#5: Sent: DO TERMINAL_TYPE
+#5: Sent: WILL CHARSET
+#5: Sent: WILL SUP_GOAHEAD
+#5: Client: WONT SUP_GOAHEAD
+#5: Sent sub:  TERMINAL_TYPE 1
+#5: Client: WILL TERMINAL_TYPE
+#5: Client: DONT CHARSET
+#5: Client: DONT SUP_GOAHEAD
+#5: Client: SB TERMINAL_TYPE
+#5: GOT TERMINAL_TYPE: ggmud
+Found client match: GGMUD
+
+BEIP:
+//Seems to work fine
+#2: 192.168.1.189 connected.
+#2: Sent: DO SUP_GOAHEAD
+#2: Sent: DO TERMINAL_TYPE
+#2: Sent: WILL CHARSET
+#2: Sent: WILL SUP_GOAHEAD
+#2: Client: WONT SUP_GOAHEAD
+#2: Sent sub:  TERMINAL_TYPE 1
+#2: Client: WILL TERMINAL_TYPE
+#2: Sent sub: ;UTF-8;ISO88591;WINDOWS1252;LATIN1;MCP437;CP437;IBM437;MCP850;MCP858;MACROMAN;MACINTOSH;ASCII CHARSET 1
+#2: Client: DO CHARSET
+#2: Client: DONT SUP_GOAHEAD
+#2: Client: SB TERMINAL_TYPE
+#2: GOT TERMINAL_TYPE: Beip
+Found client match: BEIP
+#2: Client: SB CHARSET
+#2: GOT CHARSET: UTF8
+#2: Sent sub: UTF8 CHARSET 2
+
+GMUD:
+//NO TELNET REPONSES, ISO/LATIN1
+#7: 192.168.1.189 connected.
+#7: Sent: DO SUP_GOAHEAD
+#7: Sent: DO TERMINAL_TYPE
+#7: Sent: WILL CHARSET
+#7: Sent: WILL SUP_GOAHEAD
+
+PORTAL CLIENT: //DEAD, BROKEN
+
+POTATO: //Seems to work fine, but suppress gohead if detected
+#10: 192.168.1.189 connected.
+#10: Sent: DO SUP_GOAHEAD
+#10: Sent: DO TERMINAL_TYPE
+#10: Sent: WILL CHARSET
+#10: Sent: WILL SUP_GOAHEAD
+#10: Client: WILL SUP_GOAHEAD
+#10: Sent sub:  TERMINAL_TYPE 1
+#10: Client: WILL TERMINAL_TYPE
+#10: Sent sub: ;UTF-8;ISO88591;WINDOWS1252;LATIN1;MCP437;CP437;IBM437;MCP850;MCP858;MACROMAN;MACINTOSH;ASCII CHARSET 1
+#10: Client: DO CHARSET
+#10: Client: DO SUP_GOAHEAD
+#10: Client: SB TERMINAL_TYPE
+#10: GOT TERMINAL_TYPE: Potato
+Found client match: POTATO
+#10: Client: SB CHARSET
+#10: GOT CHARSET: UTF8
+#10: Sent sub: UTF8 CHARSET 2
+
+POWWOW:
+//Term type on windows 'cygwin'
+//Uses dos/oem/cp437
+#3: 192.168.1.189 connected.
+#3: Sent: DO SUP_GOAHEAD
+#3: Sent: DO TERMINAL_TYPE
+#3: Sent: WILL CHARSET
+#3: Sent: WILL SUP_GOAHEAD
+#3: Client: WILL SUP_GOAHEAD
+#3: Sent sub:  TERMINAL_TYPE 1
+#3: Client: WILL TERMINAL_TYPE
+#3: Client: DONT CHARSET
+#3: Client: DO SUP_GOAHEAD
+#3: Client: SB TERMINAL_TYPE
+#3: GOT TERMINAL_TYPE: cygwin
+//LINUX: NEWLINE NOT WORKING????
+#10: 192.168.1.159 connected.
+#10: Sent: DO SUP_GOAHEAD
+#10: Sent: DO TERMINAL_TYPE
+#10: Sent: WILL CHARSET
+#10: Sent: WILL SUP_GOAHEAD
+#10: Client: WILL SUP_GOAHEAD
+#10: Sent sub:  TERMINAL_TYPE 1
+#10: Client: WILL TERMINAL_TYPE
+#10: Client: DONT CHARSET
+#10: Client: DO SUP_GOAHEAD
+#10: Client: SB TERMINAL_TYPE
+#10: GOT TERMINAL_TYPE: xterm-256color
+Found client match: XTERM256COLOR
+
+PUEBLO: Works fine, but normalizes accents
+#12: 192.168.1.189 connected.
+#12: Sent: DO SUP_GOAHEAD
+#12: Sent: DO TERMINAL_TYPE
+#12: Sent: WILL CHARSET
+#12: Sent: WILL SUP_GOAHEAD
+#12: Client: WONT SUP_GOAHEAD
+#12: Sent sub:  TERMINAL_TYPE 1
+#12: Client: WILL TERMINAL_TYPE
+#12: Client: DONT CHARSET
+#12: Client: DONT SUP_GOAHEAD
+#12: Client: SB TERMINAL_TYPE
+#12: GOT TERMINAL_TYPE: pueblo
+Found client match: PUEBLO
+
+SimpleMU: //Seems to work fine
+#13: 192.168.1.189 connected.
+#13: Sent: DO SUP_GOAHEAD
+#13: Sent: DO TERMINAL_TYPE
+#13: Sent: WILL CHARSET
+#13: Sent: WILL SUP_GOAHEAD
+#13: Client: WONT SUP_GOAHEAD
+#13: Sent sub:  TERMINAL_TYPE 1
+#13: Client: WILL TERMINAL_TYPE
+#13: Client: DONT CHARSET
+#13: Client: DONT SUP_GOAHEAD
+#13: Client: SB TERMINAL_TYPE
+#13: GOT TERMINAL_TYPE: ANSI
+
+WinTin95: //Seems to work fine
+#14: 192.168.1.189 connected.
+#14: Sent: DO SUP_GOAHEAD
+#14: Sent: DO TERMINAL_TYPE
+#14: Sent: WILL CHARSET
+#14: Sent: WILL SUP_GOAHEAD
+#14: Client: WONT SUP_GOAHEAD
+#14: Client: WONT TERMINAL_TYPE
+#14: Client: DONT CHARSET
+#14: Client: DONT SUP_GOAHEAD
+
+ZMUD: //Seems to work fine
+#15: 192.168.1.189 connected.
+#15: Sent: DO SUP_GOAHEAD
+#15: Sent: DO TERMINAL_TYPE
+#15: Sent: WILL CHARSET
+#15: Sent: WILL SUP_GOAHEAD
+#15: Client: WILL SUP_GOAHEAD
+#15: Sent sub:  TERMINAL_TYPE 1
+#15: Client: WILL TERMINAL_TYPE
+#15: Client: DONT CHARSET
+#15: Client: SB TERMINAL_TYPE
+#15: GOT TERMINAL_TYPE: zmud
+Found client match: ZMUD
