@@ -1,4 +1,9 @@
 Public test server: m45sci.xyz 7777 or 7778 (SSL/TLS secure) 
+Getting Started
+--------------
+1. Install Go 1.22 or later. Visit https://go.dev/dl/ for instructions.
+2. Build the server with `go build` and run the resulting binary, or run it directly with `go run main.go`.
+3. For optional TLS support, run `./makeTestCert.sh` to generate a self-signed certificate.
 
 Old Changelog:
 April 25th - May 2nd 2024 Changelog (129 commits):
