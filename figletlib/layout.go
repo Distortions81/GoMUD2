@@ -25,7 +25,9 @@ const (
 // 1: Smush equal chars (not hardblanks)
 // 2: Smush '_' with any char in hierarchy below
 // 4: hierarchy: "|", "/\", "[]", "{}", "()", "<>"
-//    Each class in hier. can be replaced by later class.
+//
+//	Each class in hier. can be replaced by later class.
+//
 // 8: [ + ] -> |, { + } -> |, ( + ) -> |
 // 16: / + \ -> X, > + < -> X (only in that order)
 // 32: hardblank + hardblank -> hardblank
@@ -43,6 +45,13 @@ func smushem(lch rune, rch rune, s Settings) rune {
 
 	if (s.smushmode & 63) == 0 {
 		// Nothing set below 64: this is smushing by universal overlapping
+
+		// When SMKern is set but SMHardBlank is not, do not smush hardblanks
+		if s.smushmode&SMKern != 0 && s.smushmode&SMHardBlank == 0 {
+			if lch == s.hardblank || rch == s.hardblank {
+				return 0
+			}
+		}
 
 		// ensure overlapping preference to visible chars (spaces handled already)
 		if lch == s.hardblank {
