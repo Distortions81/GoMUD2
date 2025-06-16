@@ -198,22 +198,27 @@ func (player *characterData) handleCommands(input string) {
 
 }
 
+func executeCommand(player *characterData, command *commandData, args string) {
+	if command.disabled {
+		player.send("That command is disabled.")
+		return
+	}
+
+	if command.checkCommandLevel(player) {
+		if command.forceArg != "" {
+			command.goDo(player, command.forceArg)
+		} else {
+			command.goDo(player, args)
+		}
+	}
+}
+
 func parseCommand(player *characterData, input string) {
 	cmdStr, args, _ := strings.Cut(input, " ")
 	cmdStr = strings.ToLower(cmdStr)
 	command := cmdMap[cmdStr]
 	if command != nil {
-		if command.disabled {
-			player.send("That command is disabled.")
-			return
-		}
-		if command.checkCommandLevel(player) {
-			if command.forceArg != "" {
-				command.goDo(player, command.forceArg)
-			} else {
-				command.goDo(player, args)
-			}
-		}
+		executeCommand(player, command, args)
 	} else {
 		if cmdChat(player, input) {
 			if !findCommandMatch(cmdList, player, cmdStr, args) {
