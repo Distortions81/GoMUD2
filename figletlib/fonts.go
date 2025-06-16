@@ -2,7 +2,7 @@ package figletlib
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -113,7 +113,7 @@ func (f *Font) Settings() Settings {
 }
 
 func ReadFont(filename string) (*Font, error) {
-	bytes, err := ioutil.ReadFile(filename)
+	bytes, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
