@@ -63,10 +63,16 @@ func cmdForce(player *characterData, input string) {
 	}
 }
 
-/* To do: remove dupe code */
+// goForce runs a command as if it were typed by another player. If the
+// command isn't found, the available command list is shown.
 func goForce(player *characterData, input string) {
 	cmdStr, args, _ := strings.Cut(input, " ")
 	cmdStr = strings.ToLower(cmdStr)
+
+	if cmdStr == "" {
+		player.listCommands("")
+		return
+	}
 
 	var command *commandData
 	for _, cmd := range cmdList {
@@ -75,18 +81,9 @@ func goForce(player *characterData, input string) {
 			break
 		}
 	}
+
 	if command != nil {
-		if command.disabled {
-			player.send("That command is disabled.")
-			return
-		}
-		if command.checkCommandLevel(player) {
-			if command.forceArg != "" {
-				command.goDo(player, command.forceArg)
-			} else {
-				command.goDo(player, args)
-			}
-		}
+		executeCommand(player, command, args)
 	} else {
 		if cmdChat(player, input) {
 			if !findCommandMatch(cmdList, player, cmdStr, args) {
