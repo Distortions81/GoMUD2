@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"net"
-	"strings"
 	"sync"
 	"time"
 
@@ -37,16 +36,6 @@ var levelToName map[int]*levelNameData = map[int]*levelNameData{
 	LEVEL_ADMIN:       {Name: "Administrators", Short: "admin", Description: "Mud staff, administrators"},
 	LEVEL_IMPLEMENTER: {Name: "Implementer", Short: "imp", Description: "People writing code for the MUD."},
 	LEVEL_OWNER:       {Name: "Owner", Short: "own", Description: "Owner of the MUD."},
-}
-
-func nameToLevel(input string) (int, bool) {
-	input = strings.ToLower(input)
-	for lvl, item := range levelToName {
-		if strings.HasPrefix(input, item.Short) {
-			return lvl, true
-		}
-	}
-	return LEVEL_ANY, false
 }
 
 var (

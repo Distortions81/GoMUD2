@@ -61,15 +61,6 @@ func cEllip(input string, limit int) string {
 	return input
 }
 
-func cText(input string, limit int) string {
-	inLen := len(input)
-	if inLen > limit {
-		return input[:limit]
-	}
-
-	return input
-}
-
 func boolToText(value bool) string {
 	if value {
 		return "{GOn{x "

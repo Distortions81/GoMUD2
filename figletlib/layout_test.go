@@ -215,18 +215,6 @@ func testSmush(l rune, r rune, mode int, expect rune, t *testing.T) {
 	}
 }
 
-func validSmushModes() []int {
-	modes := make([]int, 0, 36+1)
-	modes = append(modes, 0)
-	for i := 1; i <= 128; i *= 2 {
-		modes = append(modes, i)
-		for j := 1; j < i; j *= 2 {
-			modes = append(modes, i+j)
-		}
-	}
-	return modes
-}
-
 func smushModes() []int {
 	modes := make([]int, 8+1)
 	modes[0] = 0

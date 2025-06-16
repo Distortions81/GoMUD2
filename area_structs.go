@@ -112,21 +112,6 @@ var dirToTextColor [DIR_MAX]string = [DIR_MAX]string{
 	DIR_CUSTOM: "Custom",
 }
 
-var dirToShortColor [DIR_MAX]string = [DIR_MAX]string{
-	DIR_NORTH:      "{RN",
-	DIR_NORTH_EAST: "{RN{GE",
-	DIR_EAST:       "{GE",
-	DIR_SOUTH_EAST: "{BS{GE",
-	DIR_SOUTH:      "{BS",
-	DIR_SOUTH_WEST: "{BS{CW",
-	DIR_WEST:       "{CW",
-	DIR_NORTH_WEST: "{RN{CW",
-	DIR_DOWN:       "{WD",
-	DIR_UP:         "{MU",
-
-	DIR_CUSTOM: "Custom",
-}
-
 var dirToShort [DIR_MAX]string = [DIR_MAX]string{
 	DIR_NORTH:      "N",
 	DIR_NORTH_EAST: "NE",

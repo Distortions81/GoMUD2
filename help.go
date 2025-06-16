@@ -162,22 +162,6 @@ func loadHelp(file string) *helpTopicData {
 	return newHelpTopic
 }
 
-func createNewHelpTopic(topic string) {
-	newHelpTopic := &helpTopicData{Topic: topic}
-	helpFiles = append(helpFiles, newHelpTopic)
-}
-
-func createNewHelp(player *characterData, topicStr, title string) {
-	for _, topic := range helpFiles {
-		if strings.EqualFold(topic.Topic, strings.TrimSpace(topicStr)) {
-			newHelp := helpData{topic: topic, Created: time.Now().UTC(),
-				Modified: time.Now().UTC(), Authors: []string{player.Name},
-				Text: "Work in progress.", Name: title}
-			topic.Helps = append(topic.Helps, newHelp)
-		}
-	}
-}
-
 func saveHelps() {
 	helpKeywords = []string{}
 
