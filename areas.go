@@ -91,15 +91,15 @@ func (area *areaData) saveArea() bool {
 		enc := json.NewEncoder(outbuf)
 		enc.SetIndent("", "\t")
 
-		if !area.UUID.hasUUID() {
-			critLog("saveArea: Area '%v' doesn't have a UUID.", fileSafeName(area.Name))
+		if !target.UUID.hasUUID() {
+			critLog("saveArea: Area '%v' doesn't have a UUID.", fileSafeName(target.Name))
 			return
 		}
-		area.Version = AREA_VERSION
-		area.ModDate = time.Now().UTC()
-		fileName := DATA_DIR + AREA_DIR + fileSafeName(area.Name) + ".json"
+		target.Version = AREA_VERSION
+		target.ModDate = time.Now().UTC()
+		fileName := DATA_DIR + AREA_DIR + fileSafeName(target.Name) + ".json"
 
-		err := enc.Encode(&area)
+		err := enc.Encode(&target)
 		if err != nil {
 			critLog("saveArea: enc.Encode: %v", err.Error())
 			return
@@ -110,8 +110,8 @@ func (area *areaData) saveArea() bool {
 			critLog("saveArea: saveFile failed %v", err.Error())
 			return
 		}
-		area.dirty = false
 	}(target)
+	area.dirty = false
 
 	return true
 }
