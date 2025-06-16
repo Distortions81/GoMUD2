@@ -53,7 +53,7 @@ func cmdBug(player *characterData, input string) {
 		player.send("That seems a bit excessive... Rejected.")
 	}
 	if player.NumReports > MAX_REPORTS {
-		player.send("You already have %v reports recorded. Try our discord instead.")
+		player.send("You already have %v reports recorded. Try our discord instead.", player.NumReports)
 		return
 	}
 
