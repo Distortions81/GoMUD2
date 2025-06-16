@@ -64,7 +64,7 @@ func FontNamesInDir(dir string) ([]string, error) {
 
 func GetFontByName(dirname, name string) (*Font, error) {
 	if dirname == "" {
-		dirname := GuessFontsDirectory()
+		dirname = GuessFontsDirectory()
 		if dirname == "" {
 			return nil, errors.New("Could not find fonts directory!")
 		}
