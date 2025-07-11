@@ -1,4 +1,3 @@
-Public test server: m45sci.xyz 7777 or 7778 (SSL/TLS secure) 
 Getting Started
 --------------
 1. Install Go 1.22 or later. Visit https://go.dev/dl/ for instructions.
