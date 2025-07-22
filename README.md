@@ -16,7 +16,7 @@ GoMUD2 is a modern MUD (Multi-User Dungeon) server written in Go. It aims to be 
 
 ## Changelog
 
-[CHANGELOG.md](changelog)
+[Changelog](CHANGELOG.md)
 
 ## Screenshots
 Below are a few handy reference charts from the `dev-notes` directory:
