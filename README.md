@@ -14,6 +14,11 @@ GoMUD2 is a modern MUD (Multi-User Dungeon) server written in Go. It aims to be 
 - **Emoji shortcuts, FIGlet fonts** and other fun extras
 - Built-in help system, stats command and more
 
+## Changelog
+
+[CHANGELOG.md](changelog)
+
+## Screenshots
 Below are a few handy reference charts from the `dev-notes` directory:
 
 ![ANSI colour chart](dev-notes/ansi.png)
