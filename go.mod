@@ -7,7 +7,7 @@ require (
 	github.com/martinhoefling/goxkcdpwgen v0.1.1
 	github.com/muesli/reflow v0.3.0
 	github.com/remeh/sizedwaitgroup v1.0.0
-	github.com/tklauser/numcpus v0.8.0
+	github.com/tklauser/numcpus v0.12.0
 	golang.org/x/crypto v0.57.0
 	golang.org/x/exp v0.0.0-20240707233637-46b078467d37
 	golang.org/x/text v0.42.0
