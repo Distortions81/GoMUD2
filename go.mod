@@ -10,7 +10,7 @@ require (
 	github.com/tklauser/numcpus v0.12.0
 	golang.org/x/crypto v0.57.0
 	golang.org/x/exp v0.0.0-20240707233637-46b078467d37
-	golang.org/x/text v0.42.0
+	golang.org/x/text v0.43.0
 )
 
 require (
